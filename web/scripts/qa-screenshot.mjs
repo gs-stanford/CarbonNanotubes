@@ -13,7 +13,12 @@ const browser = await chromium.launch({
   executablePath: chromePath
 });
 
-const page = await browser.newPage({ viewport: { width: 1440, height: 950 }, deviceScaleFactor: 1 });
+const context = await browser.newContext({
+  viewport: { width: 1440, height: 950 },
+  deviceScaleFactor: 1,
+  acceptDownloads: true
+});
+const page = await context.newPage();
 await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
 const howToCiteButton = page.getByRole("button", { name: "How to cite" });
 await howToCiteButton.click();
@@ -22,10 +27,30 @@ await citationDialog.waitFor({ state: "visible", timeout: 5000 });
 await page.screenshot({ path: path.join(outDir, "citation-modal.png"), fullPage: true });
 await page.getByRole("button", { name: "Close citation tool" }).click();
 await citationDialog.waitFor({ state: "hidden", timeout: 5000 });
-const exportButton = page.getByLabel("Property plot").getByRole("button", { name: "Download Figure" });
+const exportButton = page.getByRole("button", { name: "Download Figure", exact: true });
 await exportButton.click();
 const exportDialog = page.getByRole("dialog", { name: "Download figure and citations" });
 await exportDialog.waitFor({ state: "visible", timeout: 5000 });
+const svgDownload = await Promise.all([
+  page.waitForEvent("download", { timeout: 5000 }),
+  page.getByRole("button", { name: "Download SVG" }).click()
+]).then(([download]) => download);
+const exportedSvgPath = path.join(outDir, "exported-figure.svg");
+await svgDownload.saveAs(exportedSvgPath);
+const exportedSvg = await fs.readFile(exportedSvgPath, "utf8");
+if (!exportedSvg.includes("<style>") || !exportedSvg.includes(".plot-area") || exportedSvg.includes("plot-watermark")) {
+  throw new Error("Exported SVG is not standalone or still contains the watermark.");
+}
+const pdfPopupPromise = page.waitForEvent("popup", { timeout: 5000 });
+await page.getByRole("button", { name: "Save PDF" }).click();
+const pdfPopup = await pdfPopupPromise;
+await pdfPopup.waitForLoadState("load", { timeout: 5000 }).catch(() => {});
+await pdfPopup.waitForTimeout(800);
+const pdfSvgCount = await pdfPopup.locator("svg.plot-svg").count();
+if (pdfSvgCount !== 1) {
+  throw new Error(`PDF print view expected one exported SVG, found ${pdfSvgCount}.`);
+}
+await pdfPopup.close();
 await page.screenshot({ path: path.join(outDir, "export-modal.png"), fullPage: true });
 await page.getByRole("button", { name: "Close export" }).click();
 await exportDialog.waitFor({ state: "hidden", timeout: 5000 });
@@ -84,6 +109,7 @@ const mobileInfo = await page.evaluate(() => ({
   scrollHeight: document.documentElement.scrollHeight
 }));
 
+await context.close();
 await browser.close();
 
 console.log(
@@ -98,6 +124,7 @@ console.log(
     path.join(outDir, "desktop.png"),
     path.join(outDir, "citation-modal.png"),
     path.join(outDir, "export-modal.png"),
+    path.join(outDir, "exported-figure.svg"),
     path.join(outDir, "submission-invalid-doi.png"),
     path.join(outDir, "ranked.png"),
     path.join(outDir, "trend.png"),

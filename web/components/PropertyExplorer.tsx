@@ -180,6 +180,64 @@ const RANKED_REFERENCE_LINES: Partial<Record<PropertyKey, RankedReferenceLine[]>
   ]
 };
 
+const EXPORTED_FIGURE_CSS = `
+svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
+.plot-area { fill: #fcfdfc; }
+.grid-line { stroke: #e4e8e2; stroke-width: 0.65; }
+.axis-line, .axis-tick { stroke: #171a16; stroke-width: 0.9; vector-effect: non-scaling-stroke; }
+.axis-text { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.axis-title { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 11.5px; font-weight: 700; }
+.plot-point { cursor: pointer; stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: 0.95; }
+.plot-point.is-selected { stroke-width: 1.8; opacity: 1; }
+.plot-point.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
+.plot-point.point-material-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
+.plot-point.point-material-graphene { fill: #009e73; stroke: #006b4f; }
+.plot-point.point-material-carbon-fiber { fill: #4a4a4a; stroke: #202020; }
+.plot-point.point-material-other-carbon { fill: #8a8a8a; stroke: #5c5c5c; }
+.plot-point.point-material-polymer { fill: #e69f00; stroke: #9a6a00; }
+.plot-point.point-material-metal { fill: #cc79a7; stroke: #8c4d73; }
+.plot-point.point-material-ceramic { fill: #6a3d9a; stroke: #432667; }
+.plot-point.point-material-unknown { fill: #979d95; stroke: #60665f; }
+.plot-point.point-shape-open-circle.point-material-cnt { fill: #ffffff; stroke: #0072b2; }
+.plot-point.point-shape-open-circle.point-material-cnt-metal { fill: #ffffff; stroke: #d55e00; }
+.plot-point.point-shape-open-circle.point-material-graphene { fill: #ffffff; stroke: #009e73; }
+.plot-point.point-shape-open-circle.point-material-carbon-fiber { fill: #ffffff; stroke: #4a4a4a; }
+.plot-point.point-shape-open-circle.point-material-other-carbon { fill: #ffffff; stroke: #8a8a8a; }
+.plot-point.point-shape-open-circle.point-material-polymer { fill: #ffffff; stroke: #e69f00; }
+.plot-point.point-shape-open-circle.point-material-metal { fill: #ffffff; stroke: #cc79a7; }
+.plot-point.point-shape-open-circle.point-material-ceramic { fill: #ffffff; stroke: #6a3d9a; }
+.plot-point.point-shape-open-circle.point-material-unknown { fill: #ffffff; stroke: #979d95; }
+.selected-halo circle { fill: none; stroke: #0f5d55; stroke-width: 1.25; vector-effect: non-scaling-stroke; pointer-events: none; }
+.point-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.95); stroke-width: 2.8px; }
+.label-leader { stroke: rgba(23, 26, 22, 0.38); stroke-width: 0.75; vector-effect: non-scaling-stroke; pointer-events: none; }
+.rank-row-line { stroke: rgba(216, 222, 214, 0.58); stroke-width: 0.65; vector-effect: non-scaling-stroke; }
+.rank-value-line { stroke: rgba(23, 26, 22, 0.22); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.rank-label { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 9.5px; font-weight: 650; }
+.rank-value-text { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; font-variant-numeric: tabular-nums; }
+.rank-reference-line { stroke: rgba(23, 26, 22, 0.42); stroke-dasharray: 4 4; stroke-width: 1.05; vector-effect: non-scaling-stroke; pointer-events: none; }
+.rank-reference-leader { stroke: rgba(23, 26, 22, 0.34); stroke-width: 0.85; vector-effect: non-scaling-stroke; pointer-events: none; }
+.rank-reference-tag { fill: rgba(251, 251, 250, 0.94); stroke: rgba(23, 26, 22, 0.24); stroke-width: 0.8; vector-effect: non-scaling-stroke; pointer-events: none; }
+.rank-reference-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 11.4px; font-weight: 760; letter-spacing: 0; pointer-events: none; }
+.rank-reference-line.reference-copper, .rank-reference-leader.reference-copper { stroke: #b36a34; }
+.rank-reference-tag.reference-copper { stroke: rgba(179, 106, 52, 0.7); }
+.rank-reference-label.reference-copper { fill: #8a471f; }
+.rank-reference-line.reference-silver, .rank-reference-leader.reference-silver { stroke: #8f9aa3; }
+.rank-reference-tag.reference-silver { stroke: rgba(143, 154, 163, 0.78); }
+.rank-reference-label.reference-silver { fill: #68727a; }
+.rank-reference-line.reference-aluminum, .rank-reference-leader.reference-aluminum { stroke: #5f6f7c; }
+.rank-reference-tag.reference-aluminum { stroke: rgba(95, 111, 124, 0.78); }
+.rank-reference-label.reference-aluminum { fill: #4d5a64; }
+.rank-reference-line.reference-aramid, .rank-reference-leader.reference-aramid { stroke: #7f6a00; }
+.rank-reference-tag.reference-aramid { stroke: rgba(127, 106, 0, 0.72); }
+.rank-reference-label.reference-aramid { fill: #695800; }
+.rank-reference-line.reference-pbo, .rank-reference-leader.reference-pbo { stroke: #8d3f86; }
+.rank-reference-tag.reference-pbo { stroke: rgba(141, 63, 134, 0.72); }
+.rank-reference-label.reference-pbo { fill: #75336f; }
+.rank-reference-line.reference-carbon-reference, .rank-reference-leader.reference-carbon-reference, .rank-reference-line.reference-hm-carbon, .rank-reference-leader.reference-hm-carbon { stroke: #333b3a; }
+.rank-reference-tag.reference-carbon-reference, .rank-reference-tag.reference-hm-carbon { stroke: rgba(51, 59, 58, 0.7); }
+.rank-reference-label.reference-carbon-reference, .rank-reference-label.reference-hm-carbon { fill: #2f3735; }
+`;
+
 function metaFor(properties: PropertyMeta[], key: PropertyKey): PropertyMeta {
   const meta = properties.find((item) => item.key === key);
   if (!meta) throw new Error(`Property metadata missing for ${key}`);
@@ -227,6 +285,15 @@ function stripMarkup(value: string | null | undefined): string {
     .replace(/&nbsp;/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 function doiValue(value: string | null | undefined): string | null {
@@ -402,6 +469,20 @@ function downloadText(filename: string, text: string, type: string) {
   anchor.download = filename;
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+function prepareFigureSvg(svg: SVGSVGElement, figureTitle: string, includeXmlDeclaration = true): string {
+  const clone = svg.cloneNode(true) as SVGSVGElement;
+  clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("role", "img");
+  clone.removeAttribute("style");
+  clone.insertAdjacentHTML(
+    "afterbegin",
+    `<title>${escapeXml(stripMarkup(figureTitle))}</title><desc>Exported from CNT Property Atlas. Cite original plotted sources and the atlas.</desc><defs><style>${EXPORTED_FIGURE_CSS}</style></defs>`
+  );
+  const serialized = new XMLSerializer().serializeToString(clone);
+  return includeXmlDeclaration ? `<?xml version="1.0" encoding="UTF-8"?>\n${serialized}` : serialized;
 }
 
 function sourceRank(record: PlotRecord): number {
@@ -663,46 +744,42 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   function downloadFigureSvg() {
     const svg = document.querySelector<SVGSVGElement>(".plot-svg");
     if (!svg) return;
-    const clone = svg.cloneNode(true) as SVGSVGElement;
-    clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
-    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    clone.setAttribute("role", "img");
-    clone.insertAdjacentHTML(
-      "afterbegin",
-      `<title>${stripMarkup(figureTitle)}</title><desc>Exported from CNT Property Atlas. Cite original plotted sources and the atlas.</desc>`
-    );
-    const serialized = new XMLSerializer().serializeToString(clone);
+    const serialized = prepareFigureSvg(svg, figureTitle);
     downloadText(`cnt-property-atlas-${plotType}-${xKey}-vs-${yKey}.svg`, serialized, "image/svg+xml;charset=utf-8");
   }
 
   function printFigurePdf() {
     const svg = document.querySelector<SVGSVGElement>(".plot-svg");
     if (!svg) return;
-    const clone = svg.cloneNode(true) as SVGSVGElement;
-    clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
-    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=1000,height=780");
+    const standaloneSvg = prepareFigureSvg(svg, figureTitle, false);
+    const printWindow = window.open("", "_blank", "width=1100,height=820");
     if (!printWindow) return;
     printWindow.document.write(`<!doctype html>
 <html>
   <head>
     <title>CNT Property Atlas figure</title>
     <style>
-      body { margin: 32px; font-family: Arial, Helvetica, sans-serif; color: #171a16; }
-      h1 { font-size: 18px; margin: 0 0 18px; }
-      svg { width: 100%; height: auto; }
-      p { margin-top: 18px; font-size: 11px; line-height: 1.4; color: #555; }
+      @page { size: landscape; margin: 14mm; }
+      html, body { margin: 0; background: #ffffff; color: #171a16; font-family: Arial, Helvetica, sans-serif; }
+      main { padding: 24px; }
+      h1 { font-size: 15px; line-height: 1.2; margin: 0 0 14px; font-weight: 700; }
+      svg { width: 100%; height: auto; display: block; }
+      p { margin: 14px 0 0; font-size: 9.5px; line-height: 1.35; color: #555; }
     </style>
   </head>
   <body>
-    <h1>${stripMarkup(figureTitle)}</h1>
-    ${new XMLSerializer().serializeToString(clone)}
-    <p>When using this figure, cite the original plotted sources and Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026).</p>
+    <main>
+      <h1>${escapeXml(stripMarkup(figureTitle))}</h1>
+      ${standaloneSvg}
+      <p>When using this figure, cite the original plotted sources and Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026).</p>
+    </main>
+    <script>
+      window.addEventListener("load", () => window.setTimeout(() => window.print(), 300));
+    </script>
   </body>
 </html>`);
     printWindow.document.close();
     printWindow.focus();
-    window.setTimeout(() => printWindow.print(), 250);
   }
 
   function downloadFigureCitations() {
@@ -872,8 +949,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             <Send size={16} strokeWidth={1.8} />
             <span>Submit data</span>
           </button>
-          <button className="header-action-link" type="button" onClick={() => setExportOpen(true)} title="Download Figure" aria-label="Download Figure">
-            <Download size={17} strokeWidth={1.8} />
+          <button className="header-action-link header-action-primary" type="button" onClick={() => setExportOpen(true)} title="Download Figure" aria-label="Download Figure">
+            <Download size={18} strokeWidth={2} />
             <span>Download Figure</span>
           </button>
           <button className="header-action-link" type="button" onClick={resetView} title="Reset view" aria-label="Reset view">
@@ -1042,10 +1119,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                   </button>
                 ))}
               </div>
-              <button className="data-link" type="button" onClick={() => setExportOpen(true)}>
-                <Download size={14} strokeWidth={1.8} />
-                Download Figure
-              </button>
             </div>
             <div className="encoding-legend" aria-label="Visual encoding legend">
               <div className="legend-group">
