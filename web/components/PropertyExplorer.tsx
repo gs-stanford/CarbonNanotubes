@@ -3,6 +3,7 @@
 import { ArrowLeftRight, Check, Clipboard, Download, ExternalLink, FileText, Printer, Quote, RefreshCcw, Send, X } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { RankedPlot, type RankedReferenceLine } from "@/components/RankedPlot";
+import { isRadarCompleteRecord, RadarPlot } from "@/components/RadarPlot";
 import { ScatterPlot } from "@/components/ScatterPlot";
 import { TrendPlot } from "@/components/TrendPlot";
 import type { ExplorerPayload, PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
@@ -11,7 +12,7 @@ type PropertyExplorerProps = {
   initialData: ExplorerPayload;
 };
 
-type PlotType = "scatter" | "ranked" | "trend";
+type PlotType = "scatter" | "ranked" | "trend" | "ashby";
 
 const DEFAULT_SCALE: ScaleMode = "linear";
 const DEFAULT_YEAR_MIN = 1991;
@@ -19,7 +20,8 @@ const DEFAULT_YEAR_MIN = 1991;
 const PLOT_TYPES: Array<{ key: PlotType; label: string }> = [
   { key: "scatter", label: "Scatter" },
   { key: "ranked", label: "Ranked" },
-  { key: "trend", label: "Trend" }
+  { key: "trend", label: "Trend" },
+  { key: "ashby", label: "Ashby" }
 ];
 
 const TIER_OPTIONS = [
@@ -659,11 +661,32 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
   const [submissionPacket, setSubmissionPacket] = useState<string | null>(null);
   const [submittingData, setSubmittingData] = useState(false);
+  const [selectedRadarId, setSelectedRadarId] = useState<string | null>(null);
 
+  const isXyPlot = plotType === "scatter" || plotType === "ashby";
   const xMeta = metaFor(atlasData.properties, xKey);
   const yMeta = metaFor(atlasData.properties, yKey);
-  const normalizedComparisonView = plotType === "scatter" ? NORMALIZED_KEYS.has(xKey) && NORMALIZED_KEYS.has(yKey) : NORMALIZED_KEYS.has(yKey);
-  const figureTitle = plotType === "trend" ? `${yMeta.label} by publication year` : plotType === "ranked" ? `Ranked ${yMeta.label}` : `${yMeta.label} vs ${xMeta.label}`;
+  const normalizedComparisonView = isXyPlot ? NORMALIZED_KEYS.has(xKey) && NORMALIZED_KEYS.has(yKey) : NORMALIZED_KEYS.has(yKey);
+  const figureTitle =
+    plotType === "trend"
+      ? `${yMeta.label} by publication year`
+      : plotType === "ranked"
+        ? `Ranked ${yMeta.label}`
+        : plotType === "ashby"
+          ? `Ashby plot: ${yMeta.label} vs ${xMeta.label}`
+          : `${yMeta.label} vs ${xMeta.label}`;
+
+  const radarRecords = useMemo(() => {
+    return atlasData.records.filter(isRadarCompleteRecord).sort((a, b) => {
+      if (a.material_family === "CNT_or_CNT_hybrid" && b.material_family !== "CNT_or_CNT_hybrid") return -1;
+      if (a.material_family !== "CNT_or_CNT_hybrid" && b.material_family === "CNT_or_CNT_hybrid") return 1;
+      return (a.public_sample_label ?? a.record_label).localeCompare(b.public_sample_label ?? b.record_label);
+    });
+  }, [atlasData.records]);
+
+  const selectedRadarRecord = useMemo(() => {
+    return radarRecords.find((record) => record.record_id === selectedRadarId) ?? radarRecords.find((record) => record.material_family === "CNT_or_CNT_hybrid") ?? radarRecords[0] ?? null;
+  }, [radarRecords, selectedRadarId]);
 
   const eligibleRecords = useMemo(() => {
     return atlasData.records
@@ -671,8 +694,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         const x = record.values[xKey];
         const y = record.values[yKey];
         if (typeof y !== "number") return false;
-        if (plotType === "scatter" && typeof x !== "number") return false;
-        if (plotType === "scatter" && xScale === "log" && typeof x === "number" && x <= 0) return false;
+        if (isXyPlot && typeof x !== "number") return false;
+        if (isXyPlot && xScale === "log" && typeof x === "number" && x <= 0) return false;
         if (yScale === "log" && y <= 0) return false;
         if (!selectedTiers.has(record.public_release_tier)) return false;
         if (!selectedExtractions.has(record.value_extraction_type)) return false;
@@ -684,7 +707,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         return record.public_release_tier !== "commercial_contextual_comparator";
       })
       .sort((a, b) => sourceRank(a) - sourceRank(b));
-  }, [atlasData.records, normalizedComparisonView, plotType, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, xScale, yKey, yScale, yearMax, yearMin]);
+  }, [atlasData.records, isXyPlot, normalizedComparisonView, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, xScale, yKey, yScale, yearMax, yearMin]);
 
   const filteredRecords = useMemo(() => {
     return reduceToBestRecords(eligibleRecords, xKey, yKey);
@@ -706,6 +729,12 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
       setSelectedId(selectedRecord.record_id);
     }
   }, [selectedId, selectedRecord]);
+
+  useEffect(() => {
+    if (selectedRadarRecord && selectedRadarRecord.record_id !== selectedRadarId) {
+      setSelectedRadarId(selectedRadarRecord.record_id);
+    }
+  }, [selectedRadarId, selectedRadarRecord]);
 
   useEffect(() => {
     setAtlasData(initialData);
@@ -985,7 +1014,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         <aside className="control-rail" aria-label="Plot controls">
           <section className="rail-section axis-section">
             <div className="rail-heading">Plot setup</div>
-            {plotType === "scatter" ? (
+            {isXyPlot ? (
               <>
                 <label className="field-label" htmlFor="x-property">
                   X property
@@ -1030,7 +1059,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             ) : null}
 
             <label className="field-label" htmlFor="y-property">
-              {plotType === "scatter" ? "Y property" : "Property"}
+              {isXyPlot ? "Y property" : "Property"}
             </label>
             <select id="y-property" value={yKey} onChange={(event) => changeProperty("y", event.target.value as PropertyKey)}>
               {atlasData.properties.map((property) => (
@@ -1112,6 +1141,23 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               <input type="number" value={yearMax} onChange={(event) => setYearMax(Number(event.target.value))} aria-label="Maximum publication year" />
             </div>
           </section>
+
+          {radarRecords.length ? (
+            <section className="rail-section">
+              <div className="rail-heading">Radar comparison</div>
+              <label className="field-label" htmlFor="radar-record">
+                Complete record
+              </label>
+              <select id="radar-record" value={selectedRadarRecord?.record_id ?? ""} onChange={(event) => setSelectedRadarId(event.target.value)}>
+                {radarRecords.map((record) => (
+                  <option key={record.record_id} value={record.record_id}>
+                    {displaySampleLabel(record) || record.public_sample_label || record.record_label}
+                  </option>
+                ))}
+              </select>
+              <p className="fine-note">{radarRecords.length} records with density, strength, modulus, work of rupture, electrical conductivity, and thermal conductivity.</p>
+            </section>
+          ) : null}
         </aside>
 
         <section className="plot-panel" aria-label="Property plot">
@@ -1133,6 +1179,10 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                     aria-selected={plotType === type.key}
                     onClick={() => {
                       setPlotType(type.key);
+                      if (type.key === "ashby") {
+                        setXScale("log");
+                        setYScale("log");
+                      }
                       setSelectedId(null);
                     }}
                   >
@@ -1163,7 +1213,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             </div>
           </div>
 
-          {plotType === "scatter" ? (
+          {plotType === "scatter" || plotType === "ashby" ? (
             <ScatterPlot
               records={plottedRecords}
               xKey={xKey}
@@ -1189,6 +1239,19 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
           ) : null}
           {plotType === "trend" ? (
             <TrendPlot records={plottedRecords} yKey={yKey} yMeta={yMeta} yScale={yScale} selectedId={selectedRecord?.record_id ?? null} onSelect={(record) => setSelectedId(record.record_id)} />
+          ) : null}
+
+          {selectedRadarRecord ? (
+            <section className="radar-section" aria-label="Fixed radar comparison">
+              <div className="radar-section-header">
+                <div>
+                  <p className="plot-kicker">Complete-record radar</p>
+                  <h2>Performance profile</h2>
+                </div>
+                <span>{radarRecords.length} complete records</span>
+              </div>
+              <RadarPlot records={radarRecords} selectedRecord={selectedRadarRecord} />
+            </section>
           ) : null}
         </section>
 
