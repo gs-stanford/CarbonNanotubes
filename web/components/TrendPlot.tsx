@@ -1,6 +1,7 @@
 "use client";
 
 import type { KeyboardEvent } from "react";
+import { ExportLegend } from "@/components/ExportLegend";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 
 type TrendPlotProps = {
@@ -333,6 +334,7 @@ export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, onSelect }
         >
           {yMeta.label} ({yMeta.displayUnit})
         </text>
+        <ExportLegend records={plotRecords} width={WIDTH} y={HEIGHT + 18} />
       </svg>
     </figure>
   );

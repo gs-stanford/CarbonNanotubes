@@ -1,6 +1,7 @@
 "use client";
 
 import type { KeyboardEvent } from "react";
+import { ExportLegend } from "@/components/ExportLegend";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 
 export type RankedReferenceLine = {
@@ -311,6 +312,7 @@ export function RankedPlot({ records, yKey, yMeta, yScale, referenceLines = [], 
         <text x={(MARGIN.left + WIDTH - MARGIN.right) / 2} y={HEIGHT - 24} textAnchor="middle" className="axis-title">
           {yMeta.label} ({yMeta.displayUnit})
         </text>
+        <ExportLegend records={plotRecords} width={WIDTH} y={HEIGHT + 18} />
       </svg>
     </figure>
   );

@@ -236,6 +236,21 @@ svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .rank-reference-line.reference-carbon-reference, .rank-reference-leader.reference-carbon-reference, .rank-reference-line.reference-hm-carbon, .rank-reference-leader.reference-hm-carbon { stroke: #333b3a; }
 .rank-reference-tag.reference-carbon-reference, .rank-reference-tag.reference-hm-carbon { stroke: rgba(51, 59, 58, 0.7); }
 .rank-reference-label.reference-carbon-reference, .rank-reference-label.reference-hm-carbon { fill: #2f3735; }
+.export-legend { display: block; }
+.export-legend-heading { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.export-legend-text { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 9.8px; font-weight: 600; }
+.export-legend-count { fill: #7e867c; font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; font-weight: 700; }
+.export-legend-symbol { stroke-width: 1.05; vector-effect: non-scaling-stroke; }
+.export-legend-material.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
+.export-legend-material.point-material-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
+.export-legend-material.point-material-graphene { fill: #009e73; stroke: #006b4f; }
+.export-legend-material.point-material-carbon-fiber { fill: #4a4a4a; stroke: #202020; }
+.export-legend-material.point-material-other-carbon { fill: #8a8a8a; stroke: #5c5c5c; }
+.export-legend-material.point-material-polymer { fill: #e69f00; stroke: #9a6a00; }
+.export-legend-material.point-material-metal { fill: #cc79a7; stroke: #8c4d73; }
+.export-legend-material.point-material-ceramic { fill: #6a3d9a; stroke: #432667; }
+.export-legend-form { fill: #646c64; stroke: #646c64; }
+.export-legend-form.point-shape-open-circle { fill: #ffffff; stroke: #646c64; }
 `;
 
 function metaFor(properties: PropertyMeta[], key: PropertyKey): PropertyMeta {
@@ -477,6 +492,12 @@ function prepareFigureSvg(svg: SVGSVGElement, figureTitle: string, includeXmlDec
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   clone.setAttribute("role", "img");
   clone.removeAttribute("style");
+  const exportLegend = clone.querySelector<SVGGElement>(".export-legend");
+  const viewBox = clone.getAttribute("viewBox")?.split(/\s+/).map(Number);
+  if (exportLegend && viewBox?.length === 4 && viewBox.every((value) => Number.isFinite(value))) {
+    const padding = Number(exportLegend.getAttribute("data-export-padding") ?? 72);
+    clone.setAttribute("viewBox", `${viewBox[0]} ${viewBox[1]} ${viewBox[2]} ${viewBox[3] + Math.max(52, padding)}`);
+  }
   clone.insertAdjacentHTML(
     "afterbegin",
     `<title>${escapeXml(stripMarkup(figureTitle))}</title><desc>Exported from CNT Property Atlas. Cite original plotted sources and the atlas.</desc><defs><style>${EXPORTED_FIGURE_CSS}</style></defs>`
