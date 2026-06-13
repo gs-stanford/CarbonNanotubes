@@ -38,8 +38,20 @@ const svgDownload = await Promise.all([
 const exportedSvgPath = path.join(outDir, "exported-figure.svg");
 await svgDownload.saveAs(exportedSvgPath);
 const exportedSvg = await fs.readFile(exportedSvgPath, "utf8");
-if (!exportedSvg.includes("<style>") || !exportedSvg.includes(".plot-area") || exportedSvg.includes("plot-watermark")) {
+if (
+  !exportedSvg.includes("<style>") ||
+  !exportedSvg.includes(".plot-area") ||
+  !exportedSvg.includes("export-legend") ||
+  !exportedSvg.includes("Color") ||
+  !exportedSvg.includes("Shape") ||
+  exportedSvg.includes("plot-watermark")
+) {
   throw new Error("Exported SVG is not standalone or still contains the watermark.");
+}
+const viewBoxMatch = exportedSvg.match(/viewBox="([^"]+)"/);
+const viewBoxHeight = viewBoxMatch ? Number(viewBoxMatch[1].trim().split(/\s+/)[3]) : 0;
+if (!Number.isFinite(viewBoxHeight) || viewBoxHeight <= 560) {
+  throw new Error(`Exported SVG viewBox was not expanded for the legend: ${viewBoxMatch?.[1] ?? "missing"}.`);
 }
 const pdfPopupPromise = page.waitForEvent("popup", { timeout: 5000 });
 await page.getByRole("button", { name: "Save PDF" }).click();

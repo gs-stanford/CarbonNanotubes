@@ -1,5 +1,6 @@
 "use client";
 
+import { ExportLegend } from "@/components/ExportLegend";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 
 type ScatterPlotProps = {
@@ -434,6 +435,7 @@ export function ScatterPlot({
         >
           {yMeta.label} ({yMeta.displayUnit})
         </text>
+        <ExportLegend records={plotRecords} width={WIDTH} y={HEIGHT + 18} />
       </svg>
     </figure>
   );

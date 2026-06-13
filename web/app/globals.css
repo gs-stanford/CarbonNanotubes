@@ -722,6 +722,10 @@ textarea {
   pointer-events: none;
 }
 
+.export-legend {
+  display: none;
+}
+
 .rank-row-line {
   stroke: rgba(216, 222, 214, 0.58);
   stroke-width: 0.65;
