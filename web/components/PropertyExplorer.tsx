@@ -1,0 +1,1460 @@
+"use client";
+
+import { ArrowLeftRight, Check, Clipboard, Download, ExternalLink, FileText, Printer, Quote, RefreshCcw, Send, X } from "lucide-react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { RankedPlot, type RankedReferenceLine } from "@/components/RankedPlot";
+import { ScatterPlot } from "@/components/ScatterPlot";
+import { TrendPlot } from "@/components/TrendPlot";
+import type { ExplorerPayload, PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
+
+type PropertyExplorerProps = {
+  initialData: ExplorerPayload;
+};
+
+type PlotType = "scatter" | "ranked" | "trend";
+
+const DEFAULT_SCALE: ScaleMode = "linear";
+const DEFAULT_YEAR_MIN = 1991;
+
+const PLOT_TYPES: Array<{ key: PlotType; label: string }> = [
+  { key: "scatter", label: "Scatter" },
+  { key: "ranked", label: "Ranked" },
+  { key: "trend", label: "Trend" }
+];
+
+const TIER_OPTIONS = [
+  {
+    key: "peer_reviewed_research",
+    label: "Peer-reviewed research",
+    short: "Research",
+    defaultOn: true
+  },
+  {
+    key: "peer_reviewed_contextual_comparator",
+    label: "Peer-reviewed comparators",
+    short: "Context",
+    defaultOn: true
+  },
+  {
+    key: "commercial_contextual_comparator",
+    label: "Commercial/spec-sheet",
+    short: "Spec",
+    defaultOn: false
+  }
+];
+
+const EXTRACTION_OPTIONS = [
+  {
+    key: "direct_or_source_table",
+    label: "Direct/source-table values",
+    short: "Direct",
+    defaultOn: true
+  },
+  {
+    key: "secondary_meta_analysis",
+    label: "Secondary extracted values",
+    short: "Secondary",
+    defaultOn: true
+  }
+];
+
+const NORMALIZED_KEYS = new Set<PropertyKey>([
+  "density",
+  "specific_volume",
+  "specific_strength",
+  "specific_modulus",
+  "specific_electrical_conductivity",
+  "specific_thermal_conductivity"
+]);
+
+const FAMILY_LABELS: Record<string, string> = {
+  CNT_or_CNT_hybrid: "CNT",
+  CNT_metal_composite: "CNT-metal composite",
+  graphene_or_GO_fiber: "Graphene / graphene oxide",
+  carbon_fiber_comparator: "Carbon fiber",
+  other_carbon_comparator: "Other carbon",
+  polymer_fiber_comparator: "Polymer",
+  metal_comparator: "Metal",
+  ceramic_or_glass_comparator: "Ceramic / glass"
+};
+
+const MATERIAL_CLASS: Record<string, string> = {
+  CNT_or_CNT_hybrid: "material-cnt",
+  CNT_metal_composite: "material-cnt-metal",
+  graphene_or_GO_fiber: "material-graphene",
+  carbon_fiber_comparator: "material-carbon-fiber",
+  other_carbon_comparator: "material-other-carbon",
+  polymer_fiber_comparator: "material-polymer",
+  metal_comparator: "material-metal",
+  ceramic_or_glass_comparator: "material-ceramic"
+};
+
+const FORM_SHAPE_CLASS: Record<string, string> = {
+  fiber_yarn: "shape-circle",
+  sheet_mat_film: "shape-down-triangle",
+  buckypaper: "shape-square",
+  foam_aerogel: "shape-open-circle",
+  forest_array: "shape-triangle",
+  individual_nanotube_or_bundle: "shape-diamond",
+  bulk: "shape-hexagon",
+  unknown: "shape-open-circle"
+};
+
+const LOW_DENSITY_CNT_FIBER_THRESHOLD_KG_M3 = 600;
+
+const PERFORMANCE_TARGET_KEYS: PropertyKey[] = [
+  "specific_electrical_conductivity",
+  "electrical_conductivity",
+  "specific_strength",
+  "tensile_strength",
+  "specific_modulus",
+  "initial_modulus",
+  "specific_thermal_conductivity",
+  "thermal_conductivity",
+  "ampacity",
+  "work_of_rupture",
+  "breaking_strain",
+  "g_d_ratio"
+];
+
+const PERFORMANCE_TARGET_SET = new Set<PropertyKey>(PERFORMANCE_TARGET_KEYS);
+
+const FORM_LABELS: Record<string, string> = {
+  fiber_yarn: "Fiber / yarn",
+  sheet_mat_film: "Sheet / mat / film",
+  buckypaper: "Buckypaper",
+  foam_aerogel: "Foam / aerogel",
+  forest_array: "Forest / array",
+  individual_nanotube_or_bundle: "Individual tube / bundle",
+  bulk: "Bulk",
+  unknown: "Unknown"
+};
+
+const RANKED_MATERIAL_FAMILIES = new Set([
+  "carbon_fiber_comparator",
+  "CNT_or_CNT_hybrid",
+  "CNT_metal_composite",
+  "graphene_or_GO_fiber"
+]);
+
+const RANKED_REFERENCE_LINES: Partial<Record<PropertyKey, RankedReferenceLine[]>> = {
+  electrical_conductivity: [
+    { label: "Ag", value: 63.0, className: "reference-silver" },
+    { label: "Cu", value: 58.0, className: "reference-copper" },
+    { label: "Al", value: 37.7, className: "reference-aluminum" }
+  ],
+  specific_electrical_conductivity: [
+    { label: "Al", value: 13.96, className: "reference-aluminum" },
+    { label: "Cu", value: 6.47, className: "reference-copper" },
+    { label: "Ag", value: 6.0, className: "reference-silver" }
+  ],
+  thermal_conductivity: [
+    { label: "Ag", value: 429, className: "reference-silver" },
+    { label: "Cu", value: 401, className: "reference-copper" },
+    { label: "Al", value: 237, className: "reference-aluminum" }
+  ],
+  specific_thermal_conductivity: [
+    { label: "Al", value: 0.0878, className: "reference-aluminum" },
+    { label: "Cu", value: 0.0448, className: "reference-copper" },
+    { label: "Ag", value: 0.0409, className: "reference-silver" }
+  ],
+  tensile_strength: [
+    { label: "Kevlar 49", value: 3.6, className: "reference-aramid" },
+    { label: "PBO", value: 5.8, className: "reference-pbo" },
+    { label: "T1000G CF", value: 6.4, className: "reference-carbon-reference" }
+  ],
+  specific_strength: [
+    { label: "Kevlar 49", value: 2.5, className: "reference-aramid" },
+    { label: "T1000G CF", value: 3.6, className: "reference-carbon-reference" },
+    { label: "PBO", value: 3.8, className: "reference-pbo" }
+  ],
+  initial_modulus: [
+    { label: "Kevlar 49", value: 112, className: "reference-aramid" },
+    { label: "T1000G CF", value: 294, className: "reference-carbon-reference" },
+    { label: "HM CF", value: 540, className: "reference-hm-carbon" }
+  ],
+  specific_modulus: [
+    { label: "Kevlar 49", value: 78, className: "reference-aramid" },
+    { label: "T1000G CF", value: 163, className: "reference-carbon-reference" },
+    { label: "HM CF", value: 280, className: "reference-hm-carbon" }
+  ]
+};
+
+function metaFor(properties: PropertyMeta[], key: PropertyKey): PropertyMeta {
+  const meta = properties.find((item) => item.key === key);
+  if (!meta) throw new Error(`Property metadata missing for ${key}`);
+  return meta;
+}
+
+function uniqueSorted(values: string[]): string[] {
+  return Array.from(new Set(values)).sort((a, b) => {
+    const labelA = FAMILY_LABELS[a] ?? FORM_LABELS[a] ?? a;
+    const labelB = FAMILY_LABELS[b] ?? FORM_LABELS[b] ?? b;
+    return labelA.localeCompare(labelB);
+  });
+}
+
+function formatValue(value: number | undefined, meta: PropertyMeta): string {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "n/a";
+  return `${value.toLocaleString("en-US", {
+    maximumFractionDigits: meta.precision,
+    minimumFractionDigits: value < 10 && meta.precision > 0 ? Math.min(meta.precision, 1) : 0
+  })} ${meta.displayUnit}`;
+}
+
+function formatPlainValue(value: number | string | null | undefined, fallback = "-"): string {
+  if (value === null || value === undefined || value === "") return fallback;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) return fallback;
+    return value.toLocaleString("en-US", { maximumFractionDigits: 4 });
+  }
+  return value;
+}
+
+function doiHref(value: string | null): string | null {
+  if (!value) return null;
+  const doi = value.split(";")[0]?.trim();
+  if (!doi) return null;
+  return doi.startsWith("10.") ? `https://doi.org/${doi}` : null;
+}
+
+function stripMarkup(value: string | null | undefined): string {
+  return (value ?? "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function doiValue(value: string | null | undefined): string | null {
+  const doi = value?.split(";")[0]?.trim();
+  return doi && doi.startsWith("10.") ? doi : null;
+}
+
+const NAME_PARTICLES = new Set(["da", "de", "del", "della", "der", "di", "dos", "du", "la", "le", "van", "von", "y"]);
+
+function normalizeInitials(value: string): string {
+  return value
+    .replace(/\b([A-Z])\b/g, "$1.")
+    .replace(/([A-Z])\.([A-Z])\./g, "$1. $2.")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tokenInitial(token: string): string {
+  const cleaned = token.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ-]/g, "");
+  return cleaned ? `${cleaned[0].toUpperCase()}.` : "";
+}
+
+function formatNatureAuthorName(name: string): string {
+  const cleaned = name.replace(/\s+/g, " ").trim();
+  if (!cleaned) return "";
+  if (cleaned.includes(",")) {
+    const [family, given = ""] = cleaned.split(",", 2).map((part) => part.trim());
+    return [family, normalizeInitials(given)].filter(Boolean).join(", ");
+  }
+
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return cleaned;
+  let familyStart = parts.length - 1;
+  while (familyStart > 0 && NAME_PARTICLES.has(parts[familyStart - 1].toLowerCase().replace(/\.$/, ""))) {
+    familyStart -= 1;
+  }
+  const family = parts.slice(familyStart).join(" ");
+  const initials = parts
+    .slice(0, familyStart)
+    .map((part) => {
+      if (/^[A-Z](\.)?$/.test(part)) return `${part[0]}.`;
+      if (/^([A-Z]\.)+$/.test(part)) return normalizeInitials(part);
+      return tokenInitial(part);
+    })
+    .filter(Boolean)
+    .join(" ");
+  return [family, initials].filter(Boolean).join(", ");
+}
+
+function formatShortNatureAuthors(short: string | null | undefined): string {
+  const cleaned = (short ?? "").replace(/\s+/g, " ").trim();
+  if (!cleaned) return "Unknown authors";
+  const etAl = /\bet\s+al\.?$/i.test(cleaned);
+  const firstAuthor = cleaned.replace(/\bet\s+al\.?$/i, "").trim();
+  const formatted = formatNatureAuthorName(firstAuthor);
+  return etAl ? `${formatted} et al.` : formatted;
+}
+
+function natureAuthors(full: string | null | undefined, short: string | null | undefined): string {
+  const names = (full ?? "")
+    .split(";")
+    .map((name) => name.trim())
+    .filter(Boolean);
+  if (!names.length) return formatShortNatureAuthors(short);
+  const formatted = names.map(formatNatureAuthorName).filter(Boolean);
+  if (formatted.length > 6) return `${formatted[0]} et al.`;
+  if (formatted.length === 1) return formatted[0];
+  return `${formatted.slice(0, -1).join(", ")} & ${formatted[formatted.length - 1]}`;
+}
+
+function formatJournalBlock(journal: string | null | undefined, issuePages: string | null | undefined): string {
+  const cleanJournal = stripMarkup(journal ?? "");
+  const parts = stripMarkup(issuePages ?? "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (!cleanJournal) return "";
+  if (parts.length >= 3) return `${cleanJournal} ${parts[0]}, ${parts.slice(2).join(", ")}`;
+  if (parts.length === 2) return `${cleanJournal} ${parts[0]}, ${parts[1]}`;
+  if (parts.length === 1) return `${cleanJournal} ${parts[0]}`;
+  return cleanJournal;
+}
+
+function formatNatureCitation(record: PlotRecord): string {
+  const doi = doiValue(record.doi_verified ?? record.doi_raw);
+  const authors = natureAuthors(record.publication_authors_full_verified, record.publication_authors_short_verified);
+  const title = stripMarkup(record.publication_title_verified ?? record.citation_raw ?? record.record_label);
+  const journalBlock = formatJournalBlock(record.publication_journal_verified, record.publication_issue_pages_verified);
+  const year = record.publication_year_verified ?? "n.d.";
+  const doiBlock = doi ? ` https://doi.org/${doi}` : "";
+  return `${authors} ${title}. ${journalBlock} (${year}).${doiBlock}`.replace(/\s+/g, " ").trim();
+}
+
+function formatSecondaryCitation(record: PlotRecord): string | null {
+  if (!record.secondary_source_doi_raw) return null;
+  if (record.secondary_source_doi_raw === "10.1002/adma.202008432") {
+    return "Bulmer, J. S., Kaniyoor, A. & Elliott, J. A. A meta-analysis of conductive and strong carbon nanotube materials. Advanced Materials 33, 2008432 (2021). https://doi.org/10.1002/adma.202008432";
+  }
+  const year = record.secondary_source_year ?? 2021;
+  return `${formatShortNatureAuthors(record.secondary_source_authors_short ?? "Bulmer et al.")} ${record.secondary_source_title ?? "A Meta-Analysis of Conductive and Strong Carbon Nanotube Materials"}. ${record.secondary_source_journal ?? "Advanced Materials"} (${year}). https://doi.org/${record.secondary_source_doi_raw}`;
+}
+
+function formatAtlasCitation(): string {
+  return "Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026).";
+}
+
+function bibtexKey(record: PlotRecord): string {
+  const author = (record.publication_authors_short_verified ?? "source").split(/\s+/)[0]?.replace(/[^A-Za-z0-9]/g, "") || "source";
+  const year = record.publication_year_verified ?? "nd";
+  return `${author}${year}_${record.record_id.slice(-6)}`;
+}
+
+function formatBibtex(record: PlotRecord): string {
+  const doi = doiValue(record.doi_verified ?? record.doi_raw);
+  const title = stripMarkup(record.publication_title_verified ?? record.record_label);
+  const fullAuthors = record.publication_authors_full_verified
+    ? record.publication_authors_full_verified.split(";").map((name) => name.trim()).filter(Boolean).join(" and ")
+    : formatShortNatureAuthors(record.publication_authors_short_verified).replace(/\s+et al\.$/, " and others");
+  return `@article{${bibtexKey(record)},\n  title = {${title}},\n  author = {${fullAuthors}},\n  journal = {${stripMarkup(record.publication_journal_verified ?? "")}},\n  year = {${record.publication_year_verified ?? ""}},\n  doi = {${doi ?? ""}}\n}`;
+}
+
+function formatAtlasBibtex(): string {
+  return "@misc{sharma_boies_cnt_property_atlas_2026,\n  title = {CNT Property Atlas},\n  author = {Sharma, Gaurav and Boies, Adam M.},\n  year = {2026},\n  version = {0.1}\n}";
+}
+
+function buildCsv(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey, xMeta: PropertyMeta, yMeta: PropertyMeta): string {
+  const headers = [
+    "record_id",
+    "public_sample_label",
+    "material_family",
+    "form_factor",
+    "source_tier",
+    "value_extraction_type",
+    `x_${xKey}_${xMeta.displayUnit}`,
+    `y_${yKey}_${yMeta.displayUnit}`,
+    "doi",
+    "publication"
+  ];
+  const rows = records.map((record) =>
+    [
+      record.record_id,
+      record.public_sample_label,
+      record.material_family,
+      record.form_factor,
+      record.public_release_tier,
+      record.value_extraction_type,
+      record.values[xKey],
+      record.values[yKey],
+      record.doi_verified ?? record.doi_raw ?? "",
+      record.publication_title_verified ?? ""
+    ].map((value) => `"${String(value ?? "").replaceAll('"', '""')}"`)
+  );
+  return [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+}
+
+function uniqueText(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const value of values) {
+    const cleaned = stripMarkup(value).replace(/\s+/g, " ").trim();
+    if (!cleaned || seen.has(cleaned)) continue;
+    seen.add(cleaned);
+    unique.push(cleaned);
+  }
+  return unique;
+}
+
+function downloadText(filename: string, text: string, type: string) {
+  const blob = new Blob([text], { type });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function sourceRank(record: PlotRecord): number {
+  if (record.public_release_tier === "peer_reviewed_research" && record.value_extraction_type !== "secondary_meta_analysis") return 0;
+  if (record.public_release_tier === "peer_reviewed_research") return 1;
+  if (record.public_release_tier === "peer_reviewed_contextual_comparator") return 2;
+  return 3;
+}
+
+function defaultYearMin(value: number | null | undefined): number {
+  return Math.max(value ?? DEFAULT_YEAR_MIN, DEFAULT_YEAR_MIN);
+}
+
+function groupPart(value: string | null | undefined, fallback = "unspecified"): string {
+  const cleaned = stripMarkup(value).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  return cleaned || fallback;
+}
+
+function publicationGroupKey(record: PlotRecord): string {
+  const doi = doiValue(record.doi_verified ?? record.doi_raw);
+  if (doi) return `doi:${doi.toLowerCase()}`;
+  return [
+    "publication",
+    groupPart(record.publication_title_verified ?? record.citation_raw ?? record.source_file),
+    groupPart(record.publication_authors_short_verified),
+    record.publication_year_verified ?? "n.d."
+  ].join("|");
+}
+
+function bestRecordGroupKey(record: PlotRecord): string {
+  return [
+    publicationGroupKey(record),
+    record.material_family,
+    record.form_factor,
+    groupPart(record.cnt_type)
+  ].join("|");
+}
+
+function displayMetric(record: PlotRecord, key: PropertyKey): number {
+  const value = record.values[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : Number.NEGATIVE_INFINITY;
+}
+
+function representativePriorityKeys(xKey: PropertyKey, yKey: PropertyKey): PropertyKey[] {
+  const axisKeys = [yKey, xKey];
+  const activePerformanceKeys = axisKeys.filter((key) => PERFORMANCE_TARGET_SET.has(key));
+  if (activePerformanceKeys.length) return activePerformanceKeys;
+  return axisKeys;
+}
+
+function compareBestRecords(a: PlotRecord, b: PlotRecord, xKey: PropertyKey, yKey: PropertyKey): number {
+  for (const key of representativePriorityKeys(xKey, yKey)) {
+    const diff = displayMetric(b, key) - displayMetric(a, key);
+    if (diff !== 0) return diff;
+  }
+  const sourceDiff = sourceRank(a) - sourceRank(b);
+  if (sourceDiff !== 0) return sourceDiff;
+  if (a.strict_comparison_ready !== b.strict_comparison_ready) return a.strict_comparison_ready ? -1 : 1;
+  return (b.publication_year_verified ?? 0) - (a.publication_year_verified ?? 0);
+}
+
+function reduceToBestRecords(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey): PlotRecord[] {
+  const best = new Map<string, PlotRecord>();
+  for (const record of records) {
+    const key = bestRecordGroupKey(record);
+    const existing = best.get(key);
+    if (!existing || compareBestRecords(record, existing, xKey, yKey) < 0) {
+      best.set(key, record);
+    }
+  }
+  return Array.from(best.values()).sort((a, b) => sourceRank(a) - sourceRank(b));
+}
+
+function recordDisplayTitle(record: PlotRecord): string {
+  const title = stripMarkup(record.publication_title_verified ?? record.citation_raw);
+  if (title) return title;
+  const label = stripMarkup(record.public_sample_label ?? record.record_label);
+  return label || record.record_id;
+}
+
+function displaySampleLabel(record: PlotRecord): string {
+  const sample = stripMarkup(record.public_sample_label ?? record.sample_name ?? "");
+  const doi = doiValue(record.doi_verified ?? record.doi_raw);
+  if (doi === "10.1038/srep00083" && /doped floating cat doulewall/i.test(sample)) {
+    return "Iodine-doped floating-catalyst DWCNT cable";
+  }
+  return sample;
+}
+
+function displayCntType(record: PlotRecord): string | null {
+  const doi = doiValue(record.doi_verified ?? record.doi_raw);
+  if (doi === "10.1038/srep00083") return "DWCNT";
+  return record.cnt_type;
+}
+
+function recordSampleSummary(record: PlotRecord): string {
+  const title = groupPart(recordDisplayTitle(record));
+  const sample = displaySampleLabel(record);
+  const cntType = displayCntType(record);
+  const parts = [];
+  if (sample && groupPart(sample) !== title && !/^\(?\d+\)?$/.test(sample)) parts.push(sample);
+  parts.push(FAMILY_LABELS[record.material_family] ?? record.material_family);
+  parts.push(FORM_LABELS[record.form_factor] ?? record.form_factor);
+  if (cntType) parts.push(cntType);
+  return parts.join(" / ");
+}
+
+function hasLowDensitySpecificMetricCaveat(record: PlotRecord): boolean {
+  const density = record.values.density;
+  const specificElectricalConductivity = record.values.specific_electrical_conductivity;
+  return (
+    record.material_family === "CNT_or_CNT_hybrid" &&
+    record.form_factor === "fiber_yarn" &&
+    typeof density === "number" &&
+    density > 0 &&
+    density < LOW_DENSITY_CNT_FIBER_THRESHOLD_KG_M3 &&
+    typeof specificElectricalConductivity === "number" &&
+    specificElectricalConductivity > 0
+  );
+}
+
+function lowDensityCaveatText(record: PlotRecord): string {
+  const density = record.values.density;
+  const densityText = typeof density === "number" ? `${density.toLocaleString("en-US", { maximumFractionDigits: 0 })} kg m⁻³` : "a low reported bulk density";
+  return `Specific conductivity is normalized by reported bulk density. This record uses ${densityText}, so the mass-normalized value should be read with volumetric conductivity and packing density rather than treated as directly equivalent to a dense CNT fiber.`;
+}
+
+export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
+  const [atlasData, setAtlasData] = useState(initialData);
+  const initialYearMin = defaultYearMin(atlasData.summary.minYear);
+  const initialYearMax = atlasData.summary.maxYear ?? new Date().getFullYear();
+  const [xKey, setXKey] = useState<PropertyKey>("specific_strength");
+  const [yKey, setYKey] = useState<PropertyKey>("specific_electrical_conductivity");
+  const [xScale, setXScale] = useState<ScaleMode>(DEFAULT_SCALE);
+  const [yScale, setYScale] = useState<ScaleMode>(DEFAULT_SCALE);
+  const [selectedTiers, setSelectedTiers] = useState<Set<string>>(
+    () => new Set(TIER_OPTIONS.filter((tier) => tier.defaultOn).map((tier) => tier.key))
+  );
+  const [selectedExtractions, setSelectedExtractions] = useState<Set<string>>(
+    () => new Set(EXTRACTION_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key))
+  );
+  const families = useMemo(() => uniqueSorted(atlasData.records.map((record) => record.material_family)), [atlasData.records]);
+  const forms = useMemo(() => uniqueSorted(atlasData.records.map((record) => record.form_factor)), [atlasData.records]);
+  const [selectedFamilies, setSelectedFamilies] = useState<Set<string>>(() => new Set(families));
+  const [selectedForms, setSelectedForms] = useState<Set<string>>(() => new Set(forms));
+  const [yearMin, setYearMin] = useState(initialYearMin);
+  const [yearMax, setYearMax] = useState(initialYearMax);
+  const [plotType, setPlotType] = useState<PlotType>("scatter");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [citationOpen, setCitationOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
+  const [submissionPacket, setSubmissionPacket] = useState<string | null>(null);
+  const [submittingData, setSubmittingData] = useState(false);
+
+  const xMeta = metaFor(atlasData.properties, xKey);
+  const yMeta = metaFor(atlasData.properties, yKey);
+  const normalizedComparisonView = plotType === "scatter" ? NORMALIZED_KEYS.has(xKey) && NORMALIZED_KEYS.has(yKey) : NORMALIZED_KEYS.has(yKey);
+  const figureTitle = plotType === "trend" ? `${yMeta.label} by publication year` : plotType === "ranked" ? `Ranked ${yMeta.label}` : `${yMeta.label} vs ${xMeta.label}`;
+
+  const eligibleRecords = useMemo(() => {
+    return atlasData.records
+      .filter((record) => {
+        const x = record.values[xKey];
+        const y = record.values[yKey];
+        if (typeof y !== "number") return false;
+        if (plotType === "scatter" && typeof x !== "number") return false;
+        if (plotType === "scatter" && xScale === "log" && typeof x === "number" && x <= 0) return false;
+        if (yScale === "log" && y <= 0) return false;
+        if (!selectedTiers.has(record.public_release_tier)) return false;
+        if (!selectedExtractions.has(record.value_extraction_type)) return false;
+        if (!selectedFamilies.has(record.material_family)) return false;
+        if (!selectedForms.has(record.form_factor)) return false;
+        const year = record.publication_year_verified;
+        if (typeof year === "number" && (year < yearMin || year > yearMax)) return false;
+        if (normalizedComparisonView) return record.normalized_comparison_eligible;
+        return record.public_release_tier !== "commercial_contextual_comparator";
+      })
+      .sort((a, b) => sourceRank(a) - sourceRank(b));
+  }, [atlasData.records, normalizedComparisonView, plotType, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, xScale, yKey, yScale, yearMax, yearMin]);
+
+  const filteredRecords = useMemo(() => {
+    return reduceToBestRecords(eligibleRecords, xKey, yKey);
+  }, [eligibleRecords, xKey, yKey]);
+
+  const plottedRecords = useMemo(() => {
+    if (plotType !== "ranked") return filteredRecords;
+    return filteredRecords.filter((record) => RANKED_MATERIAL_FAMILIES.has(record.material_family));
+  }, [filteredRecords, plotType]);
+
+  const selectedRecord = useMemo(() => {
+    const explicit = plottedRecords.find((record) => record.record_id === selectedId);
+    if (explicit) return explicit;
+    return plottedRecords.slice().sort((a, b) => compareBestRecords(a, b, xKey, yKey))[0] ?? null;
+  }, [plottedRecords, selectedId, xKey, yKey]);
+
+  useEffect(() => {
+    if (selectedRecord && selectedRecord.record_id !== selectedId) {
+      setSelectedId(selectedRecord.record_id);
+    }
+  }, [selectedId, selectedRecord]);
+
+  useEffect(() => {
+    setAtlasData(initialData);
+  }, [initialData]);
+
+  useEffect(() => {
+    setSelectedFamilies((current) => {
+      if (families.every((family) => current.has(family))) return current;
+      return new Set([...current, ...families]);
+    });
+  }, [families]);
+
+  useEffect(() => {
+    setSelectedForms((current) => {
+      if (forms.every((form) => current.has(form))) return current;
+      return new Set([...current, ...forms]);
+    });
+  }, [forms]);
+
+  function toggleSetValue(value: string, setter: (next: Set<string>) => void, current: Set<string>) {
+    const next = new Set(current);
+    if (next.has(value)) next.delete(value);
+    else next.add(value);
+    setter(next);
+  }
+
+  function changeProperty(axis: "x" | "y", value: PropertyKey) {
+    if (axis === "x") {
+      setXKey(value);
+      setXScale(DEFAULT_SCALE);
+    } else {
+      setYKey(value);
+      setYScale(DEFAULT_SCALE);
+    }
+    setSelectedId(null);
+  }
+
+  function resetView() {
+    setXKey("specific_strength");
+    setYKey("specific_electrical_conductivity");
+    setXScale(DEFAULT_SCALE);
+    setYScale(DEFAULT_SCALE);
+    setSelectedTiers(new Set(TIER_OPTIONS.filter((tier) => tier.defaultOn).map((tier) => tier.key)));
+    setSelectedExtractions(new Set(EXTRACTION_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key)));
+    setSelectedFamilies(new Set(families));
+    setSelectedForms(new Set(forms));
+    setYearMin(initialYearMin);
+    setYearMax(initialYearMax);
+    setSelectedId(null);
+  }
+
+  function downloadPlotCsv() {
+    const csv = buildCsv(plottedRecords, xKey, yKey, xMeta, yMeta);
+    downloadText(`cnt-property-atlas-${xKey}-vs-${yKey}.csv`, csv, "text/csv;charset=utf-8");
+  }
+
+  function downloadFigureSvg() {
+    const svg = document.querySelector<SVGSVGElement>(".plot-svg");
+    if (!svg) return;
+    const clone = svg.cloneNode(true) as SVGSVGElement;
+    clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("role", "img");
+    clone.insertAdjacentHTML(
+      "afterbegin",
+      `<title>${stripMarkup(figureTitle)}</title><desc>Exported from CNT Property Atlas. Cite original plotted sources and the atlas.</desc>`
+    );
+    const serialized = new XMLSerializer().serializeToString(clone);
+    downloadText(`cnt-property-atlas-${plotType}-${xKey}-vs-${yKey}.svg`, serialized, "image/svg+xml;charset=utf-8");
+  }
+
+  function printFigurePdf() {
+    const svg = document.querySelector<SVGSVGElement>(".plot-svg");
+    if (!svg) return;
+    const clone = svg.cloneNode(true) as SVGSVGElement;
+    clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=1000,height=780");
+    if (!printWindow) return;
+    printWindow.document.write(`<!doctype html>
+<html>
+  <head>
+    <title>CNT Property Atlas figure</title>
+    <style>
+      body { margin: 32px; font-family: Arial, Helvetica, sans-serif; color: #171a16; }
+      h1 { font-size: 18px; margin: 0 0 18px; }
+      svg { width: 100%; height: auto; }
+      p { margin-top: 18px; font-size: 11px; line-height: 1.4; color: #555; }
+    </style>
+  </head>
+  <body>
+    <h1>${stripMarkup(figureTitle)}</h1>
+    ${new XMLSerializer().serializeToString(clone)}
+    <p>When using this figure, cite the original plotted sources and Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026).</p>
+  </body>
+</html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    window.setTimeout(() => printWindow.print(), 250);
+  }
+
+  function downloadFigureCitations() {
+    downloadText(`cnt-property-atlas-${plotType}-${xKey}-vs-${yKey}-citations.txt`, figureCitationDownloadText, "text/plain;charset=utf-8");
+  }
+
+  async function copyCitation(key: string, text: string) {
+    await navigator.clipboard.writeText(text);
+    setCopiedCitation(key);
+    window.setTimeout(() => setCopiedCitation(null), 1400);
+  }
+
+  const sourceCounts = TIER_OPTIONS.map((tier) => ({
+    ...tier,
+    count: plottedRecords.filter((record) => record.public_release_tier === tier.key).length
+  }));
+  const extractionCounts = EXTRACTION_OPTIONS.map((option) => ({
+    ...option,
+    count: plottedRecords.filter((record) => record.value_extraction_type === option.key).length
+  }));
+  const familyOptions = plotType === "ranked" ? families.filter((family) => RANKED_MATERIAL_FAMILIES.has(family)) : families;
+  const familyCounts = familyOptions.map((family) => ({
+    key: family,
+    label: FAMILY_LABELS[family] ?? family,
+    className: MATERIAL_CLASS[family] ?? "material-unknown",
+    selected: selectedFamilies.has(family),
+    count: plottedRecords.filter((record) => record.material_family === family).length
+  }));
+  const legendFamilies = familyCounts.filter((family) => family.count > 0);
+  const formCounts = forms.map((form) => ({
+    key: form,
+    label: FORM_LABELS[form] ?? form,
+    className: FORM_SHAPE_CLASS[form] ?? "shape-open-circle",
+    selected: selectedForms.has(form),
+    count: plottedRecords.filter((record) => record.form_factor === form).length
+  }));
+  const legendForms = formCounts.filter((form) => form.count > 0);
+  const rankedReferenceLines = plotType === "ranked" ? RANKED_REFERENCE_LINES[yKey] ?? [] : [];
+  const detailMetricKeys = Array.from(new Set<PropertyKey>([xKey, yKey, "density", "diameter", "electrical_conductivity", "ampacity"])).filter(
+    (key) => selectedRecord && typeof selectedRecord.values[key] === "number"
+  );
+  const sourceHref = selectedRecord ? doiHref(selectedRecord.doi_verified ?? selectedRecord.doi_raw) : null;
+  const selectedSourceCitation = selectedRecord ? formatNatureCitation(selectedRecord) : "";
+  const selectedAtlasCitation = formatAtlasCitation();
+  const selectedAtlasBibtex = formatAtlasBibtex();
+  const selectedLowDensityCaveat = selectedRecord ? hasLowDensitySpecificMetricCaveat(selectedRecord) : false;
+  const figureSourceCitations = useMemo(() => uniqueText(plottedRecords.map(formatNatureCitation)), [plottedRecords]);
+  const figureSecondaryCitations = useMemo(() => uniqueText(plottedRecords.map(formatSecondaryCitation)), [plottedRecords]);
+  const figureBibtex = useMemo(() => uniqueText(plottedRecords.map(formatBibtex)), [plottedRecords]);
+  const figureNatureCitations = useMemo(
+    () => uniqueText([...figureSourceCitations, ...figureSecondaryCitations, selectedAtlasCitation]),
+    [figureSecondaryCitations, figureSourceCitations, selectedAtlasCitation]
+  );
+  const figureCitationText = useMemo(() => {
+    const lines = [
+      `CNT Property Atlas figure: ${figureTitle}`,
+      `${plottedRecords.length} plotted records; source filters active in the browser at export time.`,
+      "",
+      "Citations:",
+      ...figureNatureCitations.map((citation, index) => `${index + 1}. ${citation}`)
+    ];
+    return lines.join("\n");
+  }, [figureNatureCitations, figureTitle, plottedRecords.length]);
+  const figureCitationDownloadText = useMemo(() => {
+    const lines = [
+      figureCitationText,
+      "",
+      "BibTeX:",
+      ...figureBibtex,
+      selectedAtlasBibtex
+    ];
+    return lines.join("\n");
+  }, [figureBibtex, figureCitationText, selectedAtlasBibtex]);
+
+  async function handleSubmitData(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const packet = {
+      schema_version: "cnt-property-atlas-submission-v0.1",
+      created_at: new Date().toISOString(),
+      publication: {
+        doi: String(formData.get("doi") ?? "").trim(),
+        title: String(formData.get("title") ?? "").trim(),
+        year: String(formData.get("year") ?? "").trim()
+      },
+      sample: {
+        sample_label: String(formData.get("sample_label") ?? "").trim(),
+        material_family: String(formData.get("material_family") ?? "").trim(),
+        form_factor: String(formData.get("form_factor") ?? "").trim(),
+        cnt_type: String(formData.get("cnt_type") ?? "").trim(),
+        synthesis_method: String(formData.get("synthesis_method") ?? "").trim(),
+        postprocessing: String(formData.get("postprocessing") ?? "").trim()
+      },
+      measurements: Object.fromEntries(
+        atlasData.properties.map((property) => [property.key, String(formData.get(`measurement_${property.key}`) ?? "").trim()])
+      ),
+      conditions: {
+        temperature_C: String(formData.get("temperature_C") ?? "").trim(),
+        atmosphere: String(formData.get("atmosphere") ?? "").trim(),
+        measurement_method: String(formData.get("measurement_method") ?? "").trim(),
+        gauge_length_mm: String(formData.get("gauge_length_mm") ?? "").trim(),
+        strain_rate_s_inv: String(formData.get("strain_rate_s_inv") ?? "").trim()
+      },
+      provenance: {
+        table_figure_page: String(formData.get("provenance") ?? "").trim(),
+        notes: String(formData.get("notes") ?? "").trim()
+      }
+    };
+
+    setSubmittingData(true);
+    try {
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(packet)
+      });
+      const result = (await response.json()) as {
+        ok?: boolean;
+        payload?: ExplorerPayload;
+        record?: PlotRecord;
+        checks?: unknown;
+        error?: unknown;
+      };
+
+      if (!response.ok || !result.ok || !result.payload || !result.record) {
+        setSubmissionPacket(JSON.stringify({ status: "rejected", submitted: packet, response: result }, null, 2));
+        return;
+      }
+
+      setAtlasData(result.payload);
+      setSelectedId(result.record.record_id);
+      setSubmissionPacket(
+        JSON.stringify(
+          {
+            status: "accepted_and_plotted",
+            record_id: result.record.record_id,
+            checks: result.checks,
+            doi: result.record.doi_verified,
+            title: result.record.publication_title_verified
+          },
+          null,
+          2
+        )
+      );
+      form.reset();
+    } catch {
+      setSubmissionPacket(JSON.stringify({ status: "failed", submitted: packet, error: "Network or server error during submission." }, null, 2));
+    } finally {
+      setSubmittingData(false);
+    }
+  }
+
+  return (
+    <main className="atlas-shell">
+      <header className="atlas-header">
+        <div className="brand-block">
+          <h1>CNT Property Atlas</h1>
+        </div>
+        <nav className="header-nav" aria-label="Atlas sections">
+          <button type="button" onClick={() => setCitationOpen(true)}>
+            How to cite
+          </button>
+        </nav>
+        <div className="header-actions" aria-label="View actions">
+          <button className="header-action-link" type="button" onClick={() => setSubmitOpen(true)} title="Submit data" aria-label="Submit data form">
+            <Send size={16} strokeWidth={1.8} />
+            <span>Submit data</span>
+          </button>
+          <button className="header-action-link" type="button" onClick={() => setExportOpen(true)} title="Download Figure" aria-label="Download Figure">
+            <Download size={17} strokeWidth={1.8} />
+            <span>Download Figure</span>
+          </button>
+          <button className="header-action-link" type="button" onClick={resetView} title="Reset view" aria-label="Reset view">
+            <RefreshCcw size={16} strokeWidth={1.8} />
+            <span>Reset</span>
+          </button>
+        </div>
+      </header>
+
+      <div className="atlas-workspace">
+        <aside className="control-rail" aria-label="Plot controls">
+          <section className="rail-section axis-section">
+            <div className="rail-heading">Plot setup</div>
+            {plotType === "scatter" ? (
+              <>
+                <label className="field-label" htmlFor="x-property">
+                  X property
+                </label>
+                <select id="x-property" value={xKey} onChange={(event) => changeProperty("x", event.target.value as PropertyKey)}>
+                  {atlasData.properties.map((property) => (
+                    <option key={property.key} value={property.key}>
+                      {property.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="unit-hint">({xMeta.displayUnit})</p>
+                <div className="scale-row">
+                  <button className={xScale === "linear" ? "segmented is-active" : "segmented"} type="button" onClick={() => setXScale("linear")}>
+                    Linear
+                  </button>
+                  <button className={xScale === "log" ? "segmented is-active" : "segmented"} type="button" onClick={() => setXScale("log")}>
+                    Log
+                  </button>
+                </div>
+
+                <button
+                  className="swap-button"
+                  type="button"
+                  title="Swap axes"
+                  aria-label="Swap axes"
+                  onClick={() => {
+                    const nextX = yKey;
+                    const nextY = xKey;
+                    const nextXScale = yScale;
+                    const nextYScale = xScale;
+                    setXKey(nextX);
+                    setYKey(nextY);
+                    setXScale(nextXScale);
+                    setYScale(nextYScale);
+                    setSelectedId(null);
+                  }}
+                >
+                  <ArrowLeftRight size={15} strokeWidth={1.7} />
+                </button>
+              </>
+            ) : null}
+
+            <label className="field-label" htmlFor="y-property">
+              {plotType === "scatter" ? "Y property" : "Property"}
+            </label>
+            <select id="y-property" value={yKey} onChange={(event) => changeProperty("y", event.target.value as PropertyKey)}>
+              {atlasData.properties.map((property) => (
+                <option key={property.key} value={property.key}>
+                  {property.label}
+                </option>
+              ))}
+            </select>
+            <p className="unit-hint">({yMeta.displayUnit})</p>
+            <div className="scale-row">
+              <button className={yScale === "linear" ? "segmented is-active" : "segmented"} type="button" onClick={() => setYScale("linear")}>
+                Linear
+              </button>
+              <button className={yScale === "log" ? "segmented is-active" : "segmented"} type="button" onClick={() => setYScale("log")}>
+                Log
+              </button>
+            </div>
+          </section>
+
+          <section className="rail-section">
+            <div className="rail-heading">Source class</div>
+            {TIER_OPTIONS.map((tier) => (
+              <label key={tier.key} className="check-row">
+                <input
+                  type="checkbox"
+                  checked={selectedTiers.has(tier.key)}
+                  onChange={() => toggleSetValue(tier.key, setSelectedTiers, selectedTiers)}
+                />
+                <span>{tier.label}</span>
+                <span className="count">{sourceCounts.find((item) => item.key === tier.key)?.count ?? 0}</span>
+              </label>
+            ))}
+          </section>
+
+          <section className="rail-section">
+            <div className="rail-heading">Value extraction</div>
+            {EXTRACTION_OPTIONS.map((option) => (
+              <label key={option.key} className="check-row">
+                <input
+                  type="checkbox"
+                  checked={selectedExtractions.has(option.key)}
+                  onChange={() => toggleSetValue(option.key, setSelectedExtractions, selectedExtractions)}
+                />
+                <span>{option.label}</span>
+                <span className="count">{extractionCounts.find((item) => item.key === option.key)?.count ?? 0}</span>
+              </label>
+            ))}
+          </section>
+
+          <section className="rail-section">
+            <div className="rail-heading">Material family</div>
+            {familyCounts.map((family) => (
+              <label key={family.key} className="check-row compact family-check-row">
+                <input type="checkbox" checked={selectedFamilies.has(family.key)} onChange={() => toggleSetValue(family.key, setSelectedFamilies, selectedFamilies)} />
+                <i className={`material-swatch ${family.className}`} aria-hidden="true" />
+                <span>{family.label}</span>
+                <span className="count">{family.count}</span>
+              </label>
+            ))}
+          </section>
+
+          <section className="rail-section">
+            <div className="rail-heading">Form factor</div>
+            {formCounts.map((form) => (
+              <label key={form.key} className="check-row compact family-check-row">
+                <input type="checkbox" checked={selectedForms.has(form.key)} onChange={() => toggleSetValue(form.key, setSelectedForms, selectedForms)} />
+                <i className={`shape-swatch ${form.className}`} aria-hidden="true" />
+                <span>{form.label}</span>
+                <span className="count">{form.count}</span>
+              </label>
+            ))}
+          </section>
+
+          <section className="rail-section">
+            <div className="rail-heading">Year</div>
+            <div className="year-row">
+              <input type="number" value={yearMin} onChange={(event) => setYearMin(Number(event.target.value))} aria-label="Minimum publication year" />
+              <span>to</span>
+              <input type="number" value={yearMax} onChange={(event) => setYearMax(Number(event.target.value))} aria-label="Maximum publication year" />
+            </div>
+          </section>
+        </aside>
+
+        <section className="plot-panel" aria-label="Property plot">
+          <div className="plot-title-row">
+            <div className="plot-heading">
+              <h2>
+                {figureTitle}
+              </h2>
+              <p>Watermark is removed from exported SVG/PDF files; export includes a citation file for the active figure.</p>
+            </div>
+            <div className="plot-toolbar">
+              <div className="plot-type-tabs" role="tablist" aria-label="Plot type">
+                {PLOT_TYPES.map((type) => (
+                  <button
+                    key={type.key}
+                    className={plotType === type.key ? "mode-button is-active" : "mode-button"}
+                    type="button"
+                    role="tab"
+                    aria-selected={plotType === type.key}
+                    onClick={() => {
+                      setPlotType(type.key);
+                      setSelectedId(null);
+                    }}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
+              <button className="data-link" type="button" onClick={() => setExportOpen(true)}>
+                <Download size={14} strokeWidth={1.8} />
+                Download Figure
+              </button>
+            </div>
+            <div className="encoding-legend" aria-label="Visual encoding legend">
+              <div className="legend-group">
+                <span className="legend-title">Color</span>
+                {legendFamilies.map((family) => (
+                  <span key={family.key} className={family.count === 0 ? "is-muted" : undefined}>
+                    <i className={`material-swatch ${family.className}`} /> {family.label}
+                    <b className="legend-count">{family.count}</b>
+                  </span>
+                ))}
+              </div>
+              <div className="legend-group">
+                <span className="legend-title">Shape</span>
+                {legendForms.map((form) => (
+                  <span key={form.key} className={form.count === 0 ? "is-muted" : undefined}>
+                    <i className={`shape-swatch ${form.className}`} /> {form.label}
+                    <b className="legend-count">{form.count}</b>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {plotType === "scatter" ? (
+            <ScatterPlot
+              records={plottedRecords}
+              xKey={xKey}
+              yKey={yKey}
+              xMeta={xMeta}
+              yMeta={yMeta}
+              xScale={xScale}
+              yScale={yScale}
+              selectedId={selectedRecord?.record_id ?? null}
+              onSelect={(record) => setSelectedId(record.record_id)}
+            />
+          ) : null}
+          {plotType === "ranked" ? (
+            <RankedPlot
+              records={plottedRecords}
+              yKey={yKey}
+              yMeta={yMeta}
+              yScale={yScale}
+              referenceLines={rankedReferenceLines}
+              selectedId={selectedRecord?.record_id ?? null}
+              onSelect={(record) => setSelectedId(record.record_id)}
+            />
+          ) : null}
+          {plotType === "trend" ? (
+            <TrendPlot records={plottedRecords} yKey={yKey} yMeta={yMeta} yScale={yScale} selectedId={selectedRecord?.record_id ?? null} onSelect={(record) => setSelectedId(record.record_id)} />
+          ) : null}
+        </section>
+
+        <aside className="detail-rail" aria-label="Focused record">
+          <section className="detail-section">
+            <div className="rail-heading">Selected point</div>
+            {selectedRecord ? (
+              <>
+                <h3>{recordDisplayTitle(selectedRecord)}</h3>
+                <p className="detail-meta">
+                  {recordSampleSummary(selectedRecord)}
+                </p>
+                <div className="badge-line">
+                  <span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>
+                    {selectedRecord.public_plot_badge}
+                  </span>
+                  {selectedRecord.value_extraction_type === "secondary_meta_analysis" ? <span className="tier-badge secondary">secondary extraction</span> : null}
+                  {selectedRecord.duplicate_group_id ? <span className="tier-badge primary">canonicalized</span> : null}
+                  {selectedLowDensityCaveat ? <span className="tier-badge warning">low-density basis</span> : null}
+                  {selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}
+                  {selectedRecord.unit_inference_review_needed ? <span className="tier-badge warning">unit review</span> : null}
+                </div>
+                <dl className="metric-list">
+                  {detailMetricKeys.map((key) => {
+                    const meta = metaFor(atlasData.properties, key);
+                    return (
+                      <div key={key}>
+                        <dt>{meta.label}</dt>
+                        <dd>{formatValue(selectedRecord.values[key], meta)}</dd>
+                      </div>
+                    );
+                  })}
+                </dl>
+              </>
+            ) : (
+              <p className="detail-meta">No records match the active filters.</p>
+            )}
+          </section>
+
+          {selectedRecord ? (
+            <>
+              <section className="detail-section">
+                <div className="rail-heading">Source</div>
+                <p className="source-title">{selectedRecord.publication_title_verified ?? selectedRecord.citation_raw ?? selectedRecord.source_file}</p>
+                <p className="detail-meta">{formatPlainValue(selectedRecord.publication_authors_short_verified, "")}</p>
+                <p className="detail-meta">
+                  {[selectedRecord.publication_journal_verified, selectedRecord.publication_year_verified].filter(Boolean).join(" / ")}
+                </p>
+                {sourceHref ? (
+                  <a className="doi-link" href={sourceHref} target="_blank" rel="noreferrer">
+                    {selectedRecord.doi_verified ?? selectedRecord.doi_raw}
+                    <ExternalLink size={12} strokeWidth={1.8} />
+                  </a>
+                ) : (
+                  <p className="doi-line">{selectedRecord.doi_verified ?? selectedRecord.doi_raw ?? selectedRecord.url_raw ?? "source pending"}</p>
+                )}
+              </section>
+
+              <section className="detail-section">
+                <div className="rail-heading">Measurement conditions</div>
+                <dl className="detail-table">
+                  <div>
+                    <dt>Temperature</dt>
+                    <dd>{selectedRecord.condition_temperature_C !== null ? `${selectedRecord.condition_temperature_C} °C` : "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>Atmosphere</dt>
+                    <dd>{formatPlainValue(selectedRecord.condition_atmosphere)}</dd>
+                  </div>
+                  <div>
+                    <dt>Method</dt>
+                    <dd>{formatPlainValue(selectedRecord.measurement_method)}</dd>
+                  </div>
+                  <div>
+                    <dt>Gauge length</dt>
+                    <dd>{selectedRecord.gauge_length_mm !== null ? `${selectedRecord.gauge_length_mm} mm` : "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>Strain rate</dt>
+                    <dd>{selectedRecord.strain_rate_s_inv !== null ? `${selectedRecord.strain_rate_s_inv.toPrecision(3)} s⁻¹` : "-"}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              {selectedLowDensityCaveat ? (
+                <section className="detail-section">
+                  <div className="rail-heading">Interpretation caveat</div>
+                  <p className="caveat-text">{lowDensityCaveatText(selectedRecord)}</p>
+                </section>
+              ) : null}
+
+              <section className="detail-section" id="citation">
+                <div className="rail-heading">Citation</div>
+                <p className="citation-preview">{selectedSourceCitation}</p>
+                <button className="citation-button" type="button" onClick={() => setCitationOpen(true)}>
+                  <Quote size={14} strokeWidth={1.8} />
+                  Open citation tool
+                </button>
+              </section>
+            </>
+          ) : null}
+        </aside>
+      </div>
+      {citationOpen ? (
+        <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="citation-title">
+          <div className="citation-card citation-card-wide">
+            <div className="citation-card-header">
+              <div>
+                <p className="plot-kicker">Citation tool</p>
+                <h2 id="citation-title">Citations for the current figure</h2>
+              </div>
+              <button className="icon-button" type="button" onClick={() => setCitationOpen(false)} aria-label="Close citation tool">
+                <X size={17} strokeWidth={1.8} />
+              </button>
+            </div>
+
+            <div className="citation-list">
+              <section>
+                <div className="rail-heading">Active figure</div>
+                <p>
+                  This citation set covers the active plotted figure: {plottedRecords.length} plotted records and {figureNatureCitations.length} total citations.
+                </p>
+                <button className="copy-button" type="button" onClick={() => copyCitation("figure-all", figureCitationText)}>
+                  {copiedCitation === "figure-all" ? <Check size={14} /> : <Clipboard size={14} />}
+                  {copiedCitation === "figure-all" ? "Copied" : "Copy all citations"}
+                </button>
+              </section>
+
+              <section>
+                <div className="rail-heading">Atlas</div>
+                <p>{selectedAtlasCitation}</p>
+              </section>
+
+              <section>
+                <div className="rail-heading">Original sources</div>
+                <ol className="citation-source-list">
+                  {figureSourceCitations.map((citation) => (
+                    <li key={citation}>{citation}</li>
+                  ))}
+                </ol>
+              </section>
+
+              <section>
+                <div className="rail-heading">Compilation / secondary sources</div>
+                {figureSecondaryCitations.length ? (
+                  <ol className="citation-source-list">
+                    {figureSecondaryCitations.map((citation) => (
+                      <li key={citation}>{citation}</li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p>No secondary compilation source is active in this figure.</p>
+                )}
+              </section>
+
+              <section className="bibtex-section">
+                <div className="rail-heading">BibTeX</div>
+                <pre>{`${figureBibtex.join("\n\n")}\n\n${selectedAtlasBibtex}`}</pre>
+                <button className="copy-button" type="button" onClick={() => copyCitation("bibtex", `${figureBibtex.join("\n\n")}\n\n${selectedAtlasBibtex}`)}>
+                  {copiedCitation === "bibtex" ? <Check size={14} /> : <Clipboard size={14} />}
+                  {copiedCitation === "bibtex" ? "Copied" : "Copy BibTeX"}
+                </button>
+              </section>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {exportOpen ? (
+        <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="export-title">
+          <div className="citation-card export-card">
+            <div className="citation-card-header">
+              <div>
+                <p className="plot-kicker">Figure export</p>
+                <h2 id="export-title">Download figure and citations</h2>
+              </div>
+              <button className="icon-button" type="button" onClick={() => setExportOpen(false)} aria-label="Close export">
+                <X size={17} strokeWidth={1.8} />
+              </button>
+            </div>
+            <div className="export-list">
+              <button className="export-option" type="button" onClick={downloadFigureSvg}>
+                <Download size={16} strokeWidth={1.8} />
+                <span>
+                  <strong>Download SVG</strong>
+                  <small>Vector figure without the on-screen watermark.</small>
+                </span>
+              </button>
+              <button className="export-option" type="button" onClick={printFigurePdf}>
+                <Printer size={16} strokeWidth={1.8} />
+                <span>
+                  <strong>Save PDF</strong>
+                  <small>Opens the browser print dialog; choose Save as PDF.</small>
+                </span>
+              </button>
+              <button className="export-option" type="button" onClick={downloadFigureCitations}>
+                <FileText size={16} strokeWidth={1.8} />
+                <span>
+                  <strong>Download citations</strong>
+                  <small>Single citation list plus BibTeX for the active figure.</small>
+                </span>
+              </button>
+              <button className="export-option" type="button" onClick={downloadPlotCsv}>
+                <Download size={16} strokeWidth={1.8} />
+                <span>
+                  <strong>Download plotted CSV</strong>
+                  <small>Current filtered records and active x/y values.</small>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {submitOpen ? (
+        <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="submit-title">
+          <div className="citation-card submit-card">
+            <div className="citation-card-header">
+              <div>
+                <p className="plot-kicker">Submission packet</p>
+                <h2 id="submit-title">Submit data for curator review</h2>
+              </div>
+              <button className="icon-button" type="button" onClick={() => setSubmitOpen(false)} aria-label="Close submit data">
+                <X size={17} strokeWidth={1.8} />
+              </button>
+            </div>
+
+            <form className="submit-form" onSubmit={handleSubmitData}>
+              <section>
+                <div className="rail-heading">Publication</div>
+                <label className="form-field">
+                  <span>DOI</span>
+                  <input name="doi" type="text" placeholder="10.xxxx/xxxxx" required />
+                </label>
+                <label className="form-field">
+                  <span>Title</span>
+                  <input name="title" type="text" placeholder="Publication title" />
+                </label>
+                <label className="form-field">
+                  <span>Year</span>
+                  <input name="year" type="number" min="1991" max="2100" placeholder="2026" />
+                </label>
+              </section>
+
+              <section>
+                <div className="rail-heading">Sample</div>
+                <label className="form-field form-field-wide">
+                  <span>Sample label</span>
+                  <input name="sample_label" type="text" placeholder="Specific fiber, mat, film, or benchmark label" required />
+                </label>
+                <label className="form-field">
+                  <span>Material family</span>
+                  <select name="material_family" defaultValue="CNT_or_CNT_hybrid">
+                    {families.map((family) => (
+                      <option key={family} value={family}>
+                        {FAMILY_LABELS[family] ?? family}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="form-field">
+                  <span>Form factor</span>
+                  <select name="form_factor" defaultValue="fiber_yarn">
+                    {forms.map((form) => (
+                      <option key={form} value={form}>
+                        {FORM_LABELS[form] ?? form}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="form-field">
+                  <span>CNT type</span>
+                  <input name="cnt_type" type="text" placeholder="SWCNT, DWCNT, MWCNT..." />
+                </label>
+                <label className="form-field">
+                  <span>Synthesis</span>
+                  <input name="synthesis_method" type="text" placeholder="Wet-spun, FCCVD, array-spun..." />
+                </label>
+                <label className="form-field form-field-wide">
+                  <span>Postprocessing</span>
+                  <input name="postprocessing" type="text" placeholder="Densified, iodine doped, drawn, annealed..." />
+                </label>
+              </section>
+
+              <section>
+                <div className="rail-heading">Measurements</div>
+                {atlasData.properties.map((property) => (
+                  <label key={property.key} className="form-field">
+                    <span>{property.label}</span>
+                    <input name={`measurement_${property.key}`} type="text" inputMode="decimal" placeholder={property.displayUnit} />
+                  </label>
+                ))}
+              </section>
+
+              <section>
+                <div className="rail-heading">Measurement conditions</div>
+                <label className="form-field">
+                  <span>Temperature</span>
+                  <input name="temperature_C" type="text" inputMode="decimal" placeholder="°C" />
+                </label>
+                <label className="form-field">
+                  <span>Atmosphere</span>
+                  <input name="atmosphere" type="text" placeholder="Air, vacuum, inert..." />
+                </label>
+                <label className="form-field form-field-wide">
+                  <span>Method</span>
+                  <input name="measurement_method" type="text" placeholder="4-probe, tensile test, laser flash..." />
+                </label>
+                <label className="form-field">
+                  <span>Gauge length</span>
+                  <input name="gauge_length_mm" type="text" inputMode="decimal" placeholder="mm" />
+                </label>
+                <label className="form-field">
+                  <span>Strain rate</span>
+                  <input name="strain_rate_s_inv" type="text" inputMode="decimal" placeholder="s⁻¹" />
+                </label>
+              </section>
+
+              <section>
+                <div className="rail-heading">Provenance</div>
+                <label className="form-field form-field-wide">
+                  <span>Table / figure / page</span>
+                  <input name="provenance" type="text" placeholder="Fig. 2, Table S1, p. 538..." />
+                </label>
+                <label className="form-field form-field-wide">
+                  <span>Notes</span>
+                  <textarea name="notes" rows={3} placeholder="Measurement method, atmosphere, temperature, gauge length, caveats..." />
+                </label>
+              </section>
+
+              <div className="submit-actions">
+                <button className="citation-button" type="submit" disabled={submittingData}>
+                  <Send size={14} strokeWidth={1.8} />
+                  {submittingData ? "Checking DOI" : "Submit and plot"}
+                </button>
+                {submissionPacket ? (
+                  <button className="copy-button" type="button" onClick={() => copyCitation("submission", submissionPacket)}>
+                    {copiedCitation === "submission" ? <Check size={14} /> : <Clipboard size={14} />}
+                    {copiedCitation === "submission" ? "Copied" : "Copy JSON"}
+                  </button>
+                ) : null}
+              </div>
+
+              {submissionPacket ? <pre className="submit-output">{submissionPacket}</pre> : null}
+            </form>
+          </div>
+        </div>
+      ) : null}
+      <footer className="atlas-footer">
+        <div className="footer-left">
+          <strong>Carbon Nanotubes Property Atlas</strong>
+          <span>Boies Group, Stanford University v0.1</span>
+          <span>Please cite Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026), if you utilize information from this tool.</span>
+        </div>
+        <div className="footer-right">
+          <strong>Database contains {atlasData.summary.recordCount} public records</strong>
+          <span>
+            Research: {atlasData.summary.peerReviewedResearchRecords} / DOI comparators: {atlasData.summary.peerReviewedComparatorRecords} / commercial: {atlasData.summary.commercialComparatorRecords}
+          </span>
+          <span>Secondary-extracted values: {atlasData.summary.secondaryExtractedRecords}</span>
+        </div>
+      </footer>
+    </main>
+  );
+}
