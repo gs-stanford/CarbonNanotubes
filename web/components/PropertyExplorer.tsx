@@ -3,7 +3,6 @@
 import { ArrowLeftRight, Check, Clipboard, Download, ExternalLink, FileText, Printer, Quote, RefreshCcw, Send, X } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { RankedPlot, type RankedReferenceLine } from "@/components/RankedPlot";
-import { isRadarCompleteRecord, RadarPlot } from "@/components/RadarPlot";
 import { ScatterPlot } from "@/components/ScatterPlot";
 import { TrendPlot } from "@/components/TrendPlot";
 import type { ExplorerPayload, PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
@@ -72,7 +71,7 @@ const NORMALIZED_KEYS = new Set<PropertyKey>([
 const FAMILY_LABELS: Record<string, string> = {
   CNT_or_CNT_hybrid: "CNT",
   CNT_metal_composite: "CNT-metal composite",
-  graphene_or_GO_fiber: "Graphene / graphene oxide",
+  graphene_or_GO_fiber: "Graphene / graphite",
   carbon_fiber_comparator: "Carbon fiber",
   other_carbon_comparator: "Other carbon",
   polymer_fiber_comparator: "Polymer",
@@ -673,7 +672,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
   const [submissionPacket, setSubmissionPacket] = useState<string | null>(null);
   const [submittingData, setSubmittingData] = useState(false);
-  const [selectedRadarId, setSelectedRadarId] = useState<string | null>(null);
 
   const isXyPlot = plotType === "scatter" || plotType === "ashby";
   const xMeta = metaFor(atlasData.properties, xKey);
@@ -690,18 +688,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         : plotType === "ashby"
           ? `Ashby plot: ${yMeta.label} vs ${xMeta.label}`
           : `${yMeta.label} vs ${xMeta.label}`;
-
-  const radarRecords = useMemo(() => {
-    return atlasData.records.filter(isRadarCompleteRecord).sort((a, b) => {
-      if (a.material_family === "CNT_or_CNT_hybrid" && b.material_family !== "CNT_or_CNT_hybrid") return -1;
-      if (a.material_family !== "CNT_or_CNT_hybrid" && b.material_family === "CNT_or_CNT_hybrid") return 1;
-      return (a.public_sample_label ?? a.record_label).localeCompare(b.public_sample_label ?? b.record_label);
-    });
-  }, [atlasData.records]);
-
-  const selectedRadarRecord = useMemo(() => {
-    return radarRecords.find((record) => record.record_id === selectedRadarId) ?? radarRecords.find((record) => record.material_family === "CNT_or_CNT_hybrid") ?? radarRecords[0] ?? null;
-  }, [radarRecords, selectedRadarId]);
 
   const eligibleRecords = useMemo(() => {
     return atlasData.records
@@ -744,12 +730,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
       setSelectedId(selectedRecord.record_id);
     }
   }, [selectedId, selectedRecord]);
-
-  useEffect(() => {
-    if (selectedRadarRecord && selectedRadarRecord.record_id !== selectedRadarId) {
-      setSelectedRadarId(selectedRadarRecord.record_id);
-    }
-  }, [selectedRadarId, selectedRadarRecord]);
 
   useEffect(() => {
     setAtlasData(initialData);
@@ -1158,22 +1138,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             </div>
           </section>
 
-          {radarRecords.length ? (
-            <section className="rail-section">
-              <div className="rail-heading">Radar comparison</div>
-              <label className="field-label" htmlFor="radar-record">
-                Complete record
-              </label>
-              <select id="radar-record" value={selectedRadarRecord?.record_id ?? ""} onChange={(event) => setSelectedRadarId(event.target.value)}>
-                {radarRecords.map((record) => (
-                  <option key={record.record_id} value={record.record_id}>
-                    {displaySampleLabel(record) || record.public_sample_label || record.record_label}
-                  </option>
-                ))}
-              </select>
-              <p className="fine-note">{radarRecords.length} records with density, strength, modulus, work of rupture, electrical conductivity, and thermal conductivity.</p>
-            </section>
-          ) : null}
         </aside>
 
         <section className="plot-panel" aria-label="Property plot">
@@ -1258,18 +1222,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             <TrendPlot records={plottedRecords} yKey={yKey} yMeta={yMeta} yScale={effectiveYScale} selectedId={selectedRecord?.record_id ?? null} onSelect={(record) => setSelectedId(record.record_id)} />
           ) : null}
 
-          {selectedRadarRecord ? (
-            <section className="radar-section" aria-label="Fixed radar comparison">
-              <div className="radar-section-header">
-                <div>
-                  <p className="plot-kicker">Complete-record radar</p>
-                  <h2>Performance profile</h2>
-                </div>
-                <span>{radarRecords.length} complete records</span>
-              </div>
-              <RadarPlot records={radarRecords} selectedRecord={selectedRadarRecord} />
-            </section>
-          ) : null}
         </section>
 
         <aside className="detail-rail" aria-label="Focused record">

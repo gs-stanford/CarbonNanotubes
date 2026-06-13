@@ -110,7 +110,7 @@ const ashbyInfo = await page.evaluate(() => ({
       return box.width / (920 - 92 - 34);
     })
   ),
-  sparseRegionCount: [...document.querySelectorAll(".ashby-region")].filter((region) => Number(region.getAttribute("data-total-count") ?? "0") < 8).length,
+  singlePointRegionCount: [...document.querySelectorAll(".ashby-region")].filter((region) => Number(region.getAttribute("data-total-count") ?? "0") < 2).length,
   labelOverlapCount: (() => {
     const labels = [...document.querySelectorAll(".point-label, .ashby-region-label")].map((label) => {
       const box = label.getBBox();
@@ -138,7 +138,7 @@ if (
   ashbyInfo.ashbyRegions < 1 ||
   ashbyInfo.minorGridLines < 1 ||
   ashbyInfo.largestRegionWidthFraction > 0.82 ||
-  ashbyInfo.sparseRegionCount !== 0 ||
+  ashbyInfo.singlePointRegionCount !== 0 ||
   ashbyInfo.labelOverlapCount !== 0 ||
   !ashbyInfo.xLinearDisabled ||
   !ashbyInfo.xLogDisabled ||
@@ -155,9 +155,7 @@ await page.screenshot({ path: path.join(outDir, "desktop.png"), fullPage: true }
 const desktopInfo = await page.evaluate(() => ({
   title: document.title,
   plotPoints: document.querySelectorAll(".plot-point").length,
-  radarRecordOptions: document.querySelectorAll("#radar-record option").length,
-  radarPolygons: document.querySelectorAll(".radar-polygon").length,
-  radarNodes: document.querySelectorAll(".radar-node").length,
+  radarSections: document.querySelectorAll(".radar-section, #radar-record").length,
   citationModalClosed: !document.querySelector('[role="dialog"]'),
   overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   width: document.documentElement.clientWidth,
@@ -165,13 +163,8 @@ const desktopInfo = await page.evaluate(() => ({
   height: document.documentElement.clientHeight,
   scrollHeight: document.documentElement.scrollHeight
 }));
-if (desktopInfo.radarRecordOptions !== 7 || desktopInfo.radarPolygons !== 1 || desktopInfo.radarNodes !== 6) {
-  throw new Error(`Radar QA failed: ${JSON.stringify(desktopInfo)}`);
-}
-await page.locator("#radar-record").selectOption({ label: "T1100GC" });
-const radarSourceLine = (await page.locator(".radar-record-card p").first().textContent()) ?? "";
-if (/XiaO_DATA|\.xlsx/i.test(radarSourceLine)) {
-  throw new Error(`Radar source line exposed an internal workbook filename: ${radarSourceLine}`);
+if (desktopInfo.radarSections !== 0) {
+  throw new Error(`Radar UI should be hidden until enough complete records exist: ${JSON.stringify(desktopInfo)}`);
 }
 
 await page.setViewportSize({ width: 390, height: 844 });

@@ -56,7 +56,7 @@ const WIDTH = 920;
 const HEIGHT = 560;
 const MARGIN = { top: 42, right: 34, bottom: 74, left: 92 };
 const LINEAR_TICK_TARGET = 6;
-const MIN_ASHBY_REGION_POINTS = 8;
+const MIN_ASHBY_REGION_POINTS = 2;
 
 type MarkerShape = "circle" | "open-circle" | "square" | "diamond" | "triangle" | "down-triangle" | "hexagon";
 
@@ -264,70 +264,70 @@ function covarianceStats(points: Array<{ x: number; y: number }>) {
   return { cx, cy, varX: varX / denom, varY: varY / denom, covXY: covXY / denom };
 }
 
+function quantile(values: number[], q: number): number {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = clamp((sorted.length - 1) * q, 0, sorted.length - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  if (lower === upper) return sorted[lower];
+  const fraction = index - lower;
+  return sorted[lower] * (1 - fraction) + sorted[upper] * fraction;
+}
+
+function principalAxis(points: Array<{ x: number; y: number }>) {
+  const stats = covarianceStats(points);
+  let angle = 0;
+  if (points.length === 2) {
+    angle = Math.atan2(points[1].y - points[0].y, points[1].x - points[0].x);
+  } else {
+    angle = 0.5 * Math.atan2(2 * stats.covXY, stats.varX - stats.varY);
+  }
+  let vx = Math.cos(angle);
+  let vy = Math.sin(angle);
+  if (!Number.isFinite(vx) || !Number.isFinite(vy) || Math.hypot(vx, vy) < 0.1) {
+    vx = 1;
+    vy = 0;
+  }
+  return {
+    cx: stats.cx,
+    cy: stats.cy,
+    vx,
+    vy,
+    nx: -vy,
+    ny: vx
+  };
+}
+
+function projectToAxis(point: { x: number; y: number }, axis: ReturnType<typeof principalAxis>) {
+  const dx = point.x - axis.cx;
+  const dy = point.y - axis.cy;
+  return {
+    t: dx * axis.vx + dy * axis.vy,
+    n: dx * axis.nx + dy * axis.ny
+  };
+}
+
+function coreByNormalResidual(points: Array<{ x: number; y: number }>, axis: ReturnType<typeof principalAxis>): Array<{ x: number; y: number }> {
+  const projected = points.map((point) => ({ point, ...projectToAxis(point, axis) }));
+  const centerNormal = median(projected.map((item) => item.n));
+  const residuals = projected.map((item) => Math.abs(item.n - centerNormal));
+  const targetCount = clamp(Math.ceil(points.length * 0.82), Math.min(points.length, 6), points.length);
+  const residualMAD = median(residuals) * 1.4826;
+  const residualCutoff = Math.max(18, residualMAD * 2.6, quantile(residuals, 0.76) * 1.45);
+  const sorted = projected
+    .map((item, index) => ({ ...item, residual: residuals[index] }))
+    .sort((a, b) => a.residual - b.residual);
+  const trimmed = sorted.filter((item) => item.residual <= residualCutoff).map((item) => item.point);
+  if (trimmed.length >= Math.min(points.length, 5)) return trimmed;
+  return sorted.slice(0, targetCount).map((item) => item.point);
+}
+
 function robustCore(points: Array<{ x: number; y: number }>): Array<{ x: number; y: number }> {
-  if (points.length < MIN_ASHBY_REGION_POINTS) return points;
-  const xs = points.map((point) => point.x);
-  const ys = points.map((point) => point.y);
-  const centerX = median(xs);
-  const centerY = median(ys);
-  const scaleX = Math.max(median(xs.map((x) => Math.abs(x - centerX))) * 1.4826, 14);
-  const scaleY = Math.max(median(ys.map((y) => Math.abs(y - centerY))) * 1.4826, 14);
-  const targetCoreCount = clamp(Math.ceil(points.length * 0.68), Math.min(points.length, 6), points.length);
-  let core = [...points]
-    .sort((a, b) => {
-      const distanceA = ((a.x - centerX) / scaleX) ** 2 + ((a.y - centerY) / scaleY) ** 2;
-      const distanceB = ((b.x - centerX) / scaleX) ** 2 + ((b.y - centerY) / scaleY) ** 2;
-      return distanceA - distanceB;
-    })
-    .slice(0, targetCoreCount);
-
-  for (let iteration = 0; iteration < 2; iteration += 1) {
-    const stats = covarianceStats(core);
-    const regularizedVarX = stats.varX + 14 * 14;
-    const regularizedVarY = stats.varY + 14 * 14;
-    const determinant = Math.max(regularizedVarX * regularizedVarY - stats.covXY * stats.covXY, 1);
-    core = [...points]
-      .sort((a, b) => {
-        const dxA = a.x - stats.cx;
-        const dyA = a.y - stats.cy;
-        const dxB = b.x - stats.cx;
-        const dyB = b.y - stats.cy;
-        const distanceA = (regularizedVarY * dxA * dxA - 2 * stats.covXY * dxA * dyA + regularizedVarX * dyA * dyA) / determinant;
-        const distanceB = (regularizedVarY * dxB * dxB - 2 * stats.covXY * dxB * dyB + regularizedVarX * dyB * dyB) / determinant;
-        return distanceA - distanceB;
-      })
-      .slice(0, targetCoreCount);
-  }
-
+  if (points.length <= 4) return points;
+  let core = coreByNormalResidual(points, principalAxis(points));
+  core = coreByNormalResidual(points, principalAxis(core));
   return core;
-}
-
-function cross(origin: { x: number; y: number }, a: { x: number; y: number }, b: { x: number; y: number }): number {
-  return (a.x - origin.x) * (b.y - origin.y) - (a.y - origin.y) * (b.x - origin.x);
-}
-
-function convexHull(points: Array<{ x: number; y: number }>): Array<{ x: number; y: number }> {
-  const unique = Array.from(
-    new Map(points.map((point) => [`${point.x.toFixed(3)},${point.y.toFixed(3)}`, point])).values()
-  ).sort((a, b) => (a.x === b.x ? a.y - b.y : a.x - b.x));
-  if (unique.length <= 2) return unique;
-
-  const lower: Array<{ x: number; y: number }> = [];
-  for (const point of unique) {
-    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) lower.pop();
-    lower.push(point);
-  }
-
-  const upper: Array<{ x: number; y: number }> = [];
-  for (let index = unique.length - 1; index >= 0; index -= 1) {
-    const point = unique[index];
-    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) upper.pop();
-    upper.push(point);
-  }
-
-  upper.pop();
-  lower.pop();
-  return lower.concat(upper);
 }
 
 function boundsFor(points: Array<{ x: number; y: number }>): Box {
@@ -339,23 +339,6 @@ function boundsFor(points: Array<{ x: number; y: number }>): Box {
     x1: Math.max(...xs),
     y1: Math.max(...ys)
   };
-}
-
-function expandHull(
-  hull: Array<{ x: number; y: number }>,
-  center: { x: number; y: number },
-  padding: number,
-  limits: { left: number; right: number; top: number; bottom: number }
-): Array<{ x: number; y: number }> {
-  return hull.map((point) => {
-    const dx = point.x - center.x;
-    const dy = point.y - center.y;
-    const length = Math.max(Math.hypot(dx, dy), 1);
-    return {
-      x: clamp(point.x + (dx / length) * padding, limits.left, limits.right),
-      y: clamp(point.y + (dy / length) * padding, limits.top, limits.bottom)
-    };
-  });
 }
 
 function smoothClosedPath(points: Array<{ x: number; y: number }>): string {
@@ -374,6 +357,68 @@ function smoothClosedPath(points: Array<{ x: number; y: number }>): string {
   }
   commands.push("Z");
   return commands.join(" ");
+}
+
+function trendBandFor(
+  points: Array<{ x: number; y: number }>,
+  limits: { left: number; right: number; top: number; bottom: number }
+): { path: string; bounds: Box; labelX: number; labelY: number } | null {
+  if (points.length < MIN_ASHBY_REGION_POINTS) return null;
+  const core = robustCore(points);
+  if (core.length < MIN_ASHBY_REGION_POINTS) return null;
+
+  const axis = principalAxis(core);
+  const projected = core.map((point) => {
+    return projectToAxis(point, axis);
+  });
+  const tValues = projected.map((point) => point.t);
+  const nValues = projected.map((point) => point.n);
+  let tMin = core.length <= 4 ? Math.min(...tValues) : quantile(tValues, 0.02);
+  let tMax = core.length <= 4 ? Math.max(...tValues) : quantile(tValues, 0.98);
+  if (tMax - tMin < 16) {
+    const center = (tMin + tMax) / 2;
+    tMin = center - 8;
+    tMax = center + 8;
+  }
+  const centerNormal = median(nValues);
+  const normalResiduals = nValues.map((value) => Math.abs(value - centerNormal));
+  const robustNormalSpread = quantile(normalResiduals, core.length <= 4 ? 1 : 0.86);
+  const halfWidth = clamp(robustNormalSpread * 1.35 + (core.length <= 4 ? 12 : 15), core.length <= 4 ? 13 : 18, core.length <= 4 ? 30 : 66);
+  const endPad = clamp(halfWidth * 0.62, 8, 30);
+  tMin -= endPad;
+  tMax += endPad;
+
+  const tCenter = (tMin + tMax) / 2;
+  const halfLength = Math.max((tMax - tMin) / 2, 8);
+  const endWidth = clamp(halfWidth * (core.length <= 4 ? 0.46 : 0.32), 7, halfWidth * 0.7);
+  const edgeSteps = 14;
+  const upper: Array<{ x: number; y: number }> = [];
+  const lower: Array<{ x: number; y: number }> = [];
+  for (let index = 0; index <= edgeSteps; index += 1) {
+    const progress = index / edgeSteps;
+    const normalized = progress * 2 - 1;
+    const taper = Math.sqrt(Math.max(0, 1 - normalized * normalized));
+    const localWidth = endWidth + (halfWidth - endWidth) * Math.pow(taper, 0.78);
+    const localT = tCenter + normalized * halfLength;
+    upper.push({
+      x: clamp(axis.cx + axis.vx * localT + axis.nx * (centerNormal + localWidth), limits.left, limits.right),
+      y: clamp(axis.cy + axis.vy * localT + axis.ny * (centerNormal + localWidth), limits.top, limits.bottom)
+    });
+    lower.push({
+      x: clamp(axis.cx + axis.vx * localT + axis.nx * (centerNormal - localWidth), limits.left, limits.right),
+      y: clamp(axis.cy + axis.vy * localT + axis.ny * (centerNormal - localWidth), limits.top, limits.bottom)
+    });
+  }
+  const envelopePoints = upper.concat(lower.reverse());
+  const path = smoothClosedPath(envelopePoints);
+  if (!path) return null;
+  const bounds = boundsFor(envelopePoints);
+  return {
+    path,
+    bounds,
+    labelX: clamp((bounds.x0 + bounds.x1) / 2, limits.left + 28, limits.right - 28),
+    labelY: clamp(bounds.y0 + 15, limits.top + 15, limits.bottom - 8)
+  };
 }
 
 function ashbyRegions({
@@ -415,36 +460,24 @@ function ashbyRegions({
   const plotRight = WIDTH - MARGIN.right - 4;
   const plotTop = MARGIN.top + 4;
   const plotBottom = HEIGHT - MARGIN.bottom - 4;
+  const plotLimits = { left: plotLeft, right: plotRight, top: plotTop, bottom: plotBottom };
 
   return Array.from(groups.entries())
     .map(([key, points]) => {
       if (points.length < MIN_ASHBY_REGION_POINTS) return null;
-      const core = robustCore(points);
-      const hull = convexHull(core);
-      if (hull.length < 3) return null;
-      const center = {
-        x: core.reduce((sum, point) => sum + point.x, 0) / core.length,
-        y: core.reduce((sum, point) => sum + point.y, 0) / core.length
-      };
-      const expanded = expandHull(hull, center, clamp(34 / Math.sqrt(core.length), 8, 15), {
-        left: plotLeft,
-        right: plotRight,
-        top: plotTop,
-        bottom: plotBottom
-      });
-      const path = smoothClosedPath(expanded);
-      const bounds = boundsFor(expanded);
-      if (!path) return null;
+      const region = trendBandFor(points, plotLimits);
+      if (!region) return null;
+      const coreCount = robustCore(points).length;
       return {
         key,
         label: materialFamilyLabel(key),
         className: ashbyRegionClass(key),
-        path,
-        labelX: clamp((bounds.x0 + bounds.x1) / 2, plotLeft + 28, plotRight - 28),
-        labelY: clamp(bounds.y0 + 15, plotTop + 15, plotBottom - 8),
-        bounds,
+        path: region.path,
+        labelX: region.labelX,
+        labelY: region.labelY,
+        bounds: region.bounds,
         count: points.length,
-        coreCount: core.length
+        coreCount
       };
     })
     .filter((region): region is AshbyRegion => Boolean(region))
@@ -461,7 +494,7 @@ function boxesOverlap(a: LabelPlacement["box"], b: LabelPlacement["box"]): boole
   return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 }
 
-function placeRegionLabels(regions: AshbyRegion[]): RegionLabelPlacement[] {
+function placeRegionLabels(regions: AshbyRegion[], occupiedBoxes: Box[] = []): RegionLabelPlacement[] {
   const placements: RegionLabelPlacement[] = [];
   for (const region of regions) {
     const width = Math.min(156, Math.max(48, region.label.length * 5.4 + 9));
@@ -471,7 +504,9 @@ function placeRegionLabels(regions: AshbyRegion[]): RegionLabelPlacement[] {
       { x0: region.labelX - width / 2, y0: (region.bounds.y0 + region.bounds.y1) / 2 - height / 2 },
       { x0: region.bounds.x1 - width - 8, y0: region.bounds.y0 + 8 },
       { x0: region.bounds.x0 + 8, y0: region.bounds.y0 + 8 },
-      { x0: region.labelX - width / 2, y0: region.bounds.y1 - height - 8 }
+      { x0: region.labelX - width / 2, y0: region.bounds.y1 - height - 8 },
+      { x0: region.bounds.x1 + 6, y0: (region.bounds.y0 + region.bounds.y1) / 2 - height / 2 },
+      { x0: region.bounds.x0 - width - 6, y0: (region.bounds.y0 + region.bounds.y1) / 2 - height / 2 }
     ].map((candidate) => {
       const x0 = clamp(candidate.x0, MARGIN.left + 4, WIDTH - MARGIN.right - width - 4);
       const y0 = clamp(candidate.y0, MARGIN.top + 4, HEIGHT - MARGIN.bottom - height - 4);
@@ -482,7 +517,14 @@ function placeRegionLabels(regions: AshbyRegion[]): RegionLabelPlacement[] {
         y1: y0 + height
       };
     });
-    const box = candidates.find((candidate) => placements.every((placement) => !boxesOverlap(candidate, placement.box))) ?? candidates[0];
+    const box =
+      candidates.find(
+        (candidate) =>
+          placements.every((placement) => !boxesOverlap(candidate, placement.box)) &&
+          occupiedBoxes.every((occupied) => !boxesOverlap(candidate, occupied))
+      ) ??
+      candidates.find((candidate) => placements.every((placement) => !boxesOverlap(candidate, placement.box))) ??
+      candidates[0];
     placements.push({
       region,
       x: (box.x0 + box.x1) / 2,
@@ -668,7 +710,6 @@ export function ScatterPlot({
           yScale
         })
       : [];
-  const regionLabelPlacements = placeRegionLabels(familyRegions);
   const pointBoxes = plotRecords.map((record) => {
     const x = scaleNumber(record.values[xKey] as number, xDomain, xRange, xScale);
     const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
@@ -677,6 +718,10 @@ export function ScatterPlot({
       box: { x0: x - 7, y0: y - 7, x1: x + 7, y1: y + 7 }
     };
   });
+  const regionLabelPlacements = placeRegionLabels(
+    familyRegions,
+    pointBoxes.map((point) => point.box)
+  );
   const selected = plotRecords.find((record) => record.record_id === selectedId) ?? null;
   const labelCandidates = plotRecords
     .filter((record) => record.public_release_tier === "peer_reviewed_research")

@@ -31,7 +31,7 @@ const MATERIAL_ITEMS = [
   { key: "ceramic_or_glass_comparator", label: "Ceramic / glass", className: "point-material-ceramic" },
   { key: "CNT_or_CNT_hybrid", label: "CNT", className: "point-material-cnt" },
   { key: "CNT_metal_composite", label: "CNT-metal composite", className: "point-material-cnt-metal" },
-  { key: "graphene_or_GO_fiber", label: "Graphene / graphene oxide", className: "point-material-graphene" },
+  { key: "graphene_or_GO_fiber", label: "Graphene / graphite", className: "point-material-graphene" },
   { key: "metal_comparator", label: "Metal", className: "point-material-metal" },
   { key: "other_carbon_comparator", label: "Other carbon", className: "point-material-other-carbon" },
   { key: "polymer_fiber_comparator", label: "Polymer", className: "point-material-polymer" }
