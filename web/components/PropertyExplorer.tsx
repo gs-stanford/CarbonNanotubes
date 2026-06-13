@@ -186,9 +186,21 @@ const EXPORTED_FIGURE_CSS = `
 svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .plot-area { fill: #fcfdfc; }
 .grid-line { stroke: #e4e8e2; stroke-width: 0.65; }
+.minor-grid-line { stroke: rgba(216, 222, 214, 0.58); stroke-width: 0.42; stroke-dasharray: 1.6 3.2; vector-effect: non-scaling-stroke; }
 .axis-line, .axis-tick { stroke: #171a16; stroke-width: 0.9; vector-effect: non-scaling-stroke; }
 .axis-text { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 10.5px; font-variant-numeric: tabular-nums; }
 .axis-title { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 11.5px; font-weight: 700; }
+.ashby-region { opacity: 0.13; stroke-width: 1.1; stroke-dasharray: 5 3.5; vector-effect: non-scaling-stroke; pointer-events: none; }
+.ashby-region-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.92); stroke-width: 2.8px; pointer-events: none; }
+.ashby-region-cnt { fill: #0072b2; stroke: #004f7a; }
+.ashby-region-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
+.ashby-region-graphene { fill: #009e73; stroke: #006b4f; }
+.ashby-region-carbon-fiber { fill: #4a4a4a; stroke: #202020; }
+.ashby-region-other-carbon { fill: #8a8a8a; stroke: #5c5c5c; }
+.ashby-region-polymer { fill: #e69f00; stroke: #9a6a00; }
+.ashby-region-metal { fill: #cc79a7; stroke: #8c4d73; }
+.ashby-region-ceramic { fill: #6a3d9a; stroke: #432667; }
+.ashby-region-unknown { fill: #979d95; stroke: #60665f; }
 .plot-point { cursor: pointer; stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: 0.95; }
 .plot-point.is-selected { stroke-width: 1.8; opacity: 1; }
 .plot-point.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
@@ -666,6 +678,9 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const isXyPlot = plotType === "scatter" || plotType === "ashby";
   const xMeta = metaFor(atlasData.properties, xKey);
   const yMeta = metaFor(atlasData.properties, yKey);
+  const ashbyAxisLocked = plotType === "ashby";
+  const effectiveXScale: ScaleMode = ashbyAxisLocked ? "log" : xScale;
+  const effectiveYScale: ScaleMode = ashbyAxisLocked ? "log" : yScale;
   const normalizedComparisonView = isXyPlot ? NORMALIZED_KEYS.has(xKey) && NORMALIZED_KEYS.has(yKey) : NORMALIZED_KEYS.has(yKey);
   const figureTitle =
     plotType === "trend"
@@ -695,8 +710,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         const y = record.values[yKey];
         if (typeof y !== "number") return false;
         if (isXyPlot && typeof x !== "number") return false;
-        if (isXyPlot && xScale === "log" && typeof x === "number" && x <= 0) return false;
-        if (yScale === "log" && y <= 0) return false;
+        if (isXyPlot && effectiveXScale === "log" && typeof x === "number" && x <= 0) return false;
+        if (effectiveYScale === "log" && y <= 0) return false;
         if (!selectedTiers.has(record.public_release_tier)) return false;
         if (!selectedExtractions.has(record.value_extraction_type)) return false;
         if (!selectedFamilies.has(record.material_family)) return false;
@@ -707,7 +722,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         return record.public_release_tier !== "commercial_contextual_comparator";
       })
       .sort((a, b) => sourceRank(a) - sourceRank(b));
-  }, [atlasData.records, isXyPlot, normalizedComparisonView, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, xScale, yKey, yScale, yearMax, yearMin]);
+  }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
 
   const filteredRecords = useMemo(() => {
     return reduceToBestRecords(eligibleRecords, xKey, yKey);
@@ -762,12 +777,13 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   }
 
   function changeProperty(axis: "x" | "y", value: PropertyKey) {
+    const nextScale: ScaleMode = ashbyAxisLocked ? "log" : DEFAULT_SCALE;
     if (axis === "x") {
       setXKey(value);
-      setXScale(DEFAULT_SCALE);
+      setXScale(nextScale);
     } else {
       setYKey(value);
-      setYScale(DEFAULT_SCALE);
+      setYScale(nextScale);
     }
     setSelectedId(null);
   }
@@ -775,8 +791,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   function resetView() {
     setXKey("specific_strength");
     setYKey("specific_electrical_conductivity");
-    setXScale(DEFAULT_SCALE);
-    setYScale(DEFAULT_SCALE);
+    setXScale(ashbyAxisLocked ? "log" : DEFAULT_SCALE);
+    setYScale(ashbyAxisLocked ? "log" : DEFAULT_SCALE);
     setSelectedTiers(new Set(TIER_OPTIONS.filter((tier) => tier.defaultOn).map((tier) => tier.key)));
     setSelectedExtractions(new Set(EXTRACTION_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key)));
     setSelectedFamilies(new Set(families));
@@ -1028,10 +1044,10 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                 </select>
                 <p className="unit-hint">({xMeta.displayUnit})</p>
                 <div className="scale-row">
-                  <button className={xScale === "linear" ? "segmented is-active" : "segmented"} type="button" onClick={() => setXScale("linear")}>
+                  <button className={effectiveXScale === "linear" ? "segmented is-active" : "segmented"} type="button" disabled={ashbyAxisLocked} onClick={() => setXScale("linear")}>
                     Linear
                   </button>
-                  <button className={xScale === "log" ? "segmented is-active" : "segmented"} type="button" onClick={() => setXScale("log")}>
+                  <button className={effectiveXScale === "log" ? "segmented is-active" : "segmented"} type="button" disabled={ashbyAxisLocked} onClick={() => setXScale("log")}>
                     Log
                   </button>
                 </div>
@@ -1044,8 +1060,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                   onClick={() => {
                     const nextX = yKey;
                     const nextY = xKey;
-                    const nextXScale = yScale;
-                    const nextYScale = xScale;
+                    const nextXScale = ashbyAxisLocked ? "log" : yScale;
+                    const nextYScale = ashbyAxisLocked ? "log" : xScale;
                     setXKey(nextX);
                     setYKey(nextY);
                     setXScale(nextXScale);
@@ -1070,10 +1086,10 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             </select>
             <p className="unit-hint">({yMeta.displayUnit})</p>
             <div className="scale-row">
-              <button className={yScale === "linear" ? "segmented is-active" : "segmented"} type="button" onClick={() => setYScale("linear")}>
+              <button className={effectiveYScale === "linear" ? "segmented is-active" : "segmented"} type="button" disabled={ashbyAxisLocked} onClick={() => setYScale("linear")}>
                 Linear
               </button>
-              <button className={yScale === "log" ? "segmented is-active" : "segmented"} type="button" onClick={() => setYScale("log")}>
+              <button className={effectiveYScale === "log" ? "segmented is-active" : "segmented"} type="button" disabled={ashbyAxisLocked} onClick={() => setYScale("log")}>
                 Log
               </button>
             </div>
@@ -1220,8 +1236,9 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               yKey={yKey}
               xMeta={xMeta}
               yMeta={yMeta}
-              xScale={xScale}
-              yScale={yScale}
+              xScale={effectiveXScale}
+              yScale={effectiveYScale}
+              variant={plotType === "ashby" ? "ashby" : "scatter"}
               selectedId={selectedRecord?.record_id ?? null}
               onSelect={(record) => setSelectedId(record.record_id)}
             />
@@ -1231,14 +1248,14 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               records={plottedRecords}
               yKey={yKey}
               yMeta={yMeta}
-              yScale={yScale}
+              yScale={effectiveYScale}
               referenceLines={rankedReferenceLines}
               selectedId={selectedRecord?.record_id ?? null}
               onSelect={(record) => setSelectedId(record.record_id)}
             />
           ) : null}
           {plotType === "trend" ? (
-            <TrendPlot records={plottedRecords} yKey={yKey} yMeta={yMeta} yScale={yScale} selectedId={selectedRecord?.record_id ?? null} onSelect={(record) => setSelectedId(record.record_id)} />
+            <TrendPlot records={plottedRecords} yKey={yKey} yMeta={yMeta} yScale={effectiveYScale} selectedId={selectedRecord?.record_id ?? null} onSelect={(record) => setSelectedId(record.record_id)} />
           ) : null}
 
           {selectedRadarRecord ? (

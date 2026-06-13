@@ -286,6 +286,15 @@ textarea {
   padding: 8px 10px;
 }
 
+.segmented:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.segmented.is-active:disabled {
+  opacity: 1;
+}
+
 .segmented + .segmented {
   border-left: 1px solid var(--rule);
 }
@@ -598,6 +607,13 @@ textarea {
   stroke-width: 0.65;
 }
 
+.minor-grid-line {
+  stroke: rgba(216, 222, 214, 0.58);
+  stroke-width: 0.42;
+  stroke-dasharray: 1.6 3.2;
+  vector-effect: non-scaling-stroke;
+}
+
 .axis-line,
 .axis-tick {
   stroke: var(--ink);
@@ -686,6 +702,70 @@ textarea {
 .point-shape-open-circle {
   fill: #ffffff;
   stroke: var(--point-fill);
+}
+
+.ashby-region {
+  opacity: 0.13;
+  stroke-width: 1.1;
+  stroke-dasharray: 5 3.5;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.ashby-region-label {
+  fill: var(--ink);
+  font-family: var(--font-plot);
+  font-size: 9.4px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: rgba(252, 253, 252, 0.92);
+  stroke-width: 2.8px;
+  pointer-events: none;
+}
+
+.ashby-region-cnt {
+  fill: var(--material-cnt);
+  stroke: #004f7a;
+}
+
+.ashby-region-cnt-metal {
+  fill: var(--material-cnt-metal);
+  stroke: #8c3e00;
+}
+
+.ashby-region-graphene {
+  fill: var(--material-graphene);
+  stroke: #006b4f;
+}
+
+.ashby-region-carbon-fiber {
+  fill: var(--material-carbon-fiber);
+  stroke: #202020;
+}
+
+.ashby-region-other-carbon {
+  fill: var(--material-other-carbon);
+  stroke: #5c5c5c;
+}
+
+.ashby-region-polymer {
+  fill: var(--material-polymer);
+  stroke: #9a6a00;
+}
+
+.ashby-region-metal {
+  fill: var(--material-metal);
+  stroke: #8c4d73;
+}
+
+.ashby-region-ceramic {
+  fill: var(--material-ceramic);
+  stroke: #432667;
+}
+
+.ashby-region-unknown {
+  fill: var(--material-unknown);
+  stroke: #60665f;
 }
 
 .selected-halo circle {
