@@ -99,7 +99,13 @@ function recordTitle(record: PlotRecord): string {
 
 function sourceLine(record: PlotRecord): string {
   const source = [stripMarkup(record.publication_authors_short_verified), record.publication_year_verified].filter(Boolean).join(" ");
-  return source || stripMarkup(record.publication_title_verified ?? record.source_file);
+  if (source) return source;
+  const publicationTitle = stripMarkup(record.publication_title_verified);
+  if (publicationTitle) return publicationTitle;
+  if (record.public_release_tier === "commercial_contextual_comparator") {
+    return stripMarkup(record.public_plot_badge) || "Commercial/spec-sheet benchmark";
+  }
+  return stripMarkup(record.public_plot_badge ?? record.source_disclosure) || "Source pending";
 }
 
 export function RadarPlot({ records, selectedRecord }: RadarPlotProps) {

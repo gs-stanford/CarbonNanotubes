@@ -101,11 +101,53 @@ await page.screenshot({ path: path.join(outDir, "ashby.png"), fullPage: true });
 const ashbyInfo = await page.evaluate(() => ({
   title: document.querySelector(".plot-heading h2")?.textContent?.trim() ?? "",
   plotPoints: document.querySelectorAll(".plot-point").length,
+  ashbyRegions: document.querySelectorAll(".ashby-region").length,
+  minorGridLines: document.querySelectorAll(".minor-grid-line").length,
+  largestRegionWidthFraction: Math.max(
+    0,
+    ...[...document.querySelectorAll(".ashby-region")].map((region) => {
+      const box = region.getBBox();
+      return box.width / (920 - 92 - 34);
+    })
+  ),
+  sparseRegionCount: [...document.querySelectorAll(".ashby-region")].filter((region) => Number(region.getAttribute("data-total-count") ?? "0") < 8).length,
+  labelOverlapCount: (() => {
+    const labels = [...document.querySelectorAll(".point-label, .ashby-region-label")].map((label) => {
+      const box = label.getBBox();
+      return { x0: box.x, y0: box.y, x1: box.x + box.width, y1: box.y + box.height };
+    });
+    let overlaps = 0;
+    for (let i = 0; i < labels.length; i += 1) {
+      for (let j = i + 1; j < labels.length; j += 1) {
+        if (labels[i].x0 < labels[j].x1 && labels[i].x1 > labels[j].x0 && labels[i].y0 < labels[j].y1 && labels[i].y1 > labels[j].y0) overlaps += 1;
+      }
+    }
+    return overlaps;
+  })(),
+  xLinearDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][0]?.querySelector("button:first-child")?.hasAttribute("disabled")),
+  xLogDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][0]?.querySelector("button:last-child")?.hasAttribute("disabled")),
+  yLinearDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][1]?.querySelector("button:first-child")?.hasAttribute("disabled")),
+  yLogDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][1]?.querySelector("button:last-child")?.hasAttribute("disabled")),
   activeTab: document.querySelector('.plot-type-tabs .mode-button[aria-selected="true"]')?.textContent?.trim() ?? "",
   xScaleLogActive: [...document.querySelectorAll(".axis-section .scale-row")][0]?.querySelector(".is-active")?.textContent?.trim() ?? "",
   yScaleLogActive: [...document.querySelectorAll(".axis-section .scale-row")][1]?.querySelector(".is-active")?.textContent?.trim() ?? ""
 }));
-if (!ashbyInfo.title.includes("Ashby") || ashbyInfo.plotPoints < 1 || ashbyInfo.activeTab !== "Ashby") {
+if (
+  !ashbyInfo.title.includes("Ashby") ||
+  ashbyInfo.plotPoints < 1 ||
+  ashbyInfo.ashbyRegions < 1 ||
+  ashbyInfo.minorGridLines < 1 ||
+  ashbyInfo.largestRegionWidthFraction > 0.82 ||
+  ashbyInfo.sparseRegionCount !== 0 ||
+  ashbyInfo.labelOverlapCount !== 0 ||
+  !ashbyInfo.xLinearDisabled ||
+  !ashbyInfo.xLogDisabled ||
+  !ashbyInfo.yLinearDisabled ||
+  !ashbyInfo.yLogDisabled ||
+  ashbyInfo.xScaleLogActive !== "Log" ||
+  ashbyInfo.yScaleLogActive !== "Log" ||
+  ashbyInfo.activeTab !== "Ashby"
+) {
   throw new Error(`Ashby QA failed: ${JSON.stringify(ashbyInfo)}`);
 }
 await page.getByRole("tab", { name: "Scatter" }).click();
@@ -125,6 +167,11 @@ const desktopInfo = await page.evaluate(() => ({
 }));
 if (desktopInfo.radarRecordOptions !== 7 || desktopInfo.radarPolygons !== 1 || desktopInfo.radarNodes !== 6) {
   throw new Error(`Radar QA failed: ${JSON.stringify(desktopInfo)}`);
+}
+await page.locator("#radar-record").selectOption({ label: "T1100GC" });
+const radarSourceLine = (await page.locator(".radar-record-card p").first().textContent()) ?? "";
+if (/XiaO_DATA|\.xlsx/i.test(radarSourceLine)) {
+  throw new Error(`Radar source line exposed an internal workbook filename: ${radarSourceLine}`);
 }
 
 await page.setViewportSize({ width: 390, height: 844 });
