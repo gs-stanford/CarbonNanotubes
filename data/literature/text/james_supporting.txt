@@ -1,0 +1,119 @@
+© 2021 Wiley-VCH GmbH
+
+
+
+
+                    Supporting Information
+for Adv. Mater., DOI: 10.1002/adma.202008432
+
+A Meta-Analysis of Conductive and Strong Carbon
+Nanotube Materials
+John S. Bulmer,* Adarsh Kaniyoor, and James A. Elliott
+        Supplemental Section for
+
+A Meta-analysis of Conductive and Strong Carbon Nanotube Materials
+
+                   John Bulmer, Adarsh Kaniyoor, James Elliott
+
+                   Department of Materials Science and Metallurgy, 27 Charles Babbage Road, University of
+                   Cambridge, CB3 0FS, UK
+
+
+
+Below are various t-tests used to statistically compare properties of two CNT categories.
+
+
+
+
+Supplemental Figure S1. t-test showing on average aligned FWCNTs are stronger than aligned MWCNTs. Note
+that a statistically significant difference between these populations persists even after removing the stratified
+data point near 10 GPa.
+
+
+
+                                                                                                              1|
+Supplemental Figure S2. t-test showing, on average, the tensile strength of fibres derived from direct FC-CVD
+extraction (DS-CNT) and fibres derived from extrusion of super-acid CNT solutions (SS-CNT) are equal. Here we
+only considered the aligned FWCNT subsets. Further, we restricted the SS-CNT subset to those with doping/
+acid exposure, the most favourable embodiment of SS-CNTs.
+
+
+
+
+                                                                                                          2|
+Here we test the on/ off effect of doping on strength, for several different CNT categories.
+
+
+
+
+Supplemental Figure S3. t-test showing no strength difference from doping on MWCNT materials.
+
+
+
+
+                                                                                                3|
+Supplemental Figure S4. t-test showing doped aligned FWCNT materials are stronger than undoped. This is
+just from CNT materials extracted directly from FC-CVD (DS-CNT).
+
+
+
+
+                                                                                                          4|
+Supplemental Figure S5. t-test showing doped aligned FWCNT materials are stronger than undoped, for wet-
+spun fibres (SS-CNT). This is somewhat misleading however in that the super-acid extruded subcategory has
+better properties generally than other wet-spinning techniques and is typically in a doped configuration.
+
+Now we compare the thermal conductivity of aligned MWCNT materials against aligned FWCNT materials.
+
+
+
+
+Supplemental Figure S6. t-test showing no major difference in thermal conductivity of aligned MWCNT and
+FWCNT materials.
+
+
+
+Now we compare the specific strength of wet spun and FC-CVD derived fibres.
+
+
+
+
+                                                                                                          5|
+Supplemental Figure S7. t-test showing fibres derived directly from FC-CVD (DS-CNT) are decisively stronger
+than wet-spun fibres (SS-CNT) on the basis of weight. Again for the SS-CNT fibres, we only consider those with
+acid exposure because it is the most favourable embodiment of SS-CNT methods.
+
+
+
+
+                                                                                                           6|
+Here we show the correlation and power law of electrical conductivity and tensile strength against the CNT
+diameter (with and without the weighted adjustment) of all four bulk CNT categories grouped together
+(unaligned MWCNT, aligned MWCNT, unaligned FWCNT, aligned FWCNT).
+
+Log Electrical Conductivity vs Log CNT diameter
+
+                                                                                                          Adjusted Fitted Adjusted Fitted     Adjusted
+                                        Fitted Slope for   Fitted Slope Correlation and     Adjusted      Slope for Power Slope Standard Correlation and Number of
+                           Correlation     Power Law      Standard Error Fit Probability   Correlation          Law            Error       Fit Probability data points
+All four CNT categories   -0.34        -0.63             0.09            <0.01           -0.39           -0.73            0.08            <0.01           408
+
+
+
+
+Log Tensile Strength vs Log CNT diameter
+
+                                                                                                          Adjusted Fitted Adjusted Fitted     Adjusted
+                                        Fitted Slope for   Fitted Slope Correlation and     Adjusted      Slope for Power Slope Standard Correlation and Number of
+                           Correlation     Power Law      Standard Error Fit Probability   Correlation          Law            Error       Fit Probability data points
+All four CNT categories   -0.21        -0.26             0.07            <0.01           -0.32           -0.46            0.08            <0.01           271
+
+
+Supplemental Figure S8. Tables quantifying the relationship of physical properties against CNT diameter,
+where all four categories have been grouped together.
+
+
+
+
+                                                                                                                                                                   7|
+

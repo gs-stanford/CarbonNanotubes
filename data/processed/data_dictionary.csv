@@ -1,0 +1,32 @@
+field,description,canonical_unit
+record_id,Stable row identifier for a source record.,
+source_file/source_sheet/source_row,Exact provenance of extracted row.,
+citation_raw,Normalized/corrected citation text used for DOI extraction and publication grouping.,
+source_citation_raw,Original citation text from the source workbook when preserved separately from normalized citation text.,
+secondary_source_*,"Secondary compilation source metadata, used when values entered through a peer-reviewed meta-analysis workbook rather than direct primary-paper extraction.",
+original_reference_raw,Original reference text from the secondary workbook before DOI resolution.,
+doi_resolution_status/score,Crossref/OpenAlex title-year resolution status and match score for secondary workbook references.,
+duplicate_of_record_id,Higher-priority record that appears to duplicate this lower-priority secondary row.,
+*_raw,Value as represented in source workbook after basic null cleaning.,source unit
+density_kg_m3,Canonical density.,kg/m^3
+specific_volume_m3_kg,Canonical specific volume calculated from density.,m^3/kg
+tenacity_N_tex_raw,Raw tenacity/specific strength from source.,N/tex
+specific_strength_N_m_kg,Canonical specific strength; 1 N/tex = 1e6 N m/kg.,N m/kg
+tensile_strength_GPa,Canonical tensile strength in GPa after scale inference.,GPa
+tensile_strength_Pa,Canonical tensile strength.,Pa
+electrical_conductivity_S_m,Canonical electrical conductivity; S/cm multiplied by 100 or MS/m by 1e6.,S/m
+specific_electrical_conductivity_S_m2_kg,Electrical conductivity divided by density.,S m^2/kg
+thermal_conductivity_W_mK,Thermal conductivity.,W/m/K
+specific_thermal_conductivity_W_m2_K_kg,Thermal conductivity divided by density.,W m^2/K/kg
+ampacity_A_m2,Maximum current density before open circuit/failure.,A/m^2
+comparison_scope,Initial comparison classification for UI filtering.,
+source_citation_class,Citation/provenance category used for public badges and source filters.,
+evidence_tier,Evidence strength tier distinguishing primary literature records from contextual benchmark comparators.,
+comparison_note,Human-readable disclosure text for website tooltips and figure legends.,
+public_status,Public exposure state. Seed rows are not marked public-official until curation/validation is complete.,
+internal_status,"Internal curation state for reference, unit, condition, and value review.",
+condition_*,Nullable measurement-condition metadata. Missing values block strict scientific comparison.,
+publication_year,Formal citation year when known.,year
+publication_published_date,Online/version-of-record publication date when known.,date
+annual_progression,Separate derived plot-series table from RadarFigureSource/FibersStrengthYr.,
+excluded_source_rows,"Rows deliberately excluded from scientific records because they are plot headers, max values, scores, or unlabeled plot cells.",

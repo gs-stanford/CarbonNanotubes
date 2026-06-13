@@ -1,0 +1,1714 @@
+                                                                              arXiv LATEX
+
+
+
+
+arXiv:2204.04468v2 [cond-mat.mtrl-sci] 15 Apr 2022
+                                                     Simultaneously Enhanced Tenacity, Rupture
+                                                     Work, and Thermal Conductivity of Carbon
+                                                     Nanotubes Fibers by Increasing the Effective
+                                                                 Tube Contribution
+                                                      Xiao Zhang1,2 , Michael De Volder2*, Wenbin Zhou3 , Liron
+                                                     Issman2 , Xiaojun Wei1 , Adarsh Kaniyoor4 , Jerónimo Portas
+                                                           Terrones4 , Fiona Smail2 , Zibo Wang1 , Yanchun
+                                                     Wang1 , Huaping Liu1 , Weiya Zhou1 , James Elliott4*, Sishen
+                                                                        Xie1* and Adam Boies2*
+                                                      1 Beijing National Laboratory for Condensed Matter Physics,
+
+                                                        Institute of Physics, Chinese Academy of Sciences, Beijing,
+                                                                               100190, China.
+                                                          2 Department of Engineering, University of Cambridge,
+
+                                                                        Cambridge, CB2 1PZ, UK.
+                                                     3 MOE Key Laboratory of Enhanced Heat Transfer and Energy
+
+                                                        Conservation, Beijing Key Laboratory of Heat Transfer and
+                                                       Energy Conversion, Beijing University of Technology, Beijing,
+                                                                               100124, China.
+                                                     4 Department of Materials Science and Metallurgy, University of
+
+                                                                   Cambridge, Cambridge, CB3 0FS, UK.
+
+
+                                                          *Corresponding author(s). E-mail(s): mfld2@cam.ac.uk;
+                                                        jae1001@cam.ac.uk; ssxie@iphy.ac.cn; amb233@cam.ac.uk;
+                                                     Contributing authors: zhangx@iphy.ac.cn; wbzhou@bjut.edu.cn;
+                                                     li242@cam.ac.uk; weixiaojun@iphy.ac.cn; ak2011@cantab.ac.uk;
+                                                         jt451@cam.ac.uk; frs25@cam.ac.uk; wangzibo@iphy.ac.cn;
+                                                     ycwang@iphy.ac.cn; liuhuaping@iphy.ac.cn; wyzhou@iphy.ac.cn;
+
+
+
+
+                                                                                   1
+                                  arXiv LATEX
+
+
+2    Main text
+
+                                    Abstract
+     Although individual carbon nanotubes (CNTs) are superior as con-
+     stituents to polymer chains, the mechanical and thermal properties of
+     CNT fibers (CNTFs) remain inferior to commercial synthetic fibers due
+     to the lack of synthesis methods to embed CNTs effectively in super-
+     structures. The application of conventional techniques for mechanical
+     enhancement resulted in a mild improvement of target properties while
+     achieving parity at best on others. In this work, a Double-Drawing tech-
+     nique is developed to deform continuously grown CNTFs and rearrange
+     the constituent CNTs in both mesoscale and nanoscale morphology. Con-
+     sequently, the mechanical and thermal properties of the resulting CNTFs
+     can be jointly improved, and simultaneously reach their highest per-
+     formances with specific strength (tenacity) ∼ 3.30 N tex−1 , work of
+     rupture ∼ 70 J g−1 , and thermal conductivity ∼ 354 W m−1 K−1 ,
+     despite starting from commercial low-crystallinity materials (I G : I D ∼
+     5). The processed CNTFs are more versatile than comparable carbon
+     fiber, Zylon, Dyneema, and Kevlar. Furthermore, based on evidence
+     of load transfer efficiency on individual CNTs measured with In-Situ
+     Stretching Raman, we find the main contributors to property enhance-
+     ments are (1) the increased proportion of load-bearing CNT bundles and
+     (2) the extension of effective length of tubes attached on these bundles.
+
+     Keywords: carbon nanotubes, fibers, strength, toughness, thermal
+     conductivity, raman
+
+
+
+
+1 Introduction
+Carbon nanotube (CNT) macroscopic assemblies, like CNT fibers (CNTFs)
+are analogous to bulk materials of highly-conjugated polymer molecules.[1, 2]
+Correspondingly, constituent CNTs are akin to polymer chains, but with
+outstanding mechanical,[3–5] thermal,[6, 7] electrical properties,[8, 9] and
+chemical resilience.[10] CNT bundles are reported to possess excellent tensile
+strength (27 − 31 N tex−1 ) and Young’s modulus (337 − 640 N tex−1 ).[11–14]
+Direct-spun CNTFs can be produced continuously (1−2 km h−1 ) with low-cost,
+resulting in light-weight and high flexibility fibers. However, raw direct-spun
+CNTFs still suffer from a 1-2 orders of magnitude degradation in properties
+relative to CNT bundles, and are uncompetitive with commercial carbon fibers
+(CF), Kevlar fibers and Zylon fibers on their corresponding specialties.
+    Researchers attribute the property degradation primarily to the poor
+arrangement of the constituent CNTs within the as-synthesized CNTFs,[2] and
+thus they utilized various post-synthesis treatments seeking to rearrange the
+individual CNTs (iCNTs) and CNT bundles. However, with techniques com-
+monly used on textile fibers (e.g. direct stretching,[15, 16] compression,[17–19]
+and twisting[20, 21]) only minor enhancements have been achieved. In 2013,
+                                  arXiv LATEX
+
+
+                                                                 Main text      3
+
+with a similar method to produce Kevlar and Zylon, the solution-spinning tech-
+nique was reported to produce highly aligned and compacted CNTFs[22] from
+a liquid crystal solution of CNTs in chlorosulfonic acid (CSA). The reported
+mechanical properties increased significantly to strengths ∼ 1.0 GPa (tenac-
+ity ∼ 0.97 N tex−1 ) and moduli ∼ 120 GPa. Recently researchers stretched
+the Direct-spun CNTFs in CSA to obtain an aligned structure[23] which
+employed screening of van der Waals (vdW) forces in CSA,[24–26] similar
+to stiffening cellulose fibers within water to screen hydrogen bonds between
+chains.[27] Even though the reported mechanical performances surpass those of
+solution-spinning CNTFs, superior performance seems only achievable on very
+thin CNTFs (linear density 0.05 tex), while those of thick CNTFs are much
+degraded, even poorer than raw thin CNTFs.[28] The achieved density is lim-
+ited to less than 1.1 g cm−3 , indicating potential for further enhancement to the
+theoretical density of ideally compacted CNTs bundles (1.54 g cm−3 ).[22, 29]
+Meanwhile, CSA appears to have competing effects, facilitating rearrangement
+while hindering the load transfer within CNTFs in internal regions where
+remnant CSA screens vdW forces.[26] Additionally, because phonon conduc-
+tion is also impeded by the disordered microstructure in CNTFs, strategies to
+enhance thermal conductivity also warrant investigation. Thus, improving the
+properties of CNTFs while avoiding the disturbance from residual CSA is the
+primary motivation of our work.
+    Additionally, while many improvements have been reported for CNT
+performance, a mechanistic explanation of property enhancement is still incom-
+plete. Most conceptual models omit the distinctive structure of CNTFs as a
+porous hierarchical network of long rigid iCNTs, as distinct from CF, Kevlar,
+or cotton yarn. Furthermore, the efficiency of load transfer between iCNTs,
+and focus on the different behavior of iCNTs under various loads remains to
+be fully investigated. Thus, our work also focuses on optimizing the mecha-
+nism applicable to hierarchical CNT networks bonded by vdW forces to guide
+further enhancement and to assess current processing techniques.
+    Here, we develop a novel Double-Drawing technique to straighten and
+compact the iCNTs within raw Direct-spun CNTFs, seeking a simultaneous
+improvement in mechanical and thermal properties. The iCNT alignment and
+CNTF porosity were monitored by Wide and Small-Angle X-ray Scattering
+and FIB cross-section analysis, as well as in-situ stretching Raman to study
+quantitatively the iCNTs’ behavior in various CNTFs after different levels of
+processing and loading. Finally, based on the experimental findings, we com-
+plement the mechanism of enhancement with two critical factors: the increased
+proportion of load-bearing CNT bundles and the extension of effective length
+of tubes attached on these bundles.
+                arXiv LATEX
+
+
+4   Main text
+                                     arXiv LATEX
+
+
+                                                                       Main text       5
+
+2 Results
+2.1 Enhancement of CNTF with the Double-Drawing
+    Process
+
+
+
+
+Fig. 1 The Double-Drawing process on CNT fiber (CNTF). (a) Schematic diagram of the
+Double-Drawing process to enhance the CNTFs, and the corresponding typical cell within
+CNTF (second row): (i) the raw CNTF is fixed within a dropping funnel straightened out
+but without a pre-tension; (ii) to weaken the binding between iCNTs, the raw CNTF is
+immersed in HSO3Cl (CSA); (iii) CNTF is then firstly drawn in CSA to a specific ratio
+(η CSA ) to straighten out and align the crumpled iCNTs; (iv) after the immersing solvent
+being changed into CHCl3 (chloroform), (v) CNTF is further drawn by η PT = 0.5%, referred
+as Poisson Tightening. During this process, the remaining CSA is removed from the fiber,
+which radially compresses and “freezes” iCNTs into larger bundles; (vi) Finally CNTF is
+successively rinsed in water and acetone, and vacuum dried. The substantial enhancement
+on alignment and compactness of fully Double-Drawn CNTF can be observed on the surface
+and inner microstructures by (b vs d) SEM and (c vs e) HRTEM. The red arrows in the
+schematic cell (the second row) represent the force exerted.
+                                  arXiv LATEX
+
+
+6     Main text
+
+In our work, the raw CNTFs are fabricated by direct spinning CNT aero-
+gels produced with a continuous floating catalyst chemical vapor deposition
+(FCCVD) method. The FCCVD method is considered highly suitable for the
+continuous mass-production of iCNTs with a very high aspect ratio.[2] These
+grown CNTs aggregate into bundles and then entangle as an aerogel,[30, 31]
+which is subsequently densified into fibers by acetone during collection from
+the reactor. The as-synthesized CNTFs consist of a hierarchical network of
+randomly connected CNTs (Fig.1a(i), b-c). Analogous to polymer molecules
+in a textile fiber being held together by hydrogen bonds and/or vdW forces,
+the iCNTs in CNTF are held together by vdW forces in an entangled network.
+The vdW forces “freeze” the CNTF in a non-equilibrium curved morphology,
+i.e. an athermal structure.[32]
+     Here, to enhance the CNTF after synthesis, the connections or constraint
+intra and inter bundles are firstly weakened or even released by immersing the
+CNTF in HSO3 Cl (CSA) (Fig.1a(ii)). The protonation of CNTs by CSA[24]
+screens the vdW forces, as observed by the swelling of the CNTF in CSA.
+The weakened tube-tube forces thus reduce the large shear strength. Thus, the
+mutual lateral movement of iCNTs can occur easily, which otherwise might
+break CNTs if done without CSA. This process is analogous to the high humid-
+ity environment softening the hydrogen bonds between cellulose molecules
+before enhancing cellulose fiber.
+     The CNTF is then firstly drawn in CSA to a specific draw-ratio (η CSA , the
+extension length divided by original length), during which the crumpled CNTs
+are freely straightened and aligned along the fiber axis (Fig.1a(iii)), with min-
+imal breaking of CNTs. To quantitatively study the effect of drawing in CSA,
+the range of η CSA is controlled from 0% to the maximum ratio η max , in which
+the η max ∼ 30% less than the failure ratio in CSA (η ∗ ). We find a strong depen-
+dence of η ∗ on linear density (LD) of CNTF, i.e., η ∗ = 41 × LD1/2 [% tex−1/2 ]
+(details can be found in S1). For CNTFs the respective dependencies on LD
+and draw-ratios are observed LD ∼ 0.5 tex, η ∗ ∼ 28%, and η max ∼ 25%.
+     After drawing, the remaining CSA within CNTF still hinders the load
+transfer between iCNTs caused by vdW forces. Chloroform serves as the best
+solvent to dissolve CSA, but the fine voids in the increasingly compacted outer
+CNT layers hinder the outward diffusion of CSA (Fig.1a(iv)). Therefore, to
+remove the remaining CSA and densify the fiber, we further introduce a sec-
+ond drawing process, referred as “Poisson Tightening” process. After the first
+drawing in CSA, the fiber is immediately drawn further in chloroform with
+another draw-ratio, η PT ∼ 0.5% (Fig.1a(v)). When immersed in chloroform,
+CNTs in the outer layer solidify, significantly, thus increasing the layer’s mod-
+ulus. Then under subsequent axial drawing, the resulting radial tightening,
+caused by the Poisson effect, further expels CSA, while solidify and compress-
+ing CNTs in the inner layers (details in S1). We also find excessive drawing,
+η PT >0.5%, may cause plastic deformation and break iCNTs. After the above
+Double-Drawing processes, the CNTFs are successively rinsed with water and
+acetone (Fig.1a(vi)), and finally vacuum dried for further use.
+                                     arXiv LATEX
+
+
+                                                                        Main text        7
+
+2.2 The Microstructure After Drawing
+
+
+
+
+Fig. 2 Microstructure of the CNTF after the Double-Drawing process. (a) The fracture
+end of the fully Double-Drawn CNTF illustrates fringed morphology with thick bundles
+commonly seen in the highly oriented linear-polymer fibers. Within every large bundle, the
+iCNTs closely compact into thick bundles in a range of 50-200 nm, much larger than those
+of raw CNTFs. (b) The Wide Angle X-ray Diffraction (WAXD) patterns (inset) of the
+suspended CNTFs illustrate the two preferred orientation peaks of the (002) planes in the
+azimuthal profile. The Full Width Half Maximum of the peaks indicate the level of alignment
+within CNTFs. (c) With the gradual increase in the draw-ratio, the alignment of iCNTs
+increases but reaches a plateau state after threshold level of drawing (∼ 14.5%).
+
+
+
+For the Double-Drawn CNTF (DD-CNTF) with full drawing (η CSA = η max =
+25% and η PT = 0.5%), referred as fully DD-CNTF, both the mesoscale and
+nanoscale structure are organized. The disordered network of the raw CNTF
+is optimized into an aligned and tightly compacted bundle structure (Fig.1b-
+e). The raw thin bundles (diameter of 10-50 nm, Fig.1c) converge to much
+thicker bundles with diameter of 80-500 nm, as observed in the fracture end of
+the fully DD-CNTF (Fig.2a). Within the thick bundles, all iCNTs are tightly
+packed.
+    The alignment evolution within CNTFs is observed by Wide-Angle X-ray
+Diffraction (WAXD).[16, 33, 34] The Full-Width-at-Half-Maximum (FWHM)
+of the preference peak in azimuthal scan is an indicator of CNTs alignment
+(Fig.2b). As the draw-ratio increases to 14.5%, the FWHM decreases from
+14.89◦ to 7.97◦ (Fig.2c). At draw-ratios above 14.5%, FWHM plateaus near
+7.9◦ , which indicates the saturation of the alignment of CNTs above the thresh-
+old level of drawing. Similar results are shown for Small-Angle X-ray Scattering
+(SAXS, Fig.S1) where the optimization of alignment levels off above 12% of
+drawing.
+                                       arXiv LATEX
+
+
+8     Main text
+
+
+
+
+Fig. 3 The evolution of porosity within CNTF after various levels of Double-Drawing. (a-c)
+On the cross-section cut perpendicular to the fiber axis, the porosity monotonically decreases
+with the increase of draw-ratio. (c) For the fully DD-CNTF, only fine voids can be found. (d)
+On the cross-section cut parallel to the fiber axis as shown in the inset, the remaining voids
+are all in a configuration of bead-chain along fiber axis (white arrow) instead of randomly
+distributed, indicating their presence between large bundles and aerogel layers.
+
+
+    The evolution of voids within DD-CNTF was monitored by SEM of the
+cross-section cut by Focused Ion Beam (FIB). As shown in Fig.3a-c, with
+increasing draw-ratio, the porosity decreases and reaches minimum on the fully
+DD-CNTF with fine voids (more details can be found in Fig.S2). Because the
+area surrounded by the voids is an indicator of the cross-section of a bundle,
+the ever-increasing solid area also illustrates the thickening of bundles. We
+further checked the cross-section cut parallel to the fiber axis (Fig.3d). The
+remaining voids are in bead-chain configuration, indicating that the remaining
+voids in the fully DD-CNTF originate from the gaps between thick bundles
+and layers of aerogel.
+                                      arXiv LATEX
+
+
+                                                                         Main text        9
+
+2.3 Enhancement of Mechanical Properties for
+    DD-CNTFs
+
+
+
+
+Fig. 4 The evolution of the mechanical properties of CNTF with various draw-ratios. (a) In
+the representative tenacity-strain (ε) plots of CNTFs, for Double-Drawn (red dots, DD) and
+Single-Drawn (blue squares, SD) CNTFs, they are both significantly stiffened compared with
+the raw fiber (black triangles). With additional Poisson Tightening, the breaking tenacity
+further improved by 23% without sacrificing ductility. (b) In the corresponding tangent
+specific modulus-strain plots, after drawing in CSA, the tangent specific modulus dropped
+monotonically with the increase of strain. (c) With CNTFs after different drawing, the
+evolution of the breaking tenacity and (d) the initial specific modulus versus the draw-
+ratios (η CSA + η PT are shown. Both DD and SD CNTF tenacity and the initial modulus
+monotonically increase with the increasing draw-ratio. (e) The work of rupture after Poisson
+Tightening increases, particularly for the CNTF above threshold drawing. (f) With the
+organized microstructure, the apparent density increases monotonically with the draw-ratio
+and reaches 1.40 g cm−3 for the fully DD-CNTF.
+                                 arXiv LATEX
+
+
+10     Main text
+
+The strength of fibers increase with the increasing density where the cross
+sectional-area diminishes for a given fiber as it is densified.[35] The cross-
+sectional area is poorly defined for porous nanomaterials and assemblies with
+ambiguous cross-sections or non-uniform diameters. Thus, to best character-
+ize DD-CNTFs “tenacity”, i.e. “specific strength” with units of N tex−1 (or
+GPa SG−1 ), is a well-defined indicator of load and does not have the ambigu-
+ity of absolute “strength” with units of GPa. Tenacity is widely used for textile
+fibers and can be calculated directly by dividing stretching force with linear
+density (LD, mass/length), both of which can be unambiguously measured for
+fibers and porous nanomaterials.
+    As shown in Fig.4a, compared with the raw CNTFs (black triangles), after
+full Double-Drawing (red dots), the fibers exhibit an increase in breaking tenac-
+ity from 1.22 N tex−1 to 3.30 N tex−1 . When compared with the CNTF only
+drawn in CSA (Single-Drawn, SD-CNTF, blue squares in Fig.4), the tenacity
+of the fully DD-CNTF has 23% greater tenacity without any ductility degrada-
+tion, which illustrates the importance of the Poisson Tightening process. Fiber
+strength, when accounting for SEM-measured cross sectional areas, increases
+from raw fiber strength of 0.9 GPa to 4.6 GPa for fully DD-CNTFs (see Fig.S3).
+    With the gradual increase in the draw-ratio, both DD-CNTFs and SD-
+CNTFs show a monotonic increase in tenacity (Fig.4c). We find no saturation
+plateau on tenacity after threshold drawing as was shown with alignment
+(Fig.2c). The further enhancing effect from Poisson Tightening is more obvious
+when η CSA >10%. Furthermore, because of the consistency of ductility before
+and after the Poisson Tightening (Fig.S4), the work of rupture, i.e. energy
+absorbed during the rupture process increased to ∼ 70 J g−1 for DD-CNTFs,
+from ∼ 42 J g−1 for the raw CNTF, and ∼ 55 J g−1 for SD-CNTFs.
+    In the corresponding tangent specific modulus-strain plots (M-S plots,
+Fig.4b), for both DD-CNTFs and SD-CNTFs, the modulus reduces during the
+tensile testing process. The rising of modulus for the raw CNTF at the begin-
+ning comes from the deformation of the iCNT network.[36] For CNTFs after
+different draw-ratios, the initial modulus (maximum modulus) monotonically
+increases with the rising of draw-ratio (Fig.4d) and reaches 130.2 N tex−1 for
+the specific modulus of fully DD-CNTF, compared with 56.8 N tex−1 for the
+raw CNTF. The close stacking and collapsed cross-section (Fig.S5) increases
+the CNTF apparent density from 0.66 g cm−3 of the raw fibers to 1.40 g cm−3
+of the fully DD-CNTF (Fig.4f), which is very close to the theoretical density
+of ideally compacted CNTs bundle (1.54 g cm−3 ).[22, 29]
+    It is also interesting that by only immersing in CSA, the CNTF gains
+∼ 40% increase in tenacity (Fig.4c), along with short and straight CNT bun-
+dles on the fiber surface (Fig.1d). We believe these phenomena originate from
+the spontaneously rearrangement of iCNTs, due to their high stiffness and
+persistence length (More discussion in S3).[1, 32]
+                                   arXiv LATEX
+
+
+                                                                   Main text       11
+
+2.4 Enhancement of Thermal Properties for DD-CNTFs
+
+
+
+
+Fig. 5 Evolution of thermal conductivity with the increase of draw-ratio. Owing to the
+optimization of CNT-CNT junctions after drawing, the thermal conductivity of the fully
+DD-CNTF reaches 354 W m−1 K−1 which is 335% higher than the raw CNTF, and 31%
+higher than the fully SD-CNTFs.
+
+
+Since the CNT-CNT contacts (junctions) are the main source of thermal
+resistance[37] (e.g. phonon scattering centers[38]), the fiber thermal conduc-
+tivity also improves from the microstructure rearrangement after drawing.
+With the gradual increase of draw-ratio, the thermal conductivity increases
+monotonically, and the Poisson Tightening gives rise to further increase after
+the threshold drawing (Fig.5). Consequently, thermal conductivity of the
+fully DD-CNTF reaches 354 W m−1 K−1 which is 335% higher than the raw
+CNTF, and 31% higher than the fully SD-CNTFs. Normalized by density, the
+specific thermal conductivity of the fully DD-CNTF (0.258 W m2 K−1 kg−1 )
+is five times higher than that of copper (0.044 W m2 K−1 kg−1 ) and silver
+(0.041 W m2 K−1 kg−1 ). The electrical conductivity also substantially increases
+from 1650 S cm−1 of the raw CNTF to 10700 S cm−1 of the fully DD-CNTF
+Fig.S6). While improved, the electrical conductivity remains below the con-
+ductivity of other bulk metal conductors, e.g., copper (∼ 60000 S cm−1 ).
+Interestingly, in contrast to alignment evolution with the draw-ratio, the evo-
+lution of mechanical and conductive properties monotonically improves, which
+                                     arXiv LATEX
+
+
+12     Main text
+
+implies that there are other enhancing mechanisms besides the improvement
+in alignment.
+
+2.5 Comparison Between the DD-CNTF with
+    Commercial Fibers
+
+
+
+
+Fig. 6 Properties comparison between CNTFs and commercial synthetic fibers. Ashby
+plots of (a) tenacity (specific tensile strength) versus work of rupture, and (b) tenacity
+versus thermal conductivity. The data points contain reported high-performance CNTFs
+(pure), high strength CFs (PAN-based CFs), highly thermal conductive CFs (Pitch-based
+CFs), some high-performance polymer fibers, and results from this work. (c) Radar plots
+comparing the performance of the fully DD-CNTF with PAN-based CF (T1100GC), Pitch-
+based CF (K13D2U), Zylon AS, Kevlar 49 and Dyneema SK75. The results are normalized
+by the maximum value of each characteristic (references in Table S1).
+                                 arXiv LATEX
+
+
+                                                              Main text      13
+
+As shown in Fig.6, compared with current leading fibers, carbon nanotube
+fibers can exhibit overall versatile performance with a combination of high
+specific tensile strength (tenacity), work of rupture, thermal conductivity, and
+specific volume (e.g. low density). The fully DD-CNTFs have thermal con-
+ductivities that match the best pitch-based CFs and surpass them in terms
+of tenacity and ductility. The fully DD-CNTF tenacity is within 15% of the
+strongest PAN-based CFs (T1000GB) and PBO fibers (Zylon AS and HM),
+while tougher and more conductive. The performance of fully DD-CNTFs are
+superior to Kevlar for all reported metrics highlighting potential applications
+of impact shielding or advanced structural usage with thermal management
+purposes.
+    The DD-CNTFs further the trend of the remarkable annual improvements
+of CNTF properties highlighted by Taylor et al over the last decade.[39] The
+DD-CNTFs is a method that enhances commercially-produced raw fibers with
+fiber test lengths (10-20 mm) from medium-grade crystalline materials (I G :
+I D ∼ 5.3, Fig.S7). When compared to congeneric fibers, including the solution-
+spun CNTF composed of higher crystallinity CNTs (I G : I D = 54 to 85),[39]
+the fully DD-CNTF have improved strength and modulus, owing to the longer
+effective length of CNTs. Compared to other CNTF acid stretching processes,
+the DD-CNTF enables a larger LD while improving the overall fiber properties.
+Short CNT strand (VA-MIT) have higher work of rupture than DD-CNTFs
+(94 J g−1 ), but compromise strength and modulus with short fibers that were
+restricted lengths less than the individual CNTs (∼ 1 mm).[40] Critically, the
+present work enables sustained strength over gauge lengths that exceed the
+longest CNTs and offer a measure of scaled fiber performance that is com-
+parable (0-25% less) to high work of rupture of the IMDEA materials. Our
+materials do not require removal of catalyst or other impurities from CNTFs
+which account for 7 − 8 wt% with marginally crystalline material.
+                                       arXiv LATEX
+
+
+14      Main text
+
+3 Discussions
+3.1 Load Transfer Efficiency on Individual Tubes As
+    Illustrated by the In-Situ Stretching Raman
+
+
+
+
+Fig. 7 The Redshift of Raman G’ mode of CNTFs evaluated by the In-Situ Stretching
+Raman (ISSR). (a) Schematic diagram of the ISSR characterization with polarized laser and
+ZZ / XX configuration. (b) For the fully DD-CNTF, with the increase of strain on CNTF (εf ),
+the redshift is distinctively efficient for portions of CNTs (indicated by red dotted arrow),
+which is indicative of increased of strain shared on iCNTs (εi ). Other portions of CNTs only
+partially redshift and return to the free state quickly (indicated by blue dotted arrow). The
+evolution of εi with εf are shown in the contour plots which respectively depict the evolution
+of the parallel iCNTs within the (c) raw CNTF, (d) the moderate DD-CNTF, (e) fully DD-
+CNTF, and (g) fully SD-CNTF, as well as the evolution of the perpendicular iCNTs within
+the (f) raw CNTF and (h) fully DD-CNTF. All the contour plots are normalized by the
+same scales, and divided into zones (Roman numerals) based on the different behaviors of
+redshift. The white arrows are guides to the redshifts, with their corresponding load transfer
+ratio (εi /εf ) being elucidated by the arrows’ slope. The maximum strains for iCNTs (ε∗i )
+are also marked.
+
+
+The distinctive increase in mechanical properties after the Double-Drawing
+process warrants a mechanistic study of the enhancing mechanisms to deter-
+mine whether the DD-CNTFs have taken the full advantage of iCNTs’
+                                 arXiv LATEX
+
+
+                                                              Main text      15
+
+properties. Here we use the In-Situ Stretching Raman (ISSR) with the polar-
+ized detecting configuration to study the load transfer efficiency on iCNTs. In
+contrast to the common polarized Raman characterization that solely depicts
+the CNTs alignment in fibers, ISSR enables assessment of the distribution
+of strain on iCNTs.[41] In ISSR, the C-C bonds softens under stretching,
+redshifting the Raman G’ mode proportionally with strain.[42, 43]
+    It is important to note that the ISSR spectrum is an amalgamation of every
+section on thousands of iCNTs within the laser spot, which can experience
+various strain. Along each CNT the strain can be distributed unevenly. Based
+on the antenna effect of CNTs,[44, 45] we use ZZ/XX polarization configura-
+tion to detect the strain distribution of iCNTs parallel/perpendicular to the
+axis of CNTF (Fig.7a). As shown in Fig.7b, when CNTF strain (εf ) is grad-
+ually increased, sections in the spectrum start to redshift differently (red and
+blue dotted lines), from which the corresponding strain distribution among
+iCNTs (εi ) can thus be deduced (more details can be found in S4). To high-
+light the evolution of εi with corresponding εf , we accumulate these spectra
+of each CNTF into its contour plot (Fig.7c-h). As the fiber strain increases to
+εf =1.27% (Zone i) the tubes parallel to the raw CNTF axis (ZZ configura-
+tion, Fig.7c) exhibit a small broadening in the spectrum tail of low-frequency
+(white solid arrow), while the middle and high frequency sections change little
+(white dotted arrow). This implies that only a small proportion of CNTs share
+the strain on the fiber, while the others do not participate.[46, 47]) When εf
+=1.27% the average εi can be deduced ∼ 0.22% (calculation details can be
+found in S4). We use load transfer ratio LT R ≡ εi /εf as a figure of merit
+for load sharing. Thus, the average LT R (LT R) is only ∼ 0.17, which indi-
+cates that the fiber strain εf is primarily a result of straightening of curled
+tubes, alignment of tubes towards axis direction or the relative slippage among
+tubes, rather than the strain increase on iCNTs. For larger strain, εf >1.27%,
+the redshift reaches a plateau without any changes in the spectrum (Zone ii).
+εi does not further increase and reaches a maximum, ε∗i ∼ 1.65% (the cor-
+responding LT R∗ is ∼ 0.49), indicating the occurrence of slippage between
+iCNTs. Approaching the failure point (εf ≥ 3.38%, Zone iii), the broadening
+disappears (short white dotted arrows), which indicates the remaining small
+portion of CNTs break and return to the initial state without any strain.
+    As a comparison, the fully DD-CNTF (Fig.7e) shows a significant enhance-
+ment on the load sharing on the iCNTs. As load increases to εf =0.97%, the
+entire peak of G’ mode redshifts without obvious broadening (white dotted
+arrow vs white solid arrow), which we referred as Zone i’. The correspond-
+ing LT R increases to ∼ 0.35 at εf =0.97%. The redshift of the entire G’
+mode indicates that a major portion of CNTs take the load with fiber. More
+importantly, with greater strain, εf >0.97%, there is no plateau of redshift in
+Zone ii’. Instead, the spectrum splits into 2 groups: one group (indicated by
+the red arrow) continues to share the load as εf increases, while the other
+group (indicated by the blue arrow) gradually releases when strained, indicat-
+ing the successive failure of thick bundles. For the former group, εf continues
+                                  arXiv LATEX
+
+
+16     Main text
+
+to increase and finally achieves ε∗i ∼ 2.44% just before the rupture of CNTF,
+The corresponding LT R∗ can then be deduced as high as 0.89, indicating that
+a portion of CNTs synchronize with the fiber to take the load from the begin-
+ning until the fracture. We did not observe the Zone iii strain releases to the
+initial state as occurred with the raw CNTF.
+    For the moderate DD-CNTF (η CSA = 10.4% and η PT = 0.5%, Fig.7d), its
+behavior falls in between raw CNTF and fully DD-CNTF. The LT R at the
+end of Zone i is ∼ 0.23. Like the fully DD-CNTF, Zone ii’ appears with εf
+increases. ε∗i finally reaches ∼ 2.07% just before the rupture of CNTF. The
+corresponding LT R∗ is ∼ 0.64. Without the Poisson Tightening process, the
+fully SD-CNTF behaves similarly in Zone i’ and ii’ (Fig.7g), with LT R ∼ 0.29
+at the end of Zone i’, and LT R∗ is ∼ 0.83 when ε∗i ∼ 2.09%. Importantly, in
+the Zone iii where εf approaches the rupture point, ε∗i cannot further increase,
+while the other portion of CNTs release to the initial state free of strain. As a
+contrast, for the tubes perpendicular to the fiber axis (XX-Polarization), for
+both raw (Fig.7f) and the fully DD-CNTFs (Fig.7h), during the whole period,
+εi changes very little with the increase of εf , indicating the redundance of tubes
+perpendicular to the axis.
+    Collectively the ISSR results for CNTFs with different enhancing process,
+enables insights into CNTFs and the Double-Drawing process, namely (1) only
+a small portion of CNTs in the raw CNTF can take axial load; (2) with only
+small strain on iCNTs, slippage will happen in raw CNTF; (3) by drawing in
+CSA, a larger portion of CNTs can participate in load sharing upon initial
+loading; (4) by drawing in CSA, higher strain on iCNTs are needed to lead
+to a slippage; (5) Poisson Tightening can further increase the strain capacity
+on iCNTs. The cumulative impact of these optimization from the Double-
+Drawing elucidates the substantial increase in the breaking tenacity of the
+fully DD-CNTF.
+                                       arXiv LATEX
+
+
+                                                                           Main text         17
+
+3.2 Enhancing Mechanism - the Increase of Effective
+    Bundles and the Extension of CNTs Effective Length
+    in Bundle
+
+
+
+
+Fig. 8 The 2D schematic graph of the optimization on bundles being effective and the
+effective length of tubes within a bundle after Double-Drawing process. (a) in the disor-
+dered CNTs network, tubes (lines) aggregate as bundles (marked as 1      ○ to 4○). Within the
+schematic cell under vertical stretching, only shortest bundle connecting the vertical surfaces
+takes load, i.e., being effective (painted in red). Tubes outside the loaded bundle remain
+idle despite portions being oriented parallel to the load (circled with blue dotted circle). For
+tubes that link to multiple bundles, only the length section of tubes attached to an effective
+bundle take load (solid blue arrows), while the external length section remains idle (hollow
+blue arrows). (b) With the Double-Drawing process, the crumpled iCNTs are straightened
+as the shortest pathway and more tubes are compressed into a large bundle ([ 2       ○3 ○4 ○]),
+extending the effective length section.
+
+
+The improvement of properties after the saturation of alignment optimization,
+and the ever rising of LT R and ε∗i after processing, indicates additional factors
+must be included to develop a representative mechanism for CNTF loading.
+Misorientation of monomer units along the polymer chain has been recognized
+as the primary factor that leads to the reduction of stiffness of many synthetic
+fibers.[48] The tensile Young’s modulus of fibers is commonly estimated by the
+appropriate average of the moduli of all monomers along the axis.[27] However,
+the assumption implies that all monomers evenly participate within a fiber,
+which is not suitable for a fibrillar assembly like the CNTF. The movement and
+deformation of iCNTs within CNTFs are not all affine. Instead under load a
+tensioning line frequently appears from the disordered network in raw CNTFs,
+which indicates the stress concentration, also the only portion of CNTs bearing
+the load (detailed analysis can be found in S5).
+    As shown within a simplified CNTF cell (Fig.8a), if the load is exerted on
+the vertical surfaces of the cell (along axis), there is no medium between CNTs
+to transmit the load, thus only the shortest CNT bundle is loaded (bundle
+○, the red lines). While alignment analysis by WAXD shows a substantial
+ 3
+alignment, the portion of idle CNTs cannot be determined. Therefore, for the
+                                  arXiv LATEX
+
+
+18     Main text
+
+fibrillar structures the straightening of bundles is a more indicative metric
+for fiber strength than orientation factor. After the drawing in CSA, more
+crumpled tubes and bundles straighten ([ 2     ○3 ○4 ○]) and become effective to
+link the “shortest” distance (the red lines in Fig.8b). They jointly participate
+in sharing the load after the initial stretching. More correlations between this
+factor to the optimization of ISSR results and mechanical properties can be
+found in S5.
+     Nevertheless, only accounting for the increased fraction of load-bearing
+bundles in network does not fully explain the much higher ε∗i for the DD-
+CNTF. As the ε∗i appears immediately prior to failure, the much-improved
+tenacity for the fully DD-CNTF must therefore be considered. For the elastic
+interface (static friction), the stress exerted on iCNTs σ i = Y εi , is balanced by
+the friction from the surrounding tubes, where Y and εi is the tube’s Young’s
+modulus and strain, respectively.[49] When σi increases to the critical value
+σi∗ , slippage will occur and the elastic interface will begin to deform plasticly.
+Immediately prior to slippage, σ ∗i At = f s Leff , where At is the cross-sectional
+area of the tube, fs is tube’s maximum static friction coefficient per unit length,
+and Leff is the effective length of tube that shares the load (friction). Thus,
+σi∗ is the maximum value for σi and the corresponding ε∗i can be deduced by:
+                                       σ ∗i   f s Leff
+                                ε∗i =       =                                   (1)
+                                       Y       Y At
+    In a fibrillar structure, particularly raw CNTF (entire length of iCNTs L ∼
+100 µm[2]), tubes within the hierarchical network only partly align with any
+specific bundle, and may be incorporated into many bundles. Because the load
+can only be transmitted through the coupling between adjacent tubes, only the
+tube section attached to an effective bundle can participate in sharing the load
+(the red lines as indicated by solid blue arrows in Fig.8), i.e., Leff  L (Fig.1b-
+c). With the Double-Drawing process, longer length of tubes aggregate into the
+effective bundles ([ 2○○   ○] in Fig.8b), with Leff approaching L. Consequently,
+                         3 4
+ε∗i needed to activate the slippage also increases, which delays the failure of
+DD-CNTF and improves the tenacity (discussed further in S5).
+    Although the conduction pathway for heat is not essential to be short-
+est, the thermal conduction benefits when more bundles and larger fraction of
+tubes become effective. The junction boundaries between bundles are likely a
+first order contribution to thermal resistance,[50] which become sparser along
+the fiber axis after the Double-Drawing. With the increase of Leff and align-
+ment of adjoining bundles, the joint length and interfacial area between tubes
+are extended, improving the thermal conductance through the corresponding
+junctions.
+
+4 Conclusions
+In summary, we have developed a technique to enhance CNT fibers by suc-
+cessively drawing the raw direct-spun CNTFs within CSA and chloroform at
+ambient temperature and pressure, which aligns the CNT bundles, densifies
+                                 arXiv LATEX
+
+
+                                                               Main text      19
+
+the fibers and removes the residue CSA via Poisson Tightening and rins-
+ing. With full Double-Drawing, CNTFs reach a tenacity of 3.30 N tex−1 (4.60
+GPa), Young’s modulus of 130 N tex−1 , rupture work of 70 J g−1 , electrical con-
+ductivity of 10700 S cm−1 , and thermal conductivity of 354 W m−1 K−1 . The
+resulting simultaneous optimization properties results in an attractive over-
+all performance, continuing the impressive line of improvement seen within
+CNTFs worldwide in recent years. We anticipate further advancement in mate-
+rial properties using the Double-Drawing technique which is applicable to other
+CNTs ensemble including forests, films, fibers, and aerogels.
+    Importantly, in addition to the known dependence of properties on CNT
+alignment and stacking, new evidence of the load transfer coefficient on indi-
+vidual CNTs highlights the importance of (i) straightening of CNT bundles
+which increases the proportion of effective bundles jointly sharing the load and
+(ii) the higher barrier of slippage activation within bundles, which originates
+from the effective tube length increase within effective bundles.
+    The comprehensive improvement of CNTF properties enables long-sought
+applications of advanced load-bearing fibers that can simultaneously dissipate
+heat, shield impacts, or dissipate electrical charge. Comprehensive understand-
+ing, advancement of these multitude of mechanisms, and resulting properties
+are necessary to manifest bulk CNT fiber properties that approach the horizon
+of properties offered by individual CNTs.
+
+5 Experimental/Methods Section
+CNT fibers preparation: Continuous CNTFs were fabricated using the float-
+ing catalyst method,[51, 52] and supplied by Tortech Nanofibers Ltd. The
+produced CNT aerogels from a tube furnace were mechanically pulled out,
+densified by acetone, and spun continuously winded. Although a small tension
+force is applied during the spinning process to obtain a preferential alignment
+along fiber axis, the anisotropic ratio is always within 0.85.[53]
+    Enhancing CNTF with the Double-Drawing process: (i) Immersing and first
+drawing: The raw CNTF is fixed at its lower end inside a dropping funnel, and
+its upper end fixed on a spin rotor. The CNTF is straightened out but with-
+out a pre-tension. After being immersed in chlorosulfonic acid (CSA), CNTF
+is firstly drawn to a specific ratio (η CSA ; (ii) Poisson Tightening: After the
+immersing solvent being changed into chloroform, the CNTF is immediately
+further drawn by η PT . (iii) Rinsing: after the Double-Drawing processes, the
+CNTF is successively rinsed in water and acetone, and finally vacuum dried.
+    Linear Density measurement: The LD is measured based on Direct Single-
+fiber Weight Determination, following ASTM D1577-07(2018) OPTION B.
+The weight of a CNTF with length ∼ 100 mm is measured with a Sartorius SE2
+Ultra-micro balance. We find it worthy to notice the importance of accurately
+measurement of LD, because the susceptibility of fiber’s tenacity to LD. The
+frequently used Vibroscopic method in reports is abandoned here, because
+of the potential serious underestimation of LD, if the “stiffness correction”
+                                  arXiv LATEX
+
+
+20     Main text
+
+ was overlooked (ASTM D1577-07(2018) OPTION C - the standard for the
+ Vibroscopic method). More discussion can be found in S2.
+     Tensile test: The CNTFs are tested with the Single-Fiber Testers (Tex-
+ techno FAVIMAT with Load cell of 210 cN and delicately aligned clamps (4 mm
+ hard rubber), the force resolution of ∼ 0.0001 cN, the displacement resolu-
+ tion of 0.1 µm). The CNTFs are tested with gauge length of 10 mm, stretching
+ speed of 1 mm min-1 and pretension of 0.1 cN tex−1 . Every sample is tested
+ for 3 specimens to guarantee the repeatability of results. Stretching speeds of
+ 0.2, 2 and 5 mm min−1 , and gauge length of 20 mm have been tried to generate
+ similar results.
+     Thermal and Electrical conductivity measurement: The thermal conduc-
+ tivity of CNTF along fiber axis is performed with a homemade measuring
+ apparatus based on a self-heating method.[54] The electrical conductivity of
+ CNTFs along fiber axis is measured in air at room temperature (1 atm,
+ 25 − 27 ◦ C, relative humidity: 40 ± 3 %RH) by a homemade testing stage using
+ the four-electrode method and steady-state method.[55]
+     In-Situ Stretching Raman: The suspended CNTFs are ends fixed onto a
+ manual stretching stage to detect the Raman signal with HORIBA HR800
+ micro-Raman spectroscopy. We excite the Raman G’ mode with linearly polar-
+ ized laser, and only collect the scattered radiation in the parallel polarization
+ with a Glan Polarizer, so that only iCNTs with their axis close to parallel with
+ the laser polarization can be detected. For the ZZ/XX configuration,[56] the
+ polarizations of both incident and scattered photons are parallel/perpendicular
+ to the axis of CNTFs, offering the strain distribution of CNTs along/normal
+ to the fiber axis;
+     Wide Angle X-ray Diffraction (WAXD)/Small-Angle X-ray Scattering
+ (SAXS): The CNTFs with different processing are studied using a small and
+ wide-angle diffractometer (Molecular Metrology SAXS system) equipped with
+ a sealed microfocus tube (MicroMax-002+S) emitting Cu Kα radiation (wave-
+ length of 0.1542 nm), two Göbel mirrors, and three pinhole slits. CNTFs with
+ diameter of 18 − 50 µm were suspended onto a holder perpendicular to the
+ beam and measured at ambient temperature. All the raw data are analyzed
+ by SAXSGUI. For data analysis of WAXD, the sharp equatorial reflections at
+q~ ∼ 1.8 Å−1 corresponding to the scattering from (002) reflection of the inter-
+ layer spacing of a few walled CNT, and to a higher order reflection of the
+ hexagonal packing of parallel CNTs. Both possibilities are due to the planes
+ perpendicular to the CNT axis. To obtain the azimuthal profile of (002) scatter-
+ ing, the intensity is integrated in the range of 1.6 − 1.9 Å−1 . With the increase
+ of the alignment, two peaks emerge in the azimuthal profile around the pre-
+ ferred alignment, from which the Full Width Half Maximum is obtained. For
+ data analysis of SAXS, the integrating range is 0.04 − 0.1 Å−1 to obtain the
+ azimuthal profile of scattering.
+     Other characterization: The cross-sections of CNTFs are fabricated with
+ FIB (FEI Helios 600i). The cross-section is firstly cut with Gallium ions with
+ current of 9 nA (30 kV) and then finely polished under current of 0.79 nA,
+                                 arXiv LATEX
+
+
+                                                               Main text      21
+
+after which the SEM of cross-sections are conducted by electron beam of FIB.
+The SEM for other CNTFs is conducted on a TESCAN MIRA3. HRTEM is
+conducted on an FEI Talos F200X TEM working under 80 kV to reduce the
+damage to CNTs.
+Supplementary materials. Supplementary materials are available.
+Acknowledgements. Funding: This work is supported by EPSRC project
+’Advanced Nanotube Application and Manufacturing (ANAM) Initiative’
+[grant numbers: EP/M015211/1]. WY Zhou and HP Liu thank the par-
+tial support by the National Key R&D Program of China [grant numbers:
+2018YFA0208402, 2020YFA0714700]. General: The authors especially thank
+Ms. Mingzhao Wang, Prof. Wei Tan, Dr. Joe Stallard, Dr. Le Cai, Ms Rulan
+Qiao, Dr. Sarah Stevenson, for their kind support and useful discussion. The
+author also thanks Dr. Heather Greer, Dr. Rafail Khalfin, Prof. Yachin Cohen,
+and Prof. Thurid S. Gspann for TEM, WAXD, SAXS, and mechanical exper-
+iment support. Competing interests: All authors declare that they have no
+competing interests. Data and materials availability: All data needed to
+evaluate the conclusions in the paper are present in the paper and/or the Sup-
+plementary Materials. Additional data related to this paper may be requested
+from the authors. Author Contributions: Conceptualization: XZ, MDV,
+SSX, AMB; Methodology: XZ, MDV, WBZ; Formal analysis: XZ, WBZ, AMB;
+Investigation: XZ, WBZ, JTP, AK; Resources: WBZ, LI, AK, JTP, FRS, ZBW,
+JAE; Validation: MDV, WBZ, WYZ, JAE, AMB; Supervision: MDV, HPL,
+WYZ, SSX, AMB; Project administration: YCW, AMB; Funding acquisition:
+HPL, WYZ, AMB; Writing—original draft: XZ, MDV, AMB; Writing—review
+& editing: XZ, MDV, WBZ, XJW, JTP, HPL, WYZ, JAE, AMB.
+
+References
+ [1] Fakhri, N., Tsyboulski, D.A., Cognet, L., Bruce Weisman, R., Pasquali,
+     M.: Diameter-dependent bending dynamics of single-walled carbon nan-
+     otubes in liquids. Proceedings of the National Academy of Sciences of the
+     United States of America 106(34), 14219–14223 (2009). https://doi.org/
+     10.1073/pnas.0904148106
+
+ [2] Mikhalchan, A., Vilatela, J.J.: A perspective on high-performance CNT
+     fibres for structural composites. Carbon 150, 191–215 (2019). https://
+     doi.org/10.1016/j.carbon.2019.04.113
+
+ [3] Min-Feng, Y., Oleg, L., J., D.M., Katerina, M., F., K.T., S., R.R.: Strength
+     and Breaking Mechanism of Multiwalled Carbon Nanotubes Under Ten-
+     sile Load. Science 287(5453), 637–640 (2000). https://doi.org/10.1126/
+     science.287.5453.637
+
+ [4] Peng, B., Locascio, M., Zapol, P., Li, S., Mielke, S.L., Schatz, G.C.,
+     Espinosa, H.D.: Measurements of near-ultimate strength for multiwalled
+                                 arXiv LATEX
+
+
+22     Main text
+
+     carbon nanotubes and irradiation-induced crosslinking improvements.
+     Nature Nanotechnology 3(10), 626–631 (2008). https://doi.org/10.1038/
+     nnano.2008.211
+
+ [5] Zhang, X., Lu, W., Zhou, G., Li, Q.: Understanding the Mechanical and
+     Conductive Properties of Carbon Nanotube Fibers for Smart Electronics
+     (2020). https://doi.org/10.1002/adma.201902028
+
+ [6] Kim, P., Shi, L., Majumdar, A., McEuen, P.L.: Thermal transport mea-
+     surements of individual multiwalled nanotubes. Physical Review Letters
+     87(21), 215502 (2001) https://arxiv.org/abs/0106578 [cond-mat]. https:
+     //doi.org/10.1103/PhysRevLett.87.215502
+
+ [7] Pop, E., Mann, D., Wang, Q., Goodson, K.E., Dai, H.J.: Thermal
+     conductance of an individual single-wall carbon nanotube above room
+     temperature. Nano Letters 6(1), 96–100 (2006). https://doi.org/10.1021/
+     Nl052145f
+
+ [8] Bulmer, J.S., Kaniyoor, A., Elliott, J.A.: A Meta-Analysis of Conductive
+     and Strong Carbon Nanotube Materials. Advanced Materials n/a(n/a),
+     2008432 (2021). https://doi.org/10.1002/adma.202008432
+
+ [9] Komatsu, N., Ichinose, Y., Dewey, O.S., Taylor, L.W., Trafford, M.A.,
+     Yomogida, Y., Wehmeyer, G., Pasquali, M., Yanagi, K., Kono, J.: Macro-
+     scopic weavable fibers of carbon nanotubes with giant thermoelectric
+     power factor. Nature Communications 12(1), 4931 (2021). https://doi.
+     org/10.1038/s41467-021-25208-z
+
+[10] De Volder, M.F.L.L., Tawfick, S.H., Baughman, R.H., Hart, A.J.: Car-
+     bon Nanotubes: Present and Future Commercial Applications. Science
+     339(6119), 535–539 (2013). https://doi.org/10.1126/science.1222453
+
+[11] Tombler, T.W., Zhou, C., Alexseyev, L., Kong, J., Dai, H., Liu, L.,
+     Jayanthi, C.S., Tang, M., Wu, S.-Y.: Reversible electromechanical char-
+     acteristics of carbon nanotubes underlocal-probe manipulation. Nature
+     405(6788), 769–772 (2000). https://doi.org/10.1038/35015519
+
+[12] Yu, M.-F., Files, B.S., Arepalli, S., Ruoff, R.S.: Tensile Loading of Ropes
+     of Single Wall Carbon Nanotubes and their Mechanical Properties. Phys-
+     ical Review Letters 84(24), 5552–5555 (2000). https://doi.org/10.1103/
+     PhysRevLett.84.5552
+
+[13] Baughman, H.R., Zakhidov, A.A., de Heer Walt, A.: Carbon Nanotubes–
+     the Route Toward Applications. Science 297(5582), 787–792 (2002).
+     https://doi.org/10.1126/science.1060928
+
+[14] Bai, Y., Zhang, R., Ye, X., Zhu, Z., Xie, H., Shen, B., Cai, D., Liu, B.,
+                                  arXiv LATEX
+
+
+                                                                Main text      23
+
+    Zhang, C., Jia, Z., Zhang, S., Li, X., Wei, F.: Carbon nanotube bundles
+    with tensile strength over 80 GPa. Nature Nanotechnology 13(7), 589–595
+    (2018). https://doi.org/10.1038/s41565-018-0141-z
+
+[15] Koziol, K., Vilatela, J., Moisala, A., Motta, M., Cunniff, P., Sennett, M.,
+     Windle, A.: High-performance carbon nanotube fiber. Science 318(5858),
+     1892–1895 (2007). https://doi.org/10.1126/science.1147635
+
+[16] Fernández-Toribio, J.C., Alemán, B., Ridruejo, Á., Vilatela, J.J.: Tensile
+     properties of carbon nanotube fibres described by the fibrillar crystallite
+     model. Carbon 133, 44–52 (2018). https://doi.org/10.1016/j.carbon.2018.
+     03.006
+
+[17] Wang, J.N., Luo, X.G., Wu, T., Chen, Y.: High-strength carbon nan-
+     otube fibre-like ribbon with high ductility and high electrical conductiv-
+     ity. Nature Communications 5(1), 3848 (2014). https://doi.org/10.1038/
+     ncomms4848
+
+[18] Tran, T.Q., Fan, Z., Liu, P., Myint, S.M., Duong, H.M.: Super-strong and
+     highly conductive carbon nanotube ribbons from post-treatment meth-
+     ods. Carbon 99, 407–415 (2016). https://doi.org/10.1016/j.carbon.2015.
+     12.048
+
+[19] Xu, W., Chen, Y., Zhan, H., Wang, J.N.: High-Strength Carbon Nanotube
+     Film from Improving Alignment and Densification. Nano Letters 16(2),
+     946–952 (2016). https://doi.org/10.1021/acs.nanolett.5b03863
+
+[20] Zhang, M., Atkinson, K.R., Baughman, R.H.: Multifunctional carbon
+     nanotube yarns by downsizing an ancient technology. Science 306(5700),
+     1358–1361 (2004). https://doi.org/10.1126/science.1104276
+
+[21] Headrick, R.J., Tsentalovich, D.E., Berdegué, J., Bengio, E.A., Liberman,
+     L., Kleinerman, O., Lucas, M.S., Talmon, Y., Pasquali, M.: Struc-
+     ture–Property Relations in Carbon Nanotube Fibers by Downscaling
+     Solution Processing. Advanced Materials 30(9), 1–8 (2018). https://doi.
+     org/10.1002/adma.201704482
+
+[22] Behabtu, N., Young, C.C., Tsentalovich, D.E., Kleinerman, O., Wang, X.,
+     Ma, A.W.K., Bengio, E.A., Ter Waarbeek, R.F., De Jong, J.J., Hooger-
+     werf, R.E., Fairchild, S.B., Ferguson, J.B., Maruyama, B., Kono, J.,
+     Talmon, Y., Cohen, Y., Otto, M.J., Pasquali, M.: Strong, light, multi-
+     functional fibers of carbon nanotubes with ultrahigh conductivity. Science
+     339(6116), 182–186 (2013). https://doi.org/10.1126/science.1228061
+
+[23] Lee, J., Lee, D.M., Jung, Y., Park, J., Lee, H.S., Kim, Y.K., Park, C.R.,
+     Jeong, H.S., Kim, S.M.: Direct spinning and densification method for
+     high-performance carbon nanotube fibers. Nature Communications 10(1),
+                                 arXiv LATEX
+
+
+24     Main text
+
+     1–10 (2019). https://doi.org/10.1038/s41467-019-10998-0
+
+[24] Davis, V.A., Parra-Vasquez, A.N.G., Green, M.J., Rai, P.K., Behabtu, N.,
+     Prieto, V., Booker, R.D., Schmidt, J., Kesselman, E., Zhou, W., Fan, H.,
+     Adams, W.W., Hauge, R.H., Fischer, J.E., Cohen, Y., Talmon, Y., Smal-
+     ley, R.E., Pasquali, M.: True solutions of single-walled carbon nanotubes
+     for assembly into macroscopic materials. Nature Nanotechnology 4(12),
+     830–834 (2009). https://doi.org/10.1038/nnano.2009.302
+
+[25] Parra-Vasquez, A.N.G., Behabtu, N., Green, M.J., Pint, C.L., Young,
+     C.C., Schmidt, J., Kesselman, E., Goyal, A., Ajayan, P.M., Cohen, Y.,
+     Talmon, Y., Hauge, R.H., Pasquali, M.: Spontaneous dissolution of ultra-
+     long single-and multiwalled carbon nanotubes. ACS Nano 4(7), 3969–3978
+     (2010). https://doi.org/10.1021/nn100864v
+
+[26] Ramesh, S., Ericson, L.M., Davis, V.A., Saini, R.K., Kittrell, C., Pasquali,
+     M., Billups, W.E., Adams, W.W., Hauge, R.H., Smalley, R.E.: Dissolu-
+     tion of Pristine Single Walled Carbon Nanotubes in Superacids by Direct
+     Protonation. The Journal of Physical Chemistry B 108(26), 8794–8798
+     (2004). Chap. 8794. https://doi.org/10.1021/jp036971t
+
+[27] Hearle, J.W.S., Morton, W.E.: Physical Properties of Textile Fibres.
+     Elsevier, ??? (2008)
+
+[28] Lee, D.-M., Park, J., Lee, J., Lee, S.-H., Kim, S.-H., Kim, S.M., Jeong,
+     H.S.: Improving Mechanical and Physical Properties of Ultra-thick Car-
+     bon Nanotube Fiber by Fast Swelling and Stretching Process. Carbon
+     (2020). https://doi.org/10.1016/j.carbon.2020.10.068
+
+[29] Aliev, A.E., Lima, M.H., Silverman, E.M., Baughman, R.H.: Thermal
+     conductivity of multi-walled carbon nanotube sheets: Radiation losses and
+     quenching of phonon modes. Nanotechnology 21(3) (2010). https://doi.
+     org/10.1088/0957-4484/21/3/035709
+
+[30] Boies, A.M., Hoecker, C., Bhalerao, A., Kateris, N., de La Verpilliere,
+     J., Graves, B., Smail, F.: Agglomeration Dynamics of 1D Materials: Gas-
+     Phase Collision Rates of Nanotubes and Nanorods. Small 15(27), 1900520
+     (2019). https://doi.org/10.1002/smll.201900520
+
+[31] Kateris, N., Kloza, P., Qiao, R., Elliott, J.A., Boies, A.M.: From Colli-
+     sions to Bundles: An Adaptive Coarse-Grained Model for the Aggregation
+     of High-Aspect-Ratio Carbon Nanotubes. The Journal of Physical Chem-
+     istry C 124(15), 8359–8370 (2020). https://doi.org/10.1021/acs.jpcc.
+     9b10479
+
+[32] Yakobson, B.I., Couchman, L.S.: Persistence Length and Nanomechanics
+     of Random Bundles of Nanotubes. Journal of Nanoparticle Research 8(1),
+                                arXiv LATEX
+
+
+                                                             Main text      25
+
+    105–110 (2006). https://doi.org/10.1007/s11051-005-8335-3
+
+[33] Bedewy, M., Meshot, E.R., Guo, H., Verploegen, E.A., Lu, W., Hart, A.J.:
+     Collective Mechanism for the Evolution and Self-Termination of Vertically
+     Aligned Carbon Nanotube Growth. The Journal of Physical Chemistry C
+     113(48), 20576–20582 (2009). https://doi.org/10.1021/jp904152v
+
+[34] Kaniyoor, A., Gspann, T.S., Mizen, J.E., Elliott, J.A.: Quantifying align-
+     ment in carbon nanotube yarns and similar two-dimensional anisotropic
+     systems. Journal of Applied Polymer Science 138(37), 50939 (2021).
+     https://doi.org/10.1002/app.50939
+
+[35] Stallard, J.C., Tan, W., Smail, F.R., Gspann, T.S., Boies, A.M., Fleck,
+     N.A.: The mechanical and electrical properties of direct-spun carbon
+     nanotube mats. Extreme Mechanics Letters 21, 65–75 (2018). https:
+     //doi.org/10.1016/j.eml.2018.03.003
+
+[36] Park, J., Lee, J., Lee, D.-M., Lee, S.-H., Jeong, H.S., Lee, K.-H., Kim,
+     S.M.: Mathematical model for the dynamic mechanical behavior of carbon
+     nanotube yarn in analogy with hierarchically structured bio-materials.
+     Carbon 152, 151–158 (2019). https://doi.org/10.1016/j.carbon.2019.05.
+     077
+
+[37] Prasher, R.S., Hu, X.J., Chalopin, Y., Mingo, N., Lofgreen, K., Volz,
+     S., Cleri, F., Keblinski, P.: Turning Carbon Nanotubes from Exceptional
+     Heat Conductors into Insulators. Physical Review Letters 102(10), 105901
+     (2009). https://doi.org/10.1103/PhysRevLett.102.105901
+
+[38] Dresselhaus, M.S., Eklund, P.C.: Phonons in carbon nanotubes.
+     Advances in Physics 49(6), 705–814 (2000). https://doi.org/10.1080/
+     000187300413184
+
+[39] Taylor, L.W., Dewey, O.S., Headrick, R.J., Komatsu, N., Peraca, N.M.,
+     Wehmeyer, G., Kono, J., Pasquali, M.: Improved properties, increased
+     production, and the path to broad adoption of carbon nanotube fibers.
+     Carbon 171, 689–694 (2021). https://doi.org/10.1016/j.carbon.2020.07.
+     058
+
+[40] Hill, F.A., Havel, T.F., Hart, A.J., Livermore, C.: Enhancing the Ten-
+     sile Properties of Continuous Millimeter-Scale Carbon Nanotube Fibers
+     by Densification. ACS Applied Materials & Interfaces 5(15), 7198–7207
+     (2013). https://doi.org/10.1021/am401524q
+
+[41] Chang, C.-C., Hsu, I.-K., Aykol, M., Hung, W.-H., Chen, C.-C., Cronin,
+     S.B.: A New Lower Limit for the Ultimate Breaking Strain of Carbon
+     Nanotubes. ACS Nano 4(9), 5095–5100 (2010). https://doi.org/10.1021/
+     nn100946q
+                                 arXiv LATEX
+
+
+26     Main text
+
+[42] Cronin, S.B., Swan, A.K., Ünlü, M.S., Goldberg, B.B., Dresselhaus,
+     M.S., Tinkham, M.: Measuring the Uniaxial Strain of Individual Single-
+     Wall Carbon Nanotubes: Resonance Raman Spectra of Atomic-Force-
+     Microscope Modified Single-Wall Nanotubes. Physical Review Letters
+     93(16), 167401 (2004). https://doi.org/10.1103/PhysRevLett.93.167401
+
+[43] Mohiuddin, T.M.G., Lombardo, A., Nair, R.R., Bonetti, A., Savini, G.,
+     Jalil, R., Bonini, N., Basko, D.M., Galiotis, C., Marzari, N., Novoselov,
+     K.S., Geim, A.K., Ferrari, A.C.: Uniaxial strain in graphene by Raman
+     spectroscopy: G peak splitting, Gruneisen parameters, and sample ori-
+     entation. Physical Review B 79(20), 205433 (2009). https://doi.org/10.
+     1103/PhysRevB.79.205433
+
+[44] Saito, R., Hofmann, M., Dresselhaus, G., Jorio, A., Dresselhaus, M.S.:
+     Raman spectroscopy of graphene and carbon nanotubes. Advances in
+     Physics 60(3), 413–550 (2011). https://doi.org/10.1080/00018732.2011.
+     582251
+
+[45] Zhang, X., Song, L., Cai, L., Tian, X., Zhang, Q., Qi, X., Zhou, W.,
+     Zhang, N., Yang, F., Fan, Q., Wang, Y., Liu, H., Bai, X., Zhou, W., Xie,
+     S.: Optical visualization and polarized light absorption of the single-wall
+     carbon nanotube to verify intrinsic thermal applications. Light: Science
+     and Applications 4(8) (2015). https://doi.org/10.1038/lsa.2015.91
+
+[46] Cronin, S.B., Swan, A.K., Ünlü, M.S., Goldberg, B.B., Dresselhaus, M.S.,
+     Tinkham, M.: Resonant Raman spectroscopy of individual metallic and
+     semiconducting single-wall carbon nanotubes under uniaxial strain. Phys-
+     ical Review B 72(3), 35425 (2005). https://doi.org/10.1103/PhysRevB.
+     72.035425
+
+[47] Kumar, R., Cronin, S.B.: Raman scattering of carbon nanotube bun-
+     dles under axial strain and strain-induced debundling. Physical Review B
+     75(15), 155421 (2007). https://doi.org/10.1103/PhysRevB.75.155421
+
+[48] Adams, W.W., Eby, R.K.: High-Performance Polymer Fibers. MRS Bul-
+     letin 12(8), 22–26 (1987). https://doi.org/10.1557/S0883769400066707
+
+[49] Gupta, N., Alred, J.M., Penev, E.S., Yakobson, B.I.: Universal strength
+     scaling in carbon nanotube bundles with frictional load transfer. ACS
+     Nano 15(1), 1342–1350 (2020). https://doi.org/10.1021/acsnano.0c08588
+
+[50] Chalopin, Y., Volz, S., Mingo, N.: Upper bound to the thermal conductiv-
+     ity of carbon nanotube pellets. Journal of Applied Physics 105(8), 84301
+     (2009). https://doi.org/10.1063/1.3088924
+
+[51] Li, Y.L., Kinloch, I.A., Windle, A.H.: Direct Spinning of Carbon
+     Nanotube Fibers from Chemical Vapor Deposition Synthesis. Science
+                                  arXiv LATEX
+
+
+                                                                Main text      27
+
+    304(5668), 276–278 (2004). https://doi.org/10.1126/science.1094982
+
+[52] Motta, M., Moisala, A., Kinloch, I.A., Windle, A.H.: High performance
+     fibres from ’dog bone’ carbon nanotubes. Advanced Materials 19(21),
+     3721–3726 (2007). https://doi.org/10.1002/adma.200700516
+
+[53] Zhang, X., Tan, W., Smail, F., De Volder, M., Fleck, N., Boies, A.: High-
+     fidelity characterization on anisotropic thermal conductivity of carbon
+     nanotube sheets and on their effects of thermal enhancement of nanocom-
+     posites. Nanotechnology 29(36), 365708 (2018). https://doi.org/10.1088/
+     1361-6528/aacd7b
+
+[54] Zhou, W., Fan, Q., Zhang, Q., Cai, L., Li, K., Gu, X., Yang, F., Zhang,
+     N., Wang, Y., Liu, H., Zhou, W., Xie, S.: High-performance and compact-
+     designed flexible thermoelectric modules enabled by a reticulate carbon
+     nanotube architecture. Nature Communications 8(1), 14886 (2017). https:
+     //doi.org/10.1038/ncomms14886
+
+[55] Zhou, W.B., Fan, Q.X., Zhang, Q., Li, K.W., Cai, L., Gu, X.G., Yang,
+     F., Zhang, N., Xiao, Z.J., Chen, H.L., Xiao, S.Q., Wang, Y.C., Liu, H.P.,
+     Zhou, W.Y., Xie, S.S.: Ultrahigh-Power-Factor Carbon Nanotubes and
+     an Ingenious Strategy for Thermoelectric Performance Evaluation. Small
+     12(25), 3407 (2016). https://doi.org/10.1002/smll.201600501
+
+[56] Damnjanović, M., Milošević, I., Vuković, T., Sredanović, R.: Full symme-
+     try, optical activity, and potentials of single-wall and multiwall nanotubes.
+     Physical Review B 60(4), 2728–2739 (1999). https://doi.org/10.1103/
+     PhysRevB.60.2728
+                                                                              arXiv LATEX
+
+
+
+
+arXiv:2204.04468v2 [cond-mat.mtrl-sci] 15 Apr 2022
+                                                               Supplementary material
+
+                                                     Simultaneously Enhanced Tenacity, Rupture
+                                                     Work, and Thermal Conductivity of Carbon
+                                                     Nanotubes Fibers by Increasing the Effective
+                                                                 Tube Contribution
+                                                      Xiao Zhang1,2 , Michael De Volder2*, Wenbin Zhou3 , Liron
+                                                     Issman2 , Xiaojun Wei1 , Adarsh Kaniyoor4 , Jerónimo Portas
+                                                           Terrones4 , Fiona Smail2 , Zibo Wang1 , Yanchun
+                                                     Wang1 , Huaping Liu1 , Weiya Zhou1 , James Elliott4*, Sishen
+                                                                        Xie1* and Adam Boies2*
+                                                      1 Beijing National Laboratory for Condensed Matter Physics,
+
+                                                        Institute of Physics, Chinese Academy of Sciences, Beijing,
+                                                                               100190, China.
+                                                          2 Department of Engineering, University of Cambridge,
+
+                                                                        Cambridge, CB2 1PZ, UK.
+                                                     3 MOE Key Laboratory of Enhanced Heat Transfer and Energy
+
+                                                        Conservation, Beijing Key Laboratory of Heat Transfer and
+                                                       Energy Conversion, Beijing University of Technology, Beijing,
+                                                                               100124, China.
+                                                     4 Department of Materials Science and Metallurgy, University of
+
+                                                                   Cambridge, Cambridge, CB3 0FS, UK.
+
+
+                                                          *Corresponding author(s). E-mail(s): mfld2@cam.ac.uk;
+                                                        jae1001@cam.ac.uk; ssxie@iphy.ac.cn; amb233@cam.ac.uk;
+                                                     Contributing authors: zhangx@iphy.ac.cn; wbzhou@bjut.edu.cn;
+                                                     li242@cam.ac.uk; weixiaojun@iphy.ac.cn; ak2011@cantab.ac.uk;
+                                                         jt451@cam.ac.uk; frs25@cam.ac.uk; wangzibo@iphy.ac.cn;
+                                                     ycwang@iphy.ac.cn; liuhuaping@iphy.ac.cn; wyzhou@iphy.ac.cn;
+
+
+                                                                                   1
+                                  arXiv LATEX
+
+
+2     Supplementary material
+
+S1. Experiment details on the Double-Drawing
+process.
+The raw CNTFs are continuously fabricated with a CVD reactor at 1100 −
+1200 ◦ C using the floating catalyst method,[1, 2] and supplied by Tortech
+Nanofibers Ltd. In the fabrication process, a preheated feedstock consisting of
+toluene (carbon source), ferrocene (catalyst precursor), thiophene (promoter),
+and hydrogen (carrier gas) with flow rates of 1 − 2 g h−1 , 100 − 400 mL min−1 ,
+10 − 20 mL min−1 , and 1000 − 2000 mL min−1 , respectively, was injected into a
+reactor to form CNT aerogels continuously. The CNT aerogels were mechani-
+cally pulled out, densified by acetone, and spun continuously with a motorized
+winding system at a winding rate of 15 m min−1 . Although a small tension
+force is applied during the spinning process to obtain a preferential alignment
+along fiber axis, the anisotropic ratio is always within 0.85.[3] The raw CNTFs,
+normally with linear density ∼ 0.5 tex and I G : I D ∼ 5.3 are used for the
+subsequent processing.
+     To enhance the raw CNTFs, the fiber is firstly fixed at its lower end inside a
+dropping funnel, and its upper end fixed on a spin rotor. After being immersed
+in chlorosulfonic acid (CSA) for 30 s, CNTF is drawn to a specific ratio (η CSA )
+at a rate of 1 mm s−1 . To fully draw the CNTF, the maximum ratio η max is
+used, which is slightly less than the failure ratio η ∗ in CSA. The drawing rates
+from 0.1 mm s−1 to 10 mm s−1 have been tried without generating obvious
+difference.
+     After the immersing solvent being changed into chloroform, the drawn
+CNTF is immediately further drawn by η PT = 0.5%. When the CNTF is
+only immersed in chloroform, pimples of CSA always appear on the surface of
+drawn CNTF, this is because the closely compacted tubes on the outer fiber
+layer hinders the diffusion of the remaining CSA from the inner layers. The
+remaining CSA keeps screen the vdW forces through which the load transfer.
+Therefore, the second drawing process in chloroform is necessary. The pimples
+keep disappearing during the second drawing process.
+     After the Double-Drawing processes, the CNTF is successively rinsed in
+water and acetone, and finally vacuum dried at 200 ◦ C for 2 hours.
+     We find the strong dependence of η ∗ on linear density (LD) of CNTF.
+For example, for CNTFs with LD ∼ 0.47 tex, η ∗ ∼ 28%; and for CNTFs
+with LD ∼ 5.38 tex, η ∗ ∼ 125%. With the thickening of the CNTF, larger
+η ∗ is needed to straighten all the tubes across the thickness. Thus, η ∗ can be
+estimated as η ∗ = 41 × LD1/2 [% tex−1/2 ]. The empirical relationship should
+be also applicable for other direct spun CNT assemblies, like mat and film.
+     In our experiment, all the raw CNTFs are used directly without any purifi-
+cation. Although by heating and acid treatment, impurities like catalysts and
+amorphous carbon can be removed, we find that the inevitable defects gener-
+ated during the purifying process result in the excessive drawing at variable
+points and the degradation of the draw-ratio on other part.
+                                  arXiv LATEX
+
+
+                                                   Supplementary material        3
+
+S2. Precise Determination of Linear Density for
+CNTFs.
+The accuracy of tenacity (specific strength) value for micro-fibers heavily relies
+on the accurate measurements of linear density (LD).
+    Researchers usually used the Vibroscopic methods to deduce LD of CNTFs.
+By introduce transverse vibration with oscillatory force, LD can be deduced
+by finding the fundamental resonance frequency (f0 ) of the fiber under known
+conditions of gauge length (l) and pre-tension tension (FPT ) with following
+equation:[4]
+                                          FPT
+                                  LD =                                      (S1)
+                                         4f02 l2
+    However, Equation (S1) only works well under the assumption that tested
+fibers are perfectly flexible. However, the assumption can cause problems for
+CNTFs. As mentioned in ASTM D1577-07(2018) OPTION C, correction must
+be made on f0 to account for the “stiffness effect”,[4–6] following the equation
+below:
+                           FPT                         FPT
+                LDc =        2  2
+                                  (1 + 2α + 5.47α2 ) = 2 2 (1 + δ)            (S2)
+                          4f0 l                       4f0 l
+    Here, f0c is thep measured apparent fundamental resonant frequency, stiff-
+ness factor α ≡ 4EI/l2 FP T , and E is the Young’s modulus of the fiber,
+I is the inertia moment of the fiber about the neutral axis. For a circular
+cross-section fiber with diameter, I = πd4 /64. And δ ≡ 2α + 5.47α2 is the
+increase factor for LD because of the “stiffness effect”. Thus, the real tenacity
+consequently should be 1/(1 + δ) lower compared to that without considering
+“stiffness effect”.
+    Therefore, δ becomes non-negligible if fibers possess (a) high Young’s mod-
+ulus, or (b) relative short gauge length, or (c) being tested with low pre-tension.
+As to the post-processed CNTFs with high modulus and commonly used test-
+ing parameters, the measured LD always deviates away from that based on
+perfect flexible string model. Based on some typical reported data, δ deduced
+can be as high as 33%, which is unreasonable to be ignore.
+    Considering the above factors, we choose the Direct Single-fiber Weighing
+method as the reliable measurement of LD following ASTM D1577-07(2018)
+OPTION B, because the accuracy is only dependent on the accuracy with
+which the fibers can be length measured and weighed.
+
+S3. Surface morphology and tenacity of CNTFs
+only immersed in CSA.
+As shown in Fig.4c, by only immersing in CSA, the CNTF gains 40% increase
+in tenacity. Moreover, after CSA processing, CNTFs always contain short and
+straight CNT bundles on the fiber surface (Fig.4d). We believe these straight
+                                arXiv LATEX
+
+
+4    Supplementary material
+
+bundles originate from the high stiffness and persistence length of iCNTs and
+their bundles which behave similarly to semiflexible filaments, with their per-
+sistence length much larger than the pristine curved diameter formed in raw
+fiber.[7, 8] When the athermal structure of CNTF “melts” upon immersion in
+CSA, the curved iCNTs spontaneously rearrange towards an equilibrium orga-
+nized structure with improved properties, while dangling iCNTs on the surface
+rearrange into a rod-like shape as observed.
+
+
+
+
+Fig.S 1: SAXS pattern evolution of CNTFs with the increase of
+draw-ratio. (a-b) the SAXS patterns from the suspended fully DD-CNTF
+and raw CNTF. (c) The azimuthal profiles of the SAXS intensity illustrate
+peaks from the preferred alignment in CNTF. (d) The evolution of alignment
+peak in SAXS azimuthal results of suspended CNTFs. Like the (002) peak of
+WAXD azimuthal profile, the alignment of iCNTs within CNTF indicated by
+the FWHM of peaks in SAXS azimuthal profile decreases with the gradually
+increase of draw-ratio but seems to saturate after threshold level of drawing
+(12%)
+                                 arXiv LATEX
+
+
+                                                 Supplementary material        5
+
+
+
+
+Fig.S 2: The evolution of the porosity within the CNTFs after the
+increase of drawing. On the cross-section cut with FIB, the trend is obvious
+that the porosity monotonically decreases with the increase of draw-ratio. We
+further checked the cross-section parallelly cut along the fiber axis (last row),
+the stubborn voids are all in a configuration of beads-chain along fiber axis
+(white arrow). Because the area surrounded by the voids is an indicator of the
+cross-section of a bundle, the ever increasing of solid area also illustrates the
+thickening of bundles, as mentioned in the Microstructure section of main text.
+The bright lines in images come from the Curtain Effect originated during the
+FIB cutting. We remove the bright lines in the last row by image processing
+method[9]to highlight the voids configuration.
+                                arXiv LATEX
+
+
+6    Supplementary material
+
+
+
+
+Fig.S 3: The evaluation of the CNTFs’ ultimate tensile stress
+(strength) with the rising of draw-ratio. All the strength values are cal-
+culated by dividing the breaking force with the apparent cross-sectional area
+measured with SEM. For the fully DD-CNTF, the strength is improved to
+4.50 ± 0.11 GPa, compared with 0.81 ± 0.19 GPa for the raw CNTF.
+                                arXiv LATEX
+
+
+                                               Supplementary material      7
+
+
+
+
+Fig.S 4: The evaluation of the CNTFs’ elongation at break (ductil-
+ity) with the increase of draw-ratio. For both Double-Drawn (DD) and
+Single-Drawn (SD) CNTFs, the ductility keeps decreasing with the draw-ratio.
+Although exerted extra drawing (Poisson Tightening), DD-CNTFs are not sac-
+rificed on ductility when compared with SD counterparts. The large error bars
+for the raw and slightly drawn CNTFs come from the difference between fiber
+samples. The error bars are reduced with drawing.
+                               arXiv LATEX
+
+
+8    Supplementary material
+
+
+
+
+Fig.S 5: With HRTEM characterization, all the cross-sections of
+bundles we found are collapsed ones instead of the deformed irreg-
+ular ones.[10] We think it may come from the radial compressing during
+the Double-Drawing process. The collapsed cross-section also has a positive
+impact on fs by maximizing the contact area between tubes, which can further
+enhance the bundle.[2]
+                                arXiv LATEX
+
+
+                                                Supplementary material       9
+
+
+
+
+Fig.S 6: Evolution of electrical conductivity with the increase
+of draw-ratio. The electrical conductivity substantially increases from
+1650 S cm−1 of the raw CNTF to 10700 S cm−1 of the fully DD-CNTF, and
+15500 S cm−1 of the fully SD-CNTF. However, unlike the thermal conductiv-
+ity, the optimization of electrical conductivity may be attributed to doping
+effect, ordering on microstructure, and electron-electron interactions,[11, 12]
+further study is underway to elucidate the origin of the increase.
+                                  arXiv LATEX
+
+
+10     Supplementary material
+
+
+
+
+Fig.S 7: Raman spectra of (a) raw CNTF and (b) fully DD-CNTF.
+The high performance fully DD-CNTF Although the raw CNTFs are only
+medium-grade crystalline materials (I G : I D = 5.3 ± 1.3), they can still be
+processed to produce high performance DD-CNTFs. Moreover, as the I G : I D
+for fully DD-CNTFs is 5.0 ± 0.7, we have not observed obvious increase of
+defects after the Double-Drawing process.
+
+
+
+
+S4. Experiment details on the In-Situ
+Stretching Raman.
+Monitoring the redshift of Raman mode is often the clearest and simplest
+characterization to detect strain on iCNTs.
+    During the In-Situ Stretching Raman (ISSR) characterization, the sus-
+pended CNTFs are ends fixed onto a manual stretching stage to detect the
+Raman signal with HORIBA HR800 micro-Raman spectroscopy. We excite the
+Raman G’ mode with linearly polarized laser with power on sample ∼ 4.9 mW.
+Because the redshift level is proportional to the strain. Among the Raman
+modes, the two phonon processes, such as the G’ mode, possess a higher
+redshift rate (∼ 70 cm−1 %−1 ), which increases the accuracy of the strain dis-
+tribution measured. Moreover, the insensitivity of G’ mode on the types of
+CNTs also facilities the deducing of strain.
+    Within CNTFs, the diameter of CNTs is ∼ 10 nm. The laser spot size
+(∼ 2 µm) covers thousands of tubes and length in micron scale in each tube.
+Therefore, the Raman scattering signal gives the strain distribution among
+these thousands of tubes and along each iCNTs. Because strain, which is pro-
+portion to the content of redshift, is unevenly distributed inter and intra tubes,
+the redshift signal detected gives the strain distribution normalized by volume.
+Because the fiber is isotropic across the depth (as verified by cross-section cut
+by FIB), the results of ISSR offers the overall description of the fiber. More-
+over, for iCNTs, the linewidth of Raman mode will not increase even with a
+strain at least 4%,[25] thus, the broadening of Raman peak with stretching can
+be converted to the broadening of strain distribution instead of the linewidth
+Table.S 1: Summary of mechanical, thermal, and electrical properties of pure CNT fibers in our and others’ work, and some
+commercial high-performance fibers. The data list is also used for the Ashby plot of main text.
+                                                                                                                                                 Electrical       Thermal
+                                                              Density         Tenacity     Initial Modulus     Elongation        Rupture Work
+       Name1                        Commnets                                                                                                    Conductivity    Conductivity
+                                                              [g cm−1 ]      [N tex−1 ]       [N tex−1 ]          [%]               [J g−1 ]
+                                                                                                                                                 [MS m−1 ]     [W m−1 K −1 ]
+
+ This Work-Fully DD         Fully Double-Drawn CNTF         1.40 ± 0.01     3.22 ± 0.07        138 ± 6         3.9 ± 0.2            75 ± 5          1.07            354
+   This Work-Raw             Raw Direct-spun CNTF           0.66 ± 0.15     1.23 ± 0.08         53 ± 5         5.0 ± 0.5            43 ± 6          0.16            106
+      SS-2017[13]              Solution-spun CNTF           1.50 ± 0.10     1.54 ± 0.09        160 ± 40        1.8 ± 0.2              17             8.5             −
+      SS-2004[14]              Solution-spun CNTF           1.11 ± 0.07     0.10 ± 0.01        108 ± 9             −                  −               −             21
+   SS-2013[11, 13]             Solution-spun CNTF           1.30 ± 0.10        0.97            92 ± 38         1.4 ± 0.5              −              2.9         380 ± 15
+      SS-2021[15]              Solution-spun CNTF           1.93 ± 0.16     2.10 ± 0.30           −            3.5 ± 0.6           50 ± 14      10.90 ± 1.20     391 ± 63
+ DS-IMDEA-DW[16]          Direct-spun collapsed DWCNT            −          1.70 ± 0.30         61 ± 7             −               100 ± 30           −              −
+ DS-IMDEA-MW[16]          Direct-spun few-layer MWCNT            −          1.10 ± 0.20        64 ± 16             −               80 ± 40            −              −
+  DS-PUST-CSA[10]           CSA 13% stretched CNTF               −          2.19 ± 0.25        176 ± 22           3.3                 39              −              −
+  DS-PUST-Raw[10]            Raw Direct-spun CNTF                −          0.95 ± 0.13         76 ± 8            5.5                 50              −              −
+  DS-CAM-Den[17]            Acetone Direct-spun CNTF             −              1.1               50              3.8                 13              −              −
+DS-CAM-DogBone[2]          Dog Bone Direct-spun CNTF             −              2.2              160               −                  46              −              −
+   VA-UT2004[18]                Twisted VA-CNTF                 0.8            0.58              −−               7.2                 14            0.03             −
+   VA-UT2007[19]                Twisted VA-CNTF                 0.8            0.88              −−                 6                 27              −              −
+     VA-MIT[20]                 Densified VA-CNTF               0.8             1.8               89               −                  94              −              −
+  Graphene fiber[21]        Optimized Graphene fiber           1.87         0.44 ± 0.04          −−               1.5                 −         0.22 ± 0.01      1290 ± 53
+    Spider silk[22]             Spider dragline silk            1.3         0.88 ± 0.15          131           39.0 ± 8.0          165 ± 30           −              −
+   Toray T300[23]                 PAN-based CF                 1.76            2.01              131              1.5                 16            0.06           10.5
+    Toray T700SC                  PAN-based CF                  1.8            2.72              128              2.1                 −             0.06            9.6
+    Toray T800SC                  PAN-based CF                  1.8            3.27              163                2                 −             0.08           11.3
+   Toray T1000GB                  PAN-based CF                  1.8            3.54              163              2.2                 −             0.07           10.5
+ Toray T1100GC[23]                PAN-based CF                 1.79            3.91              181                2                 39            0.07            13
+  Toray M35JB[23]                 PAN-based CF                 1.75            2.58              196              1.3                 18            0.09           38.9
+    Toray M40JB                   PAN-based CF                 1.77            2.49              213              1.2                 −              0.1           66.9
+  Toray M60JB[23]                 PAN-based CF                 1.93            1.98              305              0.7                  7            0.14           150.5
+ HexTow AS4[23, 24]               PAN-based CF                 1.79            2.48              129              1.7                 23            0.06           6.83
+     HexTow IM7                   PAN-based CF                 1.78             3.2              155              1.8                 −             0.07            5.4
+    HexTow IM10                   PAN-based CF                 1.79            3.81              175                2                 −             0.08           6.14
+    HexTow HM63                   PAN-based CF                 1.83            2.64              237                1                 −             0.11            55
+                                                                                                                                                                                                        arXiv LATEX
+ GRANOC YSH50A                    Pitch-based CF                2.1            1.82              248              0.7                 −             0.14            120
+ GRANOC YSH70A                    Pitch-based CF               2.15            1.69              335              0.5                 −              0.2            250
+  GRANOC YS80A                    Pitch-based CF               2.17            1.67              362              0.5                 −              0.2            320
+  GRANOC YS90A                    Pitch-based CF               2.18            1.62              404              0.3                 −             0.33            500
+  GRANOC YS95A                    Pitch-based CF               2.19            1.61              420              0.3                 −             0.45            600
+ DIALEAD K1352U                   Pitch-based CF               2.12             1.7              292              0.6                 −             0.15            140
+ DIALEAD K1392U                   Pitch-based CF               2.15            1.72              353              0.5                 −              0.2            210
+ DIALEAD K13C6U                   Pitch-based CF               2.18            1.65              413              0.4                 −              0.4            580
+ DIALEAD K13D2U                   Pitch-based CF                2.2            1.68              425              0.4                 −             0.67            800
+     Zylon AS[24]                    PBO fiber                 1.54             3.7              117              3.5                 65              −             19
+    Zylon HM[24]                     PBO fiber                 1.56             3.7              172              2.5                 46              −             23
+   Dyneema SK60                   UHMWPE fiber                 0.97             3.1              107              3.7                 −               −             20
+Dyneema SK75[23, 24]              UHMWPE fiber                 0.97            3.74              133              3.5                 63              −             14
+   Dyneema SK99                   UHMWPE fiber                 0.98             4.3              159              3.5                 −               −             20
+   Vectran UM[23]                Polyarylate fiber             1.41            2.03               73              2.7                 30              −              −
+   Vectran HT[23]                Polyarylate fiber             1.41            2.29               53              3.8                 43              −             1.5
+       Kevlar 29                  Polyamide fiber              1.44            2.03               49              3.6                 36              −            0.04
+       Kevlar 49                  Polyamide fiber              1.44            2.08               78              2.4                 25              −            0.04
+    Kevlar 149[5]                 Polyamide fiber              1.47            2.35              122              2.5                 −               −              3
+                                                                                                                                                                               Supplementary material
+
+   Technora[23, 24]               Polyamide fiber              1.39             2.4               54              4.2                 42              −              −
+        C-Glass                     Glass fiber                2.54             1.3               27              4.8                1.1              −              −
+      E-Glass[23]                   Glass fiber                2.57            1.41               28              4.8                1.3              −              −
+      S-Glass[23]                   Glass fiber                2.48            1.85               35              5.4                1.45             −             31
+        R-Glass                     Glass fiber                2.54            1.63               34              4.8                 −               −             37
+       Gold[11]                        Metal                   19.32           0.01                4               −                  −             45.3            315        11
+       Silver[11]                      Metal                   10.5            0.01                7               −                  −              62             427
+      Copper[11]                       Metal                   8.92            0.04               13               −                  −             59.4            398
+       Nickel[11]                      Metal                   8.73            0.04               19               −                  −            15.36           91.4
+    Aluminium[11]                      Metal                   2.72            0.04               25               −                  −             47.6            238
+    Stainless steel                    Metal                    7.8            0.35               29              1.4                 −              1.5            17
+
+1 Most data of commercial fibers are based on the corresponding technical data from their company’s websites or www.matweb.com
+                                 arXiv LATEX
+
+
+12     Supplementary material
+
+broadening of Raman mode itself. Therefore, we can use the collective signal
+to analyze the distribution of strain among CNTs.
+    Here, with a Glan Polarizer, we only collect the scattered radiation in the
+parallel polarization with the laser, so that only iCNTs with their axis nearly
+along the laser polarization can be detected. For the ZZ/XX configuration,[26]
+both incident and scattered photons detected parallel/perpendicular to the
+axis of CNTFs, offers strain distribution of CNTs along/normal to the fiber
+axis. Additionally, we have not noticed the relaxation of strain during the ISSR
+experiment. At least 95% of force retention within 10 mins is verified by the
+strain relaxation experiment (Fig.S8). The force retention is sufficient for us
+to complete the ISSR characterization.
+
+
+
+
+Fig.S 8: Force retention of raw CNTF under tension. The strain of
+0.7% and 1.5% is exerted onto raw CNTF to monitor the change of force. As
+shown, the force can be maintained to at least 95% within 10 mins.
+
+
+
+S5. Details on the enhancing mechanism.
+S5.1: Why the raw CNTFs are weak on mechanical
+properties:
+When a raw CNTF is under load, tensioning lines frequently appear from the
+disordered iCNTs network in raw CNTFs, which indicates the stress concen-
+tration. The tensioning lines are also the small load-bearing portion of CNTs as
+indicated by ISSR (Fig.7c). Around the tensioning line, the slippage and fail-
+ure happen first. This is because the tensioning line, as the shortest pathway,
+is the first region of the material to take the load and alone.
+    In the fibrillar structure of CNTFs, the rupture procedure under increasing
+load proceeds with the shortest bundle breaking first, then the second-rated
+shortest bundle takes the increased load, and so forth. Eventually, as the major
+                                  arXiv LATEX
+
+
+                                                 Supplementary material        13
+
+distribution of bundle lengths is approached and broken, there will be insuf-
+ficient bundle left to support the load, and catastrophic failure will occur.
+Because in raw CNTFs, at any time of stretching, only a small portion of bun-
+dles are shortest within the disordered network. During the whole stretching
+process, the bundles just successively break with a unit of small portion of
+them. Therefore, the tangent modulus at any time of stretching is low.
+
+S5.2: 1st Enhancing mechanism: the increased proportion
+of load-bearing bundles.
+As shown within a simplified CNTF cell (Fig.8a), if the load is exerted on the
+vertical surfaces of the cell (along axis), because there is no medium between
+CNTs to transmit the load, only the shortest CNT bundle is loaded (bundle
+○, the red lines). The curved bundles (bundle 2
+ 3                                                 ○3 ○4 ○) do not substantially
+contribute to bearing the load, despite portions of them being oriented in
+the vertical direction (circled by blue dots line). As observed in the ISSR, a
+substantial proportion of CNTs do not share the load, particularly for the raw
+CNTF with disordered microstructure.
+    After the drawing in CSA, more crumpled tubes and bundles are straight-
+ened and become effective to link the “shortest” distance (the red lines in
+Fig.8b). They jointly participate in sharing the load after the initial stretch-
+ing, indicated by the soaring of initial modulus (Fig.4b, d). This optimization
+is also verified by the entire redshift of G’ mode in Zone i’ (Fig.7e and g) and
+the larger portion of tubes further redshift in Zone ii’. As the load continues
+to increase, effective bundles fail successively, decreasing the modulus mono-
+tonically (Fig.4b). The failed bundles return to the initial state free of strain,
+as observed in the redshift release in Zone ii’ (Fig.7b and e blue dotted arrow).
+
+S5.3: 2nd Enhancing mechanism: the extension of
+effective length of tubes in load-bearing bundles.
+Only accounting for the increased fraction of load-bearing bundles in network
+does not fully explain the much higher final/maximum strain on iCNTs, i.e.,
+ε∗i for the DD-CNTF. Another factor must be considered for the mechanism,
+particularly considering the maximum strain turns up just before the failure.
+The much-improved tenacity value for the fully DD-CNTF must link to this
+factor.
+     We attribute the optimization of ε∗i to the effective CNTs length increase
+within load-bearing bundles, which results in a higher activation barrier for
+slippage. As found recently by Yakobson et al, the product of the tube length
+and the friction coefficient between tubes is positively correlated with the
+tensile properties of a bundle.[27] For the elastic interface (static friction),
+the stress exerted on iCNTs σi = Y εi , is balanced by the friction from the
+surrounding tubes, where Y and εi is the tube’s Young’s modulus and strain,
+respectively. When σi increases to the critical value σi∗ , slippage will occur
+and the elastic interface will begin to deform plasticly. Immediately prior to
+                                  arXiv LATEX
+
+
+14     Supplementary material
+
+slippage, σ ∗i At = f s Leff , where At is the cross-sectional area of the tube, fs
+is tube’s maximum static friction coefficient per unit length, and Leff is the
+effective length of tube that sharing the load (friction). It is easy to find that
+σi∗ is the maximum value for σi , because Leff will shrink as the tube-tube
+contact area drops during relative slipping. Therefore, the corresponding ε∗i
+can be deduced by:
+                                     σ ∗i   f s Leff
+                               ε∗i =      =                                   (S3)
+                                      Y      Y At
+    Previous models often contain an implied assumption that the entire
+lengths of tubes (L) are attached to the bundle, i.e., Leff = L. However, in a
+fibrillar structure, particularly raw CNTF, tubes within the hierarchical net-
+work only partly align with any specific bundle, and may be incorporated
+into many bundles. Particularly, for the CNTF used in this work, tubes pro-
+duced by FCCVD have long lengths, ∼ 100 µm.[23] Because the load can only
+be transmitted through the coupling between adjacent tubes, only the tube
+section attached to an effective bundle can participate in sharing the load (the
+red lines as indicated by solid blue arrows in Fig.8), i.e., Leff is always smaller
+than L. In contrast, the dangling CNTs or fraction of CNTs attached to an
+ineffective bundle (hollow blue arrow) do not transmit load, even though these
+portions may belong to the same tube. As observed in Fig.1b-c, in most cases
+for raw CNTF, Leff  L.
+    With the Double-Drawing process, the crumpled tubes are extended by
+drawing and squeezed together by Poisson Tightening, forming bundles with
+large diameter (red aggregated bundle [○        2○3 4○] in Fig.8b, Fig.1d-e and
+Fig.2a). Thus, longer length of tubes aggregates into the effective bundles,
+with Leff approaching L. As per Equation (S3), an increase in Leff propor-
+tionally increases εi needed to activate the slippage, which delays the failure
+of DD-CNTF and improves the tenacity.
+
+References
+ [1] Li, Y.L., Kinloch, I.A., Windle, A.H.: Direct Spinning of Carbon
+     Nanotube Fibers from Chemical Vapor Deposition Synthesis. Science
+     304(5668), 276–278 (2004). https://doi.org/10.1126/science.1094982
+
+ [2] Motta, M., Moisala, A., Kinloch, I.A., Windle, A.H.: High performance
+     fibres from ’dog bone’ carbon nanotubes. Advanced Materials 19(21),
+     3721–3726 (2007). https://doi.org/10.1002/adma.200700516
+
+ [3] Zhang, X., Tan, W., Smail, F., De Volder, M., Fleck, N., Boies, A.: High-
+     fidelity characterization on anisotropic thermal conductivity of carbon
+     nanotube sheets and on their effects of thermal enhancement of nanocom-
+     posites. Nanotechnology 29(36), 365708 (2018). https://doi.org/10.1088/
+     1361-6528/aacd7b
+                                 arXiv LATEX
+
+
+                                                 Supplementary material        15
+
+ [4] Montgomery, D.J., Milloway, W.T.: The Vibroscopic Method for Deter-
+     mination of Fiber Cross-Sectional Area. Textile Research Journal 22(11),
+     729–735 (1952). https://doi.org/10.1177/004051755202201102
+
+ [5] Hearle, J.W.S., Morton, W.E.: Physical Properties of Textile Fibres.
+     Elsevier, ??? (2008)
+
+ [6] Voong, E.T.L., Montgomery, D.J.: Experimental Study of Stiffness and
+     Nonuniformity in the Vibroscopic Determination of Fiber Cross-Sectional
+     Area. Textile Research Journal 23(11), 821–830 (1953). https://doi.org/
+     10.1177/004051755302301110
+
+ [7] Fakhri, N., Tsyboulski, D.A., Cognet, L., Bruce Weisman, R., Pasquali,
+     M.: Diameter-dependent bending dynamics of single-walled carbon nan-
+     otubes in liquids. Proceedings of the National Academy of Sciences of the
+     United States of America 106(34), 14219–14223 (2009). https://doi.org/
+     10.1073/pnas.0904148106
+
+ [8] Yakobson, B.I., Couchman, L.S.: Persistence Length and Nanomechanics
+     of Random Bundles of Nanotubes. Journal of Nanoparticle Research 8(1),
+     105–110 (2006). https://doi.org/10.1007/s11051-005-8335-3
+
+ [9] Loeber, T.H., Laegel, B., Wolff, S., Schuff, S., Balle, F., Beck, T., Eifler,
+     D., Fitschen, J.H., Steidl, G.: Reducing curtaining effects in FIB/SEM
+     applications by a goniometer stage and an image processing method.
+     Journal of Vacuum Science & Technology B 35(6), 06–01 (2017). https:
+     //doi.org/10.1116/1.4991638
+
+[10] Cho, H., Lee, H., Oh, E., Lee, S.-H.H., Park, J., Park, H.J., Yoon, S.-
+     B.B., Lee, C.-H.H., Kwak, G.-H.H., Lee, W.J., Kim, J.E.J., Kim, J.E.J.,
+     Lee, K.-H.H.: Hierarchical structure of carbon nanotube fibers, and the
+     change of structure during densification by wet stretching. Carbon 136,
+     409–416 (2018). https://doi.org/10.1016/j.carbon.2018.04.071
+
+[11] Behabtu, N., Young, C.C., Tsentalovich, D.E., Kleinerman, O., Wang, X.,
+     Ma, A.W.K., Bengio, E.A., Ter Waarbeek, R.F., De Jong, J.J., Hooger-
+     werf, R.E., Fairchild, S.B., Ferguson, J.B., Maruyama, B., Kono, J.,
+     Talmon, Y., Cohen, Y., Otto, M.J., Pasquali, M.: Strong, light, multi-
+     functional fibers of carbon nanotubes with ultrahigh conductivity. Science
+     339(6116), 182–186 (2013). https://doi.org/10.1126/science.1228061
+
+[12] Bulmer, J.S., Kaniyoor, A., Elliott, J.A.: A Meta-Analysis of Conductive
+     and Strong Carbon Nanotube Materials. Advanced Materials n/a(n/a),
+     2008432 (2021). https://doi.org/10.1002/adma.202008432
+
+[13] Tsentalovich, D.E., Headrick, R.J., Mirri, F., Hao, J., Behabtu, N., Young,
+     C.C., Pasquali, M.: Influence of Carbon Nanotube Characteristics on
+                                  arXiv LATEX
+
+
+16     Supplementary material
+
+     Macroscopic Fiber Properties. ACS Applied Materials and Interfaces
+     9(41), 36189–36198 (2017). https://doi.org/10.1021/acsami.7b10968
+
+[14] Ericson, L.M., Fan, H., Peng, H., Davis, V.A., Zhou, W., Sulpizio, J.,
+     Wang, Y., Booker, R., Vavro, J., Guthy, C., Parra-vasquez, A.N.G., Kim,
+     M.J., Ramesh, S., Saini, R.K., Kittrell, C., Lavin, G., Schmidt, H., Adams,
+     W.W., Billups, W.E., Pasquali, M., Hwang, W.-f., Hauge, R.H., Fischer,
+     J.E., Smalley, R.E.: Macroscopic , Neat , Single-Walled Carbon Nanotube
+     Fibers 305(June) (2004)
+
+[15] Taylor, L.W., Dewey, O.S., Headrick, R.J., Komatsu, N., Peraca, N.M.,
+     Wehmeyer, G., Kono, J., Pasquali, M.: Improved properties, increased
+     production, and the path to broad adoption of carbon nanotube fibers.
+     Carbon 171, 689–694 (2021). https://doi.org/10.1016/j.carbon.2020.07.
+     058
+
+[16] Fernández-Toribio, J.C., Alemán, B., Ridruejo, Á., Vilatela, J.J.: Tensile
+     properties of carbon nanotube fibres described by the fibrillar crystallite
+     model. Carbon 133, 44–52 (2018). https://doi.org/10.1016/j.carbon.2018.
+     03.006
+
+[17] Koziol, K., Vilatela, J., Moisala, A., Motta, M., Cunniff, P., Sennett, M.,
+     Windle, A.: High-performance carbon nanotube fiber. Science 318(5858),
+     1892–1895 (2007). https://doi.org/10.1126/science.1147635
+
+[18] Zhang, M., Atkinson, K.R., Baughman, R.H.: Multifunctional carbon
+     nanotube yarns by downsizing an ancient technology. Science 306(5700),
+     1358–1361 (2004). https://doi.org/10.1126/science.1104276
+
+[19] Atkinson, K.R., Hawkins, S.C., Huynh, C., Skourtis, C., Dai, J., Zhang,
+     M., Fang, S., Zakhidov, A.A., Lee, S.B., Aliev, A.E., Williams, C.D.,
+     Baughman, R.H.: Multifunctional carbon nanotube yarns and transparent
+     sheets: Fabrication, properties, and applications. Physica B: Condensed
+     Matter 394(2), 339–343 (2007). https://doi.org/10.1016/j.physb.2006.12.
+     061
+
+[20] Hill, F.A., Havel, T.F., Hart, A.J., Livermore, C.: Enhancing the Ten-
+     sile Properties of Continuous Millimeter-Scale Carbon Nanotube Fibers
+     by Densification. ACS Applied Materials & Interfaces 5(15), 7198–7207
+     (2013). https://doi.org/10.1021/am401524q
+
+[21] Xin, G., Yao, T., Sun, H., Scott, S.M., Shao, D., Wang, G., Lian, J.: Highly
+     thermally conductive and mechanically strong graphene fibers. Science
+     349(6252), 1083–1087 (2015). https://doi.org/10.1126/science.aaa6502
+
+[22] Vollrath, F., Knight, D.P.: Liquid crystalline spinning of spider silk.
+     Nature 410(6828), 541–548 (2001). https://doi.org/10.1038/35069000
+                                  arXiv LATEX
+
+
+                                                 Supplementary material        17
+
+[23] Mikhalchan, A., Vilatela, J.J.: A perspective on high-performance CNT
+     fibres for structural composites. Carbon 150, 191–215 (2019). https://
+     doi.org/10.1016/j.carbon.2019.04.113
+
+[24] Wang, X., Ho, V., Segalman, R.A., Cahill, D.G.: Thermal Conductiv-
+     ity of High-Modulus Polymer Fibers. Macromolecules 46(12), 4937–4943
+     (2013). https://doi.org/10.1021/ma400612y
+
+[25] Chang, C.-C., Hsu, I.-K., Aykol, M., Hung, W.-H., Chen, C.-C., Cronin,
+     S.B.: A New Lower Limit for the Ultimate Breaking Strain of Carbon
+     Nanotubes. ACS Nano 4(9), 5095–5100 (2010). https://doi.org/10.1021/
+     nn100946q
+
+[26] Damnjanović, M., Milošević, I., Vuković, T., Sredanović, R.: Full symme-
+     try, optical activity, and potentials of single-wall and multiwall nanotubes.
+     Physical Review B 60(4), 2728–2739 (1999). https://doi.org/10.1103/
+     PhysRevB.60.2728
+
+[27] Gupta, N., Alred, J.M., Penev, E.S., Yakobson, B.I.: Universal strength
+     scaling in carbon nanotube bundles with frictional load transfer. ACS
+     Nano 15(1), 1342–1350 (2020). https://doi.org/10.1021/acsnano.0c08588
+

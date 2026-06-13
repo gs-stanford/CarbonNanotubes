@@ -1,0 +1,1050 @@
+                              Supplementary Materials for
+
+    Intercalated carbon nanotube fibers with high specific electrical conductivity
+
+                                       A. I. de Isidro-Gómez et al.
+
+                   Corresponding author: J. J. Vilatela, juanjose.vilatela@imdeamaterials.org
+
+                                          Science 392, 395 (2026)
+                                        DOI: 10.1126/science.aeb0673
+
+The PDF file includes:
+
+      Materials and Methods
+      Supplementary Text
+      Figs. S1 to S13
+      Tables S1 to S7
+      References
+                                       Submitted Manuscript: Confidential
+                                          Template revised July 2024
+
+
+     Materials and Methods
+     Materials
+          Commercial CNTs fibers from DexMat (USA) produced by liquid crystal spinning were used.
+     The fiber is composed of highly aligned DWCNTs and spun as reported elsewhere (1). The
+ 5   samples were supplied after annealing at 500 °C for 5 hours to remove residual acid used for
+     spinning, which is itself a dopant. All tests were done on CNT fiber filaments, either those supplied
+     in such format or from multi-filament strands. The outer diameter of the constituent DWCNTs
+     determined from image analysis of TEM micrographs of FIB-milled cross-sectional lamella has a
+     log-normal distribution with mean of 2.1 nm.
+10
+     Intercalation Process
+           The two-zone vapor transport technique (18) was employed for synthesizing the carbon
+     nanotube intercalation compound (CNTIC). Sample preparation was done in a glove box with an
+     inert argon atmosphere and relative humidity below 0.05%. Pristine (undoped) samples are loaded
+15   into a ceramic boat at one end of a sealed quartz ampoule. A separate ceramic boat containing a
+     mixture of 20 mg N-chlorosuccinimide (NCS) and 70 mg anhydrous AlCl3 powders is placed at
+     the opposite end of the ampoule. NCS is used as a chlorinating agent, thermally decomposing to
+     create a Cl2 atmosphere (35). This results in an AlCl4- rich atmosphere, easing vapor transport of
+     the intercalant species, and their introduction and stabilization inside the CNT interstices. The
+20   pressure in the ampoule is reduced to ~10-2 mbar before sealing. A heat gradient is applied to avoid
+     condensation on the surface of the sample, keeping the sample zone at 120 ºC and the reagent zone
+     at approximately 110ºC. The system is held under these conditions for 24 hours. Afterwards,
+     residual gases are removed, and the samples are retrieved and stored under an inert atmosphere for
+     subsequent analysis and tests.
+25
+     Characterization
+          Intercalant mass fraction was calculated from gravimetric measurements on fiber samples
+     with lengths of 30 cm, weighed inside a glove box. The gravimetric data was in agreement with
+     values from vibroscopic linear density measurements obtained with a Favimat tensile tester at 0.4
+30   cN/tex pretension. The gravimetric linear density values were used for calculation of volumetric
+     density and specific properties. To calculate the volume fraction of intercalant, we assume
+     perfectly aligned fibers of closed-packed monodisperse CNTs, with skeletal density of 1.61 ±
+     0.41 𝑔/𝑐𝑚3.
+          Fiber diameter distributions were obtained from image analysis of SEM micrographs,
+35   assuming the fibers have a circular cross-section. Further diameter measurements were performed
+     by optical microscopy of fiber cross-sections. The mean diameter was used for calculations of
+     electrical conductivity and mechanical properties.
+          WAXS patterns were obtained using an Anton Paar SAXSPoint5.0 machine. The
+     measurements were performed in triplicate, exposing the vertically oriented fibers to the 0.15 nm-
+40   wavelength beam for 20 minutes. A 1 mm-diameter X-ray beam was used. The sample-detector
+     distance was 62.2 mm. The data were treated using the associated software SAXSAnalysis for
+     background removal. The two-dimensional scattering data was reduced to one-dimensional
+     profiles through radial or azimuthal integration.
+     Raman spectra were collected with 532 nm, 633 nm and 785 nm laser lines, using 0.5% power
+45   with 3 accumulations and 10 s exposure. The laser polarization was kept parallel to the fiber axis
+     to increase scattering intensity. To avoid exposure to humidity, some fibers were observed in a
+     dedicated Raman cell filled with argon. The G band was fitted with three Lorentzian peaks and a
+
+                                                       2
+                                       Submitted Manuscript: Confidential
+                                          Template revised July 2024
+
+
+     Breit-Wigner-Fano (BWF) peak. Other combinations were tested, but this one produced the best
+     fit using four peaks. Charge transfer per carbon atom (𝑓𝐶,𝑅𝑎𝑚𝑎𝑛 ) was calculated using Δ𝐺𝑜+ =
+     350 ⋅ 𝑓𝐶,𝑅𝑎𝑚𝑎𝑛 + 226√𝑓𝐶,𝑅𝑎𝑚𝑎𝑛 from reference (48).
+           The fiber cross-sections were produced by focused ion (FIB) beam milling using a FIB-FEG
+ 5   SEM Helios Nanolab 600i (FEI) and used for corresponding elemental mapping by Energy
+     Dispersive X-ray Spectrometry (EDX). Lamellae for transmission electron microscopy (TEM)
+     from both the intercalated and pristine CNTs fibers were fabricated using a dual beam Thermo
+     Fisher Scientific Helios 600. In the case of the intercalated fibers, due to their sensitivity to
+     humidity, these FIB lamellae were prepared and transferred under controlled (argon and vacuum)
+10   atmospheres. The transfer was done using a Thermo Fisher Scientific Clean Connect Sample
+     Transfer System, filled with argon, to transfer the samples from the FIB to the TEM air-free
+     transfer holder (Gatan double-tilt 648 model) within a glove box, also filled with argon. Scanning
+     TEM imaging was performed in a doble-aberration-corrected Thermo Fisher Scientific Titan Cube
+     working at 80 kV. SEM micrographs of the lamella are included in Figure S13. EDX maps of
+15   cross-sectional lamella were obtained by multi-frame STEM-EDX acquisition. Each frame was
+     spatially aligned using its corresponding high-angle annular dark field (HAADF) intensity to
+     improve spatial resolution. The resulting summed EDX spectrum image was analyzed by spatial
+     and spectral re-binning to provide sufficient signal-to-noise ratio. Principal component analysis
+     (PCA) was used as a denoising routine, and relative atomic quantification was performed.
+20         Electrical measurements consisted of 4-probe electrical resistance measurements on fibers of
+     5 centimeters in length, as well as 2-probe measurements on samples at different gauge lengths (1
+     – 3 cm) to obtain resistivity from the corresponding linear regression. The fibers were inserted
+     between two frames with pre-made contacts of copper foil, held together under slight pressure.
+     Values of conductivity were calculated using the fiber mean diameter to calculate their cross-
+25   sectional area, assuming a circular cross-section. High fiber conductivity values are consistently
+     and reproducibly obtained when performing intercalations and electrical measurements on
+     different occasions. Error bars are determined from the standard deviation in experimental data.
+     For measurements on a reduced number of samples, error bars are calculated based on error
+     propagation.
+30         Tensile tests were performed on 10 mm gauge length fibers using a Favimat tensile tester at
+     1.0 mm/min speed. The fibers were tested after 1-3 hours of exposure to ambient (humid)
+     conditions and thus reflect a lower bound of tensile properties. The specific values of strength and
+     modulus in GPa/SG units were calculated using the gravimetric measurements performed in a
+     glovebox. Standard deviation for tensile strength was determined from the spread in the
+35   experimental values.
+           X-ray photoelectron spectroscopy (XPS) measurements were performed in a Kratos Axis
+     SUPRA spectrometer employing a monochromatic Al Kα (1486.6 eV) X-ray source. Survey
+     spectra were obtained with an energy step of 1 eV, 160 eV analyzer pass energy and resolution of
+     0.45eV, using the charge neutralizer during spectral acquisition. The spectra were analyzed using
+40   CASA XPS software and calibrated with the binding energy of the C 1s peak at 284.5 eV. The
+     data were analyzed using a Shirley function for the background, and a symmetrical Voigt profile
+     parameterized as a Gaussian-Lorentzian function (GL 30 (Gaussian-Lorentzian mix)). In the signal
+     fitting process, all contributions are included: both the one corresponding to lifetime broadening
+     (core-hole lifetime —the natural linewidth of the photoemission process, which is inversely
+45   proportional to the core-hole lifetime), which accounts for the Lorentzian contribution, and all
+     other contributions, including the experimental one (experimental resolution and sample
+     inhomogeneity (e.g., variations in binding energy due to charging or different chemical
+
+                                                       3
+                                       Submitted Manuscript: Confidential
+                                          Template revised July 2024
+
+
+     environments)), which provides the Gaussian profile. Ultraviolet photon spectroscopy (UPS)
+     measurements were carried out using He I excitation (21.2 eV) and recorded with a constant pass
+     energy of 5 eV in the ultrahigh vacuum (UHV) chamber of the XPS instrument.
+           Three different conditions of sample exposure to humidity were studied. Fibers kept in a
+ 5   glovebox (RH < 0.05%). Samples transferred from the glove box to and kept in a metal chamber
+     with mean humidity of 7% — measured with a portable hygrometer —, kept constant through flow
+     of dry air. Samples kept in ambient conditions, which correspond to a mean RH of approximately
+     44%.
+           Measurements of stability on polymer cable sheaths were performed on samples kept in
+10   commercial cable sheaths thermally sealed at both ends before exposure to ambient conditions.
+     The commercial cable sheaths used have 0.8 mm thickness and are made of polyvinyl chloride
+     (PVC) (Type TI1 that meet BS EN 50363). Measurements of stability on silicone were performed
+     on intercalated samples embedded in Chipquick EGS10C-20G electronic-grade commercial
+     silicone.
+15
+
+     Computational Details
+          All density functional theory (DFT) calculations performed in this work were carried out with
+     the 7.1 version of the Quantum Espresso package (36, 37). The electron exchange-correlation was
+     approached by the generalized gradient approximation (GGA) with the Perdew-Burke-Ernzerhof
+20   (PBE) exchange-correlation functional (38). Grimme’s D3 correction (39) was used to account for
+     dispersion interactions. Brillouin zone calculations were performed using a Marzari-Vanderbit-
+     DeVita-Payne “cold” smearing of 0.035 Ry (40).
+          The electron density of the inner core electrons was approximated using the standard solid-
+     state pseudopotentials (SSSP) (41). For all relaxation tasks (both variable-cell and geometry
+25   relaxation), we first performed a calculation with the SSSP efficiency library and then a second
+     relaxation with the SSSP precision library. The plane-wave basis was expanded to a cutoff energy
+     equal to the highest one among the suggested values for C, Cl, and Al (45 Ry for the efficiency
+     step and 100 Ry for the precision step). The Monkhorst-Pack k-points were sized (1 x 1 x 6) for
+     the efficiency step and a denser (converged) grid of (2 x 2 x 6) was used for the precision step.
+30        Atomic charges were computed in order to analyze the charge transfer in the system of
+     nanotube and intercalant. For this, we employed the Bader program, developed by Yu and Trinkle
+     (42), which uses the Bader definition of an atom to predict the electron density partition. In this
+     case, PAW pseudopotentials were used for obtaining the electron density used as input by the
+     Bader program. Other specific computational details are described below.
+35
+     Nanotube
+          The carbon nanotube unit cell was constructed considering a double-walled CNT (DWCNT)
+     with a (9,9) CNT and a (14,14) CNT as inner and outer CNTS, respectively. A unit cell with a
+     (14,14) single-walled carbon nanotube (SWCNT) was also simulated. Five CNT unit cell layers
+40   were considered in the z direction. Variable-cell relaxation calculations were carried out to obtain
+     the optimal lattice parameters and atomic positions. The optimized DWCNT unit cell is presented
+     in Fig. S1.
+
+     Nanotube and Intercalant
+45       The optimized nanotube unit cell was used as the base to construct the unit cell of the
+     DWCNT and intercalant unit cell. The intercalant molecules were positioned in the biggest
+
+                                                       4
+                                        Submitted Manuscript: Confidential
+                                           Template revised July 2024
+
+
+     interstices between adjacent nanotubes as suggested by our experimental data. The composition of
+     the intercalant and its initial geometry was the result of analyzing both experimental results and
+     DFT calculations. The DWCNT cell simulated corresponds to an intercalant mass fraction of 10.9
+     wt.%, AlCl4 molar fraction of 0.0086, and stoichiometric formula C115AlCl4.
+ 5         To assess different possible intercalants, we relied on a simplified system model to increase
+     computational efficiency by considering an optimized (14,14) SWCNT matching the outer layer
+     of the DWCNT (16.7 wt.% of intercalant, corresponding to 0.014 molar fraction or C70AlCl4
+     stoichiometry). Our first educated guess of the intercalant is shown in Fig S2A. We first considered
+     Al2Cl6 as intercalant. After preliminary non-converging DFT relaxation calculations, we observed
+10   that the Al2Cl6 tended to dissociate into two AlCl3 molecules. Based on this result, we refined the
+     initial geometry of our intercalants considering two AlCl3 instead of a single Al2Cl6 molecule,
+     while respecting the geometric parameters (distances, angles) suggested by our experiments (Fig.
+     S2B). Following prior studies in the literature and additional conclusions drawn from our
+     experiments, we concluded that the presence of AlCl4- was more probable than that of Al2Cl6 (43).
+15   Hence, we tried two new different intercalants with additional Cl atoms: Al2Cl7- (Fig. S2C) and
+     (AlCl4-)2 (Fig. S2D).
+           Geometry relaxations were carried out to obtain the optimized structure of the intercalant. For
+     all these calculations, all atoms of the nanotube were kept fixed since experiments suggest that
+     there is no modification of the nanotube structure after intercalation. After geometry relaxations
+20   we computed energies of intercalation (𝐸𝑖𝑛𝑡 ) for both Al2Cl7- and (AlCl4-)2 to determine which of
+     the two was the most probable intercalant in the system:
+
+                      𝐴𝑙 𝐶𝑙7−
+                     𝐸𝑖𝑛𝑡2     = 𝐸𝑆𝑊𝐶𝑁𝑇+2𝐴𝑙2𝐶𝑙7− − 𝐸𝑆𝑊𝐶𝑁𝑇 − 4𝐸𝐴𝑙𝐶𝑙3 − 𝐸𝐶𝑙2 = 6.89 𝑒𝑉
+                    (𝐴𝑙𝐶𝑙4− )2
+                   𝐸𝑖𝑛𝑡        = 𝐸𝑆𝑊𝐶𝑁𝑇+2(𝐴𝑙𝐶𝑙4−)2 − 𝐸𝑆𝑊𝐶𝑁𝑇 − 4𝐸𝐴𝑙𝐶𝑙3 − 2𝐸𝐶𝑙2 = 6.36 𝑒𝑉
+25
+          From this, we found that the 𝐸𝑖𝑛𝑡 of AlCl4- (6.36 eV/unit cell) was lower than that of Al2Cl7-
+     (6.89 eV/unit cell). Hence, we consider AlCl4- to be the most probable intercalant in our system
+     and further simulations were done exclusively for such intercalant.
+
+30   Charge Transfer
+            Charge transfer was calculated for the intercalated bundle of DWCNTS. For AlCl 4-
+     /DWCNT the next charge transfer is of 2.60 per cell and C 0.65 per AlCl4- anion. It is distributed
+     as 2.175 |e| from the outer layer (0.008 |e| per C atom) and 0.425 |e| from the inner layer (0.002 |e|
+     per C atom).
+35
+
+
+
+
+                                                        5
+                                    Submitted Manuscript: Confidential
+                                       Template revised July 2024
+
+
+
+
+    Fig. S1. (Top) Optimized DWCNT cell. The unit cell is delimited by the dashed lines. (Bottom)
+    Density Overlap Regions Indicator also included for reference.
+5
+
+
+
+
+                                                    6
+                                      Submitted Manuscript: Confidential
+                                         Template revised July 2024
+
+
+
+
+     y plane    plane
+
+                           y plane       plane        y plane          plane      y plane        plane
+
+
+
+
+    Fig. S2. Different intercalants simulated. (A) Al2Cl6, (B) (AlCl3)2, (C) Al2Cl7- and (D) AlCl4-.
+5
+
+
+
+
+                                                      7
+                                       Submitted Manuscript: Confidential
+                                          Template revised July 2024
+
+
+
+
+     Fig. S3. Comparison of the DOS obtained from DFT for the pristine and intercalated DWCNT
+     bundles.
+ 5
+     Density of states
+     DFT calculations provide relative energy values as observables. This also holds for the Fermi level,
+     Ef. Hence, the comparison of pristine and intercalated materials is in terms of the relative energy
+     values of the DOS with respect to the computed Ef (E - Ef). By doing so, the position of the Ef in
+10   the plot of DOS for both systems can be determined (Figure S3). As such, the shift of the Ef from
+     the pristine material relative to the intercalated one can be approximated by taking the difference
+     between the energies of the minima of their DOS (the minimum of the DOS of the pristine material
+     corresponds to its Fermi level). This value was found to be -0.44 eV. Therefore, if we assume that
+     the Fermi level of the pristine material is approximately -4.50 eV, the Fermi level of the
+15   intercalated CNT should be located at -4.94 eV (which does not correspond to the minimum of its
+     DOS).
+
+
+
+
+                                                       8
+                                     Submitted Manuscript: Confidential
+                                        Template revised July 2024
+
+
+
+
+    Fig. S4. Crystal structure analysis from WAXS measurements and TEM of host and intercalated
+    fibers. Comparison of the host and intercalated fibers: radial profiles along the (A) meridian and
+    (B) the equator. Fiber axis vertical; and powder diffraction pattern for a graphite cathode
+5   electrochemically intercalated with AlCl4- included for reference (22). (C) WAXS pattern of the
+    pristine and AlCl4- intercalated fiber with the meridian (yellow) and equatorial (red) directions
+    highlighted. (D) Illustration of the triangular superlattice of bundled DWCNTs inferred from the
+                                                     9
+                                       Submitted Manuscript: Confidential
+                                          Template revised July 2024
+
+
+     WAXS data. (E) TEM micrographs of the cross-section of a pristine and (F) intercalated CNT
+     fiber.
+
+     The 2D WAXS pattern shows that the equatorial features of the CNT fiber host are essentially
+     preserved and instead new reflections appear on the meridian after intercalation. These new
+ 5   reflections are located on the meridian, rather than as powder rings, indicating that they are
+     oriented crystalline domains, which are parallel to the fiber axis (vertical). To determine the
+     general crystal structure of the intercalant we use the intensity profile along the meridian (Fig
+     S4A), obtained through integration of an arc of 30 degrees. This radial profile is then compared to
+     the XRD pattern of a graphite cathode electrochemically intercalated with AlCl4- (22).
+10
+
+
+
+
+                                                      10
+                                   Submitted Manuscript: Confidential
+                                      Template revised July 2024
+
+
+
+
+    Fig. S5. EDX elemental map of the cross-section of an intercalated fiber showing the uniform
+    distribution of C, Al and Cl through the whole cross-section of the fiber.
+5
+
+
+
+
+                                                  11
+                                      Submitted Manuscript: Confidential
+                                         Template revised July 2024
+
+
+
+
+    Fig. S6. Fiber diameter distribution for single filament (left) and filament taken from yarn (right)
+    obtained from image analysis of SEM micrographs, assuming the fibers are circular. No significant
+    changes in intercalated fiber diameter were observed when the samples were kept in a dry
+5   environment.
+
+
+
+
+                                                     12
+                                      Submitted Manuscript: Confidential
+                                         Template revised July 2024
+
+
+
+
+    Fig. S7. Raman spectra of pristine and intercalated fibers under different excitation energies.
+    Example of G band for pristine and intercalated samples with (A) 2.33, (B) 1.96 and (C) 1.58 eV
+5   laser excitation energies (532, 633, 785 nm, respectively), and fitting with three Lorentzian peaks
+    and a BWF profile (peak positions included in Table S3).
+
+
+
+
+                                                     13
+                                    Submitted Manuscript: Confidential
+                                       Template revised July 2024
+
+
+
+
+    Fig. S8. Relation between detected RBMs and equivalence to individual SWCNTs based on the
+    Kataura plot. Dotted circles correspond to RBMs detected only in pristine fibers and solid line
+    circles to RBMs detected in both pristine and intercalated fibers.
+5
+
+
+
+
+                                                   14
+                                    Submitted Manuscript: Confidential
+                                       Template revised July 2024
+
+
+
+
+    Fig. S9 XPS and UPS spectra of pristine and intercalated fibers. XPS spectra at the (A) Cl 2p
+    region, (B) Al 2p region and (C) C 1s region. (D) UPS spectra of the pristine (acid-free) and
+5   intercalated fibers, including one degraded after prolonged exposure to moisture.
+
+
+
+
+                                                   15
+                                      Submitted Manuscript: Confidential
+                                         Template revised July 2024
+
+
+
+
+     Figure S10. (A) Relative conductivity increase against intercalant fraction observed through the
+     meridional WAXS intensity ratio of q ≈ 18 nm-1 AlCl4- peak over the CNT (100) peak, for different
+ 5   batches of intercalated fibers. Despite different concentrations, surface charge measured by Raman
+     is nearly identical, which indicates non uniform intercalation through the fiber cross-section (B)
+     Distribution of longitudinal conductivity normalized by the mean, for pristine and intercalated
+     fibers.
+
+
+10
+
+
+
+
+                                                     16
+                                      Submitted Manuscript: Confidential
+                                         Template revised July 2024
+
+
+
+
+    Figure S11. Morphology of CNT fibers after reaction with moisture. (A) SEM micrograph of an
+    intercalated fiber exposed briefly to ambient conditions during transfer. (B) Intercalated fiber
+    exposed to ambient conditions for days. EDX spectra taken on the exposed fiber at two locations:
+5   (C) on the CNT fiber surface (region marked 1 in (B)); and (D) on the “crust” (outer layer of
+    reacted intercalant, region marked 2 in B).
+
+
+
+
+                                                     17
+                                       Submitted Manuscript: Confidential
+                                          Template revised July 2024
+
+
+
+
+     Figure S12. Retention of properties of intercalated CNT fibers. Relative changes in the position
+     of the 𝐺𝑂 + Raman peak over time, for samples in different storage conditions. Fibers encapsulated
+     with electronic grade silicones cured under ambient conditions. Cable sheaths: fibers introduced
+ 5   in cable sheaths which were then thermally sealed and stored in ambient conditions for 120 h, after
+     which they were opened in a glove box and transferred to an Ar-filled cell for Raman analysis.
+     The exponential decay shown for these samples is an extrapolation assuming stabilization of the
+     charge transfer loss at the time of measurement.
+
+
+10
+
+
+
+
+                                                      18
+                                Submitted Manuscript: Confidential
+                                   Template revised July 2024
+
+
+
+
+Figure S13. SEM micrographs of the process for FIB-milling preparation of lamella for cross-
+sectional observation in TEM.
+
+
+
+
+                                               19
+                                    Submitted Manuscript: Confidential
+                                       Template revised July 2024
+
+
+Table S1.
+
+Values of charge (in |e|) of all atoms in the unit cell.
+
+   Atom        Charge        Atom        Charge         Atom         Charge   Atom   Charge
+    C          -0.012         C           0.017          C            0.015    C      0.005
+    C           0.005         C          -0.020          C            0.003    C     -0.006
+    C           0.006         C          -0.012          C            0.035    C     -0.001
+    C           0.020         C           0.045          C            0.042    C      0.014
+    C           0.025         C           0.036          C            0.028    C     -0.008
+    C           0.028         C           0.028          C           -0.012    C      0.009
+    C           0.016         C           0.002          C            0.053    C      0.013
+    C           0.011         C          -0.025          C            0.005    C      0.016
+    C           0.009         C           0.008          C            0.001    C     -0.002
+    C           0.027         C           0.010          C            0.002    C     -0.017
+    C          -0.001         C          -0.017          C           -0.017    C      0.030
+    C           0.003         C          -0.020          C            0.045    C     -0.020
+    C           0.031         C          -0.008          C           -0.008    C      0.030
+    C           0.033         C           0.049          C            0.013    C     -0.009
+    C           0.029         C           0.038          C           -0.003    C      0.008
+    C           0.001         C           0.030          C            0.025    C     -0.016
+    C          -0.014         C           0.001          C           -0.008    C      0.005
+    C          -0.001         C          -0.013          C            0.000    C      0.001
+    C           0.007         C           0.017          C           -0.007    C      0.004
+    C           0.006         C           0.026          C            0.000    C      0.017
+    C          -0.011         C           0.007          C            0.016    C      0.004
+    C          -0.006         C          -0.039          C           -0.014    C      0.005
+    C           0.027         C           0.035          C           -0.012    C     -0.008
+    C           0.020         C           0.032          C            0.007    C      0.022
+    C           0.001         C           0.036          C            0.002    C     -0.014
+    C          -0.003         C           0.009          C           -0.010    C      0.001
+    C          -0.011         C           0.044          C           -0.023    C      0.018
+    C           0.027         C           0.038          C            0.033    C     -0.012
+    C           0.007         C          -0.004          C            0.033    C      0.028
+    C          -0.013         C           0.004          C           -0.012    C      0.004
+    C          -0.007         C          -0.005          C            0.023    C      0.004
+    C          -0.010         C           0.001          C            0.016    C     -0.003
+    C          -0.027         C          -0.001          C           -0.001    C     -0.001
+    C          -0.021         C           0.004          C            0.012    C      0.019
+    C           0.002         C          -0.020          C            0.005    C      0.020
+    C           0.010         C           0.030          C            0.014    C     -0.006
+    C          -0.034         C           0.019          C            0.003    C      0.000
+    C          -0.002         C          -0.013          C            0.010    C      0.025
+    C          -0.025         C           0.019          C            0.007    C     -0.019
+    C           0.020         C          -0.025          C            0.021    C      0.002
+    C           0.015         C          -0.001          C            0.025    C     -0.014
+                                                   20
+                 Submitted Manuscript: Confidential
+                    Template revised July 2024
+
+
+C   -0.020   C         -0.018          C               0.005   C    0.001
+C   -0.008   C          0.027          C               0.001   C    0.020
+C    0.048   C         -0.015          C              -0.004   C    0.013
+C    0.002   C          0.043          C              -0.009   C   -0.013
+C   -0.003   C          0.017          C               0.019   C   -0.007
+C    0.033   C         -0.009          C               0.015   C    0.016
+C    0.014   C          0.024          C              -0.011   C    0.005
+C   -0.010   C          0.001          C              -0.020   C   -0.001
+C    0.046   C          0.008          C               0.009   C   -0.003
+C    0.002   C          0.002          C               0.007   C    0.003
+C    0.007   C          0.011          C               0.001   C   -0.013
+C    0.023   C         -0.012          C               0.001   C    0.013
+C    0.042   C          0.038          C               0.014   C    0.007
+C   -0.023   C          0.041          C               0.011   C   -0.003
+C    0.035   C         -0.001          C               0.003   C    0.020
+C    0.038   C          0.020          C               0.010   C    0.007
+C    0.002   C          0.001          C              -0.006   C    0.004
+C   -0.022   C          0.013          C               0.015   C   -0.004
+C    0.012   C          0.008          C              -0.026   C    0.019
+C    0.026   C          0.019          C               0.032   C   -0.020
+C   -0.031   C         -0.014          C              -0.009   C   -0.002
+C    0.012   C          0.010          C               0.009   C    0.016
+C    0.032   C          0.018          C              -0.014   C   -0.013
+C    0.018   C          0.020          C               0.008   C    0.030
+C   -0.002   C          0.021          C               0.000   C    0.005
+C    0.039   C          0.012          C               0.007   C    0.002
+C    0.009   C          0.002          C               0.010   C    0.005
+C    0.010   C          0.017          C              -0.027   C   -0.007
+C    0.028   C          0.011          C              -0.001   C    0.024
+C   -0.004   C          0.029          C              -0.024   C    0.022
+C    0.020   C         -0.008          C               0.022   C   -0.009
+C    0.037   C          0.035          C              -0.029   C   -0.024
+C    0.008   C          0.024          C               0.013   C    0.017
+C   -0.028   C          0.003          C               0.005   C   -0.004
+C    0.037   C          0.003          C              -0.027   C   -0.008
+C    0.032   C         -0.012          C               0.040   C   -0.005
+C   -0.028   C          0.017          C               0.009   C    0.018
+C    0.014   C          0.000          C               0.000   C    0.008
+C    0.021   C          0.001          C               0.000   C    0.004
+C   -0.004   C          0.010          C              -0.007   C    0.001
+C   -0.003   C         -0.003          C               0.044   C   -0.008
+C    0.015   C         -0.014          C               0.002   C    0.024
+C    0.017   C          0.007          C              -0.041   C   -0.026
+C    0.016   C          0.017          C              -0.021   C    0.002
+C    0.047   C          0.004          C              -0.012   C   -0.011
+C   -0.026   C         -0.014          C               0.002   C    0.013
+                                21
+                 Submitted Manuscript: Confidential
+                    Template revised July 2024
+
+
+C    0.020   C          0.000          C              -0.004   C    -0.011
+C    0.052   C          0.023          C              -0.004   C     0.002
+C    0.016   C         -0.029          C               0.010   C     0.006
+C   -0.004   C          0.019          C               0.006   C     0.001
+C   -0.011   C          0.018          C               0.008   C     0.044
+C   -0.035   C          0.004          C               0.007   C    -0.024
+C   -0.014   C          0.003          C              -0.022   C     0.021
+C    0.017   C         -0.012          C               0.023   C    -0.026
+C   -0.006   C          0.067          C              -0.022   C     0.019
+C   -0.005   C         -0.039          C               0.035   C    -0.015
+C   -0.024   C          0.005          C              -0.006   C     0.015
+C    0.010   C          0.018          C               0.016   C     0.007
+C    0.030   C          0.017          C              -0.011   C    -0.014
+C    0.018   C         -0.030          C               0.008   Al    2.339
+C   -0.002   C          0.007          C               0.005   Al    2.341
+C    0.022   C          0.012          C               0.009   Cl   -0.724
+C    0.021   C          0.005          C               0.014   Cl   -0.779
+C    0.008   C          0.018          C               0.006   Cl   -0.780
+C    0.024   C          0.008          C               0.009   Cl   -0.714
+C    0.001   C          0.030          C              -0.008   Cl   -0.762
+C   -0.018   C         -0.011          C               0.018   Cl   -0.744
+C   -0.034   C          0.040          C              -0.029   Al    2.335
+C   -0.024   C          0.030          C              -0.004   Al    2.336
+C   -0.012   C         -0.001          C               0.009   Cl   -0.733
+C   -0.021   C         -0.001          C              -0.024   Cl   -0.779
+C    0.007   C         -0.028          C               0.022   Cl   -0.774
+C    0.039   C          0.020          C               0.007   Cl   -0.726
+C    0.007   C         -0.011          C              -0.022   Cl   -0.754
+C    0.034   C          0.014          C               0.001   Cl   -0.770
+C    0.000   C          0.019          C               0.000   Cl   -0.717
+C    0.005   C         -0.002          C               0.017   Cl   -0.719
+C   -0.027   C          0.016          C              -0.011   Cl   -0.732
+C   -0.010   C          0.025          C              -0.001   Cl   -0.745
+
+
+
+
+                                22
+                                        Submitted Manuscript: Confidential
+                                           Template revised July 2024
+
+
+    Table S2.
+    Main results reported from simulations of doped or intercalated carbon-based materials related to
+    this work.
+
+     Intercalant/dopant   Host             Main results                                          REF
+     AlCl4-               DWCNT            Non-covalent interaction determined through           This
+                          bundle           DORI.                                                 work
+                                           Alignment of intercalant along bundle channel
+                          (SWCNT           axis and Fermi level downshift of 0.44 eV (0.49
+                          bundle)          for SWCNT).
+
+     polyiodide/I2        SWCNT            Larger charge transfer in filled SWNCTs               (11)
+                          bundle           compared to intercalated bundles; 0.88 charge per
+                                           I4- polyiodide anion.
+     Br3-/Br2             DWCNT            Alignment of intercalant along bundle channel         (14)
+                          bundle           axis.
+     HSO4-/H+             Graphene         Interaction of graphene with sulphuric acid           (44)
+                                           includes interaction with both HSO4- and H+. The
+                                           latter introduces changes in graphene electronic
+                                           band structure and Raman shift pre-factors.
+     AuCl4-               3D periodic      Higher binding energy for AuCl4 than AuCl3;           (32)
+                          (0,8)            AuCl4 withdrawing electrons from the CNTs and
+                          SWCNT            lower Fermi level; increased electrical
+                          network          conductivity by factors of 17.4 and 6.7 through
+                                           the thickness and in the plane, respectively.
+     Al                   3D periodic      Increased electrical conductivity by factors of 388   (32)
+                          (0,8)            and 5.8 through the thickness and in the plane,
+                          SWCNT            respectively.
+                          network
+     AlCl4-               graphite         Proximity and electron transfer from C to Cl of      (31)
+                                           0.856 |e| per AlCl4 anion. Downshift of Fermi
+                                           level.
+     Br2/Br               Graphite         Electron transfer to the Br atoms increases the (45)
+                                           number of hole carriers in the graphite sheet;
+                                           charge transfer from graphite to Br between 0.1 –
+                                           0.5 |e| per Br atom. After intercalation, π bands of
+                                           graphite are partially occupied, with bands
+                                           crossing the Fermi surface corresponding to
+                                           non-localized electrons, suggesting increased
+                                           conductivity in the basal plane.
+5
+
+
+
+
+                                                       23
+                                      Submitted Manuscript: Confidential
+                                         Template revised July 2024
+
+
+     Table S3.
+     Data for deconvoluted Raman peak contributions for pristine and intercalated fibers, obtained
+     with different laser energies.
+
+         Laser                                        Raman shift [cm-1]
+        energy      Sample                                                                        1/q
+                                  Peak 1       Peak 2         Peak 3        Peak 4     ΔPeak 4
+         [eV]
+                    Pristine    1555.00 ±    1567.39 ±      1582.14 ±      1588.61 ±
+                                                                                                 -0.165
+                   DWNCTF         3.17         0.90           0.45           0.49
+         2.33                                                                           27.29
+                     AlCl4-     1568.74 ±    1588.29 ±      1604.25 ±      1615.90 ±
+                                                                                                 -0.082
+                    CNTIC         1.68         0.49           0.43           0.76
+                    Pristine    1552.83 ±    1575.89 ±      1586.82 ±      1594.55 ±
+                                                                                                 -0.154
+                   DWNCTF         1.91         4.25           0.37           0.67
+         1.96                                                                           15.37
+                     AlCl4-     1566.80 ±    1586.08 ±      1602.14 ±      1609.92 ±
+                                                                                                 -0.152
+                    CNTIC         1.72         0.18           0.64           0.78
+                    Pristine    1555.00 ±    1568.91 ±      1587.55 ±      1593.97 ±
+                                                                                                 -0.105
+                   DWNCTF         1.60         0.72           0.10           0.39
+         1.58                                                                           17.91
+                     AlCl4-     1569.21 ±    1589.41 ±      1597.85 ±      1611.88 ±
+                                                                                                 -0.060
+                    CNTIC         1.31         0.13           0.63           0.28
+ 5
+
+
+
+
+10   Table S4.
+     Comparison of related CNT and graphite intercalation compounds produced by vapor and
+     electrochemical methods.
+
+
+15
+
+
+
+
+                                                     24
+                                                              Charge      Charge    Charge
+                                                                                                           Mass           Volumetric
+                                       Cell Approximate transferred transferred transferred Charge
+                           𝚫𝐆𝐨+                                                                         fraction of        fraction of
+Intercalant     Host                  voltage EF, absolute from Raman from DFT from DFT transferred                                        ∆σ/σ0 Stoichiometry           Method       Ref.
+                          [cm-1]                                                                       intercalant,     intercalant, 𝚽𝑽
+                                        [V]    scale [eV] [e- per 1000 [e- per 1000  [|e| per  [mAh/g]
+                                                                     f                                   𝝎𝒊𝒏𝒕 [%]             [%]
+                                                             C atoms]    C atoms] intercalant]
+   AlCl4-                                                                    9.18                              -              8.6l
+            DWCNT                                                                                                                                                                     This
+  CNTIC              18.1 - 27.3        -        -4.99a    11.3 - 14.0                    0.643    19c                                    6.6 - 17.4    C39AlCl4          Vapor
+             lattice                                                     18.8 b - 25.7b                   21.2 - 27.0    13.8 j - 17.6j                                               work
+(this work)
+   AlCl3    Graphite 12.6 (n=2)         -          -            -             -             -       -          -               -              -         C9Al2Cl6          Vapor       (23)
+   FeCl3 FWCNTs          25             -       -5.22d          -            ~3.5           -       -          -               -             6.6           -              Vapor       (13)
+                                                                                                                                                                                       In-
+                          6.2 - 8.1     -          -        6.3 - 7.2    9.9 b - 13.2b    0.13      -     25.0 - 30.7    13.0 k - 16.0k       -             -             Vapor
+              DWCNT                                                                                                                                                                  house
+    Br3/B2                                                                   10.5b        0.13
+               lattice
+                            6.4         -        -4.77e       6.4                                   -        26.1            14.9k           8.4          C17Br           Vapor       (14)
+                                                                            0.4 – 3       0.39c
+              DWCNT
+         I2                  10         -        -5.5           -         4.7g - 29h      0.38      -          -               -              6             -             Vapor       (11)
+               lattice
+                                                                                                                                                                                        In-
+              DWCNT         8.1         -          -          7.3            16.1b        0.256     -        28.6            26.4            6.8       C24(HSO3Cl)          -
+    HClSO3                                                                                                                                                                            house
+               lattice
+                              7          -       -5,2i                        14          0.256     -          -               -              6             -              Vapor       (15)
+    AlCl4     Graphite       28        2.41      -5.17          -            31.3           -      70          -               -              -             -         Electrochemical (22)
+    AlCl4     SWCNT           -        1.83      -4.59          -            106          0.835   236.5        -               -              -             -           Simulation     (24)
+              Defective
+                                                                                                                                                                                          Submitted Manuscript: Confidential
+    AlCl4-
+    25                       20        2.4       -5.16          -            44.8           -     100          -               -              -             -         Electrochemical (27)
+              MWCNT
+                                                                                                                                                          LiCx
+     Li+      FWCNTS         10        2.5       -3.89          -           134.5           -     300          -               -              5                       Electrochemical (47)
+                                                                                                                                                       [x =(6-50) ]
+
+a
+  Considering a work function of -4.5eV for pristine CNTs.
+b
+  Calculated using DFT-computed charge transfer per intercalant and adapted to the experimental fraction of intercalant and assuming charge
+                                                                                                                                                                                             Template revised July 2024
+
+transfer from outer layer only.
+c
+  Calculated based on charge transfer from the outer layer obtained from simulations.
+d
+  Estimated from Raman measurements. Charge transfer per C atom calculated for a mean number of layers = 4.
+e
+  Taking 0.13 e- per Br atom and Br3- as intercalant.
+f
+  Computed using Δ𝐺𝑜+ = 350 ⋅ 𝑓 + 226√𝑓, constants obtained through fitting of Fig. 2a in (48).
+g
+  It is likely that a large fraction of the apparent charge transferred is related to an electrolyte redox process rather than intercalation/doping of the
+CNTs.
+h
+  From DFT, assuming an I atomic fraction of 3.7%.
+i
+  Calculated from Raman measurements.
+j
+  Calculated assuming density of intercalant equivalent to 𝜌𝐴𝑙𝐶𝑙3 = 2.48 𝑔/𝑐𝑚3.
+k
+  Calculated assuming density of intercalant equivalent to 𝜌𝐵𝑟2 = 3.1 𝑔/𝑐𝑚3 .
+l
+Estimated from the optimized DFT simulated cell.
+                                     Submitted Manuscript: Confidential
+                                        Template revised July 2024
+
+
+    Table S5.
+    Electrical and morphological measurements of reference pristine DWCNT fiber and optimally
+    intercalated AlCl4- /DWNCT fiber.
+
+                                     Linear density [g/km]                                         Specific
+                       Density                                      Diameter      Conductivity
+        Sample                                                                                   conductivity
+                       [kg/m3]                                        [um]          [MS/m]
+                                   Vibroscopic    Gravimetric                                    [KS m2 / kg]
+
+     Pristine fiber   907 ± 258    0.92 ± 0.03     1.08 ± 0.16     38.99 ± 4.71    1.40 ± 0.23   1.54 ± 0.51
+     AlCl4- CNTIC
+                                                                                  15.73 ± 1.48   11.17 ± 3.32
+        (mean)
+     AlCl4- CNTIC     1409 ± 397   1.40 ± 0.05     1.49 ± 0.22     36.67 ± 4.37   22.57 ± 6.24   16.02 ± 6.32
+     (highest two
+        values)                                                                   24.44 ± 6.37   17.35 ± 6.66
+5
+
+
+
+
+                                                    26
+                                        Submitted Manuscript: Confidential
+                                           Template revised July 2024
+
+
+     Comparison with Overhead Cables and their Related Materials
+           The type of cables used in overhead power transmission lines are aluminum conductor steel-
+     reinforced cables (ACSR). In those cables, the aluminum alloy (such as 1350-H19) is used for the
+     outer strands, and the core is made of galvanized steel. The prime function of aluminum strands is
+ 5   current conduction to ensure efficient electricity transmission with minimal energy loss, whereas
+     steel strands in the core offer mechanical reinforcement to support the cable weight for long spans
+     between power pylons, including under harsh weather conditions (strong wind, ice buildup,
+     temperature shifts).
+           Table S7 compares the properties of the intercalated CNT fiber in this work with ACSR
+10   materials. The comparison also includes other emerging cables reinforced with carbon fiber
+     composite core (ACCC) materials.
+           It is also instructive to make a comparison of properties of prototypical cables. As an example,
+     we take a standard ACSR cable of 30/7 stranding commonly presented in the market (USA, China,
+     Saudi Arabia), of a typical diameter of 18 mm and a concentric layup, composed of wires of an
+15   equal diameter (Table S8). The cables’ properties are assessed from their specifications in terms
+     of total linear net weight (kg/km), breaking force (kN), and DC resistance at 20 °C (Ohm/km).
+           For comparison, we provide an estimate of an all-CNT based overhead power cable made of
+     intercalated CNTIC fibers with the properties measured in this study. Due to high mechanical
+     properties, such a conceptual cable would require neither an additional reinforcing core, nor an
+20   additional aluminum encapsulation or conducting shell, in contrast to some novel aluminum
+     conductor composite core (ACCC)-types of cables with a carbon fiber composite core, where
+     aluminum encapsulation and /or shell is still required to ensure conductivity. The CNTIC cable
+     considered is of the same diameter as conventional ACSR (18 mm), assuming a perfect hexagonal
+     packing of individual CNTIC filaments (wires), which translates into ~241 k wires necessary to
+25   produce such a diameter.
+           With volumetric density of 1409 kg/m3, such CNTIC cable would have a net weight of about
+     295 kg per kilometer, which is ~2.5 times lower than conventional ACSR available on the market,
+     offering a large weight reduction. The breaking load of the CNTIC cable of 18 mm diameter would
+     be ~349 kN, which is 5 times stronger than a conventional ACSR (~70 kN), while offering same
+30   level of electrical conductivity. Data can be found in Table S7.
+
+
+
+
+                                                       27
+                                          Submitted Manuscript: Confidential
+                                             Template revised July 2024
+
+
+     Table S6.
+
+     Materials properties used for shell and core wires.
+
+      Material     Density     Strength      Modulus      Sp             Sp                Electrical         Sp Electrical
+                   [kg/m3]     [GPa]         [GPa]        Strength       Modulus           conductivity       conductivity
+                                                          [GPa/SG]       [GPa/SG]          [MS/m]             [S·m2/kg]
+      ACSR conductive shell
+      Al 1350- 2700            0.2           68           0.074          25.19             35.45              13130
+      H19 (46)
+      ACSR/ACCC core
+      Steel        7780        1.4           207          0.180          26.61             ca. 4 to 8         ca. 500-1000
+      CF             1600        2.55     150          1.59         93.75      ~0.036*            ~22*
+      composite1
+      CNTIC,         1409        1.37     51.87        0.975        36.81      24.44              17350
+      This work
+      1
+        – https://tokyorope-intl.co.jp/
+      *Estimated for a CF/epoxy composite of standard modulus grade PAN-based CF with electrical conductivity in
+      104 S/m range.
+ 5
+
+
+
+
+     Table S7.
+     Comparison of properties of an ASCR power cable and an intercalated CNT fiber cable.
+10
+
+                                     Diameter           Net weight         Breaking load           Resistance, 20 °C
+      Cable type
+                                      [mm]               [kg/km]               [kN]                   [Ohm/km]
+
+      Oriole (AWG, USA)1               18.8                 783                  76.95                    0.1640
+      Wolf (Alfanar, Saudi
+                                       18.1                 726                  69.20                    0.1828
+      Arabia)2
+      Lynx (HuaDong, China)3           19.5                 842                  79.80                    0.1576
+
+                                                           295                    349                      0.166
+      CNTIC, this work                 18.0         (2.5 times weight          (5 times                  (Similarly
+                                                        reduction)             stronger)                conductive)
+      1
+        – https://www.buyawg.com/
+      2
+        – https://www.alfanar.com/
+      3
+        – https://www.hdcablegroup.com/
+
+
+
+
+                                                         28
+References and Notes
+1. M. F. L. De Volder, S. H. Tawfick, R. H. Baughman, A. J. Hart, Carbon nanotubes: Present
+       and future commercial applications. Science 339, 535–539 (2013).
+       doi:10.1126/science.1222453 Medline
+2. A. Lekawa-Raus, L. Kurzepa, X. Peng, K. Koziol, Towards the development of carbon
+       nanotube based wires. Carbon 68, 597–609 (2014). doi:10.1016/j.carbon.2013.11.039
+3. J. S. Bulmer, A. Kaniyoor, J. A. Elliott, A Meta-Analysis of Conductive and Strong Carbon
+         Nanotube Materials. Adv. Mater. 33, e2008432 (2021). doi:10.1002/adma.202008432
+         Medline
+4. S. Jo, A. Mikhalchan, S. Hong, S. Kim, S. G. Kim, S. M. Kim, D.-Y. Kim, B.-C. Ku, J. J.
+        Vilatela, J. Y. Hwang, Highly conductive hybrid carbon nanotube fibers: Strategies and
+        future directions for replacing copper with next-generation conductors. Compos., Part B
+        Eng. 300, 112471 (2025). doi:10.1016/j.compositesb.2025.112471
+5. S.-H. Lee, J. Park, S. Y. Moon, S. Y. Lee, S. M. Kim, Strong and Highly Conductive Carbon
+        Nanotube Fibers as Conducting Wires for Wearable Electronics. ACS Appl. Nano Mater.
+        4, 3833–3842 (2021). doi:10.1021/acsanm.1c00248
+6. M. Li, Q. Gong, P. Cao, H. Wang, J. Qiao, Y. Yu, W. Lu, J. Di, Z. Zhang, L. Zheng, Q. Li,
+       Rational and wide-range tuning of CNT aerogel conductors with multifunctionalities.
+       Nanoscale 12, 13771–13780 (2020). doi:10.1039/D0NR03564E Medline
+7. R. M. Sundaram, A. Sekiguchi, M. Sekiya, T. Yamada, K. Hata, Copper/carbon nanotube
+       composites: Research trends and outlook. R. Soc. Open Sci. 5, 180814 (2018).
+       doi:10.1098/rsos.180814 Medline
+8. L. W. Taylor, O. S. Dewey, R. J. Headrick, N. Komatsu, N. M. Peraca, G. Wehmeyer, J.
+       Kono, M. Pasquali, Improved properties, increased production, and the path to broad
+       adoption of carbon nanotube fibers. Carbon 171, 689–694 (2021).
+       doi:10.1016/j.carbon.2020.07.058
+9. R. S. Lee, H. J. Kim, J. E. Fischer, A. Thess, R. E. Smalley, Conductivity enhancement in
+        single-walled carbon nanotube bundles doped with K and Br. Nature 388, 255–257
+        (1997). doi:10.1038/40822
+10. H. Shiozawa, T. Pichler, R. Pfeiffer, H. Kuzmany, “Carbon Nanotubes, Single‐Walled:
+        Functionalization by Intercalation” in Encyclopedia of Inorganic Chemistry, R. B. King,
+        R. H. Crabtree, C. M. Lukehart, D. A. Atwood, R. A. Scott, Eds. (Wiley, ed. 1, 2005).
+11. A. Zubair, D. Tristant, C. Nie, D. E. Tsentalovich, R. J. Headrick, M. Pasquali, J. Kono, V.
+       Meunier, E. Flahaut, M. Monthioux, I. C. Gerber, P. Puech, Charged iodide in chains
+       behind the highly efficient iodine doping in carbon nanotubes. Phys. Rev. Mater. 1,
+       064002 (2017). doi:10.1103/PhysRevMaterials.1.064002
+12. K. Iwase, Y. Hikita, T. Yokoi, Development of thermally stable carbon nanotube tapes by
+        incorporating FeCl3. Mater. Sci. Eng. B 291, 116361 (2023).
+        doi:10.1016/j.mseb.2023.116361
+13. C. Madrona, M. Vila, F. E. Oropeza, V. A. De La Peña O’Shea, J. J. Vilatela, Macroscopic
+       yarns of FeCl3-intercalated collapsed carbon nanotubes with high doping and stability.
+       Carbon 173, 311–321 (2021). doi:10.1016/j.carbon.2020.10.052
+14. C. Madrona, S. Hong, D. Lee, J. García-Pérez, J. M. Guevara-Vela, R. B. Gavito, A.
+       Mikhalchan, J. Llorca, B.-C. Ku, D. Granados, J. Y. Hwang, J. J. Vilatela, Continuous
+       intercalation compound fibers of bromine wires and aligned CNTs for high-performance
+       conductors. Carbon 204, 211–218 (2023). doi:10.1016/j.carbon.2022.12.041
+15. D. Tristant, A. Zubair, P. Puech, F. Neumayer, S. Moyano, R. J. Headrick, D. E.
+       Tsentalovich, C. C. Young, I. C. Gerber, M. Pasquali, J. Kono, J. Leotin, Enlightening
+       the ultrahigh electrical conductivities of doped double-wall carbon nanotube fibers by
+       Raman spectroscopy and first-principles calculations. Nanoscale 8, 19668–19676 (2016).
+       doi:10.1039/C6NR04647A Medline
+16. R. Matsumoto, Y. Okabe, Electrical conductivity and air stability of FeCl3, CuCl2, MoCl5,
+       and SbCl5 graphite intercalation compounds prepared from flexible graphite sheets.
+       Synth. Met. 212, 62–68 (2016). doi:10.1016/j.synthmet.2015.11.033
+17. C.-M. Hao, X. Li, A. R. Oganov, J. Hou, S. Ding, Y. Ge, L. Wang, X. Dong, H.-T. Wang, G.
+       Yang, X.-F. Zhou, Y. Tian, Superconductivity in compounds of sodium-intercalated
+       graphite. Phys. Rev. B 108, 214507 (2023). doi:10.1103/PhysRevB.108.214507
+18. M. S. Dresselhaus, G. Dresselhaus, Intercalation compounds of graphite. Adv. Phys. 30, 139–
+       326 (1981). doi:10.1080/00018738100101367
+19. A. J. Clancy, M. K. Bayazit, S. A. Hodge, N. T. Skipper, C. A. Howard, M. S. P. Shaffer,
+        Charged Carbon Nanomaterials: Redox Chemistries of Fullerenes, Carbon Nanotubes,
+        and Graphenes. Chem. Rev. 118, 7363–7408 (2018). doi:10.1021/acs.chemrev.8b00128
+        Medline
+20. S. Błażewicz, Ph. Touzain, Properties of metal-chlorides intercalated graphite fibres. Ceram.
+        Int. 24, 111–115 (1998). doi:10.1016/S0272-8842(96)00088-0
+21. L. M. Viculis, J. J. Mack, O. M. Mayer, H. T. Hahn, R. B. Kaner, Intercalation and
+       exfoliation routes to graphite nanoplatelets. J. Mater. Chem. 15, 974 (2005).
+       doi:10.1039/b413029d
+22. M.-C. Lin, M. Gong, B. Lu, Y. Wu, D.-Y. Wang, M. Guan, M. Angell, C. Chen, J. Yang, B.-
+       J. Hwang, H. Dai, An ultrafast rechargeable aluminium-ion battery. Nature 520, 325–328
+       (2015). doi:10.1038/nature14340 Medline
+23. G. M. Gualberto, C. Underhill, S. Y. Leung, G. Dresselhaus, Raman and infrared spectra of
+       graphite-Al Cl 3. Phys. Rev. B Condens. Matter 21, 862–868 (1980).
+       doi:10.1103/PhysRevB.21.862
+24. P. Bhauriyal, A. Mahata, B. Pathak, A Computational Study of a Single-Walled Carbon-
+        Nanotube-Based Ultrafast High-Capacity Aluminum Battery. Chem. Asian J. 12, 1944–
+        1951 (2017). doi:10.1002/asia.201700570 Medline
+25. J. Naruse, T. Yokoi, K. Ishino, Y. Hikita, K. Iwase, High-temperature electrical conductivity
+        and thermal stability of FeCl3 doping in carbon nanotube tapes. Appl. Phys. Express 14,
+        095002 (2021). doi:10.35848/1882-0786/ac1fc0
+26. P. de Silva, C. Corminboeuf, Simultaneous Visualization of Covalent and Noncovalent
+        Interactions Using Regions of Density Overlap. J. Chem. Theory Comput. 10, 3745–3756
+        (2014). doi:10.1021/ct500490b Medline
+27. E. Zhang, J. Wang, B. Wang, X. Yu, H. Yang, B. Lu, Unzipped carbon nanotubes for
+        aluminum battery. Energy Storage Mater. 23, 72–78 (2019).
+        doi:10.1016/j.ensm.2019.05.030
+28. M. Paillet, P. Poncharal, A. Zahab, J.-L. Sauvajol, J. C. Meyer, S. Roth, Vanishing of the
+       Breit-Wigner-Fano component in individual single-wall carbon nanotubes. Phys. Rev.
+       Lett. 94, 237401 (2005). doi:10.1103/PhysRevLett.94.237401 Medline
+29. J. C. Chacón-Torres, A. Y. Ganin, M. J. Rosseinsky, T. Pichler, Raman response of stage-1
+        graphite intercalation compounds revisited. Phys. Rev. B Condens. Matter Mater. Phys.
+        86, 075406 (2012). doi:10.1103/PhysRevB.86.075406
+30. A. M. Rao, P. C. Eklund, S. Bandow, A. Thess, R. E. Smalley, Evidence for charge transfer
+       in doped carbon nanotube bundles from Raman scattering. Nature 388, 257–259 (1997).
+       doi:10.1038/40827
+31. P. Bhauriyal, A. Mahata, B. Pathak, The staging mechanism of AlCl4 intercalation in a
+        graphite electrode for an aluminium-ion battery. Phys. Chem. Chem. Phys. 19, 7980–
+        7989 (2017). doi:10.1039/C7CP00453B Medline
+32. K. Conley, A. J. Karttunen, Bridging the Junction: Electrical Conductivity of Carbon
+       Nanotube Networks. J. Phys. Chem. C Nanomater. Interfaces 126, 17266–17274 (2022).
+       doi:10.1021/acs.jpcc.2c03904
+33. J. E. Fischer, Graphite intercalation compounds: Electronic properties and their correlation
+        with chemistry. Physica B+C 99, 383–394 (1980). doi:10.1016/0378-4363(80)90265-X
+34. M. Endo, T. C. Chieu, G. Timp, M. S. Dresselhaus, Properties of acceptor intercalated
+       graphite fibers. Synth. Met. 8, 251–260 (1983). doi:10.1016/0379-6779(83)90108-X
+35. H. Shioyama, Preparation of AlCl3-GIC in the Presence of a Chlorinating Agent. TANSO
+        1994, 35–37 (1994). doi:10.7209/tanso.1994.35
+36. P. Giannozzi, S. Baroni, N. Bonini, M. Calandra, R. Car, C. Cavazzoni, D. Ceresoli, G. L.
+        Chiarotti, M. Cococcioni, I. Dabo, A. Dal Corso, S. de Gironcoli, S. Fabris, G. Fratesi, R.
+        Gebauer, U. Gerstmann, C. Gougoussis, A. Kokalj, M. Lazzeri, L. Martin-Samos, N.
+        Marzari, F. Mauri, R. Mazzarello, S. Paolini, A. Pasquarello, L. Paulatto, C. Sbraccia, S.
+        Scandolo, G. Sclauzero, A. P. Seitsonen, A. Smogunov, P. Umari, R. M. Wentzcovitch,
+        QUANTUM ESPRESSO: A modular and open-source software project for quantum
+        simulations of materials. J. Phys. Condens. Matter 21, 395502 (2009). doi:10.1088/0953-
+        8984/21/39/395502 Medline
+37. P. Giannozzi, O. Andreussi, T. Brumme, O. Bunau, M. Buongiorno Nardelli, M. Calandra, R.
+        Car, C. Cavazzoni, D. Ceresoli, M. Cococcioni, N. Colonna, I. Carnimeo, A. Dal Corso,
+        S. de Gironcoli, P. Delugas, R. A. DiStasio Jr., A. Ferretti, A. Floris, G. Fratesi, G.
+        Fugallo, R. Gebauer, U. Gerstmann, F. Giustino, T. Gorni, J. Jia, M. Kawamura, H.-Y.
+        Ko, A. Kokalj, E. Küçükbenli, M. Lazzeri, M. Marsili, N. Marzari, F. Mauri, N. L.
+        Nguyen, H.-V. Nguyen, A. Otero-de-la-Roza, L. Paulatto, S. Poncé, D. Rocca, R.
+        Sabatini, B. Santra, M. Schlipf, A. P. Seitsonen, A. Smogunov, I. Timrov, T. Thonhauser,
+        P. Umari, N. Vast, X. Wu, S. Baroni, Advanced capabilities for materials modelling with
+       Quantum ESPRESSO. J. Phys. Condens. Matter 29, 465901 (2017). doi:10.1088/1361-
+       648X/aa8f79 Medline
+38. J. P. Perdew, K. Burke, M. Ernzerhof, Generalized Gradient Approximation Made Simple.
+        Phys. Rev. Lett. 77, 3865–3868 (1996). doi:10.1103/PhysRevLett.77.3865 Medline
+39. S. Grimme, J. Antony, S. Ehrlich, H. Krieg, A consistent and accurate ab initio
+        parametrization of density functional dispersion correction (DFT-D) for the 94 elements
+        H-Pu. J. Chem. Phys. 132, 154104 (2010). doi:10.1063/1.3382344 Medline
+40. F. J. Dos Santos, N. Marzari, Fermi energy determination for advanced smearing techniques.
+        Phys. Rev. B 107, 195122 (2023). doi:10.1103/PhysRevB.107.195122
+41. G. Prandini, A. Marrazzo, I. E. Castelli, N. Mounet, E. Passaro, J. Yu, N. Marzari, A
+        Standard Solid State Pseudopotentials (SSSP) library optimized for precision and
+        efficiency, Materials Cloud (2023); https://doi.org/10.24435/MATERIALSCLOUD:F3-
+        YM.
+42. M. Yu, D. R. Trinkle, Accurate and efficient algorithm for Bader charge integration. J.
+       Chem. Phys. 134, 064111 (2011). doi:10.1063/1.3553716 Medline
+43. Z. Wang, S. M. Selbach, T. Grande, Van der Waals density functional study of the energetics
+       of alkali metal intercalation in graphite. RSC Adv. 4, 3973–3983 (2014).
+       doi:10.1039/C3RA47187J
+44. P. Puech, T. Hu, A. Sapelkin, I. Gerber, V. Tishkova, E. Pavlenko, B. Levine, E. Flahaut, W.
+        Bacsa, Charge transfer between carbon nanotubes and sulfuric acid as determined by
+        Raman spectroscopy. Phys. Rev. B Condens. Matter Mater. Phys. 85, 205412 (2012).
+        doi:10.1103/PhysRevB.85.205412
+45. R. Hamdan, A. F. Kemper, C. Cao, H. P. Cheng, Structure and functionality of bromine
+       doped graphite. J. Chem. Phys. 138, 164702 (2013). doi:10.1063/1.4801786 Medline
+46. L. Kirkpatrick, Aluminum Electrical Conductor Handbook (the Aluminum Association, 3rd
+        ed., 1989).
+47. N. Boaretto, M. Rana, R. Marcilla, J. J. Vilatela, Revealing the Mechanism of
+       Electrochemical Lithiation of Carbon Nanotube Fibers. ACS Appl. Energy Mater. 3,
+       8695–8705 (2020). doi:10.1021/acsaem.0c01267
+48. D. Novko, Q. Zhang, P. Kaghazchi, Nonadiabatic Effects in Raman Spectra of AlCl4−-
+       graphite Based Batteries. Phys. Rev. Appl. 12, 024016 (2019).
+       doi:10.1103/PhysRevApplied.12.024016
+

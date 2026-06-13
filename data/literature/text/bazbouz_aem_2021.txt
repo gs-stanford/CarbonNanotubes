@@ -1,0 +1,697 @@
+Research Article
+
+                                                                                                                               www.advelectronicmat.de
+
+
+Fabrication of High Specific Electrical Conductivity and High
+Ampacity Carbon Nanotube/Copper Composite Wires
+Mohamed B. Bazbouz,* Atif Aziz, Davor Copic, Michael De Volder, and Mark E. Welland
+
+                                                                                                     conductivity is desirable for suppressing
+A challenge is to integrate Cu with carbon nanotubes (CNTs) and form a                               Joule heating and at the same time high
+free-standing composite wire. This is achieved by first making a CNT fila-                           specific electrical conductivity is essential
+ment using high concentration (20 g L−1 ) CNT dispersion, an acid-free wet                           for reducing weight. Especially for aero-
+                                                                                                     space industry and electric motors, these
+spinning process and then by replacing the polymer with copper using heat
+                                                                                                     wires and cable can have a very big impact
+based polymer decomposition and periodic pulse reverse electroplating.                               by reducing CO2 emission and enhancing
+It is demonstrated that indeed the specific conductivity and the current-                            the efficiency of motors, power cables and
+carrying capability (or ampacity) are increased manifold. The multiwalled CNT                        transformers. Carbon nanotubes (CNTs)
+(MWCNT)/Cu composite wires developed in this paper have electrical conduc-                           have emerged as a possible candidate for
+                                                                                                     achieving the above mentioned proper-
+tivity σ ≈ 5.5 × 10 5 S cm−1. These MWCNT/Cu wires are 2/3rd the weight of
+                                                                                                     ties.[5] Individual CNTs have been demon-
+bulk Cu wires. Their specific electrical conductivity is σρ ≈ 9.38 ×10 4 S cm2 g−1                   strated to have very high EC of 0.35 × 105
+which is 45% higher than International Annealed Copper Standard Cu. These                            and 10 × 105 S cm–1 for multiwalled (MW)
+composite wires have an ampacity of A ≈ 20 × 105 and 4 × 105 A cm−2 for 1.5                          and single walled (SW) carbon nanotubes,
+and 17 mm gauge length wires, respectively, which is four to six times higher                        respectively[6] and thus SEC of 2 × 104
+than pure Cu depending on the wire lengths. MWCNTs volume percentage in                              and 62.5 × 104 S cm g–1 for MWCNTs and
+                                                                                                     SWCNTs, respectively[7] and ampacity of
+the MWCNT/Cu wire is about 40%.
+                                                                                                     4 × 109 A cm–2 for SWCNTs.[8] However,
+                                                                                                     when CNTs are combined to form a use-
+                                                                                                     able wire, these properties drop many
+1. Introduction                                                               order of magnitude.[9] Over the last decade there has been
+                                                                              a great progress in creating CNTs wires using wet spinning
+Copper (Cu) is one of the most abundant and commonly used                     (spinning using super-acids[10–13] and surfactant-based coagula-
+conducting metal, it has a very good electrical conductivity (EC)             tion spinning[14–31]) and dry spinning (aligned forest-array spin-
+of σ = 5.96 × 105 S cm–1, but it is heavy (density 8.96 g cm–3) and           ning[32–54] and direct spinning of CNTs aerogel[40,55–87]). Good
+has a specific electrical conductivity (SEC) of 6.6 × 104 S cm g–1            quality CNTs wires are now commercially available.[88] How-
+at room temperature.[1,2] Aluminum (Al) on the other hand has                 ever, electrical conductivity and the specific electrical conduc-
+high SEC of 13.96 × 104 S cm g–1, but its EC of 3.77 × 105 S cm–1             tivity of these CNTs wires are still less than copper.[89–93] Carbon
+is much lower than copper.[3] Ampacity or the current car-                    nanotubes/copper (CNTs/Cu) composite is also a very prom-
+rying capacity of Al is also many times less than copper.[4] For              ising candidate for making light weight wires. It has been dem-
+making next generation of conducting cables, high electrical                  onstrated by using a lithographically defined small scale wires
+                                                                              deposited on a silicon chip that CNTs/Cu composite wires can
+                                                                              have an ampacity 100 times more than copper and have an SEC
+Dr. M. B. Bazbouz, Dr. A. Aziz, Prof. M. E. Welland
+The Nanoscience Centre
+                                                                              of 9 × 104 S cm g–1.[94] This study shows that CNTs/Cu com-
+Department of Engineering                                                     posite wires can have a specific electrical conductivity greater
+University of Cambridge                                                       than copper but achieving such properties for a free standing
+Cambridge CB3 0FF, UK                                                         and continuous wire still remains a challenge.
+E-mail: mbb40@cam.ac.uk                                                           Achieving a uniform dispersion of CNTs in a copper matrix
+Dr. D. Copic, Prof. M. De Volder                                              is a primary requirement for making CNTs/Cu composite wires.
+Institute for Manufacturing
+Department of Engineering                                                     In this paper we have adopted a new method for making CNTs/
+University of Cambridge                                                       Cu composite wires and we have been successful in making free
+Cambridge CB3 0FS, UK                                                         standing CNTs/Cu composite wires which have a specific elec-
+      The ORCID identification number(s) for the author(s) of this article    trical conductivity and ampacity greater than copper. To achieve
+      can be found under https://doi.org/10.1002/aelm.202001213.              this, a microfluidization (MF) dispersion process has been devel-
+© 2021 The Authors. Advanced Electronic Materials published by Wiley-         oped for creating very high concentration (up to 20 mg mL–1)
+VCH GmbH. This is an open access article under the terms of the Creative      CNTs dispersion using carboxymethyl cellulose sodium salt (Na-
+Commons Attribution License, which permits use, distribution and repro-
+duction in any medium, provided the original work is properly cited.          CMC) as a surfactant and water. This high viscosity dispersion
+                                                                              has been converted into CNTs filaments using an acid free wet
+DOI: 10.1002/aelm.202001213                                                   spinning process. Na-CMC polymer is then decomposed and
+
+
+Adv. Electron. Mater. 2021, 7, 2001213      2001213 (1 of 13)                © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                          2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                            www.advelectronicmat.de
+
+back filled with Cu using a periodic pulsed reversed (PPR) electro-        interconnected network of pores which allows the Cu to be pen-
+plating process. Using this approach, we have been able to achieve         etrated deep into the filament during PPR electroplating as evi-
+SEC of σρ ≈ 9.38 × 104 S cm2 g–1 and ampacity of A ≈ 20 × 105 and          denced by field emission scanning electron microscope (FESEM)
+4 × 105 A cm–2 for 1.5 and 17 mm gauge length wires, respectively.         and energy-dispersive X-ray spectroscopy (EDS) analysis. To fabri-
+   To produce CNTs/Cu composite using a CNTs filament, the                 cate these composite wires, first MWCNTs filaments of diameter
+most important challenge is to deposit Cu metal inside of the              about 8 ± 0.3 µm are produced. Continuous MWCNTs filaments
+CNTs filament. Physical vapor deposition (PVD),[95–97] two-step            were spun by coagulation wet spinning in acetone and then
+galvanostatic electrodeposition,[98–100] and electrochemical depo-         to decompose the polymer the spun MWCNTs filaments were
+sition (DC electroplating) can potentially be used for depositing          heated at 300 °C for 1 h. Subsequently, PPR electroplating, which
+Cu on CNTs.[2,101,102] Among these, electroplating is a low cost,          includes a series of forward bias voltages followed by reverse
+nonvacuum, and easily scalable metal deposition techniques.                voltages at a wide range of frequencies, was used for Cu electro-
+However, DC electroplating produces a Cu cladding on the                   plating. Figure 1 presents a step-by-step schematic illustration of
+CNTs filament surface that prevents the voids inside the CNTs              the fabrication process for creating MWCNTs/Cu composite wires
+matrix to be filled with copper and manifests as a (CNTs-core/             which include MWCNTs dispersion, wet spinning, surfactant deg-
+Cu-shell) structure.[2,102] To overcome this problem, PPR elec-            radation, and PPR electroplating. Composite wires with average
+troplating[103–106] has been developed as a very effective tech-           diameter of 10 ± 0.4 µm, specific weight of 5.9 ± 0.2 g cm–3, ten-
+nique for filling the voids/pores of the CNTs filament with Cu,            sile strength of 318 MPa, EC of σ = 5.5 × 105 S cm–1 which cor-
+obtaining a finer Cu grain size due to Cu dissolution during the           responds to a specific electrical conductivity of 9.4 × 104 S cm2 g–1,
+reverse cycle and therefore enabling homogeneous Cu spatial                and a maximum ampacity of ≈ 20 × 105 A cm–2 were achieved.
+distribution in the CNTs matrix.
+   In this work, we report the production of lightweight MWCNTs/
+Cu composite wires with homogeneously distributed Cu grains                2. Results and Discussion
+throughout an MWCNTs matrix. The key difference between
+our work from previous studies[2,95,97–102] is that the polymer sur-       2.1. MWCNTs Dispersions
+factant which is used to disperse CNTs has been replaced with
+copper. Furthermore, due to the uniform dispersion achieved                Due to the Van der Waals interactions, as received MWCNTs
+using microfluidization, removal of polymer surfactant creates an          are bundled together and remain agglomerated after magnetic
+
+
+
+
+Figure 1. Step-by-step schematic of the fabrication protocol of the MWCNTs/Cu composite wires which includes: microfluidizer dispersion which com-
+prises of LM20 microfluidizer schematic mechanism and comparison of the dispersed MWCNTs and residues after cycle 1 and 6 based on quantitative
+measurements of the weights of sedimentation, followed by the wet spinning process which comprises schematic of wet spinning, an SEM image
+of as-spun filament and its cross-section (Figures S1–S3, Supporting Information), followed by the heating process which shows SEM images of the
+heated filaments with sodium salt as bright cubic blocks distributed throughout the filament surface and followed by PPR electroplating process for
+the heated MWCNTs filaments and SEM image of MWCNTs/Cu composite wire.
+
+
+Adv. Electron. Mater. 2021, 7, 2001213     2001213 (2 of 13)              © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                      2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                        www.advelectronicmat.de
+
+stirring for 1 h, as shown in Figure S4a in the Supporting Infor-      throughout the filament surface are believed to be the sodium
+mation. To maximize their surface area and thus their proper-          salt which remains intact after thermal decomposition of CMC
+ties, they need to be unbundled and dispersed uniformly. To            during the annealing process. However, the sodium salt crystals
+achieve this, a very high MWCNTs concentration of 20 g L–1             were completely dissolved during the MWCNTs filament incu-
+with uniform dispersion is prepared using a scalable microflu-         bation in the utilized aqueous electrolyte for about 20 s before
+idization process. MF is a system in which a large pressure of         the PPR electroplating which took about 360 s. SEM images
+up to 30 000 psi (20.7 × 107 Pa), and a very high shear rate in the    in Figure 2a and Figure S4e,f in the Supporting Information
+order of 106–108 s–1 are applied to the whole MWCNTs solution          show the MWCNTs/Na-CMC filament following annealing and
+during the MF process.[107–110] Creating continuous MWCNTs             aqueous electrolyte incubation which consist of loose fibrils
+filament is impossible without a very uniform MWCNTs dis-              and voids in the longitudinal and radial direction of filaments.
+persion. A comprehensive detail about the MF process for               During wet spinning, there is a draw ratio of ≈12.5 between
+dispersing CNTs can be found in our recent work.[107] Even             the winding speed of 7 m min–1 and the extrusion speed at the
+a small nonuniformity or agglomeration of MWCNTs can                   spinneret of 0.56 m min–1, which stretches the filament and
+result in the breaking of the filament during wet spinning.            partially aligns the CNTs as shown in Figure 2a.
+MF has been used for dispersing as well as preparing the
+homogenous blending of MWCNTs in the polymer solution.
+Na-CMC has been used as a dispersant as well as a coagulating          2.3. Morphology and Structure of MWCNTs/Cu Composite
+polymer.[111,112] Dispersion process details are discussed in the      Wires
+Experimental section. Figure S4 in the Supporting Information
+shows the SEM images of the MWCNTs before S4a and after                To achieve the highest possible specific conductivity of
+S4b dispersion.                                                        MWCNTs/Cu wire and therefore the lowest Cu weight frac-
+    The most remarkable advantage of using MF is that all the          tion, Cu nucleation, and growth rate were studied as a func-
+CNTs present in the solution receive the same shear forces             tion of PPR electroplating parameters such as forward and
+during dispersion, which is not possible to achieve using the          reverse pulse voltage and electroplating current densities,
+conventional ultrasonication process.[109] To obtain a more            reverse ratio and electrolyte concentration. PPR electroplating
+quantitative measure for the dispersion quality, the sedimen-          is advantageous over DC electroplating because it allows for
+tation of the MWCNTs in the dispersion was measured after              the adjustment of key processing parameters that in turn
+centrifuge. Centrifugal forces that enable the acceleration of         enables nucleation and growth of fine and highly dense Cu
+the sedimentation of the dispersed CNTs bundles to the bottom          grains.[103–106] In DC electroplating, deposition persists at the
+of the cell, leading to a clarification of the dispersion were         nucleation sites due to the continuous application of current,
+used.[110,113] Figure S4c in the Supporting Information compares       and thus grains with broader size distribution evolve.[104] PPR
+the MWCNTs sediments after centrifuging at 10 000 rpm for 10           electroplating is optimized by varying voltage and current den-
+min. At 0 cycle, i.e., before the solution is passed through the       sity to produce the smallest Cu grains and the maximum Cu
+MF, almost all the MWCNTs are sediments however after six              penetration into the MWCNTs filament, as shown in Figure 2b.
+cycles, sediments are about 2 wt% of the total solution. Further-      Grujicic and Pesic have shown that Cu electroplating on glassy
+more, the MWCNTs water-based dispersion is produced at the             carbon with lower deposition potential and lower current densi-
+rate of 0.6 L h–1 which is very fast as compared to the existing       ties produce smaller Cu nuclei when compared to high current
+dispersion techniques like tip/bath sonication.[107–110]               densities.[115] If the positive pulse voltage density (Cu deposi-
+                                                                       tion) is Vf with an on-time length of tfON while the negative
+                                                                       voltage density (Cu dissolution) is Vr with an on-time length of
+2.2. Characterization of MWCNTs Filaments                              trON, the reverse ratio, δ, is defined as follows
+
+Optimum values of surfactant-based coagulation spinning                    Vr × tr
+                                                                      δ=           × 100%                                                       (1)
+parameters (i.e., spinning solution injection rate, coagulation            Vf × tf
+media, and take-up speed) which produced continuous flexible
+MWCNTs filaments were 1.8 mL h–1, acetone, and 7 m min–1,                 The reverse ratio, δ, was varied from 0% to 62.5%.
+respectively. Filaments could not be spun continuously, from           EC measurements of PPR electroplating at these reverse
+MWCNTs/Na-CMC solution, until the blending ratio was equal             ratios δ, as shown in Figure S5 in the Supporting Informa-
+or greater than 1:4.6. As shown in the SEM micrographs of              tion, indicated that EC decreases from σ = 5.5 × 105 S cm–1
+Figure 1, the MWCNTs/Na-CMC filaments exhibit a crimped,               to σ = 1.4 × 105 S cm–1 as the reverse ratio δ increases from
+longitudinal grooved and intertwined surface texture and ellip-        δ = 0.62% to δ = 62.5%. We believe that higher reverse ratio
+tical cross-section shape with a small filament diameter of 8 ±        led to larger voids volume between Cu grains making the
+0.3 µm. The formulation of this structure is due to counter dif-       interconnection of Cu grains to be reduced and thus less EC
+fusion of solvent/nonsolvent, phase separation during coagula-         values. Whereas a lower δ resulted in higher EC values due to
+tion, and stretching force inside the coagulation bath.[114] Spun      smaller voids volume between Cu grains (highly dense and uni-
+filaments were heated at 300 °C for 1 h to thermally decompose         form deposit) and higher interconnection between Cu grains.
+the Na-CMC polymer and the microstructure of the filaments             PPR electroplating with a ratio δ of 0.625% has presented the
+became very porous, as shown in Figure 1 and Figure S4d in the         lowest voids and thus highest interconnected Cu grains, the
+Supporting Information. The bright cubic blocks distributed            highest EC, the minimum outer coating thickness (or shell
+
+
+Adv. Electron. Mater. 2021, 7, 2001213   2001213 (3 of 13)            © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                           2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                             www.advelectronicmat.de
+
+
+
+
+Figure 2. SEM images of a) MWCNTs/Na-CMC filament following annealing, aqueous electrolyte incubation, and drying, b) MWCNTs/Cu composite
+wire PPR electroplated with a ratio δ of 0.625%, c) cross-section of the MWCNTs/Cu wire indicated by a dashed line and the wires are surrounded by a
+silver glue which is used to hold the wire while cleaving the wire. EDS map of copper (Cu), sulfur (S), and carbon (C) and EDS spectrum of MWCNTs/
+Cu wire cross-section inside the box are cleared.
+
+
+about 1 µm), and the highest ampacity. It is noteworthy that at                In all the cross-section images, big particles around the wire
+δ = 0%, Cu only formed the outer coating of thickness about                 are silver flakes. The diameter of the MWCNTs/Cu composite
+2 µm.                                                                       wire increased to 10 ± 0.4 µm after Cu PPR electroplating. The
+    Figure 2c shows a cross-section of an MWCNTs/Cu wire                    MWCNTs/Cu composite wire with mostly full Cu filling and
+electroplated at a reverse ratio δ of 0.625% on an MWCNTs                   interconnected Cu cladding shows a specific weight of 5.9 ±
+filament of diameter 8 ± 0.3 µm with mostly internal Cu filling             0.2 g cm–3, (2/3rd of Cu: 8.96 g cm–3), indicating that MWCNTs
+and visible MWCNTs inside the Cu matrix. Cross-section of the               has a volume fraction of 40%. To estimate the CNTs volume
+wires was created after encapsulating the wires in the silver               fraction, we have considered the density of MWCNTs to be 1.8 g
+paste and then cleaving it.                                                 cm–3. Figure 2c shows the EDS map taken at the area indicated
+
+
+Adv. Electron. Mater. 2021, 7, 2001213     2001213 (4 of 13)               © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                             2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                               www.advelectronicmat.de
+
+
+
+
+Figure 3. SEM images of the outer surface and its cross-section and Cu element distribution via EDS analysis of the MWCNTs/Cu wire PPR elec-
+troplated at a reverse ratio, δ of 0.625%, presenting the Cu nucleation rate/growth at different electrodeposition times a) 30 s, b) 90 s, c) 240 s, and
+d) 360 s.
+
+by the black box, a strong copper signal confirms the penetra-                Cu nucleation growth as a function of electrodeposition times
+tion of Cu grains into the wire interior, filling the voids between           (30, 90, 240, and 360 s) at the reverse ratio, δ of 0.625%. To
+individual MWCNTs and thus forming a structurally uniform                     perform these measurements, four similar samples were used
+MWCNTs/Cu composite wire. Furthermore, the EDS of sulfur                      which have gone through the same electrodeposition process
+element distribution shown in Figure 2c is due to the elec-                   with the only difference that the electrodeposition was termi-
+trolyte infiltration along with the filament interfaces through               nated at different times to capture the growth process. During
+the macromeso voids between MWCNTs bundles. It is worth                       the first 30 s of Cu deposition, 40–200 nm spheroidal small
+noting that controlling the porous structure of the MWCNTs                    Cu seeds, sparsely populated, appeared both on the surface
+wet spun filaments through Na-CMC and MWCNTs weight                           and inside of MWCNTs filament. Further PPR electroplating
+ratio and the thermal decomposition of Na-CMC was indispen-                   after 90 s causes additional seeding on the surface and into the
+sable to achieve structurally uniform MWCNTs/Cu distribution                  MWCNTs filament with a larger size, 50–250 nm. The Cu seeds
+at high MWCNTs vol% in the composite wires.                                   grew up and started merging and forming Cu grains, discon-
+   Figure 3 shows a collage of images which include the outer                 tinuously distributed, in the interior and outer of the filament
+surface of the wire, its cross-section and Cu element distribu-               within 240 s. Finally, during 360 s of PPR electroplating, the Cu
+tion measured via EDS analysis. These micrographs present the                 grains fully covered the 20 mm wire length and the voids and
+
+
+Adv. Electron. Mater. 2021, 7, 2001213      2001213 (5 of 13)                © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                            2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                              www.advelectronicmat.de
+
+
+
+
+Figure 4. I) TGA curves of 1.6 wt% of Na-CMC film and as spun MWCNTs filament. II) FT-IR spectra of a) as spun, b) after heating at 300 °C for 1 h,
+c) following heating and incubation in DI water, d) following the PPR electroplating in aqueous electrolyte involved of sulfuric acid and DI water only
+without copper sulfate MWNTs filaments, and e) MWCNTs wire PPR electroplated with Cu. III) Tensile stress–strain curves and summarized mechanical
+properties of as-spun and heated MWCNTs filaments and MWCNTs/Cu wires.
+
+spaces between MWCNTs bundles became mostly filled with                      at 300 °C during 1 h of heating. In other words, the TGA curve
+Cu grains. MWCNTs/Cu composite wire was formed with com-                     of Na-CMC distinctly indicates that nearly 50% of the mass
+pact and dense spheroidal/cubic Cu grains, 60–600 nm size,                   weight was lost, elucidating the reason why MWCNTs filaments
+and continuously distributed and connected across the whole                  were heated at 300 °C for 1 h. The yield of the charred residue
+structure (Figures S6–S8, Supporting Information). To the best               of MWCNTs filaments after thermal decomposition at 800 °C
+of the author’s knowledge, there are no previous reports on the              was 84.26%. Table S1 in the Supporting Information clarifies
+fabrication of CNTs/Cu composite wire with complete internal                 the mass weight loss of Na-CMC polymer and MWCNTs fila-
+Cu grains filling in the wire cross-section by PPR electroplating.           ments as a function of heating temperature from 25 to 800 °C.
+
+
+2.4. Thermal Analyses of Na-CMC and MWCNTs Filaments                         2.5. FT-IR Analysis of MWNTs Filaments and MWCNTs/Cu
+                                                                             Composite Wires
+Figure 4I shows the thermogravimetric analyzer (TGA) ther-
+mograms of 1.6 wt% Na-CMC polymer and as spun MWCNTs                         Fourier transform infrared spectroscopy (FT-IR) spectra of
+filaments. Initial mass weight loss for Na-CMC polymer and                   MWNTs filaments and MWCNTs/Cu composite wires were
+MWCNTs filaments (about 7.1%) is considered due to the evapo-                recorded to identify changes in functional group composition
+ration of the absorbed moisture trapped in the sample struc-                 during PPR electroplating. FT-IR was performed on a collec-
+ture.[116] The mass weight loss due to thermal degradation of                tion/wool of hundreds of filaments. Figure 4IIa–c presents the
+MWCNTs filament compounds was 25.92% at 300 °C based                         FT-IR of three samples a) as-spun filaments, b) after heating
+on the filament weight after subtracting the mass of evapo-                  at 300 °C and 1 h, and c) after soaking the heated filaments
+rated water. However, this weight loss was high due to the 4.6               in deionized (DI) water for 15 min. It has been noticed the
+mass ratio of Na-CMC in the total mass of MWCNTs filaments.                  absence of any significant peaks in the as-spun filaments or
+Whereas the mass weight loss of Na-CMC polymer was 49.96%                    heated filaments due to the fabrication of MWCNTs without
+
+
+Adv. Electron. Mater. 2021, 7, 2001213      2001213 (6 of 13)               © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                      2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                        www.advelectronicmat.de
+
+any functional groups. FT-IR spectrum of MWNTs filaments               PPR electroplating has enhanced the tensile strength and
+following the PPR electroplating in Figure 4IId, with aqueous          Young’s modulus of the MWCNTs filament rather than weak-
+electrolyte involved of sulfuric acid and DI water only without        ened it. SEM analysis of MWCNTs/Cu wire fracture surface
+copper sulfate, introduced two oxygen-containing functional            at tensile failure manifests both local necking and pull-out
+groups at the MWCNTs surface. These groups perform as                  of the MWCNTs as shown in Figure S9 in the Supporting
+active Cu deposition sites for as long as Cu electrodeposition         Information.
+is the interaction of applied voltage and the reduction of func-
+tional groups.[103,117] The presence of a peak at 993 cm–1 which
+is corresponding to −SO3H indicates the formation of sul-              2.7. EC of MWCNTs/Cu Composite Wires
+fonic functional groups on the sidewalls of the carbon nano-
+tubes.[118,119] The peak at 1404 cm−1 is assigned to the bending       The EC of the MWCNTs/Cu composite wire is substantially
+vibration of O–H in aliphatic hydroxyl bending due to the par-         increased after Cu electroplating. Before Cu PPR electro-
+tial oxidation of MWCNTs in the sulfonation process.[120] The          plating, the heated MWCNTs filaments had an average EC of
+peak at 1574 cm–1 is attributed to CC graphitic stretching of         σ = 65 S cm–1, which was tenfold higher than the as-spun fila-
+MWCNTs backbone, due to activation in the reverse electro-             ments, which have an average EC of σ = 6.4 S cm–1. After Cu
+plating process.[119] Finally, the peak at 2864 cm−1 is assigned       PPR electroplating, the EC of MWCNTs/Cu wires increased
+to asymmetric and symmetric stretching vibration band of               up to σ = 5.5 × 105 S cm–1 which corresponds to an SEC of
+methylene CH located at defect sites on benzene rings of             9.4 × 104 S cm2 g–1, it is 45% higher than the 100% interna-
+nanotubes.[120,121] FT-IR spectrum of an MWCNTs wire PPR               tional annealed copper standard (IACS) Cu specific electrical
+electroplated with Cu (Figure 4IIe) confirmed the interface            conductivity of ≈6.5 × 104 S cm2 g–1. Since 2010, there has
+between the Cu and MWCNTs as the indicated peaks became                been significant progress in improving the electrical conduc-
+smaller and nearly disappeared.[102]                                   tivity of macroscopic CNTs/metal composite wires.[2,95,97–102,123]
+                                                                       Figure 5a presents Ashby plots of EC versus CNTs/metal com-
+                                                                       posite wires specific weight such as CNTs/Au, CNTs/Pt, CNTs/
+2.6. Mechanical Properties of MWNTs Filaments and MWCNTs/              Pd,[101] CNTs/Ag,[123] and CNTs/Cu.[2,95,97–102] Cu based CNTs
+Cu Composite Wires                                                     composites have higher EC as compared to Au, Pt, Pd, and Ag
+                                                                       composites. Their corresponding specific electrical conductivi-
+Figure 4III compares the mechanical properties of as-spun              ties are presented in Figure S10 in the Supporting Informa-
+and heated MWCNTs filaments and MWCNTs/Cu wires. The                   tion. In CNTs/metal composites, an optimum amount of CNTs
+tensile stress–strain curves of these filaments and wires show         are required to achieve maximum SEC. As the volume fraction
+analogous behavior, which includes three stages: elastic defor-        of CNTs approaches zero, CNTs/Cu composite has similar con-
+mation, plastic deformation, and fracture stage. Corresponding         ductivity and density as the metal. For example, ref. [2], which
+average values of the tensile strength (MPa), strain to failure        uses only 2 vol% of CNTs and has an EC σ = 5.68 × 105 S cm–1.
+(%), static force to failure (N), and Young’s modulus (GPa)            Recently there have been a few studies where CNTs filaments
+were calculated using the linear, plastic and failure stages of        have been coated with Cu shell and by optimizing the thick-
+the stress–strain curves and are reported in Figure 4III. Other        ness of the Cu layer, SEC has been optimized. Reference
+than the as-spun state, the introduction of heating at 300 °C for      [95] reported an SEC about 35% more than copper but their
+1 h led to very slightly improved tensile strength, static force to    measurements were based on the density of CNTs core wire
+failure and Young’s modulus but a reduced strain to failure,           to be 1 g cm–3, however, the electrical conductivity of the core
+which is due to an increased sliding resistance and reduced            was not reported. In this work we have fabricated MWCNTs/
+contact resistance between the MWCNTs bundles.[95] It is clear         Cu composite wires where copper grains mostly fill the CNTs
+from the stress–strain curves that Cu PPR electroplating with          matrix. About 40 vol % of individual MWCNTs are spatially
+high internal Cu filling induced interfacial adhesion, friction,       distributed uniformly throughout the structure with specific
+and good contact between the Cu and MWCNTs. Eliminating                weight 2/3rd of Cu. We have measured the electrical conduc-
+the pores and gaps and suppressing the slippage between the            tivity of twenty MWCNTs/Cu composite wires, which varied
+MWCNTs bundles, enabled increased load-bearing capability.             from 4.5 × 105–5.5 × 105 S cm–1. Highest EC was 5.5 × 105 S
+As a result, the tensile strength of the MWCNTs/Cu composite           cm–1 and corresponding SEC was σρ ≈ 9.4 ×104 S cm2 g–1 which
+wires reached 318 MPa (by comparison with pure Cu which                is 45% higher than 100% IACS Cu. The mean and median EC
+has a tensile strength of 200 MPa for coarse-grained Cu and            values are 5.1 × 105 and 5.2 × 105 S cm–1, respectively, standard
+tensile strength of 270 MPa for initial pure Cu[122]), a 117% and      deviation (SD) is 0.36 × 105 S cm–1. Using 20 measurements,
+127% increase than those of the heated and as spun MWCNTs              mean and median SEC are 8.6 × 104 and 8.8 × 104 S cm2 g–1,
+filaments, respectively.                                               respectively, SD is 6.1 × 103 S cm2 g–1 and the minimum
+    In addition, the elastic Young’s modulus of the MWCNTs/            and maximum measured values are 7.7 × 104 S cm2 g–1 and
+Cu composite wires attained a 53.78 GPa which is 356% and              9.4 × 104 S cm2 g–1, respectively. We believe that the excellent
+360% higher than those of the heated and as spun MWCNTs                EC in this work is attributed to the small Cu grain distrib-
+filaments, respectively. Whereas the strain to failure of the          uted uniformly in the MWCNTs matrix which is attached with
+MWCNTs/Cu composite wires diminished to 1.8%, 6.92%, and               moderately functionalized MWCNTs and promote an efficient
+6.27% lower than those of the heated and as spun MWCNTs                electron transfer between Cu and CNTs and form a highly
+filaments, respectively. These measurements show that Cu               interconnected Cu and CNTs network.[124,125]
+
+
+Adv. Electron. Mater. 2021, 7, 2001213   2001213 (7 of 13)            © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                           2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                             www.advelectronicmat.de
+
+
+
+
+Figure 5. a) Ashby plots of electrical conductivity versus wire specific weight for MWCNTs/Au, Pt, Pd, Ag, and Cu composite wires. Pure SWCNTs fila-
+ments were also presented for comparison with this work performance of MWCNTs/Cu composite wire exceeding it. b) Ashby plots of specific electrical
+conductivity (SEC) versus ampacity for published CNTs/Cu composite wires. As shown, this work MWCNTs composite wire is overrunning a unique
+position with high ampacity and SEC. (*) polycrystalline Cu, Au, Ag, and Al metals, (**) individual multi and single-wall carbon nanotubes, (***) our
+measurements on pure Cu wires, and (****) super-acid spun SWCNTs filaments (DEXMAT CO., www.dexmat.com)[129]. c) I–V curves of MWCNTs/
+Cu composite wire electroplated with different ampacity gauge length measurements. d) Differentiation curves of ampacity values for MWCNTs/Cu
+composite wires and pure Cu wire at different gauge lengths.
+
+
+2.8. Ampacity of MWCNTs/Cu Wires                                               Electrical conductivity and the specific electrical conduc-
+                                                                            tivities reported in this paper are also very similar to the
+Here, ampacity is defined as the maximum current density                    values reported by Subramanian et al.,[94] which demonstrate
+which flows through the wire before it becomes an open cir-                 very similar material properties. However, there are two main
+cuit. It is measured using the formula                                      differences. First, we have fabricated and performed meas-
+                                                                            urements on free-standing MWCNTs/Cu wires which has a
+             I max                                                          potential for scaling up, whereas wires reported in ref. [94]
+Amp max =                                                            (2)
+             ACS                                                            are lithographically defined. Second, their CNTs are grown
+                                                                            and fabricated on a same substrate, which provides a good
+where Imax is the maximum current before failure and Acs is the             thermal contact with the silicon substrate, leading to a very
+cross-section area of the wire. Figure 5b presents SEC versus               good thermal dissipation hence very high ampacity. In case
+ampacity which compares our results with other published work               of free-standing wires, they only have a good thermal contact
+on CNTs/Cu wires,[96,98] polycrystalline metals such as Cu, Au,             at the end of the wires where these are attached with silver
+Ag, and Al,[8,126,127] individual multi and single-walled carbon            contact pads. Therefore, ampacity of free-standing wires is
+nanotubes[7,8,128] and our measurements of commercially avail-              very low in comparison with ref. [94] and ampacity of our
+able super-acid spun CNTs filaments DEXMAT CO., and pure                    wires increases as the length of the MWCNTs/Cu wire is
+Cu wires (φ 0.05 mm, the scientific wire co. Essex, UK).                    decreased.
+
+
+Adv. Electron. Mater. 2021, 7, 2001213     2001213 (8 of 13)               © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                     2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                       www.advelectronicmat.de
+
+   Figure 5c presents I–V curves of MWCNTs/Cu composite               reverse ratios δ, 0–62.5%. The reverse ratio δ of 0.625 has
+wires, PPR electroplated at a reverse ratio δ of 0.625% and           resulted in the lowest Cu volume fractions, and the highest EC
+measured at different gauge lengths (1.5–17 mm). Initially the        and ampacity. These MWCNTs/Cu wires are 2/3rd the weight
+current increases linearly as the voltage are increased and at        of bulk Cu wires. Their specific electrical conductivity is σρ ≈
+this stage the measured electrical resistivity is almost constant,    9.4 × 104 S cm2 g–1 which is 45% higher than IACS Cu, and the
+and the MWCNTs/Cu composite wires with shorter length have            ampacity is four to six times higher than bulk Cu wires. These
+a higher slope due to their smaller resistance. As these wires        MWCNTs/Cu composite wires are very promising as light-
+heat up due to Joule heating, their resistance is increased, and      weight and high-power transmission wiring in the current and
+IV curves enter the nonlinear regime and eventually become            next-generation electrical and electronic devices and systems.
+an open circuit. These curves provide the maximum current
+value (Imax) of the MWCNTs/Cu composite wires at different
+lengths form which the maximum current density or ampacity
+is calculated. For example, the Imax value of 1.857 A for 1.5 mm      4. Experimental Section
+wire length and 93 µm2 cross-section areas gave ampacity of               Materials: MWCNTs were purchased from US Research
+19.97 × 105 A cm–2 and for the Imax value of 0.259 A for 17 mm        Nanomaterials, Inc. (Houston, USA). According to the supplier
+wire length and cross-section of 93 µm2 ampacity was 2.74 ×           datasheet, these MWCNTs have a purity > 95 wt%, surface area:
+                                                                      500 m2 g–1 brunauer–emmett teller, electrical conductivity >100 S cm–1
+105 A cm–2. Presence of CNTs in CNTs/Cu composite wires
+                                                                      and impurities are 0.19% aluminum, 0.58% chlorine, 1.01% cobalt,
+inhibits the surface and grain boundary Cu diffusion due to           0.24% sulfur, 0.33% manganese, and 0.18% oxygen. Carbon is 97%,
+interlocking friction[8,94] and increase Cu diffusion activation      (Figure S12, Supporting Information). Na-CMC of MW 700 000 g mol–1
+energy (≈2.0 eV vs 0.6–1.0 eV in pure Cu),[94,130] which suppress     was purchased from Sigma-Aldrich (Gillingham, UK).
+Cu electromigration in the Cu/CNTs composite and therefore                Dispersion and Spinning Dope Solution Preparation: MWCNTs
+increase its ampacity.                                                in DI water at a (C = 20 g L–1) with Na-CMC at a (C = 3 g L–1) were
+   Figure 5d compares the ampacity values for MWCNTs/Cu               magnetically stirred for 24 h and de-agglomerated and dispersed by a
+                                                                      microfluidizer (MF) (LM20, MicrofluidicsTM, Newton, USA), with a
+composite wires and pure Cu wire at different gauge lengths.          Z type H210Z single microchannel, which has a hydraulic diameter of
+The ampacities for both MWCNTs/Cu wire and Cu increase                200 µm. 100 mL batch was processed at 5000 PSI, six processing cycles
+as the length of the wire is decreased due to the existence of        at the rate of 1 mL per cycle s−1. Subsequently, dispersed MWCNTs
+more nanometer-scale voids or other defects at longer wire            were mixed at a 1:4.6 ratio with an aqueous solution of 1.6 wt% of
+length. When a high current density flows through the wires,          Na-CMC by MF with four cycles at 5000 PSI and another four cycles
+the center of the wire has the highest temperature due to Joule       at 2000 PSI. To quantitatively characterize the MWCNTs dispersion,
+                                                                      the sedimentation was evaluated using a centrifuge 5418R (Eppendorf
+heating. As the length of the wire is decreased, heat can more
+                                                                      UK Limited, Stevenage, UK). 0.2 mL was inserted in the measurement
+easily be dissipated through the contact pads which behave like       cells and centrifuged at 10 000 rpm for 10 min at room temperature. The
+heat sinks. These measurements show that for longer wires,            weights of sedimentation were measured to determine the efficiency of
+where ampacity is independent on length, Joule heating is a           dispersion.
+dominant mechanism that determines the ampacity of the                    Surfactant-Based Coagulation Wet Spinning: The dispersed solution of
+wires. Whereas for smaller wire lengths, electromigration plays       MWCNTs/Na-CMC was fed from a 20 mL capacity syringe (Fisher Co.,
+                                                                      Leicestershire, UK) to a vertically orientated (25 gauge) flat-ended metal
+a dominant role in determining the ampacity of the wire.[124,125]
+                                                                      needle “spinneret” via Teflon tubing. The inner and outer diameters
+The difference between the Cu/CNTs composite wire and the             of the needle were 0.26 and 0.515 mm, respectively. The volume feed
+Cu wire is likely due to the higher thermal conductivity of the       rate was digitally controlled by a positive displacement microprocessor
+Cu/CNTs131 and the increased Cu diffusion activation energy in        syringe pump (KD Scientific Inc., Holliston, MA, USA). A spinning
+Cu/CNTs composite.[130,131] High thermal conductivity of CNTs         solution feed rate of 1.8 mL h–1 was maintained and acetone was used
+which dissipate Joule heating more efficiently than Cu may            as a coagulant bath at room temperature. Hundreds of meters long
+lead to a sharp increase in the ampacity of CNTs/Cu than Cu           filaments were collected on a three wires take-up winder outside the
+                                                                      bath at a rate of 7 m min–1. Figures S1–S3 in the Supporting Information
+for shorter gauge lengths. Magnified images of MWCNTs/Cu
+                                                                      of MWCNTs filaments spun continuously and collected on a winder.
+wire mechanical failure mode following the ampacity test indi-        Filaments were dried at room temperature for 24 h to remove any
+cate the presence of MWCNTs in the destructive points with            residual solvents. Then, filaments were heated in a compact horizontal
+Cu grains detection, as shown in Figure S11 in the Supporting         tube furnace (Carbolite Gero Co. Hope, UK) at 300 °C for 1 h to
+Information.                                                          decompose the Na-CMC polymer.
+                                                                          Periodic Pulse Reverse (PPR) Electroplating of Cu into MWCNTs
+                                                                      Filaments: MWCNTs filament (diameter of ≈8 ± 0.3 µm and length of
+                                                                      20 mm) as a cathode and Cu electrode (60, 10, and 0.65 mm) as an
+3. Conclusion                                                         anode were immersed in a glass cell with a volume of 0.05 dm3 and
+                                                                      the aqueous electrolyte utilized involved of 32 mL copper sulfate
+In this work, we have reported a simple acid free wet spin-           pentahydrate (1 mole), 4 mL sulfuric acid (5 moles), and 4 mL DI water.
+ning method for creating continuous MWCNTs filaments with             The experimental setup is illustrated in Figure S13a in the Supporting
+a diameter 8 ± 0.3 µm. To make continuous filaments, a very           Information. The upper end of MWCNTs filament was mounted on
+                                                                      a silicon wafer substrate by a silver paint outside the electrolyte bath
+high concentration (20 g L–1) and a very uniform dispersion
+                                                                      to make electrical contact via a copper wire and the lower end of
+of MWCNTs are formulated using a water-based microfluidi-             MWCNTs filament was mounted on the substrate inside the electrolyte
+zation process which is a very scalable and high throughput           bath by photoresist as a nonconducting glue. Silver paint and glue
+method. MWCNTs/Cu composite wires are then produced                   were dried overnight at room temperature. PPR electroplating was
+using PPR electroplating of MWCNTs filaments using various            performed by using potentiostat/galvanostat electrochemical station
+
+
+
+Adv. Electron. Mater. 2021, 7, 2001213   2001213 (9 of 13)           © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                             2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                               www.advelectronicmat.de
+
+controlled by EC-Lab software (SP200, BioLogic Science Instruments,           and 64 repetitions were averaged for each spectrum. The resolution was
+Grenoble, France) and applying periodic pulsed voltage cycles between         4 cm−1 and the scanning interval was 2 cm−1. Mechanical properties
+the MWCNTs filament and Cu electrode as shown in Figure S13b in               (Young’s modulus, strain to failure, static force to failure, and tensile
+the Supporting Information. During PPR electroplating, deposition             strength) of MWCNTs filaments and MWCNTs/Cu wires were tested
+and the removal of Cu happen alternatively on every pulse, depending          in dry condition by using dynamic mechanical analysis Q800 Dynamic
+on the polarity of the pulses. The current density was in the rage of         mechanical analysis (TA Instruments, New Castle, USA) with a 0.00001
+10–50 mA cm–2. To calculate the current density, the geometrical surface      N force resolution. Tensile tests were carried out at a temperature of
+area of the filament was used without accounting for the porosity. Also,      25 °C and relative humidity of 65% with a force ramp rate of 0.005
+the forward pulse voltage density, Vf, was (40–120) V cm–2 and ON time,       N min–1 and a gauge length of 5 mm. For each kind of filament/wire,
+tfON, was 80 ms. The reverse pulse voltage density, Vr, was 6–240 V cm–2      at least three tests were repeated. EC values were obtained at room-
+and ON time, trON, was (10–25) ms, repeated for 4000 cycles.                  temperature by four-point probe resistance measurements using
+    Morphological, Thermal, Chemical, Mechanical, and Electrical              Keithley 5200 SCS parameter analyzer (Keithley A Tektronix company,
+Characterization: Surface morphology and the diameter of the filaments        Bracknell, UK). EC[S cm–1] is defined as follows
+and composite wires and Cu nuclei were observed by FESEM (Leo
+                                                                                     L
+1530 VP, New York, USA), with an acceleration voltage of 15 kV and           EC =       × 10 −2                                                        (3)
+                                                                                    R.A
+Gallium focused ion beam (Zeiss Orion NanoFab GaFIB, Germany). Cu
+nuclei analysis and elemental quantitative mapping were analyzed by           where L is the wire length[m], R is the wire electrical resistivity[Ω],
+EDS with INCA mapping and analyzer software (Oxford Instruments               and A is the wire cross-section area [m2]. Conducting silver paint was
+Nanoanalysis, High Wycombe, UK). The internal structure and Cu                used to make electrical pads and the silver paint was dried overnight
+spatial distribution in the various types of MWCNTs/Cu wires were             at room temperature. The ampacity of the MWCNTs/Cu wires was
+obtained by characterizing multiple cross-sections in FESEM attached          measured at a laboratory atmosphere using Keithley 2651A high
+with an EDS. To estimate the uniformity of the MWCNTs/Cu wires,               power system source meter SMU instruments (Keithley A Tektronix
+the diameter was measured at least in ten points along the length of          company, Bracknell, UK). Here, the ampacity of the wire is defined as
+a 20 mm long MWCNTs/Cu wire. A mean diameter of the wires was                 the maximum current density which flows through the wire before it
+10 µm and the standard deviation was 0.24 µm, which shows that the            becomes an open circuit.
+wire diameter does not vary more than 5% over the length of a wire. To           The volume fraction of CNTs in the Cu/CNTs composite wires was
+measure the electrical conductivity of the MWCNTs/Cu wires, the cross-        calculated using the formula
+
+                                                                                              ( )ρ ( )
+section images of 12 wires were taken using an FESEM. These images
+                                                                                               R               1
+are shown in Figure S14 in the Supporting Information. A mean cross-          ρ wire = ρ Cu        +                                                   (4)
+                                                                                              1+ R     CNTs
+                                                                                                              1+ R
+section area is 86 µm2 and the SD is 6.8 µm2 and the maximum area
+is 93 µm2. Since the conductivity is inversely proportional to the cross-     where ρwire = 5.9 g cm−3, ρCu = 8.96 g cm−3, and ρCNTs = 1.8 g cm−3 are
+section area, to avoid any over estimation of conductivity, the maximum       the densities of the composite wires, copper, and CNTs, respectively,
+area value was used to calculate the electrical conductivity of all the       and R = VCu/VCNTs is the ratio of the copper and CNTs volumes. It is
+MWCNTs/Cu wires. Table S2 in the Supporting Information shows the             estimated that more than 75% of the pores are refilled with copper as
+resistance of 20 devices which were analyzed, and their lengths vary from     discussed in estimation of the percentage of pores filled with copper
+1.5 to 17 mm. These resistance values are provided without correcting         paragraph and Figure S15 in the Supporting Information. In addition,
+the total contact resistance, which was negligible, ≈0.05 Ω from both         the percolation analysis was included in Figure S16 in the Supporting
+contacts. Contact resistance was measured using a transmission line           Information.
+and after plotting resistance as a function of length. Having used the
+maximum area of 93 µm2, EC and SEC of these 20 devices are given
+in the last two columns. To study the filament/wire cross-section, first
+the filament/wire was placed on the surface of a silicon chip of area         Supporting Information
+about 1 cm × 1 cm and covered the filament/wire with the silver paste.
+Once the silver paste is completely dried, the silicon wafer was partially    Supporting Information is available from the Wiley Online Library or
+scribed with a diamond scriber and then cleaved along the scribed line.       from the author.
+These cleaved samples were then vertically mounted on an SEM stub
+for taking SEM images and EDS analyses. For all the cross-section
+images, filaments/wires are surrounded by silver flakes, which come
+from the silver paste. Silver is used because in EDS spectrum its signal      Acknowledgements
+is clearly distinguished from copper. The cross-section areas of the          M.B.B. and A.A. contributed equally to this work. All the authors
+filaments/wires obtained from SEM images were calculated via Image            acknowledge the support of the Lloyd’s Register Foundation (LRF),
+J software (cross-section area was assumed as elliptical) as shown in         London, UK, which funded this research through their grants to
+Figure S14 in the Supporting Information. The volumetric density of the       protect life and property by supporting engineering-related education,
+MWCNTs/Cu wire is measured by calculating the volume of the wire              public engagement, and the application of research (Grant Reference:
+which is the area of 93 µm2 times the length of the wire and the weight       LloydsRegisterFdn-G0083). The authors are also grateful to Dr.
+is measured using a high precision Sartorius ultramicro balance which         Changshin Jo for performing TGA and Dr. Giorgio Divitini for performing
+had a resolution of 0.1 µg (Sartorius, Germany). Thermal analyses of          transmission electron microscopy measurements.
+Na-CMC polymer and as spun MWCNTs filaments which include mass
+weight loss wt% as a function of heating temperature were conducted
+to determine the amount of Na-CMC in the MWCNTs filaments by
+using a TGA (Pyris1 TGA, PerkinElmer, Llantrisant, UK). A heating             Conflict of Interest
+temperature of 25–800 °C and a heating rate of 10 °C min–1 in the air
+with a flow rate of 20 mL min–1 were applied. To evaporate any residual       The authors declare no conflict of interest.
+solvent and moisture, both specimens were held for 15 min at 100 °C
+and to understand the polymer decomposition, Na-CMC polymer (film)
+was also held for 1 h at 300 °C. Filament/wire chemical information           Data Availability Statement
+was acquired via an FT-IR Spectrometer (Frontier, PerkinElmer,
+Massachusetts, USA). Scans were taken in the range of 4000–650 cm−1           The data that support the findings of this study are openly available.
+
+
+
+Adv. Electron. Mater. 2021, 7, 2001213      2001213 (10 of 13)               © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                                     2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                                       www.advelectronicmat.de
+
+Keywords                                                                             [20] X. Wu, X. K. Mukai, K. Asaka, T. Morimoto, T. Okazaki, App. Phys.
+                                                                                           Express 2017, 10, 055101.
+ampacity, carbon nanotubes, composite wires, copper, microfluidization               [21] Z. Jiang, D. Chen, Y. Yu, J. Miao, Y. Liu, L. Zhang, RSC Adv. 2017, 7,
+                                                                                           2186.
+                                               Received: December 10, 2020           [22] T.-W. Lee, M. Han, S.-E. Lee, Y. G. Jeong, Compos. Sci. Technol. 2016,
+                                                   Revised: January 24, 2021               123, 57.
+                                            Published online: March 12, 2021         [23] K. Mukai, K. Asaka, X. Wu, T. Morimoto, T. Okazaki, T. Saito,
+                                                                                           M. Yumura, App. Phys. Express 2016, 9, 055101.
+                                                                                     [24] Y. Ma, P. Li, J. W. Sedloff, X. Zhang, H. Zhang, J. Liu, ACS Nano
+                                                                                           2015, 9, 1352.
+  [1] S. Zhang, N. Nguyen, B. Leonhardt, C. Jolowsky, A. Hao, J. G. Park,            [25] C. Zhu, J. Chen, K. K. Koziol, J. W. Gilman, P. C. Trulove,
+      R. Liang, Adv. Electron. Mater. 2019, 5, 1800811.                                    S. S. Rahatekar, eXPRESS Polym. Lett. 2014, 8, 154.
+  [2] P. M. Hannula, A. Peltonen, J. Aromaa, D. Janas, M. Lundstrom,                 [26] G. Park, Y. Jung, G.-W. Lee, J. P. Hinestroza, Y. Jeong, Fibers Polym.
+      B. P. Wilson, K. Koziol, O. Forsen, Carbon 2016, 107, 281.                           2012, 13, 874.
+  [3] R. H. R. Castro, P. Hidalgo, E. C. Diniz, Mater. Lett. 2011, 65, 271.          [27] V. Sa, K. G. Kornev, Carbon 2011, 49, 1859.
+  [4] F. A.-D. S. Rodrigues, W. Paraguassu, S. Simoes, M. F. G. Vieira,              [28] C. Mercader, V. D. Lutard, S. Jestin, M. Maugey, A. Derre, C. Zakri,
+      J. A. D.-S. Souza, E. D.-M. Braga, M. A. L.-D. Reis, J. Nanosci. Nano-               P. Poulin, J. App. Polym. Sci. 2012, 125, E191.
+      technol. 2017, 17, 4837.                                                       [29] S. Zhang, K. K. K. Koziol, I. A. Kinloch, A. H. Windle, Small 2008,
+  [5] M. F. L. De Volder, S. H. Tawfick, R. H. Baughman, A. J. Hart,                       4, 1217.
+      Science 2013, 339, 535.                                                        [30] J. M. Razal, K. J. Gilmore, G. G. Wallace, Adv. Funct. Mater. 2008,
+  [6] R. Rao, C. L. Pint, A. E. Islam, R. S. Weatherup, S. Hofmann,                        18, 61.
+      E. R. Meshot, F. Wu, C. Zhou, N. Dee, P. B. Amama, J. Carpena-                  [31] A. B. Dalton, S. Collins, J. Razal, E. Munoz, V. H. Ebron, B. G. Kim,
+      Nunnez, W. Shi, D. L. Plata, E. S. Penev, B. I. Yakobson,                            J. N. Coleman, J. P. Ferraris, R. H. Baughman, J. Mater. Chem. 2004,
+      P. B. Balbuena, C. Bichara, D. N. Futaba, S. Noda, H. Shin,                          14, 1.
+      K. S. Kim, B. Simard, F. Mirri, M. Pasquali, F. Fornasiero,                    [32] N. T. Alvarez, P. Miller, M. R. Haase, R. Lobo, R. Malik, V. Shanov,
+      E. I. Kauppinen, M. Arnold, B. A. Cola, P. Nikolaev, S. Arepalli,                    Carbon 2019, 144, 55.
+      H.-M. Cheng, D. N. Zakharov, E. A. Stach, J. Zhang, F. Wei,                    [33] Y. Dini, J. F. Vincent, J. Dijon, Carbon 2019, 144, 301.
+      M. Terrones, D. B. Geohegan, B. Maruyama, S. Maruyama, Y. Li,                  [34] M. Han, J.-K. Kim, Y. Choi, J. P. Yun, G. S. Lee, S. W. Kang, D. Jung,
+      W. W. Adams, A. J. Hart, ACS Nano 2018, 12, 11756.                                   Jpn. J. App. Phys. 2019, 58, SDDJ07.
+  [7] A. Chinnappan, C. Baskar, H. Kim, S. Ramakrishna, J. Mater. Chem.              [35] T. H. Nam, K. Goto, Y. Shimamura, Y. Inoue, S. Ogihara, Adv.
+      A 2016, 4, 9347.                                                                     Compos. Mater. 2019, 28, 507.
+  [8] R. M. Sundaram, A. Sekiguchi, M. Sekiya, T. Yamada, K. Hata, Royal             [36] S. N. Kanakaraj, N. T. Alvarez, S. Gbordzoe, M. S. Lucas,
+      Soc. Open Sci. 2018, 5, 180814.                                                      B. Maruyama, R. Noga, Y. Y. Hsieh, V. Shanov, Mater. Res. Express
+  [9] P. Dariyal, A. K. Arya, B. P. Singh, S. R. Dhakate, J. Mater. Sci. 2021,             2018, 5, 065036.
+      56, 1087.                                                                      [37] J. Zhao, X. Zhang, Y. Huang, J. Zou, T. Liu, N. Liang, F. Yu, Z. Pan,
+[10] R. J. Headrick, D. E. Tsentalovich, J. Berdegue, E. A. Bengio,                        Y. Zhu, M. Miao, Mater. Des. 2018, 146, 20.
+      L. Liberman, O. Kleinerman, M. S. Lucas, Y. Talmon, M. Pasquali,               [38] P. Wang, J. Yang, G. Sun, X. Zhang, H. Zhang, Y. Zheng, S. Xu, Int.
+      Adv. Mater. 2018, 30, 1704482.                                                       J. Plasticity 2018, 110, 74.
+[11] N. Behabtu, C. C. Young, D. E. Tsentalovich, O. Kleinerman,                     [39] L. Qiu, H. Zou, N. Zhu, Y. Feng, X. Zhang, X. Zhang, App. Thermal
+      X. Wang, A. W. K. Ma, A. A. Bengio, R. F. Waarbeek, J. J. de-Jong,                   Eng. 2018, 141, 913.
+      R. E. Hoogerwerf, S. B. Fairchild, J. B. Ferguson, B. Maruyama,                [40] P. Wang, D. Liu, J. Zou, Y. Ye, L. Hou, J. Zhao, C. Men, X. Zhang,
+      J. Kono, Y. Talmon, Y. Cohen, M. J. Otto, M. Pasquali, Science 2013,                 Q. Li, Mater. Des. 2018, 159, 138.
+      339, 182.                                                                       [41] X. Zhang, L. Yang, H. Liu, App. Phys. Lett. 2018, 112, 164103.
+[12] V. A. Davis, N. G. Parra-Vasquez, M. J. Green, P. K. Rai, N. Behabtu,           [42] J.-G. Kim, H. Kang, Y. Lee, J. Park, J. Kim, T. Truong,
+      V. Prieto, R. D. Booker, J. Schmidt, E. Kesselman, W. Zhou, H. Fan,                  E. S. Kim, D. H. Yoon, Y. H. Lee, D. Suh, Adv. Funct. Mater. 2017, 27,
+      W. W. Adams, R. H. Hauge, J. E. Fischer, Y. Cohen, Y. Talmon,                        1701108.
+      R. E. Smalley, M. Pasqual, Nat. Nanotechnol. 2009, 4, 830.                     [43] Y. Zhang, G. Sun, Z. Zhan, L. Zheng, J. Mater. Sci. 2017, 52, 6196.
+[13] L. M. Ericson, H. Fan, H. Peng, V. A. Davis, W. Zhou, J. Sulpizio,              [44] N. T. Alvarez, P. Miller, M. Haase, N. Kienzle, L. Zhang, M. J. Schulz,
+      Y. Wang, R. Booker, J. Vavro, C. Guthy, A. N. G. Parra-Vasquez,                      V. Shanov, Carbon 2015, 86, 350.
+      M. J. Kim, S. Ramesh, R. K. Saini, C. Kittrell, G. Lavin, H. Schmidt,          [45] J. Jia, J. Zhao, G. Xu, J. Di, Z. Yong, Y. Tao, C. Fang, Z. Zhang,
+      W. W. Adams, W. E. Billups, M. Pasquali, W.-F. Hwang, R. H. Hauge,                   X. Zhang, L. Zheng, Q. Li, Carbon 2011, 49, 1333.
+      J. E. Fischer, R. E. Smalley, Science 2004, 305, 1447.                         [46] M. Miao, Carbon 2011, 49, 3755.
+[14] W. J. Lee, A. J. Clancy, J. C. F. Toribio, D. B. Anthony, E. R. White,          [47] K. Liu, Y. Sun, R. Zhou, H. Zhu, J. Wang, L. Liu, S. Fan, K. Jiang,
+      E. Solano, H. S. Leese, J. J. Vilatela, M. S. P. Shaffer, Carbon 2019,               Nanotechnology 2010, 21, 045708.
+      146, 162.                                                                      [48] C. P. Huynh, S. C. Hawkins, Carbon 2010, 48, 1105.
+[15] H. Mirbaha, P. Nourpanah, P. Scardi, M. Dincau, G. Greco,                       [49] S. Zhang, L. Zhu, M. L. Minus, H. G. Chae, U. Jagannathan,
+      L. Valentini, S. B. Bon, S. Arbab, N. Pugno, Materials 2019, 12, 2797.               C.-P. Wong, J. Kowalik, L. B. Roberson, S. Kumar, J. Mater. Sci. 2008,
+[16] J. Y. Kim, J.-H. Mo, Y. H. Kang, S. Y. Cho, K.-S. Jang, Nanoscale 2018,               43, 4356.
+      10, 19766.                                                                     [50] X. Zhang, Q. Li, Y. Tu, Y. Li, J. Y. Coulter, L. Zheng, Y. Zhao, Q. Jia,
+ [17] J.-Y. Kim, W. Lee, Y. H. Kang, S. Y. Cho, K.-S. Jan, Carbon 2018, 133, 293.          D. E. Peterson, Y. Zhu, Small 2007, 3, 244.
+[18] S. Yu, X. Wang, H. Xiang, L. Zhu, M. Tebyetekerwa, M. Zhu, Carbon               [51] X. Zhang, Q. Li, T. G. Holesinger, P. N. Arendt, J. Huang,
+      2018, 140, 1.                                                                        D. Kirven, T. G. Clapp, R. F. DePaula, X. Liao, Y. Zhao, L. Zheng,
+[19] L. Maillaud, R. J. Headrick, V. Jamali, J. Maillaud, D. E. Tsentalovich,              D. E. Peterson, Y. Zhu, Adv. Mater. 2007, 19, 4198.
+      W. Neri, E. A. Bengio, F. Mirri, O. Kleinerman, Y. Talmon, P. Poulin,          [52] X. Zhang, K. Jiang, C. Feng, P. Liu, L. Zhang, J. Kong, T. Zhang,
+      M. Pasquali, Ind. Eng. Chem. Res. 2018, 57, 3554.                                    Q. Li, S. Fan, Adv. Mater. 2006, 18, 1505.
+
+
+Adv. Electron. Mater. 2021, 7, 2001213          2001213 (11 of 13)                  © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                                   2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                                    www.advelectronicmat.de
+
+[53] Q. Li, X. Zhang, R. F. DePaula, L. Zheng, Y. Zhao, L. Stan,                  [88] N. Behabtu, M. J. Green, M. Pasquali, Nano Today 2008, 3, 24.
+      T. G. Holesinger, P. N. Arendt, D. E. Peterson, Y. T. Zhu, Adv. Mater.      [89] F. Cesano, M. J. Uddin, K. Lozano, M. Zanetti, D. Scarano, Front.
+      2006, 18, 3160.                                                                   Mater. 2020, 7, 219.
+[54] M. Zhang, K. R. Atkinson, R. H. Baughman, Science 2004, 306, 1358.           [90] G. Sun, X. Wang, P. Chen, Mater. Today 2015, 18, 215.
+[55] X. Rodiles, V. Reguero, M. Vila, B. Aleman, F. Arevalo, V. Fresno,            [91] A. Lekawa-Raus, J. Patmore, L. Kurzepa, J. Bulmer, K. Koziol, Adv.
+      D.-L. P. O’Shea, J. J. Vilatela, Sci. Rep. 2019, 9, 9239.                         Funct. Mater. 2014, 24, 3661.
+[56] B. Aleman, J. J. Vilatela, Carbon 2019, 149, 512.                            [92] W. Lu, M. Zu, J.-H. Byun, B.-S. Kim, T.-W. Chou, Adv. Mater. 2012,
+[57] L. Weller, F. R. Smail, J. A. Elliott, A. H. Windle, A. M. Boies,                  24, 1805.
+      S. Hochgreb, Carbon 2019, 146, 789.                                         [93] L. Liu, W. Ma, Z. Zhang, Small 2011, 11, 1504.
+[58] D. Lglesias, E. Senokos, B. Aleman, L. Cabana, C. Navio,                     [94] C. Subramaniam, T. Yamada, K. Kobashi, A. Sekiguchi, D. N. Futaba,
+      R. Marcilla, M. Prato, J. J. Vilatela, S. Marchesan, ACS App. Mater.              M. Yumura, K. Hata, Nat. Commun. 2013, 4, 2202.
+      Interfaces 2018, 10, 5760.                                                  [95] G. J. Wang, Y. J. Ma, Y. P. Cai, Z. H. Cao, X. K. Meng, Carbon 2019,
+[59] H. Khoshnevis, T. Q. Tran, S. M. Mint, A. Zadhoush, H. M. Duong,                   146, 293.
+      M. Youssefi, Colloids Surf., A 2018, 558, 570.                              [96] B. Han, E. Guo, X. Xu, Z. Zhao, L. Luo, H. Qu, T. Niu, Y. Xu,
+[60] L. Zheng, Y. Wang, J. Qin, X. Wang, R. Lu, C. Qu, C. Wang, Vacuum                  H. Hou, Carbon 2017, 123, 593.
+      2018, 152, 84.                                                              [97] B. Han, E. Guo, X. Xu, Z. Zhao, T. Li, Y. Xu, L. Luo, H. Hou, Appl.
+[61] S.-H. Lee, H.-R. Kim, T. Lee, H. Lee, J. Lee, J. Lee, J. Park, K.-H. Lee,          Surface Sci. 2018, 441, 984.
+      Carbon 2017, 124, 219.                                                      [98] R. Sundaram, T. Yamada, K. Hata, A. Sekiguchi, Sci. Rep. 2017, 7,
+[62] P. Liu, Y. Li, Y. Xu, L. Bao, L. Wang, J. Pan, Z. Zhang, X. Sun,                   9267.
+      H. Peng, Small 2018, 14, 1702926.                                           [99] R. Sundaram, T. Yamada, K. Hata, A. Sekiguchi, Mater. Today
+[63] T. Q. Tran, Z. Fan, P. Liu, S. M. Myint, H. M. Duong, Carbon 2016,                 Commun. 2017, 13, 119.
+      99, 407.                                                                    [100] R. Sundaram, T. Yamada, K. Hata, A. Sekiguchi, Jpn. J. Appl. Phys.
+[64] J. Liu, W. Gong, Y. Yao, Q. Li, J. Jiang, Y. Wang, G. Zhou, S. Qu,                 2018, 57, 04FP08.
+      W. Lu, Compos. Sci. Technol. 2018, 164, 290.                                [101] L. R. Randeniya, A. Bendavid, P. J. Martin, C.-D. Tran, Small 2010, 6,
+[65] B. Aleman, M. Vila, J. J. Vilatela, Phys. Status Solidi A 2018, 215,               1806.
+      1800187.                                                                    [102] G. Xu, J. Zhao, S. Li, X. Zhang, Z. Yong, Q. Li, Nanoscale 2011, 3,
+[66] S.-H. Lee, H.-R. Kim, H. Lee, J. Lee, C.-H. Lee, J. Lee, J. Park,                  4215.
+      H.-H. Lee, Chem. Eng. Sci. 2018, 192, 655.                                  [103] Y. Feng, G. E. McGuire, O. A. Shenderova, H. Ke, S. L. Burkett, Thin
+[67] O. Aberefa, K. Bedasie, M. O. Daramola, S. E. Lyuke, Adv. Nat. Sci.:               Solid Films 2016, 615, 116.
+      Nanosci. Nanotechnol. 2018, 9, 035009.                                      [104] C. L. P. Pavithra, B. V. Sarada, K. V. Rajulapati, T. N. Rao,
+[68] G. Hou, D. Chauhan, V. Ng, C. Xu, Z. Yin, M. Paine, R. Su,                         G. A. Sundararajan, Sci. Rep. 2014, 4, 4049.
+      V. Shanov, D. Mast, M. Schulz, Y. Liu, Mater. Des. 2017, 132, 112.          [105] S. Arai, Y. Suwa, M. Endo, J.Electrochem. Soc. 2011, 158, D49.
+[69] A. Pendashteh, E. Senokos, J. Palma, M. Anderson, J. J. Vilatela,            [106] M.-Y. Cheng, K.-Y. Chen, T.-F. Liu, Y.-L.Wang , H.-P. Feng, Thin Solid
+      R. Marcilla, J. Power Sources 2017, 372, 64.                                      Films 2010, 518, 7468.
+[70] R. M. Sundaram, A. H. Windle, Mater. Des. 2017, 126, 85.                     [107] A. Aziz, M. B. Bazbouz, M. E. Welland, ACS Appl. Nano Mater.
+ [71] B. Mas, B. Aleman, I. Dopico, I. M. Bragado, T. Naranjo,                          2020, 3, 9385.
+      E. M. Perez, J. J. Vilatela, Carbon 2016, 101,458.                          [108] P. G. Karagiannidis, S. A. Hodge, L. Lombardi, F. Tomarchio,
+[72] G. Hou, R. Su, A. Wang, V. Ng, W. Li, Y. Song, L. Zhang,                           N. Decorde, S. Milana, I. Goykhman, Y. Su, S. V. Mesite,
+      M. Sundaram, V. Shanov, D. Mast, D. Lashmore, M. Schulz, Y. Liu,                  D. N. Johnstone, R. K. Leary, P. A. Midgley, N. M. Pugno, F. Torrisi,
+      Carbon 2016, 102, 513.                                                            A. C. Ferrari, ACS Nano 2017, 11, 2742.
+[73] C. Paukner, K. K. K. Koziol, Sci. Rep. 2015, 4, 3903.                        [109] S. Luo, T. Liu, Y. Wang, L. Li, G. Wang, Y. Luo, J. Nanoparticle Res.
+[74] V. Reguero, B. Aleman, B. Mas, J. J. Vilatela, Chem. Mater. 2014, 26,              2016, 18, 243.
+      3550.                                                                       [110] S. Azoubel, S. Magdassi, Carbon 2010, 48, 3346.
+[75] T. S. Gspann, F. Smail, A. H. Windle, Faraday Discuss. 2014, 173, 47.        [111] M. N. Nadagouda, R. S. Varma, Macromol. Rapid Commun. 2008,
+[76] X.-H. Zhong, Y.-L. Li, J.-M. Feng, Y.-R. Kang, S.-S. Han, Nanoscale                29, 155.
+      2012, 4, 5614.                                                              [112] M. M. Hamedi, A. Hajian, A. B. Fall, K. Hakansson, M. Salajkova,
+ [77] J. J. Vilatela, L. Deng, I. Kinloch, R. J. Young, A. H. Windle, Carbon            F. Lundell, L. Wagberg, L. A. Berglund, ACS Nano 2014, 8, 2467.
+      2011, 49, 4149.                                                             [113] M. Nadler, T. Mahrholz, U. Riedel, C. Schilde, A. Kwade, Carbon
+[78] R. M. Sundaram, K. K. K. Koziol, A. H. Windle, Adv. Mater. 2011, 23,               2008, 46, 1384.
+      5064.                                                                       [114] Q. Ouyang, Y.-S. Chen, N. Zhang, G.-M. Mo, D.-H. Li, Q. Yan,
+[79] J. J. Vilatela, A. H. Windle, Adv. Mater. 2010, 22, 4959.                          J. Macromol. Sci., Part B: Phys. 2011, 50, 2417.
+[80] X.-H. Zhong, Y.-L. Li, Y.-K. Liu, X.-H. Qiao, Y. Feng, J. Liang, J. Jin,     [115] D. Grujicic, B. Pesic, Electrochim. Acta 2002, 47, 2901.
+      L. Zhu, F. Hou, J.-Y. Li, Adv. Mater. 2010, 22, 692.                        [116] M. B. Bazbouz, S. J. Russell, J. Mater. Sci. 2018, 53, 10891.
+[81] D. Conroy, A. Moisala, S. Cardoso, A. Windle, J. Davidson, Chemical          [117] W. Li, L. Liu, C. Zhong, B. Shen, W. Hu, J. Alloys Compd. 2011, 509,
+      Eng. Sci. 2010, 65, 2965.                                                         3532.
+[82] K. Koziol, J. Vilatela, A. Moisala, M. Motta, P. Cunniff, M. Sennett,        [118] B. A. Kakade, V. K. Pillai, Appl. Surface Sci. 2008, 254, 4936.
+      A. Windle, Science 2007, 318, 1892.                                         [119] Y. Wang, Z. Iqbal, S. Mitra, J. Am. Chem. Soc. 2006, 128, 95.
+[83] M. Motta, I. Kinloch, A. Moisala, V. Premnath, M. Pick, A. Windle,           [120] F. Aviles, J. V. Cauich-Rodriguez, L. Moo-Tah, A. May-Pat, R. Vargas-
+      Physica E 2007, 37, 40.                                                           Coronado, Carbon 2009, 47, 2970.
+[84] M. Motta, A. Moisala, I. A. Kinloch, A. H. Windle, Adv. Mater. 2007,         [121] Y. Wei, X. Ling, L. Zou, D. Lai, H. Lu, Y. Xu, Colloids Surf., A 2015,
+      19, 3721.                                                                         482, 507.
+[85] M. Motta, Y.-L. Li, I. Kinloch, A. Windle, Nano Lett. 2005, 5, 1529.         [122] L. Lu, Y. F. Shen, X. H. Chen, L. H. Qian, K. Lu, Science 2004, 304,
+[86] Y.-L. Li, I. A. Kinloch, A. H. Windle, Science 2004, 304, 276.                     422.
+[87] H. W. Zhu, C. L. Xu, D. H. Wu, B. Q. Wei, R. Vajtai, P. M. Ajayan,           [123] X. H. Zhong, R. Wang, Y. Y. Wen, Phys. Chem. Chem. Phys. 2013, 15, 3861.
+      Science 2002, 296, 884.                                                     [124] F. Gao, J. Qu, M. Yao, Appl. Phys. Lett. 2010, 96, 102108.
+
+
+Adv. Electron. Mater. 2021, 7, 2001213        2001213 (12 of 13)                 © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+                                                                                                                                                                 2199160x, 2021, 4, Downloaded from https://advanced.onlinelibrary.wiley.com/doi/10.1002/aelm.202001213, Wiley Online Library on [24/04/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+www.advancedsciencenews.com
+                                                                                                                                   www.advelectronicmat.de
+
+[125] M. Ghorbani-Asl, P. D. Bristowe, K. Koziol, Phys. Chem. Chem. Phys.         [129] X. Wang, N. Behabtu, C. C. Young, D. E. Tsentalovich, M. Pasquali,
+      2015, 17, 18273.                                                                  J. Kono, Adv. Funct. Mater. 2014, 24, 3241.
+[126] G. Mokry, J. Pozuelo, J. J. Vilatela, J. Sanz, J. Baselga, Nanomaterials    [130] D. B. Butrymowicz, J. R. Manning, M. E. Read, J. Phys. Chem. Ref.
+      2019, 9, 383.                                                                     Data 1973, 2, 643.
+[127] A. Kamyshny, S. Magdassi, Chem. Soc. Rev. 2019, 48, 1712.                   [131] P. Kim, L. Shi, A. Majumdar, P. L. McEuen, Phys. Rev. Lett. 2001, 87,
+[128] A. Kamyshny, S. Magdassi, Small 2014, 10, 3515.                                   215502.
+
+
+
+
+Adv. Electron. Mater. 2021, 7, 2001213        2001213 (13 of 13)                 © 2021 The Authors. Advanced Electronic Materials published by Wiley-VCH GmbH
+

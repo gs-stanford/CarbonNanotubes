@@ -1,0 +1,14 @@
+{
+  "plot_data": "figures/cnt_conductivity_plot_data.csv",
+  "png": "figures/cnt_conductivity_landscape.png",
+  "svg": "figures/cnt_conductivity_landscape.svg",
+  "pdf": "figures/cnt_conductivity_landscape.pdf",
+  "cnt_records_with_density_and_conductivity": 54,
+  "graphene_or_go_records_with_density_and_conductivity": 13,
+  "metal_benchmarks_with_density_and_conductivity": 10,
+  "vilatela_density_g_cm3": 1.4121037463976942,
+  "vilatela_conductivity_MS_m": 24.5,
+  "vilatela_specific_kS_m2_kg": 17.350000000000005,
+  "copper_specific_kS_m2_kg": 6.565126050420168,
+  "vilatela_specific_vs_copper_ratio": 2.6427520000000007
+}

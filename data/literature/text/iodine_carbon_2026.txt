@@ -1,0 +1,400 @@
+                                                                              Carbon 255 (2026) 121575
+
+
+                                                                     Contents lists available at ScienceDirect
+
+
+                                                                                      Carbon
+                                                          journal homepage: www.elsevier.com/locate/carbon
+
+
+
+
+Structural and electronic properties of iodine-intercalated carbon nanotube
+fibers and their conductivity mechanism
+Satoshi Yamazaki a,*, Takahiro Morimoto b , Yoko Iizumi b, Takumi Inaba c ,
+Kazufumi Kobashi b , Toshiya Okazaki b,**
+a
+  Research Association of High-Throughput Design and Development for Advanced Functional Materials, Tsukuba, Ibaraki, 305-8565, Japan
+b
+  Nanocarbon Materials Research Institute, National Institute of Advanced Industrial Science and Technology (AIST), Tsukuba Central 5, 1-1-1 Higashi, Tsukuba,
+Ibaraki, 305-8565, Japan
+c
+  Semiconductor Frontier Research Center, National Institute of Advanced Industrial Science and Technology (AIST), Japan
+
+
+
+
+A R T I C L E I N F O                                      A B S T R A C T
+
+Keywords:                                                  This study investigates the effect of iodine intercalation on the electrical conductivity of carbon nanotube (CNT)
+Carbon nanotube fiber                                      fibers. Iodine was introduced by liquid-phase and vapor-phase intercalation. Structural analyses revealed that
+Iodine chain                                               liquid-phase intercalation primarily produced linear iodine chains located in interstitial regions between CNTs,
+Intercalation compound
+                                                           while vapor-phase intercalation additionally introduced iodine into CNT inner cavities, forming ordered chain-
+Transport mechanism
+Electrical conductivity
+                                                           like lattice structures. X-ray absorption fine structure and Raman spectroscopy showed that neutral I2 species,
+                                                           including chain-like and molecular-lattice-like forms, are dominant, accompanied by a smaller amount of ionic
+                                                           I−3 . The C valence band onset and Raman G-band position remained nearly unchanged, indicating limited charge
+                                                           transfer to the CNTs. Nevertheless, the electrical conductivity increased from 3.6 MS m− 1 to 5.7 and 8.8 MS m− 1
+                                                           after liquid- and vapor-phase intercalation, respectively. These results suggest that the conductivity enhancement
+                                                           mainly arises from reduced inter-tube contact resistance due to iodine chain incorporation, rather than electronic
+                                                           doping of the CNTs.
+
+
+
+
+1. Introduction                                                                                  conductivity of as-spun CNT fibers remains far lower than that of copper
+                                                                                                 (58 MS m− 1) [3], making further conductivity enhancement an essential
+    Carbon nanotube (CNT) fibers have attracted considerable attention                           challenge.
+as next-generation conductive fibrous materials due to their unique                                  Chemical intercalation has emerged as a key strategy to enhance the
+combination of light weight, high electrical conductivity, mechanical                            conductivity of CNT fibers, drawing inspiration from graphite interca­
+flexibility, durability, and corrosion resistance [1–4]. Advances in CNT                         lation compounds and conductive polymers [1–10]. Electron-donating
+synthesis and fiber spinning over the past decade have enabled the                               or electron-accepting species can penetrate inter-tube voids or CNT
+fabrication of macroscopic CNT fibers composed of long, well-aligned                             inner cavities, modulating the electronic states of semiconducting and
+nanotubes with high packing density. As a result, their tensile strength                         metallic CNTs while also improving electrical coupling across CNT–CNT
+now exceeds that of many conventional high-performance fibers, and                               junctions. For instance, Zubair et al. reported that iodine intercalation
+their longitudinal electrical conductivity has approached the reported                           forms linear iodine chains between CNTs, increasing conductivity from
+intrinsic conductivity of CNT bundles (~1-3 MS m− 1) [3]. Among the                              1.1 to 6.5 MS m− 1 through charge transfer interactions [6]. Naruse et al.
+various potential applications, their use as lightweight electrical wiring                       and Iwase et al. demonstrated that FeCl3 introduced into both inter-tube
+is particularly promising. Replacing copper with CNT fibers has been                             spaces and CNT cores enhances conductivity to approximately 6 MS m− 1
+proposed as an effective means to reduce the mass of aerospace cabling                           while retaining high thermal stability at 220 ◦ C [7,8]. More recently,
+systems [1]. Furthermore, increasing demand for metallic conductors                              Madrona et al. showed that bromine intercalation can yield conductivity
+alongside concerns regarding resource sustainability has intensified in­                         values exceeding 10 MS m− 1, with structural analyses revealing the
+terest in carbon-based conductive alternatives. However, the electrical                          formation of Br chains and the coexistence of Br2 and Br−3 species [9].
+
+
+    * Corresponding author.
+    ** Corresponding author.
+      E-mail addresses: satoshi.mayama.yamazaki@furukawaelectric.com (S. Yamazaki), toshi.okazaki@aist.go.jp (T. Okazaki).
+
+https://doi.org/10.1016/j.carbon.2026.121575
+Received 30 December 2025; Received in revised form 1 April 2026; Accepted 7 April 2026
+Available online 8 April 2026
+0008-6223/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+S. Yamazaki et al.                                                                                                                          Carbon 255 (2026) 121575
+
+
+
+
+Fig. 1. SEM images of iodine-intercalated CNT fibers prepared by (a, b) liquid-phase and (c, d) vapor-phase intercalation: (a, c) cross-sectional and (b, d) lateral
+views. (e–h) Corresponding EDS elemental mapping of iodine.
+
+
+    Despite these advances, a comprehensive understanding of how the                 by vapor-phase treatment, in which the fibers and iodine were sealed in
+structure and electronic state of intercalated species influence the                 a glass tube, annealed at 200 ◦ C under vacuum for 12 h, and subse­
+electronic properties of CNTs and the overall conductivity of CNT fibers             quently rinsed with ethanol. For XAFS measurements, tetrabuty­
+remains limited. In this study, we investigate iodine-intercalated CNT               lammonium iodide ((CH3CH2CH2CH2)4NI, >99.0%, Sigma-Aldrich),
+fibers prepared by liquid-phase and vapor-phase intercalation. Cross-                iodine (I2, >99.9, Fujifilm Wako Pure Chemical) and tetrabutylammo­
+sectional high-resolution transmission electron microscopy (HRTEM)                   nium triiodide ((CH3CH2CH2CH2)4NI3, >96.0%, Tokyo Chemical In­
+and X-ray diffraction (XRD) revealed that liquid-phase intercalation                 dustry) were used as reference compounds representing ionic iodine
+predominantly introduces linear iodine chains into inter-tube regions,               monomers (I− ), neutral molecular iodine dimers (I2), and ionic iodine
+whereas vapor-phase intercalation additionally incorporates iodine into              trimers (I−3 ), respectively.
+CNT inner cavities, forming ordered lattice-like structures. Elemental
+analysis indicated iodine loadings of approximately C128I for the liquid-            2.2. Characterizations
+phase sample and C31I for the vapor-phase sample. X-ray absorption fine
+structure (XAFS) and Raman spectroscopy identified neutral molecular                     The morphologies of the CNT fibers were observed by scanning
+I2 chains as the dominant species, accompanied by a smaller fraction of              electron microscopy (SEM) (Hitachi SU-8200) and scanning trans­
+ionic I−3 . In contrast, X-ray photoelectron spectroscopy (XPS) of the C             mission electron microscopy (STEM) (JEOL JEM-ARM200F). The
+valence band onset and Raman G-band analysis revealed negligible                     elemental analyses were conducted by energy dispersive X-ray Spec­
+shifts relative to the as-prepared fibers, indicating charge transfer to the         troscopy (EDS) (JEOL JED-2300T DrySDD100mm) and Electron Energy
+CNTs is not significant. While the electronic doping effect of iodine on             Loss Spectroscopy (EELS) (Gatan GIF Continuum). The Raman spectra
+the CNTs is limited, the electrical conductivity increased from                      were measured with HORIBA-JY T64000 (HORIBA) with an excitation
+3.6 MS m− 1 in the as-prepared fibers to 5.7 MS m− 1 after liquid-phase              wavelength of 532 nm. XRD measurements of CNT fibers were con­
+intercalation and to 8.8 MS m− 1 after vapor-phase intercalation.                    ducted using the BL8S3 beam line at AichiSR (q = 10-40 nm− 1) with a
+    In previous studies, Raman G-band shifts in CNTs have been inter­                wavelength of 0.92 Å.
+preted as evidence of charge transfer between intercalated molecules                     XAFS of CNT fibers was performed using the BL6N1 beam line at
+and CNTs, and the resulting conductivity enhancement has often been                  AichiSR under normal temperature and pressure conditions (with a
+attributed to electronic doping accompanied by reduced inter-tube                    helium atmosphere). XPS of the CNT fibers was performed at 8 K by
+contact resistance. In contrast, under the present conditions, strong                cooling with a helium cryostat using the BL7U XAFS beamline at
+charge-transfer doping does not appear to play a significant role in the             AichiSR. X-ray computed tomography (CT) of CNT fiber was observed by
+CNT fibers studied here. Instead, our results indicate that iodine inter­            X-ray computed tomography Rigaku nano3DX (Rigaku).
+calation predominantly enhances conductivity through a reduction in                      The electrical resistance of the CNT fibers was measured using the
+inter-tube contact resistance.                                                       four-terminal method. In this four-terminal measurement system, a DC
+                                                                                     and AC current source (Model 6221, Keithley Instruments, Cleveland,
+2. Experimental section                                                              OH, USA) was used as the current source, and a digital multimeter
+                                                                                     (VOAC7602, Iwatsu Electric Co., Ltd., Tokyo, Japan) was used as the
+2.1. Materials                                                                       voltmeter. The distance between the two terminals of the differential
+                                                                                     voltage measurement system was 25 mm. The obtained values were
+    CNT fibers purchased from DexMat, consisting of highly aligned                   averaged over at least three samples for each CNT fiber. The cross-
+double-walled carbon nanotubes (DWCNTs) spun as described else­                      sectional area of the CNT fibers was estimated from optical micro­
+where [11], were annealed at approximately 200 ◦ C under vacuum to                   scopy images. The apparent width of each fiber was measured from side-
+remove residual chlorosulfonic acid (CSA) (hereafter referred to as the              view images, and the cross-sectional area was calculated assuming a
+as-prepared sample). Iodine intercalation was carried out either by                  circular geometry using the measured width as the diameter.
+liquid-phase immersion in an ethanol solution of iodine for 10 min,
+followed by rinsing with ethanol until the solution became colorless, or
+
+                                                                                 2
+S. Yamazaki et al.                                                                                                                           Carbon 255 (2026) 121575
+
+
+
+
+Fig. 2. (a-d) HAADF-STEM images and EDX elemental mapping of CNT fibers intercalated by the liquid-phase method. (e-h) HAADF-STEM images and EDX
+elemental mapping of CNT fibers intercalated by the vapor-phase method. (a, b, e, f) Cross-sectional views; (d, h) lateral views. (c, g) EDX elemental maps showing
+carbon (green) and iodine (magenta), corresponding to the STEM images in (b) and (f), respectively.
+
+
+
+
+Fig. 3. Enlarged HAADF-STEM images of iodine-intercalated CNT fibers prepared by (a–d) liquid-phase and (e–h) vapor-phase intercalation. Five distinct iodine
+configurations are observed: Type 1 - inter-tube single-chain iodine; Type 2 - single-chain iodine confined inside narrow CNT cores; Type 3 - concentric iodine
+arrangements inside larger CNT cores; Type 4 - lattice-like ordered iodine structures confined within CNT interiors; Type 5 - crystal-like iodine aggregates occupying
+inter-tube voids.
+
+
+3. Results and discussion                                                             approximately 20 μm, and the overall morphology remained consistent
+                                                                                      with that of the as-received DexMat fibers [11]. In the cross-sectional
+   Fig. 1 shows SEM images of iodine-intercalated CNT fibers prepared                 image of the liquid-phase intercalated fiber (Fig. 1a), several voids are
+by liquid-phase (Fig. 1a and b) and vapor-phase (Fig. 1c and d) inter­                visible within the CNT bundle; however, similar voids were also
+calation. Cross-sectional views are presented in Fig. 1a and c, and side              observed in some regions of the as-received fibers (Fig. S1). Moreover,
+views in Fig. 1b and d. In both samples, the fiber diameter was                       the apparent difference in void distribution between the liquid-phase
+
+
+                                                                                  3
+S. Yamazaki et al.                                                                                                                            Carbon 255 (2026) 121575
+
+
+
+
+Fig. 4. (a) Two-dimensional wide-angle X-ray scattering (WAXS) patterns of CNT fibers intercalated by the liquid-phase (left) and vapor-phase (right) methods. (b)
+Radial intensity profiles extracted along the CNT (002) (perpendicular to the alignment direction) and (100) (parallel) directions. Reflections originating from iodine
+are indicated by arrows.
+
+
+
+
+Fig. 5. (a) I L1-edge and (b) I L3-edge XAFS spectra of CNT fibers intercalated by liquid-phase and vapor-phase methods, shown together with reference spectra of
+molecular I2, ionic I−3 (tetrabutylammonium triiodide), and ionic I− (tetrabutylammonium iodide). (c) Raman spectra of iodine-intercalated CNT fibers prepared by
+liquid-phase and vapor-phase intercalation, compared with that of the as-prepared CNT fibers.
+
+
+and vapor-phase intercalated samples is attributed mainly to local het­                method.
+erogeneity within the CNT fibers, since regions containing visible voids                   STEM observations and energy-dispersive X-ray spectroscopy (EDX)
+and relatively dense regions coexist in both samples. These observations               analyses were carried out on both the lateral and cross-sectional views of
+indicate that the annealing and subsequent iodine intercalation pro­                   the iodine-intercalated CNT fibers (Fig. 2). Fig. 2a–d correspond to the
+cesses employed here did not significantly alter the fiber surface                     fibers intercalated by the liquid-phase method, and Fig. 2e–h to those
+morphology. Fig. 1e–h show the corresponding EDS elemental mapping.                    intercalated by the vapor-phase method. Cross-sectional high-angle
+In both samples, iodine is homogeneously distributed throughout the                    annular dark-field STEM (HAADF-STEM) images are shown in Fig. 2a, b,
+fiber, with no evidence of surface-localized aggregation. Comparison of                2e, and 2f, while side-view images are shown in Fig. 2d and h. In these
+the EDS signal intensities demonstrates that the vapor-phase interca­                  HAADF-STEM images, intercalated iodine atoms appear as regions of
+lated fiber contains a higher iodine content than the liquid-phase                     high contrast. Indeed, the bright spots in Fig. 2b and f coincide with the
+intercalated fiber, consistent with the representative EDS spectrum                    iodine signal in the corresponding EDX elemental maps (Fig. 2c and g),
+shown in Fig. S2. Quantitative elemental analysis further revealed                     where carbon and iodine are displayed in green and magenta, respec­
+stoichiometries of C128I for the liquid-phase sample and C31I for the                  tively. In the liquid-phase intercalated fibers (Fig. 2a–c), iodine is pre­
+vapor-phase sample, confirming that the vapor-phase intercalation in­                  dominantly located at inter-tube interstitial sites, forming linear
+troduces approximately four times more iodine than the liquid-phase                    domains with lengths of at least ~2 nm (Fig. 2d). In contrast, in the
+
+                                                                                   4
+S. Yamazaki et al.                                                                                                                       Carbon 255 (2026) 121575
+
+
+
+
+Fig. 6. EELS spectra at the iodine M4-edge for CNT fibers intercalated by the vapor-phase method, acquired from regions corresponding to Types 1–5, as defined by
+the different iodine configurations within and between CNTs.
+
+
+vapor-phase intercalated fibers (Fig. 2e–g), iodine is observed not only            intercalated by the liquid-phase method, Types 1 and 2 were predomi­
+between CNTs but also inside CNT inner cavities, where it adopts lattice-           nantly observed, whereas fibers intercalated by the vapor-phase method
+like arrangements. Moreover, the lateral view of the vapor-phase                    exhibited all four configurations (Types 1-4). Moreover, in the vapor-
+intercalated sample (Fig. 2h) shows longer and more continuous                      phase samples, iodine was also found filling relatively large inter-tube
+iodine domains compared with the liquid-phase sample, consistent with               voids and forming crystal-like aggregates, which we categorize as
+the higher overall intercalation amount achieved by the vapor-phase                 Type 5.
+process.                                                                                To examine the long-range structural arrangement of the interca­
+    Fig. 3 presents enlarged cross-sectional HAADF-STEM images of CNT               lated iodine, XRD measurements were performed (Fig. 4a). Owing to the
+fibers intercalated by the liquid-phase (Fig. 3a–d) and vapor-phase                 high degree of alignment in the CNT fibers, the (002) interlayer reflec­
+(Fig. 3e–h) methods. Several distinct configurations of intercalated                tion of the CNTs appears as a distinct spot on the 2D detector for both
+iodine were identified. The simplest configuration is a single-chain                liquid- and vapor-phase intercalated samples. Although the (100)
+iodine species, which appears either in the interstitial spaces between             reflection does not emerge as a well-defined spot, a pronounced scat­
+CNTs (Type 1) or inside narrow CNT inner cavities (Type 2). Type-2                  tering intensity perpendicular to the (002) reflection is observed,
+iodine was observed in CNTs whose inner diameters were approxi­                     consistent with the anisotropic alignment of the CNT bundles. In addi­
+mately 1.1 nm or smaller. For CNTs with larger inner diameters, two                 tion to these CNT-derived reflections, additional diffraction peaks were
+additional configurations were observed: concentric arrangements of                 detected that cannot be attributed to the graphite lattice. These peaks
+iodine located along the CNT interior (Type 3), and lattice-like ordered            originate from the intercalated iodine species.
+iodine structures confined within the CNT cores (Type 4). In fibers                     Radial intensity profiles along the CNT (002) and (100) directions
+
+
+                                                                                5
+S. Yamazaki et al.                                                                                                                          Carbon 255 (2026) 121575
+
+
+
+
+Fig. 7. (a) XPS spectra of the C valence band and (b) Raman G-band spectra of CNT fibers, shown for the as-prepared sample and after iodine intercalation by liquid-
+phase and vapor-phase methods.
+
+
+                                                                                     [12]. This interatomic spacing also agrees well with first-principles
+                                                                                     predictions for iodine chains located either in CNT interiors or inter­
+                                                                                     stitial sites (0.285–0.321 nm) [6]. Such a chain-like configuration of
+                                                                                     iodine can be attributed to type-1 iodine located between CNT bundles,
+                                                                                     or to type-2 iodine confined within CNTs with small inner diameters
+                                                                                     (less than 1.1 nm).
+                                                                                         Additionally, in the vapor phase sample, a sharp peak was detected
+                                                                                     at q = 23.2 nm− 1, corresponding to an interatomic distance of approx­
+                                                                                     imately 0.271 nm. Although the iodine configuration responsible for this
+                                                                                     shorter spacing compared with 0.301 nm remains unclear, it is plausible
+                                                                                     that this diffraction feature originates from iodine molecular chains
+                                                                                     adopting a zigzag geometry inside the CNTs. In particular, a fraction of
+                                                                                     type-3 iodine may be accommodated within relatively wide CNT in­
+                                                                                     teriors, where the available space favors a zigzag arrangement rather
+                                                                                     than a linear chain, thereby leading to a shorter interatomic distance
+                                                                                     compared with the straight-chain configuration (Fig. S3).
+                                                                                         Furthermore, characteristic peaks appeared at q = 13.1, 25.3, and
+                                                                                     34.3 nm− 1, corresponding to interatomic distances of 0.473, 0.249, and
+                                                                                     0.183 nm, respectively. These values are in good agreement with the
+                                                                                     (002), (004), and (023) reflections of crystalline molecular iodine
+                                                                                     (0.489, 0.245, and 0.189 nm [13]) (Fig. S4), suggesting that they orig­
+                                                                                     inate from lattice-like arrangements of iodine molecules encapsulated
+                                                                                     within CNTs having inner diameters of approximately 2 nm (Type 4). In
+                                                                                     this configuration, iodine is not only radially confined but also forms a
+Fig. 8. Electrical conductivity of CNT fibers for the as-prepared sample and         translationally periodic arrangement along the CNT axis. Because of this
+after iodine intercalation by liquid-phase and vapor-phase methods.                  axial periodicity, the (200) reflection of crystalline iodine (Fig. S4)
+                                                                                     should appear at q = 17.3 nm− 1, slightly higher than the (002) reflection
+were extracted and are shown in Fig. 4b. The intensities were integrated             of CNTs (q = 17.1 nm− 1). Consistent with this expectation, a peak cor­
+over the regions enclosed by the white dashed lines, labeled as regions              responding to the (400) reflection is observed at q = 34.6 nm− 1, and the
+(1) and (2) in Fig. 4a. Along the (002) direction, significant differences           associated interatomic distance (0.181 nm) agrees well with that of
+were not observed among the as-prepared (prior to iodine intercalation),             molecular crystalline iodine (0.178 nm) [13]. Therefore, the shift of the
+liquid-phase, and vapor-phase intercalated fibers. However, in the                   carbon (002) peak toward higher q observed in the vapor-intercalated
+vapor-phase sample, the CNT (002) peak exhibited a slight shift toward               fibers is likely caused by overlapping with the iodine (200) reflection,
+higher q values.                                                                     while the presence of the (400) reflection further supports the formation
+    In contrast, along the (100) direction, diffraction features associated          of lattice-like iodine arrangements within the CNTs (upper part of
+with iodine were clearly observed. For the liquid-phase and the vapor-               Fig. 4b).
+phase intercalated fibers, a strong peak at q = 20.9 nm− 1 was detec­                    The electronic state of the encapsulated iodine was then investigated
+ted, corresponding to an interatomic distance of ~0.301 nm, which is                 by XAFS (Fig. 5). At the iodine L1-edge (Fig. 5a), the spectra of both
+consistent with previously reported values for iodine chains confined                liquid- and vapor-phase intercalated fibers closely resembled those of
+between CNTs or within ~0.75 nm diameter SWCNTs (0.29 ± 0.02 nm)                     molecular iodine dimers (I2) and ionic trimers (I−3 ), and were clearly
+
+
+                                                                                 6
+S. Yamazaki et al.                                                                                                                               Carbon 255 (2026) 121575
+
+
+
+
+Fig. 9. Schematic illustration of the conduction mechanism in iodine-intercalated CNT fibers. (a) In the absence of iodine, electrical transport is limited by poor inter-
+tube contact, resulting in discontinuous conduction paths. (b) When iodine occupies interstitial sites between adjacent CNT walls, it bridges the gap and forms a
+continuous conductive pathway, thereby reducing inter-tube contact resistance and enhancing electrical conductivity.
+
+
+distinct from that of the ionic monomer (I− ). At the iodine L3-edge                        The electronic structure near the valence band was analyzed using
+(Fig. 5b), the intercalated fibers exhibited absorption energies lying                  synchrotron-based XPS measurements with high energy resolution at
+between those of I2 and I−3 . Linear combination fitting of the fiber spectra           low temperatures (8 K) to minimize thermal broadening (Fig. 7a). The
+was performed using the XAFS spectra of molecular I2 and ionic I−3 as                   onset of the C valence band for the iodine-intercalated fibers was
+reference components (Fig. S5). The fitting yielded apparent spectral                   observed at approximately 0.01 eV for the liquid-phase sample and
+contributions of 82:18 for the liquid-phase intercalated sample and 95:5                0.05 eV for the vapor-phase sample, essentially unchanged from that of
+for the vapor-phase intercalated sample. These coefficients should be                   the as-prepared fiber (0.01 eV). Furthermore, the Raman G-band profile
+interpreted as reflecting the similarity of the fiber spectra to those of the           remained nearly identical across all samples (Fig. 7b), with the peak
+respective reference species, rather than as direct quantitative fractions.             consistently located at 1590 cm− 1 within an experimental variation of
+Taken together, the results indicate that neutral molecular I2 species are              ±1 cm− 1.
+predominant in both samples, with the vapor-phase intercalated fibers                       From the XAFS analysis, the iodine species present in the fibers were
+exhibiting a higher relative contribution from I2.                                      found to be predominantly I2-like molecular or quasi-molecular units,
+    Furthermore, Raman spectroscopy was conducted to probe the                          which are electronically neutral and therefore unlikely to induce sig­
+vibrational states of the intercalated iodine (Fig. 5c). Two distinct peaks             nificant charge transfer to the CNTs. This conclusion is consistent with
+were observed at 170 cm− 1 and 107 cm− 1. Previous Raman studies of                     the XRD results, which indicate lattice-like arrangements of iodine
+iodine chains confined within one-dimensional hosts, such as the                        within the CNT interiors, and with the Raman spectra, where the
+channels of AlPO4-5 zeolite crystals, have shown that the stretching                    vibrational band associated with chain-like (I2)n species is observed. In
+mode of polyiodine chains ((I2)n) typically appears near 170 cm− 1,                     contrast, the ionic trimer species (I−3 ), which could potentially withdraw
+which is significantly red-shifted from the stretching mode of free I2                  electrons from the CNTs, appear only as a minor spectral component.
+molecules (~206 cm− 1) [14–16]. In contrast, the band near 110 cm− 1                    Taken together, these results indicate that I2-type species are the pri­
+has been assigned to the symmetric stretching vibration of linear I−3 .                 mary iodine form in the intercalated fibers, and their overall influence
+Accordingly, the peaks observed here at 170 cm− 1 and 107 cm− 1 are                     on the electronic structure of the CNTs is limited.
+attributed to polyiodine chains confined within the CNT fibers and to I−3                   Fig. 8 shows the electrical conductivity of the CNT fibers before and
+species, respectively. These results indicate that both polyiodine chains               after iodine intercalation. The as-prepared fibers exhibited a conduc­
+and I−3 species are present in the iodine-intercalated CNT fibers for both              tivity of 3.6 MS m− 1, which increased to 5.7 MS m− 1 after liquid-phase
+the liquid-phase and vapor-phase intercalation methods.                                 intercalation and to 8.8 MS m− 1 after vapor-phase intercalation. Struc­
+    Fig. 6 shows the iodine M4-edge EELS spectra acquired from regions                  tural and spectroscopic analyses indicate that while some degree of
+corresponding to Types 1–5. The insets display the HAADF-STEM im­                       electronic interaction between iodine and the CNTs is present, the
+ages of the respective measurement areas, and the EELS signals were                     magnitude of charge transfer is limited and does not result in appre­
+collected from the regions indicated by the white squares. All spectra                  ciable modification of the intrinsic electronic structure of the CNTs.
+exhibit nearly identical line shapes. This result indicates that the elec­              Therefore, the primary origin of the conductivity enhancement is
+tronic states of iodine located within the CNT interiors and those situ­                attributed to improved inter-tube coupling through iodine incorporation
+ated in the interstitial regions between CNTs are essentially the same.                 at CNT-CNT junctions (Fig. 9). In the liquid-phase intercalated fibers,
+
+                                                                                    7
+S. Yamazaki et al.                                                                                                                                Carbon 255 (2026) 121575
+
+
+iodine is introduced into narrow interstitial sites between CNTs (Type           by the New Energy and Industrial Technology Development Organiza­
+1), which contributes to reducing contact resistance. In the vapor-phase         tion (NEDO).
+intercalated fibers, however, a substantially greater amount of iodine,
+approximately four times that of the liquid-phase sample, is incorpo­            Appendix. ASupplementary data
+rated. This allows iodine to also occupy larger inter-tube voids (Type 5),
+effectively bridging junctions across both small and large CNT separa­              Supplementary data to this article can be found online at https://doi.
+tions. As a result, the long-range conductive network is reinforced,             org/10.1016/j.carbon.2026.121575.
+leading to the higher conductivity observed in the vapor-phase inter­
+calated fibers.                                                                  References
+    The environmental stability of iodine-intercalated CNT fibers was
+evaluated by measuring their electrical conductivity after long-term              [1] A. Lekawa-Raus, J. Patmore, L. Kurzepa, J. Bulmer, K. Koziol, Electrical properties
+                                                                                      of carbon nanotube based fibers and their future use in electrical wiring, Adv.
+storage under ambient conditions. After more than one year, the con­                  Funct. Mater. 24 (2014) 3661–3682, https://doi.org/10.1002/adfm.201303716.
+ductivity showed only a small variation (within ±5%), indicating that             [2] X. Zhang, W. Lu, G. Zhou, Q. Li, Understanding the mechanical and conductive
+the intercalated iodine is reasonably stable under ambient conditions.                properties of carbon nanotube fibers for smart electronics, Adv. Mater. 32 (2019)
+                                                                                      1902028, https://doi.org/10.1002/adma.201902028.
+                                                                                  [3] J.S. Bulmer, A. Kaniyoor, J.A. Elliott, A meta-analysis of conductive and strong
+4. Conclusions                                                                        carbon nanotube materials, Adv. Mater. 33 (2021) 2008432, https://doi.org/
+                                                                                      10.1002/adma.202008432.
+                                                                                  [4] Z. Yang, Y. Yang, Y. Huang, Y. Shao, H. Hao, S. Yao, Q. Xi, Y. Guo, L. Tong, M. Jian,
+    Iodine was intercalated into CNT fibers using both liquid-phase and               Y. Shao, J. Zhang, Wet-spinning of carbon nanotube fibers: dispersion, processing
+vapor-phase methods. Elemental analysis revealed iodine contents cor­                 and properties, Natl. Sci. Rev. 11 (2024), https://doi.org/10.1093/nsr/nwae203
+responding to C128I for the liquid-phase sample and C31I for the vapor-               nwae203.
+                                                                                  [5] N. Behabtu, C.C. Young, D.E. Tsentalovich, O. Kleinerman, X. Wang, A.W.K. Ma, E.
+phase sample. Cross-sectional STEM and XRD analyses showed that
+                                                                                      A. Bengio, R.F. ter Waarbeek, J.J. de Jong, R.E. Hoogerwerf, S.B. Fairchild, J.
+liquid-phase intercalation introduced iodine predominantly as linear                  B. Ferguson, B. Maruyama, J. Kono, Y. Talmon, Y. Cohen, M.J. Otto, M. Pasquali,
+chains located in the interstitial sites between CNTs, while vapor-phase              Strong, light, multifunctional fibers of carbon nanotubes with ultrahigh
+intercalation resulted in iodine occupying both inter-tube spaces and the             conductivity, Science 339 (2013) 182–186, https://doi.org/10.1126/
+                                                                                      science.1228061.
+interior of CNTs, forming ordered lattice-like structures. XAFS and               [6] A. Zubair, D. Tristant, C. Nie, D.E. Tsentalovich, R.J. Headrick, M. Pasquali,
+Raman spectroscopy confirmed that iodine was present as a mixture of                  J. Kono, V. Meunier, E. Flahaut, M. Monthioux, I.C. Gerber, P. Puech, Charged
+I2-like molecular units and I−3 species. However, XPS and Raman G-band                iodide in chains behind the highly efficient iodine intercalation in carbon
+                                                                                      nanotubes, Phys. Rev. Mater. 1 (2017) 064002, https://doi.org/10.1103/
+measurements revealed only minimal changes to the electronic structure                PhysRevMaterials.1.064002.
+of the CNTs, indicating that the extent of charge transfer induced by             [7] J. Naruse, T. Yokoi, K. Ishino, Y. Hikita, K. Iwase, High-temperature electrical
+intercalation is limited. The electrical conductivity of the CNT fibers               conductivity and thermal stability of FeCl3 intercalation in carbon nanotube tapes,
+                                                                                      Appl. Phys. Exp. 14 (2021) 095002, https://doi.org/10.35848/1882-0786/ac1fc0.
+increased from 3.6 MS m− 1 for the as-prepared sample to 5.7 MS m− 1              [8] K. Iwase, Y. Hikita, T. Yokoi, Development of thermally stable carbon nanotube
+after liquid-phase intercalation and to 8.8 MS m− 1 after vapor-phase                 tapes by incorporating FeCl3, Mater. Sci. Eng. B 291 (2023) 116361, https://doi.
+intercalation. Taken together, these results demonstrate that the pri­                org/10.1016/j.mseb.2023.116361.
+                                                                                  [9] C. Madrona, S. Hong, D. Lee, J. García-Pérez, J.M. Guevara-Vela, R.B. Gavito,
+mary mechanism of conductivity enhancement is the reduction of inter-                 A. Mikhalchan, J. Llorca, B.-C. Ku, D. Granados, J.Y. Hwang, J.J. Vilatela,
+tube contact resistance, achieved through iodine incorporation at CNT-                Continuous intercalation compound fibers of bromine wires and aligned CNTs for
+CNT junctions, with vapor-phase intercalation offering greater                        high-performance conductors, Carbon 204 (2023) 211–218, https://doi.org/
+                                                                                      10.1016/j.carbon.2022.12.041.
+improvement due to its more extensive filling of inter-tube voids.
+                                                                                 [10] Y. Zhao, J. Wei, R. Vajtai, P.M. Ajayan, E.V. Barrera, Iodine intercalated carbon
+                                                                                      nanotube cables exceeding specific electrical conductivity of metals, Sci. Rep. 1
+CRediT authorship contribution statement                                              (2011) 83, https://doi.org/10.1038/srep00083.
+                                                                                 [11] T. Watanabe, S. Yamazaki, S. Yamashita, T. Inaba, S. Muroga, T. Morimoto,
+                                                                                      K. Kobashi, T. Okazaki, Comprehensive characterization of structural, electrical,
+   Satoshi Yamazaki: Conceptualization, Investigation, Visualization,                 and mechanical properties of carbon nanotube yarns produced by various spinning
+Writing – original draft. Takahiro Morimoto: Investigation, Writing –                 methods, Nanomaterials 12 (2022) 593, https://doi.org/10.3390/nano12040593.
+review & editing. Yoko Iizumi: Investigation, Writing – review &                 [12] H.-P. Komsa, R. Senga, K. Suenaga, A.V. Krasheninnikov, Structural distortions and
+                                                                                      charge density waves in iodine chains encapsulated inside carbon nanotubes, Nano
+editing. Takumi Inaba: Investigation, Writing – review & editing.                     Lett. 17 (2017) 3694–3700, https://doi.org/10.1021/acs.nanolett.7b00969.
+Kazufumi Kobashi: Investigation, Visualization, Writing – review &               [13] R.M. Ibberson, O. Moze, C. Petrillo, High resolution neutron powder diffraction
+editing. Toshiya Okazaki: Conceptualization, Funding acquisition,                     studies of the low temperature crystal structure of molecular iodine (I2), Mol. Phys.
+                                                                                      76 (1992) 395–403, https://doi.org/10.1080/00268979200101411.
+Investigation, Supervision, Writing – original draft.                            [14] J.T. Ye, Z.K. Tang, G.G. Siu, Optical characterizations of iodine molecular wires
+                                                                                      formed inside the one-dimensional channels of an single crystal, Appl. Phys. Lett.
+Declaration of competing interest                                                     88 (2006) 073114, https://doi.org/10.1063/1.2177361.
+                                                                                 [15] M. Yao, T. Wang, Z. Yao, D. Duan, S. Chen, Z. Liu, R. Liu, S. Lu, Y. Yuan, B. Zou,
+                                                                                      T. Cui, B. Liu, Pressure-driven topological transformations of iodine confined in
+    The authors declare that they have no known competing financial                   one-dimensional channels, J. Phys. Chem. C 117 (2013) 25052–25058, https://doi.
+interests or personal relationships that could have appeared to influence             org/10.1021/jp406292g.
+                                                                                 [16] S. Chen, Y. Yuan, X. Yang, M. Du, Z. Liu, R. Liu, B. Li, B. Zou, T. Cui, B. Liu, In situ
+the work reported in this paper.
+                                                                                      low-temperature Raman studies of iodine molecules confined in the one-
+                                                                                      dimensional channels of AlPO4-5 crystals, Microporous Mesoporous Mater. 221
+Acknowledgements                                                                      (2016) 76–80, https://doi.org/10.1016/j.micromeso.2015.09.025.
+
+
+    This work was supported by a project (JPNP16010) commissioned
+
+
+
+
+                                                                             8
+

@@ -1,0 +1,10 @@
+.venv/
+.matplotlib/
+node_modules/
+node_modules
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
+~$*
+.DS_Store
+data/curation/previews/

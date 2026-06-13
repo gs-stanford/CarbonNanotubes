@@ -1,0 +1,479 @@
+                                                                                                                                         Research Articles
+
+CARBON NANOTUBES                                                                           ionic species intercalate between graphite layers and are stabilized
+                                                                                           through charge transfer, leading to enhanced electrical conductivity
+Intercalated carbon nanotube                                                               (16), superconductivity (17), and other properties emerging from
+                                                                                           changes in the electronic structure of the host (18, 19). Highly con-
+fibers with high specific                                                                  ducting GICs are, however, typically unstable in ambient conditions
+                                                                                           and impractically brittle, with up to a 90% reduction in strength due
+electrical conductivity                                                                    to the inherent interlayer expansion in the layered crystal upon in-
+                                                                                           tercalation (20). Intercalation is in fact used to exfoliate graphene
+A. I. de Isidro-­Gómez1,2, V. Vassilev-­Galindo1,3,4, A. Mikhalchan1,                      sheets and other layered crystals (21). However, unlike layered GICs,
+M. Pelaez-­Fernandez5,6, J. LLorca1,7, R. Arenal5,6,8, J. J. Vilatela1*                    the lattice structure of a bundle of CNTs can host intercalants in the
+                                                                                           channels between nanotubes without substantial lattice expansion.
+Translating the conductivity of individual carbon nanotubes into                           This subtle feature of the CNT triangular lattice opens the prospect
+practical, macroscopic conductors remains a challenge. We                                  of realizing the rich properties of intercalated compounds as tough,
+report highly aligned fibers of double-­walled carbon nanotubes                            macroscopic materials suitable for integration in energy and opto-
+intercalated with chains of tetrachloroaluminate anions (AlCl4−)                           electronic devices.
+in the intertube channels. The AlCl4− intercalant acts as a
+noncovalent dopant, accepting 0.65 electrons per anion, mostly                             Results and discussion
+from the outer nanotube layer. Combined with a 17% intercalant                             Structure of the intercalated fibers
+volume fraction, it produces an increase in room-temperature                               We demonstrate high room-­temperature conductivity by uniform and
+conductivity to values as high as 24.5 mega-Siemens per meter,                             long-­range order intercalation of a strong dopant (tetrachloroalumi-
+
+
+
+
+                                                                                                                                                                        Downloaded from https://www.science.org at Stanford University on April 24, 2026
+which is 41% of that of copper. Specific conductivity values reach                         nate anion, AlCl4−) in highly aligned double-­walled carbon nanotube
+17,345 Siemens-meter squared per kilogram, which is superior                               (DWCNT) fibers. The starting materials were commercial fibers, made
+to that of metals. These fibers are five times stronger and half                           up of DWCNTs oriented parallel to the fiber axis with a high degree of
+the weight of conventional overhead cables while remaining                                 alignment (FWHM ~ 7°) and a high CNT aspect ratio (≈ 4400). Their
+stable in dry conditions and retaining 80% of their conductivity                           measured longitudinal conductivity was 1.4 ± 0.23 MS/m, which is
+protected from moisture by a cable polymer sheath.                                         comparable to values for single-­crystal graphite or individual bundles
+                                                                                           of CNTs. Cross-­sectional transmission electron microscopy (TEM) and
+                                                                                           wide-­ angle x-­ray scattering (WAXS) measurements showed the
+                                                                                           DWCNT to be arranged in a triangular superlattice (fig. S4), confirming
+Carbon nanotubes (CNTs) are ideal building blocks for lightweight elec-                    that these fibers can be considered macroscopic bundles of ordered
+trical conductors due to their combination of low density and electrical,                  CNTs extending continuously over hundreds of meters.
+thermal, and mechanical properties. Their electrical conductivity and                         Through the two-­zone vapor method using aluminum trichloride
+maximum current density are comparable to or above those of copper,                        (AlCl3) and a precursor of excess Cl, we exposed the CNT fibers to an
+and their thermal conductivity and mechanical properties are one to                        atmosphere saturated with the intercalant precursor for 24 hours.
+two orders of magnitude greater (1). Making competitive macroscopic                        AlCl4− diffused in the fibers to form a CNT intercalation compound
+cables from CNT fibers has been a long-­standing goal (2–4).                               (CNTIC). The mass fraction of intercalate was 36.7% measured gravi-
+   Continuous CNT fibers (CNTFs) are available in lengths of kilometers,                   metrically and 35.9% measured by energy-­dispersive x-­ray spectros-
+with reported conductivity above 1 MS/m achieved through a mixture                         copy (EDX) chemical analysis corresponding to C39AlCl4. Fig. 1A
+of improvements in assembly, doping, or mixing with metals (3, 5–8).                       shows an example of a focused ion beam (FIB)–milled cross-­section.
+The factors controlling longitudinal conductivity are increasingly un-                     As shown in the line profile and elemental maps (Fig. 1, A and B, and
+derstood and controlled. Pure fibers with a high degree of alignment                       fig. S5), the intercalant was uniformly distributed throughout the
+(full width at half maximum, FWHM = 7°) made of few-­layer CNTs                            fiber cross-­section.
+with an aspect ratio greater than 4400 converge to longitudinal con-                          The structure and long-­range order of the intercalated fiber was
+ductivity values around 1 to 3 MS/m (4). This is the level of conductivity                 appreciable from WAXS measurements, as shown in Fig. 1C. Super­
+of single-­crystal graphite or an individual bundle of CNTs (3, 4).                        imposed on the sharp equatorial (002) and meridional {100} reflec-
+Achieving crystal-­level properties in kilometric CNT suggests that the                    tions from the aligned DWCNT array host are meridional arcs that
+conductivity of pure CNT fibers is close to a practical limit, motivating                  arise after intercalation (radial and azimuthal profiles in fig. S4, A
+studies on the introduction of dopants.                                                    and B). The meridional reflections resulted from the supramolecular
+   Among different methods, the introduction of noncovalent dopants                        arrangement of anions as ordered domains parallel to the fiber axis,
+into the internal CNT fiber structure produces the largest increase in                     with reflections consistent with those found for AlCl4− electrochemi-
+electrical conductivity by increasing free carrier density while preserv-                  cally intercalated in graphite cathodes used in Al-­ion batteries (AIBs)
+ing the exceptionally high carrier mobility of CNTs (9, 10). Non­covalent                  (22). Thus, the intercalation compound consists of two nested lat-
+doping with electron acceptors, such as I (11), FeCl3 (12, 13), Br (14),                   tices: a triangular lattice of DWCNTs that hosts a hexagonal lattice
+and chlorosulfonic acid (CSA) (15), can increase fiber conductivity by                     of chains of intercalant anions parallel to the CNTs.
+a factor of 5.6 to 10.                                                                        Intercalation occurs without changes in CNT interlayer separation,
+   Even greater conductivity increases by a factor as high as 36 have                      as no relevant changes in the (002) reflection or signs of bundle ex-
+been reported in graphite intercalation compounds (GICs). In GICs                          foliation were found (fig. S4, B and F). Intercalated DWCNT fibers
+                                                                                           displayed no significant fiber diameter change or loss of flexibility
+1
+                                                                                           after intercalation (fig. S6). This contrasts with the large expansion in
+ IMDEA Materials Institute, Madrid, Spain. 2Universidad Autónoma de Madrid, Madrid,        intercalated layered crystals. The interlayer spacing in graphite in-
+Spain. 3Department of Statistics, Computer Science and Mathematics, Universidad Pública
+de Navarra, Pamplona, Spain. 4Navarra Artificial Intelligence Research Center (NAIR        creased from 0.34 to 0.9 nm upon gas-­phase AlCl3 intercalation (23).
+Center), Pamplona, Spain. 5Instituto de Nanociencia y Materiales de Aragón (INMA),         As the cathode in AIB, graphite undergoes a 50-­fold bulk expansion
+CSIC-­Universidad de Zaragoza, Zaragoza, Spain. 6Laboratorio de Microscopías Avanzadas     and exfoliates into a powder (22).
+(LMA), Universidad de Zaragoza, Zaragoza, Spain. 7Departamento de Ciencia de Materiales,
+Universidad Politécnica de Madrid, Madrid, Spain. 8ARAID Foundation, Zaragoza, Spain.         We analyzed the location of intercalant relative to the bundle lattice,
+*Corresponding author. Email: juanjose.​vilatela@​imdeamaterials.​org                      particularly because, according to simulations, AlCl4− is stable both in
+
+Science 23 April 2026                                                                                                                                            395
+                                            Again diffusion is not gonna happen through covalent bonding unless tubes are open or have defects. They report using pristine highly aligned continuous fibres so no shit
+
+Research Articles
+        Ofc its stable inside, but not practical so what is this finding?
+
+the interstitial channel and inside the CNTs (24). For other intercal- between the intercalant Cl atoms and the C atoms in the nanotube,
+ants, this has been previously determined through TEM observation but the intercalant Cl atoms were spatially separated from the C
+of nanometrically thin lamella extracted from the macroscopic fibers atoms by regions with no interaction (red). The low electronic density
+by FIB milling, which showed intercalants within the channel (14) overlap between the intercalant and the DWNCT outer layer con-
+or both in the channel and inside the CNTs (25). This observation firmed their noncovalent interaction.
+method was challenging on CNT fibers owing to the lower stability                      The large charge transfer between the DWCNTs and the interca-
+of AlCl4− under irradiation compared to intercalants with lower late were readily observed through the Raman spectra of the mate-
+charge transfer. Nevertheless, in cross-­sections observed at high reso- rial. A comparison of the pristine and intercalated material probed
+lution, the DWCNTs did not appear filled. As shown in Fig. 1D, under with dif­ferent laser energies showed that the radial breathing mode
+scanning transmission electron microscopy (STEM) mode, the DWCNTs (RBM) from the outer CNT layers, in the region of 170 cm−1, was sup­
+cores did not have the expected contrast after filling. Instead, there pressed after intercalation (Fig. 3A). This occured both for metallic
+was a faint layer of a diffuse material through-
+out the bundle. The corresponding chemical
+map shows Al and Cl associated and spread
+throughout the bundle rather than concen-           A                                              C
+trated inside the CNTs.
+   Density functional theory (DFT) calcula-
+tions confirmed the crystal structure observed
+by WAXS and provided the arrangement of the
+intercalant and electronic structure of the sys-
+                                                            20 µm
+
+
+
+
+                                                                                                                                                                                                                   Downloaded from https://www.science.org at Stanford University on April 24, 2026
+tem. We considered a model system consisting
+of identical DWCNTs with a (14,14) outer layer
+and a (9,9) inner layer, which was first used for   B
+variable cell relaxation calculations (fig. S1).
+The intercalant molecules were then positioned
+in the interstitial channels. We tested two pos-
+sible intercalants: an AlCl3–AlCl4− cluster and
+an AlCl4−–AlCl4− cluster, as both anions are
+detected in AIBs (22). The AlCl4−–AlCl4− clus-
+ter featured the lowest energy of intercalation,
+and therefore, AlCl4− was used in further simu-
+lations. Geometry relaxation keeping DWCNT
+                                                    D
+atomic positions fixed gave the possible ar-
+                          −
+rangement of the AlCl4 structure (optimized                                                                                  Al-Kα                                 Cl-Kα
+cell, Fig. 2A). Two stable structures of anion
+tetrahedra are shown in Fig. 2B. The simula-
+tions show a ~3.3-­Å interplanar distance be-
+tween adjacent anions (Cl1 and Cl1’, Fig. 2B)
+corresponding to one of the prominent meridi-
+onal WAXS reflections. The structure found by
+DFT also explains the azimuthal features ob-
+served for such reflection. As seen in Fig. 1C,
+it has maxima a few degrees from the meridian
+due to the angle between the rows of adjacent
+pairs of Cl atoms in the tetrahedra relative to                                         2 nm
+the CNT axis (Fig. 2B). The reflection for ~4.4 Å
+with maximum on the meridian is assigned to                                                      −
+the interatomic distance between Cl2 and Cl2’ Fig. 1. Uniformity and structure of AlCl4 -­intercalated DWCNT fibers. (A) FIB-­milled cross-­section. (B) Elemental
+atoms, which form planes stacked parallel to        ratio profiles [line scan  shown in (A)]. (C) WAXS pattern showing equatorial features from the CNT bundle host
+the CNT axis (Fig. 2B).                             and  meridional   reflections from intercalate “chains” parallel to the CNTs. (D) High-­magnification cross-­sectional
+                                                                            STEM micrograph and EDX-STEM maps.
+CNT-­intercalant interaction and
+charge transfer
+We assessed the interaction between the inter-
+                                                                            A                                          B                                          C 1
+calant and the nanotube by density overlap re­                                                                                                          Cl2
+
+gions indicator (DORI) analysis (26). Fig. 2C                                                                              Cl1
+shows the DORI map of the intercalated DWCNT
+unit cell with three types of regions highlighted:
+(i) a C–C bond as a reference for covalent in­ter­                                                                                                      Cl2’
+action, (ii) the CNT inner layer–outer layer inter­                                                                        Cl1’                                        0
+action as a noncovalent interaction, and (iii)
+two intercalant sites. The interaction between
+the intercalant and the nanotube was similar                                Fig. 2. DFT simulation of the intercalated DWCNT cell. (A) Optimized DWCNT cell with two AlCl4− anions in each
+to the one observed between the inner and                                   interstitial channel. (B) Intercalation compound structures obtained. (C) DORI map showing noncovalent
+outer CNTs. There was high (blue) interaction                               intercalant-­DWCNT interaction.
+
+Science 23 April 2026                                                                                                                                                                                     396
+                                                                                                                                                                             Research Articles
+
+
+                           A                                                                               B
+
+                                                                                     532 nm
+
+
+                                                                                     633 nm
+
+                                               Outer          Inner
+                                               layers         layers
+                                                                                     785 nm
+
+
+
+
+                           C                                                                               D
+
+
+
+
+                                                                                                                                                                                                                      Downloaded from https://www.science.org at Stanford University on April 24, 2026
+                                                                                  Al-Cl
+
+                                                                        C-Cl                                                  Electrochemical                              Pristine
+                                                                                                                               intercalation at                            material
+                                                                                                                                full SOC (-5.1)                            EF (-4.5)
+
+
+
+
+   Fig. 3. Charge transfer and electronic structure in intercalated DWCNT fibers. (A and B) Raman spectra showing suppression of RBMs from the outer wall of DWCNTs upon
+   intercalation (A) and the G band with a large upshift (fitting with three Lorentzian peaks and a BWF profile) (B). (C) XPS in the Cl region showing doublets from Al–Cl bonds in
+   AlCl4− and from Cl strongly interacting with the CNT. (D) Close-­up of the projected DOS of the intercalated fiber, with a Fermi level shift of −0.44 eV relative to the pristine fiber.
+   The Fermi level of the pristine material and the potential for electrochemical intercalation of AlCl4− in the graphite cathode at full state of charge (SOC) are included for
+   reference (black and blue dashed lines, respectively). The inset shows the projected DOS of C (green), Al (orange), and Cl (purple) contributing to the DOS of the CNTIC (dotted
+   and dashed lines correspond to s and p orbitals, respectively).
+A blue shift/increase in frequency/wavenumber is due to change in bond length caused by the dopant. Any p or n type doping should cause phonon softening and a red shift but since the authors report a blue shift,
+                                                   maybe the alteration in bondlengths is too significant/ change in Fermi level move it away from Dirac point?
+
+   and semiconducting outer DWCNTs layers (Kataura plot, fig S8). By                                         q is the Fano asymmetry parameter. The upper value was in the range
+   contrast, the RBMs from inner layers remained prominent, albeit                                           of that of individual bundles of highly metallic SWCNTs (1/q = −0.17)
+   shifted. This indicates that it is predominantly the outer CNT layers                                     (28), reflecting the metallic character of the intercalated macroscopic
+   that take part in charge transfer and screen the intercalant charge                                       fiber, but below that of superconducting stage 1 GICs (1/q = −0.5) (29)
+   and that there is no significant tube filling. No intensity changes in                                    and alkali-­intercalated SWCNTs (1/q = −0.35) (30).
+   the D band were observed.                                                                                    The charge transfer and chemical environment of the host and
+      The G band showed a large upshift and a marked change in line                                          guest were further analyzed by x-­ray photoelectron spectroscopy
+   shape after intercalation (Fig. 3B), consistently observed with the                                       (XPS). The XPS spectra show the characteristic spin-­orbit doublet in
+   different excitation energies, which confirms the large charge transfer                                   the Cl 2p peaks assigned to the Cl 2p1/2 and Cl 2p3/2 components. Two
+   throughout the intercalated bundles. The G band was fitted for further                                    different doublet contributions were found: a lower energy one from
+   analysis using three Lorentzian peaks and an additional Breit-­Wigner-­                                   Al-­coordinated Cl as part of the AlCl4− anions and another at a higher
+   Fano (BWF) profile (fig. S7 and table S3). As a metric for charge trans-                                  binding energy from Cl species associated with the DWCNTs (Fig. 3C)
+   fer, we took the displacement in the G band high-­frequency peak (Go+)                                    (22). A concomitant broadening of the C 1s peak was observed (fig.
+   between the pristine and intercalated materials, which corresponds                                        S9C). The Al peak was like that found in AlCl3. Therefore, the inter-
+   predominantly to outer DWCNT layers. The displacement was 27.3,                                           calation compound AlCl4− was stabilized through electron transfer
+   15.4, and 17.9 cm−1 for 2.33, 1.96, and 1.58 eV excitation energies, re-                                  from the DWCNT to Cl in the intercalant anion. From the DFT simu-
+   spectively (table S3). This is a substantial upshift, one by a factor of                                  lations, we obtained a charge transfer of f = 0.65 |e | per AlCl4− anion
+   two to four greater than previously found in DWCNT fibers upon                                            and fC =0.0056 |e | per C atom, where |e | is the magnitude of the
+   doping (11, 14), indicative of a large charge transfer. For reference, in                                 electron charge. Eighty-four percent of this charge was transferred
+   stage 2 graphite intercalated through the vapor method with AlCl3, a                                      from the outer DWCNT layer. The charge transfer is large in compari-
+   two-­dimensional GIC analog, the upshift of the bounding layer tangen-                                    son to those of related CNT and GICs produced by vapor intercalation
+   tial Raman mode was 12.6 cm−1 (23). This large Raman upshift is com­                                      (table S4). It was equivalent to 13 mAh/g or 19% of the full capacity
+   parable to that found in CNTs when they are used as cathodes in AIBs                                      of a graphite cathode in an AIB.
+   at a high state of charge, which reaches ~20 cm−1 (27). The degree of                                        As seen in the calculated density of states (DOS) in Fig. 3D, the inter-
+   electron-­phonon coupling obtained from the BWF resonance was be-                                         calated material retained the parabolic line shape of the DWCNT bun­
+   tween 1/q = −0.07 and −0.15 depending on incident laser energy, where                                     dle, but the Fermi level was downshifted by 0.44 eV. Through ultraviolet
+
+   Science 23 April 2026                                                                                                                                                                                     397
+Research Articles
+
+photoelectron spectroscopy (UPS) measurements, we verified this down-                        simulations of model SWCNT networks doped with AuCl4 (32), now
+shift (fig. S9D). These results agree with DFT simulations on graphite                       realized in a continuous macroscopic fiber.
+(31) and SWCNT networks (32) intercalated with different metal chlo-                            The increase in fiber conductivity values was obtained through
+ride acceptors and other intercalants (table S2).                                            the combination of two effects: the large charge transfer produced
+   The combination of spectroscopic and DFT results provide a clear                          by AlC4− and its uniform intercalation throughout the fiber. In Fig. 4B,
+view of the DWCNT/AlCl4− intercalation compound in which the in-                             we compare conductivity increases of DWCNTs fibers with differ-
+tercalated AlCl4− ions remove electrons from the CNT bonding π-­band.                        ent intercalants and the corresponding upshift in Go+. As expected,
+However, the interaction between DWCNT and AlCl4− is noncovalent.                            larger conductivity increases correlate with higher fC,Raman values cal-
+The intercalated ions are screened almost entirely by the outer DWCNT                        culated from Raman. We propose Δσ ∝ σ0 fC (or in terms of intercalant
+layer through the delocalized holes left behind after electron transfer.                     molar charge and molar fraction, Δσ ∝ σ0 f 1 − ICn ). From DFT, we have
+                                                                                                                                           n
+
+Thus, the DOS of the host is largely preserved, and the Fermi level is                       a theoretical value of the charge transfer per carbon atom. This en-
+                                                                                                                                               IC
+
+
+shifted relative  to that of the pristine material by an amount propor-                      ables a comparison of the macroscopically realized charge transfer
+tional to fC . This increases free carrier density following the so-­called                  measured by Raman, with the simulated charge transfer at the bun-
+          √
+
+“ionic salt model” (33).                                                                     dle level. As shown in the inset of Fig. 4B, there is good correspon-
+                                                                                             dence between the two data sets, which confirms uniform intercalation.
+Bulk longitudinal properties                                                                 AlC4− produces a higher charge transfer per mol; therefore, its uni-
+We determined longitudinal electrical conductivity of pristine and                           form intercalation at high volume fraction (>13 vol %) produced
+intercalated fibers in an inert atmosphere and different humidity con-                       substantially higher charge transfer than the other intercalants.
+ditions. The mean conductivity of the intercalated fiber was 15.57 MS/m,                     We stress that without uniform intercalation, Raman spectroscopy
+and the highest value measured was 24.5 MS/m, which come close to                            measurements are not a good indicator of bulk intercalation or
+
+
+
+
+                                                                                                                                                                                       Downloaded from https://www.science.org at Stanford University on April 24, 2026
+that of Cu (59.6 MS/m) and Al (35.5 MS/m). As specific conductivities,                       charge transfer. For ordered intercalants, WAXS can instead be used
+i.e., normalized by density, the mean value of 10,380 S·m2/kg is above                       (fig. S10A).
+that of Cu (6674 S·m2/kg), and the highest values measured (17,345 S·m2/                        The scatter in experimental data in this work and the literature
+kg) are even above that of Al (13,130 S·m2/kg). Compared with that of                        can also be rationalized through the simple relations proposed. The
+the pristine CNT fiber, intercalation increases conductivity by a fac-                       line shape of normalized conductivity distributions is nearly identical
+tor of more than 17.4, which is similar to the value of 17 predicted by                      before and after intercalation (fig. S10B). The spread in conductivity
+
+
+
+
+                     A                                                                   B
+
+
+
+
+                                                                                                                                    13.82 vol.%    17.56 vol.%
+
+
+
+
+                     C                                                                   D
+                                                                                                                               DWCNT/CSA       DWCNT/
+                                                                                                                               DWCNT/Br
+
+                                                                                                                        Intercalated CF
+
+
+
+
+                                                                                                                           Metals
+
+
+
+
+Fig. 4. Charge transfer and bulk conductivity and mechanical properties. (A) Longitudinal conductivity for pristine and intercalated fibers. (B) Relative increase in
+conductivity (Δσ/σ0) against the shift in G+o for intercalated DWCNT fibers in this work and from references (14) for Br† and (11) for I2*. (Inset) Relation between charge transfer
+from the outer DWCNT layer obtained from DFT and Raman for the different fibers. (C) Stress-­strain curves of pristine and intercalated CNT fibers and ultimate tensile strength
+(UTS) of reference metals. (D) Specific electrical conductivity and specific strength of intercalated fibers and metals.
+
+Science 23 April 2026                                                                                                                                                           398
+                                                                                                                                                                      Research Articles
+
+values after intercalation is mainly reminiscent of that of the original                              glove box inert atmosphere. Fig. 5, A and B, shows the initial evolution
+material, and the values are simply multiplied by the charge transfer                                 of Go+ as an indicator of surface charge transfer and of the bulk longi-
+term nIC f . This spread could be reduced through more compositional                                  tudinal conductivity, respectively. Exposed to low humidity conditions
+uniformity and higher precision of electrical conductivity measurements.                              (RH = 7%), both were largely preserved, within 90% of their initial
+   We also performed mechanical tests on the intercalated fibers in am­                               values after 2 months, for example. In ambient conditions with mean
+bient conditions; their tensile stress-­strain curves are shown in Fig. 4C.                           RH = 44%, charge transfer and conductivity dropped during the first
+The material has higher strength than both Cu and Al and is on par                                    few hours but then leveled off at values above those of the pristine
+with steel when normalized by volume (1.37 ± 0.08 GPa strength and                                    material, indicating that some intercalation is preserved.
+51.87 ± 3.13 GPa modulus). Normalized by density, values of specific                                     The decrease in conductivity is due to reaction with moisture
+properties are above those of metals and in the range of those of struc-                              through the formation of aluminum chloride hexahydrate [Al(H2O)6]
+tural high-­performance fibers (0.975 ± 0.06 and 36.81 ± 2.22 GPa/SG                                  Cl3 (Fig. 5C), which reverts the charge transfer and returns CNTs to
+specific strength and modulus, respectively, where SG is the fiber spe-                               the undoped state. This clarifies the global reaction, but the precise
+cific gravity). The retention of intertube separation on inter­calation, a                            mechanism throughout the fibers is more complicated. SEM analysis
+distinctive feature of superlattices of one-­dimensional nanotubes com­                               showed that after moisture exposure, fibers have substantial Al and
+pared with those of layered intercalation compounds, preserves the                                    Cl content and a solid surface layer richer in oxygen. Figure 5D shows
+longitudinal mechanical properties of the host fiber.                                                 the cross-­section of a sample after 13 months of ambient exposure.
+                                                                                                      This “crust” of reacted intercalant can explain the observation of
+Stability of intercalated fibers                                                                      sharp, isotropic rings in WAXS instead of the diffuse arcs that would
+Motivated by the prospect of using these fibers as lightweight conduc-                                be expected for reacted intercalant hosted in bundles. A mecha-
+tors, we measured their stability in ambient conditions and in storage                                nism is there­fore proposed whereby hydroxylation starts at the ex-
+
+
+
+
+                                                                                                                                                                                                              Downloaded from https://www.science.org at Stanford University on April 24, 2026
+under different relative humidity (RH). Stored in a glove box with RH                                 ternal fiber surface through reaction with adsorbed water, which
+< 0.05%, fibers remained intercalated after more than a year. Exposed                                 forms an outer layer of reacted intercalant and decreases the total
+to air, the charge transfer and electrical conductivity decreased de-                                 charge transferred; however, substantial intercalation remains in the
+pending on RH levels and the time elapsed from extraction from the                                    fiber core.
+ Tells u that chemical reaction and concentration gradient was driving the diffusion with moisture,   How can u hypothesize that a diffusion dominant process with chemical reaction is not going to create
+                                                                                                           gradients that diffuse inner intercalants to form that hydroxylation compound. Sounds BS
+
+
+
+             A                                                                                        B
+
+
+
+
+             C                                                                                        D
+
+
+
+
+                                                                                                               10 µm
+                                                                                                                                                                                   Cl Al
+
+
+Fig. 5. Stability of the CNTIC in air with different RH. (A and B) Change in high G+o position (A) and longitudinal electrical conductivity over time (B) for samples exposed to
+different RH, including exponential decay fit. (C) WAXS patterns after 24 hours of different RH exposure. (Inset) Reaction of AlCl4− to form [Al(H2O)6]Cl3 observed by WAXS.
+(D) SEM micrograph (left) and EDX map (right) of a sample after 13 months of ambient exposure showing an outer layer of reacted intercalant and Al and Cl retained within
+the fiber, respectively.
+
+Science 23 April 2026                                                                                                                                                                                 399
+Research Articles
+
+   We then tested two approaches to demonstrate the potential use of                           10. H. Shiozawa, T. Pichler, R. Pfeiffer, H. Kuzmany, in Encyclopedia of Inorganic Chemistry,
+intercalated CNT fibers as conductors in ambient conditions. In the                                R. B. King, R. H. Crabtree, C. M. Lukehart, D. A. Atwood, R. A. Scott, Eds. (Wiley, ed. 1, 2005).
+                                                                                               11. A. Zubair et al., Phys. Rev. Mater. 1, 064002 (2017).
+first experiment, intercalated fibers in the glove box were introduced
+                                                                                               12. K. Iwase, Y. Hikita, T. Yokoi, Mater. Sci. Eng. B 291, 116361 (2023).
+in commercial polymeric cable sheaths that were then thermally sealed                          13. C. Madrona, M. Vila, F. E. Oropeza, V. A. De La Peña O’Shea, J. J. Vilatela, Carbon 173,
+and stored in ambient conditions. After 5 days of exposure (mean RH =                              311–321 (2021).
+44%), they were extracted and analyzed. The test intends to recreate                           14. C. Madrona et al., Carbon 204, 211–218 (2023).
+exposure to the environment as finished cables. The surface charge                             15. D. Tristant et al., Nanoscale 8, 19668–19676 (2016).
+transfer and electrical conductivity of these samples were retained                            16. R. Matsumoto, Y. Okabe, Synth. Met. 212, 62–68 (2016).
+                                                                                               17. C.-­M. Hao et al., Phys. Rev. B 108, 214507 (2023).
+within 75 and 78%, respectively (Fig. 5, A and B), over the 5 days of the
+                                                                                               18. M. S. Dresselhaus, G. Dresselhaus, Adv. Phys. 30, 139–326 (1981).
+test. The second method consisted of covering the intercalated CNT                             19. A. J. Clancy et al., Chem. Rev. 118, 7363–7408 (2018).
+fiber surface with electronic-grade silicone cured in ambient condi-                           20. S. Błażewicz, Ph. Touzain, Ceram. Int. 24, 111–115 (1998).
+tions. Encapsulation preserved surface charge transfer within 50%                              21. L. M. Viculis, J. J. Mack, O. M. Mayer, H. T. Hahn, R. B. Kaner, J. Mater. Chem. 15, 974 (2005).
+after 14 days and substantially reduced its rate of decay (fig. S12).                          22. M.-­C. Lin et al., Nature 520, 325–328 (2015).
+Additionally, there is the prospect of introducing more stable accep-                          23. G. M. Gualberto, C. Underhill, S. Y. Leung, G. Dresselhaus, Phys. Rev. B Condens. Matter 21,
+                                                                                                   862–868 (1980).
+tors or those that form a self-­passivating superficial layer that pre-
+                                                                                               24. P. Bhauriyal, A. Mahata, B. Pathak, Chem. Asian J. 12, 1944–1951 (2017).
+vents deintercalation (13, 34), thus stabilizing highly conducting                             25. J. Naruse, T. Yokoi, K. Ishino, Y. Hikita, K. Iwase, Appl. Phys. Express 14, 095002 (2021).
+CNT fibers.                                                                                    26. P. de Silva, C. Corminboeuf, J. Chem. Theory Comput. 10, 3745–3756 (2014).
+                                                                                               27. E. Zhang et al., Energy Storage Mater. 23, 72–78 (2019).
+Conclusions                                                                                    28. M. Paillet et al., Phys. Rev. Lett. 94, 237401 (2005).
+Using a vapor phase method, we fabricated continuous fibers of                                 29. J. C. Chacón-­Torres, A. Y. Ganin, M. J. Rosseinsky, T. Pichler, Phys. Rev. B Condens. Matter
+
+
+
+
+                                                                                                                                                                                                              Downloaded from https://www.science.org at Stanford University on April 24, 2026
+                                                                                                   Mater. Phys. 86, 075406 (2012).
+highly aligned DWCNTs uniformly intercalated with supramolecular
+                                                                                               30. A. M. Rao, P. C. Eklund, S. Bandow, A. Thess, R. E. Smalley, Nature 388, 257–259 (1997).
+chains of AlCl4– tetrahedra in the interstitial channel between CNTs                           31. P. Bhauriyal, A. Mahata, B. Pathak, Phys. Chem. Chem. Phys. 19, 7980–7989 (2017).
+without affecting the intertube separation. The intercalated fiber had                         32. K. Conley, A. J. Karttunen, J. Phys. Chem. C Nanomater. Interfaces 126, 17266–17274
+a stoichiometry of C39AlCl4 and 36.7 wt % intercalant. Intercalation                               (2022).
+produced suppression of Raman RBM modes from outer DWCNT                                       33. J. E. Fischer, Physica B+C 99, 383–394 (1980).
+layers, a large shift of 15 to 27 cm−1 of the G band across different                          34. M. Endo, T. C. Chieu, G. Timp, M. S. Dresselhaus, Synth. Met. 8, 251–260 (1983).
+excitation energies, and no increase in the D band. The interaction                            ACKNOWLEDGMENTS
+between intercalant and the DWCNT was noncovalent; it involved                                 We thank G. Antorrena and F. Cazaña for assistance with XPS and UPS analyses, J. Khoury for
+transfer of 0.006 |e | per C atom from the DWCNTs (84% from the                                TEM support, N. Martín for selected Raman measurements, and N. Krol for proofreading
+outer layer) to Cl atoms in AlCl4−, which lowered the Fermi level by                           the manuscript. We acknowledge computational resources and technical assistance provided
+                                                                                               by the Centro de Supercomputación y Visualización de Madrid (CeSViMa). Funding: EU
+−0.44 eV. It increased bulk fiber conductivity by a factor of as high                          UNIYARNS ERC-­Consolidator Grant 101045394 (J.J.V.); USA Air Force Office of Scientific
+as 17.5. The mean specific conductivity measured on intercalated                               Research Grant FA8665-­23-­1-­7052 (J.J.V.); CESA/Héroux-­Devtek Spain (J.J.V.); Government
+fibers (11170 S·m2/kg) was above that of Cu, and the highest measured                          of Aragon (DGA) through the project E13 23R (R.A.). The “(MAD2D-­CM)-­UCM” project is
+                                                                                               funded by Comunidad de Madrid; the Recovery, Transformation, and Resilience Plan; and
+value of 17345 S·m2/kg was also above that of Al. Combined with the                            NextGenerationEU from the European Union Spanish MICIU with funding from European
+specific tensile strength of 0.975 GPa/SG, these properties make in-                           Union Next Generation EU (PRTR-­C17.I1) promoted by the Government of Aragon and by the
+tercalated CNT fibers excellent lightweight conductors. We show that                           Spanish MICIU (PID2023-­151080NB-­I00/AEI/10.13039/501100011033 and CEX2023-­
+                                                                                               001286-­S MICIU/AEI /10.13039/501100011033) (R.A.). Author contributions:
+conductivity can be retained by preventing hydroxylation of the in-                            Conceptualization: A.I.d.I.-­G., J.J.V.; Data curation: A.I.d.I.-­G., V.V.-­G.; Formal analysis:
+tercalant driven by reaction with moisture. A polymeric cable sheath                           A.I.d.I.-­G., V.V.-­G., A.M., R.A., M.P.-F., J.J.V.; Funding acquisition: J.L., J.J.V., R.A.; Investigation:
+moisture barrier preserved 78% of conductivity.                                                A.I.d.I.-­G., A.M.; Methodology: A.I.d.I.-­G., A.M.; Supervision: J.L., J.J.V.; Visualization: A.I.d.I.-­G.,
+                                                                                               A.M., J.J.V.; Writing – original draft: A.I.d.I.-­G., A.M., V.V.-­G., J.J.V.; Writing – review & editing:
+                                                                                               A.I.d.I.-­G., V.V.-­G., A.M., R.A., M.P.-F., J.J.V. Competing interests: A.M., A.I.d.I.-­G., and J.J.V. are
+REFERENCES AND NOTES                                                                           coauthors of a patent related to electrical motors based on CNT-­based conductors. Data,
+                                                                                               code, and materials availability: All data, code, and materials used in the analysis are
+1. M. F. L. De Volder, S. H. Tawfick, R. H. Baughman, A. J. Hart, Science 339, 535–539         available from the authors to any researcher for purposes of reproducing or extending the
+   (2013).                                                                                     analysis. All data are available in the main text or the supplementary materials. License
+2. A. Lekawa-­Raus, L. Kurzepa, X. Peng, K. Koziol, Carbon 68, 597–609 (2014).                 information: Copyright © 2026 the authors, some rights reserved; exclusive licensee
+3. J. S. Bulmer, A. Kaniyoor, J. A. Elliott, Adv. Mater. 33, e2008432 (2021).                  American Association for the Advancement of Science. No claim to original US government
+4. S. Jo et al., Compos., Part B Eng. 300, 112471 (2025).                                      works. https://www.science.org/about/science-­licenses-­journal-­article-­reuse
+5. S.-­H. Lee, J. Park, S. Y. Moon, S. Y. Lee, S. M. Kim, ACS Appl. Nano Mater. 4, 3833–3842
+   (2021).                                                                                     SUPPLEMENTARY MATERIALS
+6. M. Li et al., Nanoscale 12, 13771–13780 (2020).                                             science.org/doi/10.1126/science.aeb0673
+7. R. M. Sundaram, A. Sekiguchi, M. Sekiya, T. Yamada, K. Hata, R. Soc. Open Sci. 5, 180814    Materials and Methods; Supplementary Text; Figs. S1 to S13; Tables S1 to S7;
+                                                                                               References (35–48)
+   (2018).
+8. L. W. Taylor et al., Carbon 171, 689–694 (2021).                                            Submitted 30 July 2025; accepted 17 February 2026
+9. R. S. Lee, H. J. Kim, J. E. Fischer, A. Thess, R. E. Smalley, Nature 388, 255–257 (1997).                                                                              10.1126/science.aeb0673
+
+
+
+
+Science 23 April 2026                                                                                                                                                                                400
+    Intercalated carbon nanotube fibers with high specific electrical conductivity
+    A. I. de Isidro-Gómez, V. Vassilev-Galindo, A. Mikhalchan, M. Pelaez-Fernandez, J. LLorca, R. Arenal, and J. J. Vilatela
+
+
+
+    Science 392 (6796), . DOI: 10.1126/science.aeb0673
+
+
+
+        Editor’s summary
+        Translating the outstanding individual properties of carbon nanotubes, such as their electrical and thermal conductivity,
+        into bulk materials that retain those properties remains a challenge. de Isidro-Gomez et al. demonstrated controlled
+
+
+
+
+                                                                                                                                       Downloaded from https://www.science.org at Stanford University on April 24, 2026
+        vapor-phase intercalation of tetrachloroaluminate (AlCl##) ions within intertube channels to make macroscopic double-
+        walled carbon nanotube fibers. The fibers showed high electrical conductivity approaching 40% of the value of copper
+        at room temperature. On a per-weight basis, the cables exceeded both the conductivity and strength of conventional
+        overhead cables. Furthermore, they showed excellent dry stability and reasonable moisture tolerance when protected
+        by a polymer sheath. —Marc S. Lavine
+
+
+
+
+    View the article online
+    https://www.science.org/doi/10.1126/science.aeb0673
+    Permissions
+    https://www.science.org/help/reprints-and-permissions
+
+
+
+
+Use of this article is subject to the Terms of service
+
+Science (ISSN 1095-9203) is published by the American Association for the Advancement of Science. 1200 New York Avenue NW,
+Washington, DC 20005. The title Science is a registered trademark of AAAS.
+
+Copyright © 2026 The Authors, some rights reserved; exclusive licensee American Association for the Advancement of Science. No claim
+to original U.S. Government Works
+

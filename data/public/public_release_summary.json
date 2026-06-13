@@ -1,0 +1,64 @@
+{
+  "records_assessed": 1557,
+  "public_records": 1168,
+  "public_measurements": 4422,
+  "public_publications": 270,
+  "excluded_records": 389,
+  "public_records_by_tier": {
+    "peer_reviewed_research": 878,
+    "peer_reviewed_contextual_comparator": 243,
+    "commercial_contextual_comparator": 47
+  },
+  "public_records_by_material_family": {
+    "CNT_or_CNT_hybrid": 856,
+    "other_carbon_comparator": 98,
+    "polymer_fiber_comparator": 86,
+    "carbon_fiber_comparator": 72,
+    "metal_comparator": 30,
+    "CNT_metal_composite": 13,
+    "graphene_or_GO_fiber": 9,
+    "ceramic_or_glass_comparator": 4
+  },
+  "public_measurements_by_property": {
+    "electrical_conductivity": 894,
+    "tensile_strength": 488,
+    "density": 413,
+    "specific_volume": 413,
+    "initial_modulus": 362,
+    "g_d_ratio": 342,
+    "specific_electrical_conductivity": 336,
+    "diameter": 329,
+    "specific_strength": 324,
+    "thermal_conductivity": 178,
+    "specific_thermal_conductivity": 87,
+    "specific_modulus": 64,
+    "breaking_strain": 61,
+    "ampacity": 49,
+    "work_of_rupture": 44,
+    "linear_density": 38
+  },
+  "excluded_records_by_reason": {
+    "duplicate_collapsed_into_canonical_public_record": 200,
+    "internal_seed_or_unresolved_source": 133,
+    "not_in_public_v0_release_rule": 42,
+    "secondary_duplicate_of_higher_priority_record": 7,
+    "no_canonical_measurements": 5,
+    "no_canonical_measurements;internal_seed_or_unresolved_source": 1,
+    "research_record_url_only_needs_doi": 1
+  },
+  "strict_comparison_ready_records": 3,
+  "records_requiring_missing_condition_warning": 444,
+  "records_requiring_unit_inference_warning": 49,
+  "commercial_or_specsheet_benchmark_records": 57,
+  "duplicate_groups_detected": 82,
+  "duplicate_records_collapsed": 200,
+  "outputs": [
+    "public_duplicate_audit_v0.csv",
+    "public_exclusions_v0.csv",
+    "public_measurements_v0.csv",
+    "public_publications_v0.csv",
+    "public_records_v0.csv",
+    "public_release_summary.json",
+    "public_schema_v0.csv"
+  ]
+}
