@@ -96,11 +96,26 @@ const trendInfo = await page.evaluate(() => ({
   plotPoints: document.querySelectorAll(".plot-point").length,
   trendLabels: document.querySelectorAll(".plot-label-group").length
 }));
+await page.getByRole("tab", { name: "Ashby" }).click();
+await page.screenshot({ path: path.join(outDir, "ashby.png"), fullPage: true });
+const ashbyInfo = await page.evaluate(() => ({
+  title: document.querySelector(".plot-heading h2")?.textContent?.trim() ?? "",
+  plotPoints: document.querySelectorAll(".plot-point").length,
+  activeTab: document.querySelector('.plot-type-tabs .mode-button[aria-selected="true"]')?.textContent?.trim() ?? "",
+  xScaleLogActive: [...document.querySelectorAll(".axis-section .scale-row")][0]?.querySelector(".is-active")?.textContent?.trim() ?? "",
+  yScaleLogActive: [...document.querySelectorAll(".axis-section .scale-row")][1]?.querySelector(".is-active")?.textContent?.trim() ?? ""
+}));
+if (!ashbyInfo.title.includes("Ashby") || ashbyInfo.plotPoints < 1 || ashbyInfo.activeTab !== "Ashby") {
+  throw new Error(`Ashby QA failed: ${JSON.stringify(ashbyInfo)}`);
+}
 await page.getByRole("tab", { name: "Scatter" }).click();
 await page.screenshot({ path: path.join(outDir, "desktop.png"), fullPage: true });
 const desktopInfo = await page.evaluate(() => ({
   title: document.title,
   plotPoints: document.querySelectorAll(".plot-point").length,
+  radarRecordOptions: document.querySelectorAll("#radar-record option").length,
+  radarPolygons: document.querySelectorAll(".radar-polygon").length,
+  radarNodes: document.querySelectorAll(".radar-node").length,
   citationModalClosed: !document.querySelector('[role="dialog"]'),
   overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   width: document.documentElement.clientWidth,
@@ -108,6 +123,9 @@ const desktopInfo = await page.evaluate(() => ({
   height: document.documentElement.clientHeight,
   scrollHeight: document.documentElement.scrollHeight
 }));
+if (desktopInfo.radarRecordOptions !== 7 || desktopInfo.radarPolygons !== 1 || desktopInfo.radarNodes !== 6) {
+  throw new Error(`Radar QA failed: ${JSON.stringify(desktopInfo)}`);
+}
 
 await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
@@ -129,6 +147,7 @@ console.log(
     {
       target,
       desktopInfo,
+      ashbyInfo,
       rankedInfo,
       trendInfo,
       mobileInfo,
@@ -138,6 +157,7 @@ console.log(
     path.join(outDir, "export-modal.png"),
     path.join(outDir, "exported-figure.svg"),
     path.join(outDir, "submission-invalid-doi.png"),
+    path.join(outDir, "ashby.png"),
     path.join(outDir, "ranked.png"),
     path.join(outDir, "trend.png"),
     path.join(outDir, "mobile.png")
