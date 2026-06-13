@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400..800;1,400..800&display=swap");
+
 :root {
   --page: #fbfbfa;
   --paper: #ffffff;
@@ -21,7 +23,7 @@
   --material-unknown: #979d95;
   --focus: #0f5d55;
   --warning: #9a4d38;
-  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Source Sans 3", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-plot: Arial, Helvetica, sans-serif;
 }
 
@@ -123,9 +125,9 @@ nextjs-portal {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .header-action-link {
@@ -143,6 +145,15 @@ nextjs-portal {
 
 .header-action-link svg {
   color: var(--accent);
+}
+
+.header-action-primary {
+  color: var(--accent);
+  font-weight: 750;
+}
+
+.header-action-primary span {
+  border-bottom: 1px solid rgba(45, 119, 111, 0.35);
 }
 
 .header-action-link:hover,
@@ -463,28 +474,6 @@ textarea {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.data-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 30px;
-  border: 0;
-  background: transparent;
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 4px 0;
-  white-space: nowrap;
-}
-
-.data-link:hover,
-.data-link:focus-visible {
-  color: var(--ink);
-  outline: none;
 }
 
 .legend-group span {
