@@ -2,9 +2,21 @@ services:
   - type: web
     name: cnt-property-atlas
     runtime: node
+    plan: starter
     rootDir: web
     buildCommand: npm ci && npm run build
     startCommand: npm run start
+    autoDeploy: true
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cnt-property-atlas-db
+          property: connectionString
+      - key: OPENAI_CLEANUP_MODEL
+        value: gpt-4.1-mini
+
+databases:
+  - name: cnt-property-atlas-db
+    plan: starter

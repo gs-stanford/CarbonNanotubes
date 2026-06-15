@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { getExplorerPayload } from "@/lib/data";
+import { getRuntimeExplorerPayload } from "@/lib/data";
 
-export function GET() {
+export async function GET() {
+  const payload = await getRuntimeExplorerPayload();
   return NextResponse.json({
-    properties: getExplorerPayload().properties,
-    summary: getExplorerPayload().summary
+    properties: payload.properties,
+    summary: payload.summary
   });
 }

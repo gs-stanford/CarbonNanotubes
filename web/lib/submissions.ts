@@ -1,10 +1,6 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import {
-  communitySubmissionsFile,
-  getExplorerPayload,
+  getRuntimeExplorerPayload,
   PROPERTY_BY_KEY,
-  readCommunitySubmissions,
   type CommunityAcceptedSubmission,
   type ExplorerPayload,
   type Measurement,
@@ -13,6 +9,8 @@ import {
   type Publication,
   type PublicRecord
 } from "@/lib/data";
+import { maybeCleanupSubmissionWithOpenAI } from "@/lib/openai-cleanup";
+import { hasStoredSubmission, saveAcceptedSubmission } from "@/lib/submission-store";
 
 export type SubmissionPayload = {
   publication?: {
@@ -80,10 +78,13 @@ type DoiMetadata = {
 type AcceptedSubmissionResult = {
   payload: ExplorerPayload;
   record: PublicRecord;
+  submissionId: string;
   checks: {
     doi: "verified";
     duplicate: "passed";
     acceptedMeasurements: number;
+    stored: "postgres" | "file";
+    aiCleanup: "completed" | "failed" | "skipped" | "not_configured";
   };
 };
 
@@ -261,7 +262,7 @@ function duplicateCandidates(records: PlotRecord[], doi: string, payload: Submis
   });
 }
 
-function stableId(prefix: string, parts: string[]): string {
+export function stableId(prefix: string, parts: string[]): string {
   const text = parts.join("|");
   let hash = 2166136261;
   for (let index = 0; index < text.length; index += 1) {
@@ -384,14 +385,6 @@ function buildMeasurements(record: PublicRecord, entries: Array<{ property: Prop
   });
 }
 
-async function writeCommunitySubmissions(submissions: CommunityAcceptedSubmission[]) {
-  const file = communitySubmissionsFile();
-  await fs.mkdir(path.dirname(file), { recursive: true });
-  const tempFile = `${file}.tmp`;
-  await fs.writeFile(tempFile, `${JSON.stringify(submissions, null, 2)}\n`, "utf8");
-  await fs.rename(tempFile, file);
-}
-
 export async function acceptSubmission(payload: SubmissionPayload): Promise<AcceptedSubmissionResult> {
   const doi = normalizeDoi(payload.publication?.doi);
   const metadata = await validateDoi(doi);
@@ -400,7 +393,7 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
     throw new SubmissionError(422, "missing_measurements", "At least one numeric measurement is required.");
   }
 
-  const currentPayload = getExplorerPayload();
+  const currentPayload = await getRuntimeExplorerPayload();
   const duplicates = duplicateCandidates(currentPayload.records, metadata.doi, payload, measurements);
   if (duplicates.length) {
     throw new SubmissionError(409, "duplicate_submission", "A matching DOI/sample/measurement record already exists.", {
@@ -422,10 +415,12 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
     JSON.stringify(measurements.map((measurement) => [measurement.property, measurement.canonicalValue]))
   ]);
   const publicationId = stableId("userpub", [metadata.doi]);
+  const submissionId = stableId("sub", [recordId]);
   const record = buildRecord(payload, metadata, measurements, recordId);
   const publication = buildPublication(metadata, publicationId);
   const acceptedSubmission: CommunityAcceptedSubmission = {
     schema_version: "cnt-property-atlas-community-v0.1",
+    submission_id: submissionId,
     accepted_at: new Date().toISOString(),
     duplicate_check: {
       checked_against_records: currentPayload.records.length,
@@ -436,22 +431,25 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
     publication
   };
 
-  const existing = readCommunitySubmissions();
-  if (existing.some((submission) => submission.record.record_id === recordId)) {
+  if (await hasStoredSubmission(recordId)) {
     throw new SubmissionError(409, "duplicate_submission", "This accepted submission already exists.", {
       record_id: recordId
     });
   }
 
-  await writeCommunitySubmissions([...existing, acceptedSubmission]);
+  const storage = await saveAcceptedSubmission(acceptedSubmission, payload);
+  const cleanup = await maybeCleanupSubmissionWithOpenAI(acceptedSubmission);
 
   return {
-    payload: getExplorerPayload(),
+    payload: await getRuntimeExplorerPayload(),
     record,
+    submissionId,
     checks: {
       doi: "verified",
       duplicate: "passed",
-      acceptedMeasurements: measurements.length
+      acceptedMeasurements: measurements.length,
+      stored: storage,
+      aiCleanup: cleanup.status
     }
   };
 }

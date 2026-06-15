@@ -1,9 +1,9 @@
 import { PropertyExplorer } from "@/components/PropertyExplorer";
-import { getExplorerPayload } from "@/lib/data";
+import { getRuntimeExplorerPayload } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const payload = getExplorerPayload();
+export default async function Home() {
+  const payload = await getRuntimeExplorerPayload();
   return <PropertyExplorer initialData={payload} />;
 }
