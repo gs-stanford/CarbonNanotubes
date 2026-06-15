@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { getExplorerPayload } from "@/lib/data";
+import { getRuntimeExplorerPayload } from "@/lib/data";
 
-export function GET() {
+export async function GET() {
+  const payload = await getRuntimeExplorerPayload();
   return NextResponse.json({
-    measurements: getExplorerPayload().measurements
+    measurements: payload.measurements
   });
 }

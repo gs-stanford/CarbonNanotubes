@@ -1,0 +1,34 @@
+import { NextRequest, NextResponse } from "next/server";
+import { maybeCleanupSubmissionWithOpenAI } from "@/lib/openai-cleanup";
+import { readStoredSubmission } from "@/lib/submission-store";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function POST(
+  _request: NextRequest,
+  context: { params: Promise<unknown> }
+) {
+  const params = (await context.params) as { submissionId?: string };
+  const submissionId = params.submissionId ?? "";
+  const submission = await readStoredSubmission(submissionId);
+  if (!submission) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: {
+          code: "submission_not_found",
+          message: "No stored submission matched that id."
+        }
+      },
+      { status: 404 }
+    );
+  }
+
+  const cleanup = await maybeCleanupSubmissionWithOpenAI(submission);
+  return NextResponse.json({
+    ok: cleanup.status === "completed",
+    submission_id: submission.submission_id ?? submission.record.record_id,
+    cleanup
+  });
+}

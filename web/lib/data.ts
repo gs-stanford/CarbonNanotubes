@@ -160,6 +160,7 @@ export type ExplorerPayload = {
 
 export type CommunityAcceptedSubmission = {
   schema_version: "cnt-property-atlas-community-v0.1";
+  submission_id?: string;
   accepted_at: string;
   duplicate_check: {
     checked_against_records: number;
@@ -535,8 +536,7 @@ function publicationFromRow(row: Record<string, string>): Publication {
   };
 }
 
-export function getExplorerPayload(): ExplorerPayload {
-  const communitySubmissions = readCommunitySubmissions();
+function buildExplorerPayload(communitySubmissions: CommunityAcceptedSubmission[]): ExplorerPayload {
   const records = [
     ...readCsv("public_records_v0.csv").map(recordFromRow),
     ...communitySubmissions.map((submission) => submission.record)
@@ -613,12 +613,25 @@ export function getExplorerPayload(): ExplorerPayload {
   };
 }
 
-export function getPlotPoints(x: PropertyKey, y: PropertyKey): PlotRecord[] {
-  return getExplorerPayload().records.filter((record) => {
+export function getExplorerPayload(): ExplorerPayload {
+  return buildExplorerPayload(readCommunitySubmissions());
+}
+
+export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
+  const { readAcceptedSubmissions } = await import("@/lib/submission-store");
+  return buildExplorerPayload(await readAcceptedSubmissions());
+}
+
+export function getPlotPointsFromPayload(payload: ExplorerPayload, x: PropertyKey, y: PropertyKey): PlotRecord[] {
+  return payload.records.filter((record) => {
     const xValue = record.values[x];
     const yValue = record.values[y];
     return typeof xValue === "number" && Number.isFinite(xValue) && typeof yValue === "number" && Number.isFinite(yValue);
   });
+}
+
+export function getPlotPoints(x: PropertyKey, y: PropertyKey): PlotRecord[] {
+  return getPlotPointsFromPayload(getExplorerPayload(), x, y);
 }
 
 export function isPropertyKey(value: string | null): value is PropertyKey {
