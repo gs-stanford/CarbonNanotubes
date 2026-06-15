@@ -14,6 +14,12 @@ services:
         fromDatabase:
           name: cnt-property-atlas-db
           property: connectionString
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: OPENAI_CLEANUP_ENABLED
+        value: "false"
+      - key: OPENAI_API_KEY
+        sync: false
       - key: OPENAI_CLEANUP_MODEL
         value: gpt-4.1-mini
 

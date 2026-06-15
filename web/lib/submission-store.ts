@@ -1,11 +1,69 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { PoolClient } from "pg";
 import {
   communitySubmissionsFile,
   readCommunitySubmissions,
-  type CommunityAcceptedSubmission
+  type CommunityAcceptedSubmission,
+  type PublicRecord
 } from "@/lib/data";
 import { ensureDatabaseSchema, hasDatabaseUrl, withDb } from "@/lib/db";
+
+export type ReviewStatus = "accepted" | "curator_hold" | "official" | "rejected" | "hidden";
+
+export type AdminCleanupRun = {
+  cleanup_run_id: string;
+  status: "completed" | "failed";
+  model: string | null;
+  proposed_patch_json: unknown;
+  error_message: string | null;
+  created_at: string;
+  completed_at: string | null;
+};
+
+export type AdminSubmission = CommunityAcceptedSubmission & {
+  review: {
+    status: ReviewStatus;
+    public_visible: boolean;
+    ai_cleanup_status: string;
+    issue_types: string[];
+    flags: string[];
+    duplicate_match_record_ids: string[];
+    created_at: string;
+    updated_at: string;
+  };
+  cleanup_runs: AdminCleanupRun[];
+};
+
+export type AdminSubmissionPatch = {
+  status?: ReviewStatus;
+  public_visible?: boolean;
+  record_patch?: Partial<Pick<
+    PublicRecord,
+    | "record_label"
+    | "sample_name"
+    | "public_sample_label"
+    | "material_family"
+    | "form_factor"
+    | "cnt_type"
+    | "synthesis_method"
+    | "postprocessing"
+    | "public_release_tier"
+    | "default_plot_visibility"
+    | "public_plot_badge"
+    | "value_extraction_type"
+    | "source_disclosure"
+    | "citation_requirement"
+    | "evidence_tier"
+    | "missing_conditions"
+    | "unit_inference_review_needed"
+    | "strict_comparison_ready"
+    | "normalized_comparison_eligible"
+    | "exploratory_comparison_eligible"
+    | "issue_types"
+    | "required_action"
+  >>;
+};
 
 type CleanupRunInput = {
   cleanupRunId: string;
@@ -26,9 +84,31 @@ type StoredSubmissionRow = {
   canonical_publication: unknown;
 };
 
+type AdminSubmissionRow = StoredSubmissionRow & {
+  status: ReviewStatus;
+  public_visible: boolean;
+  ai_cleanup_status: string;
+  duplicate_match_record_ids: string[] | null;
+  issue_types: string[] | null;
+  flags: string[] | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+};
+
 type StoredMeasurementRow = {
   submission_id: string;
   measurement_json: unknown;
+};
+
+type StoredCleanupRunRow = {
+  cleanup_run_id: string;
+  submission_id: string;
+  status: "completed" | "failed";
+  model: string | null;
+  proposed_patch_json: unknown;
+  error_message: string | null;
+  created_at: Date | string;
+  completed_at: Date | string | null;
 };
 
 async function writeCommunitySubmissionsFile(submissions: CommunityAcceptedSubmission[]) {
@@ -59,6 +139,352 @@ function normalizeAcceptedSubmission(row: StoredSubmissionRow, measurements: unk
     publication: row.canonical_publication
   });
   return candidate;
+}
+
+function toIsoDate(value: Date | string | null): string | null {
+  if (!value) return null;
+  return typeof value === "string" ? value : value.toISOString();
+}
+
+function normalizeCleanupRun(row: StoredCleanupRunRow): AdminCleanupRun {
+  return {
+    cleanup_run_id: row.cleanup_run_id,
+    status: row.status,
+    model: row.model,
+    proposed_patch_json: row.proposed_patch_json,
+    error_message: row.error_message,
+    created_at: toIsoDate(row.created_at) ?? "",
+    completed_at: toIsoDate(row.completed_at)
+  };
+}
+
+function normalizeAdminSubmission(row: AdminSubmissionRow, measurements: unknown[], cleanupRuns: StoredCleanupRunRow[]): AdminSubmission | null {
+  const submission = normalizeAcceptedSubmission(row, measurements);
+  if (!submission) return null;
+  return {
+    ...submission,
+    review: {
+      status: row.status,
+      public_visible: row.public_visible,
+      ai_cleanup_status: row.ai_cleanup_status,
+      issue_types: row.issue_types ?? [],
+      flags: row.flags ?? [],
+      duplicate_match_record_ids: row.duplicate_match_record_ids ?? [],
+      created_at: toIsoDate(row.created_at) ?? "",
+      updated_at: toIsoDate(row.updated_at) ?? ""
+    },
+    cleanup_runs: cleanupRuns.map(normalizeCleanupRun)
+  };
+}
+
+function splitTags(value: string | null | undefined): string[] {
+  return (value ?? "")
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function flagsForRecord(record: PublicRecord): string[] {
+  return [
+    record.public_plot_badge,
+    record.value_extraction_type,
+    record.missing_conditions ? "missing_conditions" : "",
+    record.unit_inference_review_needed ? "unit_review" : ""
+  ].filter(Boolean);
+}
+
+function publicVisibilityForStatus(status: ReviewStatus): boolean {
+  return status === "accepted" || status === "official";
+}
+
+const RECORD_STRING_PATCH_FIELDS = [
+  "record_label",
+  "sample_name",
+  "public_sample_label",
+  "material_family",
+  "form_factor",
+  "cnt_type",
+  "synthesis_method",
+  "postprocessing",
+  "public_release_tier",
+  "default_plot_visibility",
+  "public_plot_badge",
+  "value_extraction_type",
+  "source_disclosure",
+  "citation_requirement",
+  "evidence_tier",
+  "issue_types",
+  "required_action"
+] as const;
+
+const RECORD_BOOLEAN_PATCH_FIELDS = [
+  "missing_conditions",
+  "unit_inference_review_needed",
+  "strict_comparison_ready",
+  "normalized_comparison_eligible",
+  "exploratory_comparison_eligible"
+] as const;
+
+function sanitizeRecordPatch(record: PublicRecord, patch: AdminSubmissionPatch["record_patch"]): PublicRecord {
+  if (!patch || typeof patch !== "object") return record;
+  const next = { ...record };
+  const writableNext = next as unknown as Record<string, unknown>;
+
+  for (const key of RECORD_STRING_PATCH_FIELDS) {
+    const value = patch[key];
+    if (typeof value === "string") {
+      const clean = value.trim();
+      if (clean) writableNext[key] = clean;
+    }
+  }
+
+  for (const key of RECORD_BOOLEAN_PATCH_FIELDS) {
+    const value = patch[key];
+    if (typeof value === "boolean") {
+      writableNext[key] = value;
+    }
+  }
+
+  if (typeof patch.public_sample_label === "string") {
+    const clean = patch.public_sample_label.trim();
+    if (clean) {
+      next.public_sample_label = clean;
+      next.record_label = typeof patch.record_label === "string" && patch.record_label.trim() ? patch.record_label.trim() : clean;
+      next.sample_name = typeof patch.sample_name === "string" && patch.sample_name.trim() ? patch.sample_name.trim() : clean;
+    }
+  }
+
+  return next;
+}
+
+async function fetchAdminSubmission(client: PoolClient, submissionId: string): Promise<AdminSubmission | null> {
+  const submissionResult = await client.query<AdminSubmissionRow>(
+    `
+      SELECT
+        submission_id,
+        accepted_at,
+        duplicate_check,
+        canonical_record,
+        canonical_publication,
+        status,
+        public_visible,
+        ai_cleanup_status,
+        duplicate_match_record_ids,
+        issue_types,
+        flags,
+        created_at,
+        updated_at
+      FROM atlas_submissions
+      WHERE submission_id = $1 OR record_id = $1
+      LIMIT 1
+    `,
+    [submissionId]
+  );
+  const row = submissionResult.rows[0];
+  if (!row) return null;
+
+  const measurements = await client.query<StoredMeasurementRow>(
+    `
+      SELECT submission_id, measurement_json
+      FROM atlas_measurements
+      WHERE submission_id = $1
+      ORDER BY measurement_id ASC
+    `,
+    [row.submission_id]
+  );
+  const cleanupRuns = await client.query<StoredCleanupRunRow>(
+    `
+      SELECT cleanup_run_id, submission_id, status, model, proposed_patch_json, error_message, created_at, completed_at
+      FROM atlas_ai_cleanup_runs
+      WHERE submission_id = $1
+      ORDER BY created_at DESC
+      LIMIT 5
+    `,
+    [row.submission_id]
+  );
+  return normalizeAdminSubmission(
+    row,
+    measurements.rows.map((measurement) => measurement.measurement_json),
+    cleanupRuns.rows
+  );
+}
+
+export async function listAdminSubmissions(): Promise<AdminSubmission[]> {
+  if (!hasDatabaseUrl()) {
+    return readCommunitySubmissions().map((submission) => ({
+      ...submission,
+      review: {
+        status: "accepted",
+        public_visible: true,
+        ai_cleanup_status: "not_requested",
+        issue_types: splitTags(submission.record.issue_types),
+        flags: flagsForRecord(submission.record),
+        duplicate_match_record_ids: submission.duplicate_check.matched_records,
+        created_at: submission.accepted_at,
+        updated_at: submission.accepted_at
+      },
+      cleanup_runs: []
+    }));
+  }
+
+  await ensureDatabaseSchema();
+  return withDb(async (client) => {
+    const submissions = await client.query<AdminSubmissionRow>(
+      `
+        SELECT
+          submission_id,
+          accepted_at,
+          duplicate_check,
+          canonical_record,
+          canonical_publication,
+          status,
+          public_visible,
+          ai_cleanup_status,
+          duplicate_match_record_ids,
+          issue_types,
+          flags,
+          created_at,
+          updated_at
+        FROM atlas_submissions
+        ORDER BY updated_at DESC, accepted_at DESC
+        LIMIT 500
+      `
+    );
+    if (!submissions.rowCount) return [];
+
+    const ids = submissions.rows.map((row) => row.submission_id);
+    const measurementRows = await client.query<StoredMeasurementRow>(
+      `
+        SELECT submission_id, measurement_json
+        FROM atlas_measurements
+        WHERE submission_id = ANY($1::text[])
+        ORDER BY measurement_id ASC
+      `,
+      [ids]
+    );
+    const cleanupRows = await client.query<StoredCleanupRunRow>(
+      `
+        SELECT cleanup_run_id, submission_id, status, model, proposed_patch_json, error_message, created_at, completed_at
+        FROM atlas_ai_cleanup_runs
+        WHERE submission_id = ANY($1::text[])
+        ORDER BY created_at DESC
+      `,
+      [ids]
+    );
+
+    const measurementsBySubmission = new Map<string, unknown[]>();
+    for (const row of measurementRows.rows) {
+      const list = measurementsBySubmission.get(row.submission_id) ?? [];
+      list.push(row.measurement_json);
+      measurementsBySubmission.set(row.submission_id, list);
+    }
+
+    const cleanupBySubmission = new Map<string, StoredCleanupRunRow[]>();
+    for (const row of cleanupRows.rows) {
+      const list = cleanupBySubmission.get(row.submission_id) ?? [];
+      if (list.length < 5) list.push(row);
+      cleanupBySubmission.set(row.submission_id, list);
+    }
+
+    return submissions.rows
+      .map((row) =>
+        normalizeAdminSubmission(
+          row,
+          measurementsBySubmission.get(row.submission_id) ?? [],
+          cleanupBySubmission.get(row.submission_id) ?? []
+        )
+      )
+      .filter((submission): submission is AdminSubmission => submission !== null);
+  });
+}
+
+export async function updateSubmissionReview(submissionId: string, patch: AdminSubmissionPatch): Promise<AdminSubmission | null> {
+  if (!hasDatabaseUrl()) {
+    throw new Error("DATABASE_URL is required for admin mutations.");
+  }
+
+  await ensureDatabaseSchema();
+  return withDb(async (client) => {
+    await client.query("BEGIN");
+    try {
+      const current = await client.query<AdminSubmissionRow>(
+        `
+          SELECT
+            submission_id,
+            accepted_at,
+            duplicate_check,
+            canonical_record,
+            canonical_publication,
+            status,
+            public_visible,
+            ai_cleanup_status,
+            duplicate_match_record_ids,
+            issue_types,
+            flags,
+            created_at,
+            updated_at
+          FROM atlas_submissions
+          WHERE submission_id = $1 OR record_id = $1
+          LIMIT 1
+          FOR UPDATE
+        `,
+        [submissionId]
+      );
+      const row = current.rows[0];
+      if (!row) {
+        await client.query("ROLLBACK");
+        return null;
+      }
+
+      const nextStatus = patch.status ?? row.status;
+      const nextVisible =
+        typeof patch.public_visible === "boolean" ? patch.public_visible : publicVisibilityForStatus(nextStatus);
+      const currentRecord = assertAcceptedSubmission({
+        schema_version: "cnt-property-atlas-community-v0.1",
+        accepted_at: typeof row.accepted_at === "string" ? row.accepted_at : row.accepted_at.toISOString(),
+        duplicate_check: row.duplicate_check,
+        record: row.canonical_record,
+        measurements: [],
+        publication: row.canonical_publication
+      })?.record;
+      if (!currentRecord) {
+        throw new Error("Stored submission has an invalid canonical record.");
+      }
+
+      const nextRecord = sanitizeRecordPatch(currentRecord, patch.record_patch);
+      const issueTypes = splitTags(nextRecord.issue_types);
+      const flags = flagsForRecord(nextRecord);
+
+      await client.query(
+        `
+          UPDATE atlas_submissions
+          SET
+            status = $2,
+            public_visible = $3,
+            issue_types = $4::text[],
+            flags = $5::text[],
+            canonical_record = $6::jsonb,
+            updated_at = now()
+          WHERE submission_id = $1
+        `,
+        [
+          row.submission_id,
+          nextStatus,
+          nextVisible,
+          issueTypes,
+          flags,
+          JSON.stringify(nextRecord)
+        ]
+      );
+
+      const updated = await fetchAdminSubmission(client, row.submission_id);
+      await client.query("COMMIT");
+      return updated;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
 }
 
 export async function readAcceptedSubmissions(): Promise<CommunityAcceptedSubmission[]> {
