@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
 import { maybeCleanupSubmissionWithOpenAI } from "@/lib/openai-cleanup";
 import { readStoredSubmission } from "@/lib/submission-store";
 
@@ -6,9 +7,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<unknown> }
 ) {
+  const authError = requireAdmin(request);
+  if (authError) return authError;
+
   const params = (await context.params) as { submissionId?: string };
   const submissionId = params.submissionId ?? "";
   const submission = await readStoredSubmission(submissionId);
