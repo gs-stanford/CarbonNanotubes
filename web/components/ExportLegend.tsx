@@ -5,7 +5,6 @@ import type { PlotRecord } from "@/lib/data";
 type LegendItem = {
   key: string;
   label: string;
-  count: number;
   className: string;
   shape?: "circle" | "open-circle" | "square" | "diamond" | "triangle" | "down-triangle" | "hexagon";
 };
@@ -22,9 +21,9 @@ type ExportLegendProps = {
 };
 
 const LEGEND_LEFT = 92;
-const LEGEND_ITEM_START = 148;
+const LEGEND_ITEM_START = 184;
 const LEGEND_RIGHT_PAD = 34;
-const ROW_GAP = 18;
+const ROW_GAP = 17;
 
 const MATERIAL_ITEMS = [
   { key: "carbon_fiber_comparator", label: "Carbon fiber", className: "point-material-carbon-fiber" },
@@ -57,7 +56,7 @@ function countBy(records: PlotRecord[], field: "material_family" | "form_factor"
 }
 
 function itemWidth(item: LegendItem): number {
-  return Math.min(205, Math.max(72, 26 + item.label.length * 5.1 + String(item.count).length * 5.5));
+  return Math.min(190, Math.max(72, 30 + item.label.length * 5.2));
 }
 
 function layoutItems(items: LegendItem[], y: number, maxX: number): { items: PositionedLegendItem[]; nextY: number } {
@@ -109,8 +108,8 @@ export function ExportLegend({ records, width, y }: ExportLegendProps) {
   const maxX = width - LEGEND_RIGHT_PAD;
   const materialCounts = countBy(records, "material_family");
   const formCounts = countBy(records, "form_factor");
-  const materialItems = MATERIAL_ITEMS.map((item) => ({ ...item, count: materialCounts.get(item.key) ?? 0 })).filter((item) => item.count > 0);
-  const formItems = FORM_ITEMS.map((item) => ({ ...item, count: formCounts.get(item.key) ?? 0 })).filter((item) => item.count > 0);
+  const materialItems = MATERIAL_ITEMS.filter((item) => (materialCounts.get(item.key) ?? 0) > 0);
+  const formItems = FORM_ITEMS.filter((item) => (formCounts.get(item.key) ?? 0) > 0);
   const materialLayout = layoutItems(materialItems, y, maxX);
   const formY = materialLayout.nextY + 4;
   const formLayout = layoutItems(formItems, formY, maxX);
@@ -123,16 +122,13 @@ export function ExportLegend({ records, width, y }: ExportLegendProps) {
       {materialItems.length ? (
         <>
           <text x={LEGEND_LEFT} y={y + 4} className="export-legend-heading">
-            Color
+            Material family
           </text>
           {materialLayout.items.map((item) => (
             <g key={`export-material-${item.key}`} className="export-legend-item">
               <LegendSymbol item={item} x={item.x + 5} y={item.y} kind="material" />
               <text x={item.x + 17} y={item.y + 3.8} className="export-legend-text">
                 {compactLabel(item.label)}
-              </text>
-              <text x={item.x + 17 + compactLabel(item.label).length * 5.1 + 6} y={item.y + 3.8} className="export-legend-count">
-                {item.count}
               </text>
             </g>
           ))}
@@ -141,16 +137,13 @@ export function ExportLegend({ records, width, y }: ExportLegendProps) {
       {formItems.length ? (
         <>
           <text x={LEGEND_LEFT} y={formY + 4} className="export-legend-heading">
-            Shape
+            Form factor
           </text>
           {formLayout.items.map((item) => (
             <g key={`export-form-${item.key}`} className="export-legend-item">
               <LegendSymbol item={item} x={item.x + 5} y={item.y} kind="form" />
               <text x={item.x + 17} y={item.y + 3.8} className="export-legend-text">
                 {compactLabel(item.label)}
-              </text>
-              <text x={item.x + 17 + compactLabel(item.label).length * 5.1 + 6} y={item.y + 3.8} className="export-legend-count">
-                {item.count}
               </text>
             </g>
           ))}

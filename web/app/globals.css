@@ -221,6 +221,61 @@ nextjs-portal {
   text-transform: uppercase;
 }
 
+.rail-heading-note {
+  display: inline-block;
+  margin-left: 8px;
+  border: 1px solid rgba(15, 93, 85, 0.32);
+  border-radius: 999px;
+  padding: 2px 6px;
+  color: #0d5c55;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  vertical-align: 1px;
+}
+
+.numeric-filter-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.numeric-filter-row {
+  display: grid;
+  grid-template-columns: minmax(76px, 1fr) minmax(0, 72px) minmax(0, 72px);
+  gap: 7px;
+  align-items: end;
+}
+
+.numeric-filter-row div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.numeric-filter-row span {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+.numeric-filter-row small,
+.filter-note {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.numeric-filter-row input {
+  min-height: 30px;
+  padding: 6px 7px;
+  font-size: 12px;
+}
+
+.filter-note {
+  margin: 10px 0 0;
+}
+
 .field-label {
   display: block;
   margin: 0 0 7px;

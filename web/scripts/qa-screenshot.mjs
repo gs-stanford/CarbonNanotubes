@@ -42,11 +42,13 @@ if (
   !exportedSvg.includes("<style>") ||
   !exportedSvg.includes(".plot-area") ||
   !exportedSvg.includes("export-legend") ||
-  !exportedSvg.includes("Color") ||
-  !exportedSvg.includes("Shape") ||
-  exportedSvg.includes("plot-watermark")
+  !exportedSvg.includes("Material family") ||
+  !exportedSvg.includes("Form factor") ||
+  exportedSvg.includes("plot-watermark") ||
+  exportedSvg.includes("selected-halo") ||
+  exportedSvg.includes("export-legend-count")
 ) {
-  throw new Error("Exported SVG is not standalone or still contains the watermark.");
+  throw new Error("Exported SVG is not standalone or still contains UI-only export artifacts.");
 }
 const viewBoxMatch = exportedSvg.match(/viewBox="([^"]+)"/);
 const viewBoxHeight = viewBoxMatch ? Number(viewBoxMatch[1].trim().split(/\s+/)[3]) : 0;
@@ -165,6 +167,22 @@ const desktopInfo = await page.evaluate(() => ({
 }));
 if (desktopInfo.radarSections !== 0) {
   throw new Error(`Radar UI should be hidden until enough complete records exist: ${JSON.stringify(desktopInfo)}`);
+}
+
+const beforeNumericFilterCount = desktopInfo.plotPoints;
+await page.getByLabel("Minimum Density").fill("1000");
+await page.getByLabel("Minimum Diameter").fill("1");
+const numericFilterInfo = await page.evaluate(() => ({
+  activeBadge: document.querySelector(".rail-heading-note")?.textContent?.trim() ?? "",
+  plotPoints: document.querySelectorAll(".plot-point").length,
+  hasNumericFilters: document.body.textContent?.includes("Numeric filters") ?? false
+}));
+if (
+  numericFilterInfo.activeBadge !== "active" ||
+  !numericFilterInfo.hasNumericFilters ||
+  numericFilterInfo.plotPoints > beforeNumericFilterCount
+) {
+  throw new Error(`Numeric filter QA failed: ${JSON.stringify({ beforeNumericFilterCount, numericFilterInfo })}`);
 }
 
 await page.setViewportSize({ width: 390, height: 844 });

@@ -181,6 +181,59 @@ const RANKED_REFERENCE_LINES: Partial<Record<PropertyKey, RankedReferenceLine[]>
   ]
 };
 
+type NumericFilterKey = "density" | "diameter" | "gauge_length_mm" | "temperature_C";
+
+type NumericFilterState = Record<NumericFilterKey, { min: string; max: string }>;
+
+type NumericFilterConfig = {
+  key: NumericFilterKey;
+  label: string;
+  unit: string;
+  getValue: (record: PlotRecord) => number | null;
+};
+
+const NUMERIC_FILTERS: NumericFilterConfig[] = [
+  {
+    key: "density",
+    label: "Density",
+    unit: "kg m⁻³",
+    getValue: (record) => {
+      const value = record.values.density;
+      return typeof value === "number" && Number.isFinite(value) ? value : null;
+    }
+  },
+  {
+    key: "diameter",
+    label: "Diameter",
+    unit: "µm",
+    getValue: (record) => {
+      const value = record.values.diameter;
+      return typeof value === "number" && Number.isFinite(value) ? value : null;
+    }
+  },
+  {
+    key: "gauge_length_mm",
+    label: "Gauge length",
+    unit: "mm",
+    getValue: (record) => record.gauge_length_mm
+  },
+  {
+    key: "temperature_C",
+    label: "Temperature",
+    unit: "°C",
+    getValue: (record) => record.condition_temperature_C
+  }
+];
+
+function emptyNumericFilters(): NumericFilterState {
+  return {
+    density: { min: "", max: "" },
+    diameter: { min: "", max: "" },
+    gauge_length_mm: { min: "", max: "" },
+    temperature_C: { min: "", max: "" }
+  };
+}
+
 const EXPORTED_FIGURE_CSS = `
 svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .plot-area { fill: #fcfdfc; }
@@ -220,7 +273,6 @@ svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .plot-point.point-shape-open-circle.point-material-metal { fill: #ffffff; stroke: #cc79a7; }
 .plot-point.point-shape-open-circle.point-material-ceramic { fill: #ffffff; stroke: #6a3d9a; }
 .plot-point.point-shape-open-circle.point-material-unknown { fill: #ffffff; stroke: #979d95; }
-.selected-halo circle { fill: none; stroke: #0f5d55; stroke-width: 1.25; vector-effect: non-scaling-stroke; pointer-events: none; }
 .point-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.95); stroke-width: 2.8px; }
 .label-leader { stroke: rgba(23, 26, 22, 0.38); stroke-width: 0.75; vector-effect: non-scaling-stroke; pointer-events: none; }
 .rank-row-line { stroke: rgba(216, 222, 214, 0.58); stroke-width: 0.65; vector-effect: non-scaling-stroke; }
@@ -250,9 +302,8 @@ svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .rank-reference-tag.reference-carbon-reference, .rank-reference-tag.reference-hm-carbon { stroke: rgba(51, 59, 58, 0.7); }
 .rank-reference-label.reference-carbon-reference, .rank-reference-label.reference-hm-carbon { fill: #2f3735; }
 .export-legend { display: block; }
-.export-legend-heading { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.export-legend-text { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 9.8px; font-weight: 600; }
-.export-legend-count { fill: #7e867c; font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; font-weight: 700; }
+.export-legend-heading { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; font-weight: 700; letter-spacing: 0; }
+.export-legend-text { fill: #4f574e; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 500; }
 .export-legend-symbol { stroke-width: 1.05; vector-effect: non-scaling-stroke; }
 .export-legend-material.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
 .export-legend-material.point-material-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
@@ -502,6 +553,11 @@ function downloadText(filename: string, text: string, type: string) {
 function prepareFigureSvg(svg: SVGSVGElement, figureTitle: string, includeXmlDeclaration = true): string {
   const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
+  clone.querySelectorAll(".selected-halo").forEach((node) => node.remove());
+  clone.querySelectorAll(".is-selected").forEach((node) => {
+    const className = node.getAttribute("class") ?? "";
+    node.setAttribute("class", className.replace(/\bis-selected\b/g, "").replace(/\s+/g, " ").trim());
+  });
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   clone.setAttribute("role", "img");
   clone.removeAttribute("style");
@@ -644,6 +700,31 @@ function lowDensityCaveatText(record: PlotRecord): string {
   return `Specific conductivity is normalized by reported bulk density. This record uses ${densityText}, so the mass-normalized value should be read with volumetric conductivity and packing density rather than treated as directly equivalent to a dense CNT fiber.`;
 }
 
+function parseNumericFilterValue(value: string): number | null {
+  const clean = value.trim().replace(/,/g, "");
+  if (!clean) return null;
+  const parsed = Number(clean);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function hasActiveNumericFilters(filters: NumericFilterState): boolean {
+  return NUMERIC_FILTERS.some((filter) => filters[filter.key].min.trim() || filters[filter.key].max.trim());
+}
+
+function recordPassesNumericFilters(record: PlotRecord, filters: NumericFilterState): boolean {
+  for (const filter of NUMERIC_FILTERS) {
+    const min = parseNumericFilterValue(filters[filter.key].min);
+    const max = parseNumericFilterValue(filters[filter.key].max);
+    if (min === null && max === null) continue;
+
+    const value = filter.getValue(record);
+    if (value === null || !Number.isFinite(value)) return false;
+    if (min !== null && value < min) return false;
+    if (max !== null && value > max) return false;
+  }
+  return true;
+}
+
 export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const [atlasData, setAtlasData] = useState(initialData);
   const initialYearMin = defaultYearMin(atlasData.summary.minYear);
@@ -664,6 +745,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const [selectedForms, setSelectedForms] = useState<Set<string>>(() => new Set(forms));
   const [yearMin, setYearMin] = useState(initialYearMin);
   const [yearMax, setYearMax] = useState(initialYearMax);
+  const [numericFilters, setNumericFilters] = useState<NumericFilterState>(() => emptyNumericFilters());
   const [plotType, setPlotType] = useState<PlotType>("scatter");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [citationOpen, setCitationOpen] = useState(false);
@@ -704,11 +786,12 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         if (!selectedForms.has(record.form_factor)) return false;
         const year = record.publication_year_verified;
         if (typeof year === "number" && (year < yearMin || year > yearMax)) return false;
+        if (!recordPassesNumericFilters(record, numericFilters)) return false;
         if (normalizedComparisonView) return record.normalized_comparison_eligible;
         return record.public_release_tier !== "commercial_contextual_comparator";
       })
       .sort((a, b) => sourceRank(a) - sourceRank(b));
-  }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
+  }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, numericFilters, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
 
   const filteredRecords = useMemo(() => {
     return reduceToBestRecords(eligibleRecords, xKey, yKey);
@@ -756,6 +839,17 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     setter(next);
   }
 
+  function updateNumericFilter(key: NumericFilterKey, side: "min" | "max", value: string) {
+    setNumericFilters((current) => ({
+      ...current,
+      [key]: {
+        ...current[key],
+        [side]: value
+      }
+    }));
+    setSelectedId(null);
+  }
+
   function changeProperty(axis: "x" | "y", value: PropertyKey) {
     const nextScale: ScaleMode = ashbyAxisLocked ? "log" : DEFAULT_SCALE;
     if (axis === "x") {
@@ -779,6 +873,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     setSelectedForms(new Set(forms));
     setYearMin(initialYearMin);
     setYearMax(initialYearMax);
+    setNumericFilters(emptyNumericFilters());
     setSelectedId(null);
   }
 
@@ -863,6 +958,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     count: plottedRecords.filter((record) => record.form_factor === form).length
   }));
   const legendForms = formCounts.filter((form) => form.count > 0);
+  const numericFiltersActive = hasActiveNumericFilters(numericFilters);
   const rankedReferenceLines = plotType === "ranked" ? RANKED_REFERENCE_LINES[yKey] ?? [] : [];
   const detailMetricKeys = Array.from(new Set<PropertyKey>([xKey, yKey, "density", "diameter", "electrical_conductivity", "ampacity"])).filter(
     (key) => selectedRecord && typeof selectedRecord.values[key] === "number"
@@ -1136,6 +1232,40 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               <span>to</span>
               <input type="number" value={yearMax} onChange={(event) => setYearMax(Number(event.target.value))} aria-label="Maximum publication year" />
             </div>
+          </section>
+
+          <section className="rail-section">
+            <div className="rail-heading">
+              Numeric filters
+              {numericFiltersActive ? <span className="rail-heading-note">active</span> : null}
+            </div>
+            <div className="numeric-filter-grid">
+              {NUMERIC_FILTERS.map((filter) => (
+                <div className="numeric-filter-row" key={filter.key}>
+                  <div>
+                    <span>{filter.label}</span>
+                    <small>{filter.unit}</small>
+                  </div>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="min"
+                    value={numericFilters[filter.key].min}
+                    onChange={(event) => updateNumericFilter(filter.key, "min", event.target.value)}
+                    aria-label={`Minimum ${filter.label}`}
+                  />
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="max"
+                    value={numericFilters[filter.key].max}
+                    onChange={(event) => updateNumericFilter(filter.key, "max", event.target.value)}
+                    aria-label={`Maximum ${filter.label}`}
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="filter-note">Active numeric filters require reported metadata for that field.</p>
           </section>
 
         </aside>
