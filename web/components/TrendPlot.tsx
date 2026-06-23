@@ -25,7 +25,12 @@ type LabelPlacement = {
   y: number;
   textX: number;
   textY: number;
+  textAnchor: "start" | "middle" | "end";
+  leaderX: number;
+  leaderY: number;
   box: { x0: number; y0: number; x1: number; y1: number };
+  text: string;
+  kind: "benchmark" | "source";
 };
 
 type MarkerShape = "circle" | "open-circle" | "square" | "diamond" | "triangle" | "down-triangle" | "hexagon";
@@ -35,6 +40,20 @@ const HEIGHT = 560;
 const MARGIN = { top: 42, right: 42, bottom: 74, left: 92 };
 const LINEAR_TICK_TARGET = 6;
 const AUTHOR_PARTICLES = new Set(["da", "de", "del", "della", "der", "di", "dos", "du", "la", "le", "van", "von", "y"]);
+const MAX_SOURCE_LABELS = 4;
+const MAX_BENCHMARK_LABELS = 4;
+const MAX_TOTAL_LABELS = 7;
+const MAX_LABEL_LEADER_LENGTH = 92;
+const METAL_BENCHMARK_ORDER = new Map([
+  ["Cu", 0],
+  ["Al", 1],
+  ["Ag", 2],
+  ["Au", 3],
+  ["Ni", 4],
+  ["Fe", 5],
+  ["Steel", 6],
+  ["Zn", 7]
+]);
 
 function positiveValues(values: number[], scale: ScaleMode): number[] {
   return values.filter((value) => Number.isFinite(value) && (scale === "linear" || value > 0));
@@ -172,6 +191,92 @@ function labelText(record: PlotRecord): string {
   return raw.length > 42 ? `${raw.slice(0, 39)}...` : raw;
 }
 
+function metalBenchmarkLabel(record: PlotRecord): string | null {
+  if (record.material_family !== "metal_comparator") return null;
+  const raw = stripMarkup(record.public_sample_label ?? record.sample_name ?? record.record_label);
+  if (!raw) return null;
+  if (/\b(copper|cu)\b/i.test(raw)) return "Cu";
+  if (/\b(aluminum|aluminium|al)\b/i.test(raw)) return "Al";
+  if (/\b(silver|ag)\b/i.test(raw)) return "Ag";
+  if (/\b(gold|au)\b/i.test(raw)) return "Au";
+  if (/\b(nickel|ni)\b/i.test(raw)) return "Ni";
+  if (/\b(iron|fe)\b/i.test(raw)) return "Fe";
+  if (/\bsteel\b/i.test(raw)) return "Steel";
+  if (/\b(zinc|zn)\b/i.test(raw)) return "Zn";
+  return null;
+}
+
+function calloutText(record: PlotRecord): string {
+  return metalBenchmarkLabel(record) ?? labelText(record);
+}
+
+function metricValue(record: PlotRecord, key: PropertyKey): number {
+  const value = record.values[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : Number.NEGATIVE_INFINITY;
+}
+
+function labelWidth(text: string): number {
+  return Math.min(170, Math.max(28, text.length * 5.6));
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function closestPointOnBox(x: number, y: number, box: LabelPlacement["box"]): { x: number; y: number } {
+  return {
+    x: clamp(x, box.x0, box.x1),
+    y: clamp(y, box.y0, box.y1)
+  };
+}
+
+function labelCandidateBoxes(record: PlotRecord, x: number, y: number, text: string, kind: LabelPlacement["kind"]): LabelPlacement[] {
+  const width = labelWidth(text);
+  const height = 18;
+  const gap = kind === "benchmark" ? 11 : 13;
+  const minX = MARGIN.left + 2;
+  const maxX = WIDTH - MARGIN.right - width - 2;
+  const minY = MARGIN.top + 2;
+  const maxY = HEIGHT - MARGIN.bottom - height - 2;
+  const rawCandidates: Array<{ x0: number; y0: number; textAnchor: LabelPlacement["textAnchor"]; priority: number }> = [
+    { x0: x + gap, y0: y - 22, textAnchor: "start", priority: 0 },
+    { x0: x + gap, y0: y - 8, textAnchor: "start", priority: 1 },
+    { x0: x + gap, y0: y + 9, textAnchor: "start", priority: 2 },
+    { x0: x - width - gap, y0: y - 22, textAnchor: "end", priority: 3 },
+    { x0: x - width - gap, y0: y - 8, textAnchor: "end", priority: 4 },
+    { x0: x - width - gap, y0: y + 9, textAnchor: "end", priority: 5 },
+    { x0: x - width / 2, y0: y - 34, textAnchor: "middle", priority: 6 },
+    { x0: x - width / 2, y0: y + 16, textAnchor: "middle", priority: 7 }
+  ];
+
+  return rawCandidates
+    .map((candidate) => {
+      const x0 = clamp(candidate.x0, minX, maxX);
+      const y0 = clamp(candidate.y0, minY, maxY);
+      const box = { x0, y0, x1: x0 + width, y1: y0 + height };
+      const leader = closestPointOnBox(x, y, box);
+      const clampedDistance = Math.abs(x0 - candidate.x0) + Math.abs(y0 - candidate.y0);
+      const leaderLength = Math.hypot(leader.x - x, leader.y - y);
+      return {
+        record,
+        x,
+        y,
+        textX: candidate.textAnchor === "end" ? box.x1 : candidate.textAnchor === "middle" ? (box.x0 + box.x1) / 2 : box.x0,
+        textY: box.y0 + 12,
+        textAnchor: candidate.textAnchor,
+        leaderX: leader.x,
+        leaderY: leader.y,
+        box,
+        text,
+        kind,
+        score: leaderLength + clampedDistance * 0.7 + candidate.priority * 1.2
+      };
+    })
+    .filter((candidate) => Math.hypot(candidate.leaderX - x, candidate.leaderY - y) <= MAX_LABEL_LEADER_LENGTH)
+    .sort((a, b) => a.score - b.score)
+    .map(({ score: _score, ...candidate }) => candidate);
+}
+
 function formShape(record: PlotRecord): MarkerShape {
   if (record.form_factor === "fiber_yarn") return "circle";
   if (record.form_factor === "sheet_mat_film") return "down-triangle";
@@ -237,33 +342,53 @@ export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, onSelect }
   const xTicks = yearTicks(xDomain, xRange);
   const yTicks = valueTicks(yDomain, yRange, yScale);
   const selected = plotRecords.find((record) => record.record_id === selectedId) ?? null;
-  const labelCandidates = plotRecords.slice().sort((a, b) => (b.values[yKey] ?? 0) - (a.values[yKey] ?? 0));
-  const labels: LabelPlacement[] = [];
-
-  for (const record of labelCandidates) {
+  const pointBoxes = plotRecords.map((record) => {
     const x = scaleNumber(record.publication_year_verified as number, xDomain, xRange, "linear");
     const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
-    const text = labelText(record);
-    const width = Math.min(170, Math.max(64, text.length * 5.6));
-    const height = 18;
-    const candidates = [
-      { x0: x + 13, y0: y - 23 },
-      { x0: x - width - 13, y0: y - 23 },
-      { x0: x + 13, y0: y + 9 },
-      { x0: x - width - 13, y0: y + 9 }
-    ];
-    const placement = candidates
-      .map((box) => ({ record, x, y, textX: box.x0, textY: box.y0 + 12, box: { x0: box.x0, y0: box.y0, x1: box.x0 + width, y1: box.y0 + height } }))
+    return {
+      recordId: record.record_id,
+      box: { x0: x - 7, y0: y - 7, x1: x + 7, y1: y + 7 }
+    };
+  });
+  const metalLabelCandidates = plotRecords
+    .filter((record) => metalBenchmarkLabel(record))
+    .sort((a, b) => {
+      const labelA = metalBenchmarkLabel(a) ?? "";
+      const labelB = metalBenchmarkLabel(b) ?? "";
+      const rankDiff = (METAL_BENCHMARK_ORDER.get(labelA) ?? 99) - (METAL_BENCHMARK_ORDER.get(labelB) ?? 99);
+      if (rankDiff !== 0) return rankDiff;
+      return metricValue(b, yKey) - metricValue(a, yKey);
+    })
+    .filter((record, index, records) => {
+      const label = metalBenchmarkLabel(record);
+      return Boolean(label) && records.findIndex((candidate) => metalBenchmarkLabel(candidate) === label) === index;
+    });
+  const sourceLabelCandidates = plotRecords
+    .filter((record) => record.material_family !== "metal_comparator")
+    .sort((a, b) => (b.values[yKey] ?? 0) - (a.values[yKey] ?? 0));
+  const labels: LabelPlacement[] = [];
+  let benchmarkLabelCount = 0;
+  let sourceLabelCount = 0;
+
+  for (const record of [...metalLabelCandidates, ...sourceLabelCandidates]) {
+    const kind: LabelPlacement["kind"] = metalBenchmarkLabel(record) ? "benchmark" : "source";
+    if (kind === "benchmark" && benchmarkLabelCount >= MAX_BENCHMARK_LABELS) continue;
+    if (kind === "source" && sourceLabelCount >= MAX_SOURCE_LABELS) continue;
+    const x = scaleNumber(record.publication_year_verified as number, xDomain, xRange, "linear");
+    const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
+    const text = calloutText(record);
+    const placement = labelCandidateBoxes(record, x, y, text, kind)
       .find(
         (candidate) =>
-          candidate.box.x0 >= MARGIN.left + 2 &&
-          candidate.box.x1 <= WIDTH - MARGIN.right - 2 &&
-          candidate.box.y0 >= MARGIN.top + 2 &&
-          candidate.box.y1 <= HEIGHT - MARGIN.bottom - 2 &&
-          labels.every((label) => !boxesOverlap(candidate.box, label.box))
+          labels.every((label) => !boxesOverlap(candidate.box, label.box)) &&
+          pointBoxes.every((point) => point.recordId === record.record_id || !boxesOverlap(candidate.box, point.box))
       );
-    if (placement) labels.push(placement);
-    if (labels.length >= 4) break;
+    if (placement) {
+      labels.push(placement);
+      if (kind === "benchmark") benchmarkLabelCount += 1;
+      else sourceLabelCount += 1;
+    }
+    if (labels.length >= MAX_TOTAL_LABELS) break;
   }
 
   return (
@@ -305,12 +430,11 @@ export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, onSelect }
         })}
 
         {labels.map((placement) => {
-          const leaderEndX = placement.textX > placement.x ? placement.box.x0 - 3 : placement.box.x1 + 3;
           return (
             <g key={`trend-label-${placement.record.record_id}`} className="plot-label-group">
-              <line x1={placement.x} y1={placement.y} x2={leaderEndX} y2={placement.textY - 4} className="label-leader" />
-              <text x={placement.textX} y={placement.textY} className="point-label">
-                {labelText(placement.record)}
+              <line x1={placement.x} y1={placement.y} x2={placement.leaderX} y2={placement.leaderY} className="label-leader" />
+              <text x={placement.textX} y={placement.textY} textAnchor={placement.textAnchor} className="point-label">
+                {placement.text}
               </text>
             </g>
           );

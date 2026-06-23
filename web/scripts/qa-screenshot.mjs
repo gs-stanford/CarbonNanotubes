@@ -38,12 +38,14 @@ const svgDownload = await Promise.all([
 const exportedSvgPath = path.join(outDir, "exported-figure.svg");
 await svgDownload.saveAs(exportedSvgPath);
 const exportedSvg = await fs.readFile(exportedSvgPath, "utf8");
+const metalCalloutPattern = />(Cu|Al|Ag|Au|Ni|Fe|Steel|Zn)</;
 if (
   !exportedSvg.includes("<style>") ||
   !exportedSvg.includes(".plot-area") ||
   !exportedSvg.includes("export-legend") ||
   !exportedSvg.includes("Material family") ||
   !exportedSvg.includes("Form factor") ||
+  !metalCalloutPattern.test(exportedSvg) ||
   exportedSvg.includes("plot-watermark") ||
   exportedSvg.includes("selected-halo") ||
   exportedSvg.includes("export-legend-count")
@@ -96,7 +98,18 @@ await page.getByRole("tab", { name: "Trend" }).click();
 await page.screenshot({ path: path.join(outDir, "trend.png"), fullPage: true });
 const trendInfo = await page.evaluate(() => ({
   plotPoints: document.querySelectorAll(".plot-point").length,
-  trendLabels: document.querySelectorAll(".plot-label-group").length
+  trendLabels: document.querySelectorAll(".plot-label-group").length,
+  pointLabels: [...document.querySelectorAll(".point-label")].map((label) => label.textContent?.trim()).filter(Boolean),
+  maxLeaderLength: Math.max(
+    0,
+    ...[...document.querySelectorAll(".label-leader")].map((line) => {
+      const x1 = Number(line.getAttribute("x1"));
+      const y1 = Number(line.getAttribute("y1"));
+      const x2 = Number(line.getAttribute("x2"));
+      const y2 = Number(line.getAttribute("y2"));
+      return Math.hypot(x2 - x1, y2 - y1);
+    })
+  )
 }));
 await page.getByRole("tab", { name: "Ashby" }).click();
 await page.screenshot({ path: path.join(outDir, "ashby.png"), fullPage: true });
@@ -126,6 +139,17 @@ const ashbyInfo = await page.evaluate(() => ({
     }
     return overlaps;
   })(),
+  pointLabels: [...document.querySelectorAll(".point-label")].map((label) => label.textContent?.trim()).filter(Boolean),
+  maxLeaderLength: Math.max(
+    0,
+    ...[...document.querySelectorAll(".label-leader")].map((line) => {
+      const x1 = Number(line.getAttribute("x1"));
+      const y1 = Number(line.getAttribute("y1"));
+      const x2 = Number(line.getAttribute("x2"));
+      const y2 = Number(line.getAttribute("y2"));
+      return Math.hypot(x2 - x1, y2 - y1);
+    })
+  ),
   xLinearDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][0]?.querySelector("button:first-child")?.hasAttribute("disabled")),
   xLogDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][0]?.querySelector("button:last-child")?.hasAttribute("disabled")),
   yLinearDisabled: Boolean([...document.querySelectorAll(".axis-section .scale-row")][1]?.querySelector("button:first-child")?.hasAttribute("disabled")),
@@ -142,6 +166,8 @@ if (
   ashbyInfo.largestRegionWidthFraction > 0.82 ||
   ashbyInfo.singlePointRegionCount !== 0 ||
   ashbyInfo.labelOverlapCount !== 0 ||
+  !ashbyInfo.pointLabels.some((label) => /^(Cu|Al|Ag|Au|Ni|Fe|Steel|Zn)$/.test(label)) ||
+  ashbyInfo.maxLeaderLength > 94 ||
   !ashbyInfo.xLinearDisabled ||
   !ashbyInfo.xLogDisabled ||
   !ashbyInfo.yLinearDisabled ||
@@ -157,6 +183,17 @@ await page.screenshot({ path: path.join(outDir, "desktop.png"), fullPage: true }
 const desktopInfo = await page.evaluate(() => ({
   title: document.title,
   plotPoints: document.querySelectorAll(".plot-point").length,
+  pointLabels: [...document.querySelectorAll(".point-label")].map((label) => label.textContent?.trim()).filter(Boolean),
+  maxLeaderLength: Math.max(
+    0,
+    ...[...document.querySelectorAll(".label-leader")].map((line) => {
+      const x1 = Number(line.getAttribute("x1"));
+      const y1 = Number(line.getAttribute("y1"));
+      const x2 = Number(line.getAttribute("x2"));
+      const y2 = Number(line.getAttribute("y2"));
+      return Math.hypot(x2 - x1, y2 - y1);
+    })
+  ),
   radarSections: document.querySelectorAll(".radar-section, #radar-record").length,
   citationModalClosed: !document.querySelector('[role="dialog"]'),
   overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -167,6 +204,12 @@ const desktopInfo = await page.evaluate(() => ({
 }));
 if (desktopInfo.radarSections !== 0) {
   throw new Error(`Radar UI should be hidden until enough complete records exist: ${JSON.stringify(desktopInfo)}`);
+}
+if (!desktopInfo.pointLabels.some((label) => /^(Cu|Al|Ag|Au|Ni|Fe|Steel|Zn)$/.test(label)) || desktopInfo.maxLeaderLength > 94) {
+  throw new Error(`Scatter callout QA failed: ${JSON.stringify(desktopInfo)}`);
+}
+if (!trendInfo.pointLabels.some((label) => /^(Cu|Al|Ag|Au|Ni|Fe|Steel|Zn)$/.test(label)) || trendInfo.maxLeaderLength > 94) {
+  throw new Error(`Trend callout QA failed: ${JSON.stringify(trendInfo)}`);
 }
 
 const beforeNumericFilterCount = desktopInfo.plotPoints;
