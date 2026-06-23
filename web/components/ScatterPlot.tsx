@@ -255,7 +255,7 @@ const METAL_BENCHMARK_ORDER = new Map([
 function metalBenchmarkLabel(record: PlotRecord): string | null {
   if (record.material_family !== "metal_comparator") return null;
   const raw = stripMarkup(record.public_sample_label ?? record.sample_name ?? record.record_label);
-  if (!raw) return null;
+  if (!raw) return "Metal";
   if (/\b(copper|cu)\b/i.test(raw)) return "Cu";
   if (/\b(aluminum|aluminium|al)\b/i.test(raw)) return "Al";
   if (/\b(silver|ag)\b/i.test(raw)) return "Ag";
@@ -264,7 +264,7 @@ function metalBenchmarkLabel(record: PlotRecord): string | null {
   if (/\b(iron|fe)\b/i.test(raw)) return "Fe";
   if (/\bsteel\b/i.test(raw)) return "Steel";
   if (/\b(zinc|zn)\b/i.test(raw)) return "Zn";
-  return null;
+  return "Metal";
 }
 
 function metricValue(record: PlotRecord, key: PropertyKey): number {
@@ -638,16 +638,28 @@ function labelCandidateBoxes(record: PlotRecord, x: number, y: number, text: str
   const maxX = WIDTH - MARGIN.right - width - 2;
   const minY = MARGIN.top + 2;
   const maxY = HEIGHT - MARGIN.bottom - height - 2;
-  const rawCandidates: Array<{ x0: number; y0: number; textAnchor: LabelPlacement["textAnchor"]; priority: number }> = [
-    { x0: x + gap, y0: y - 22, textAnchor: "start", priority: 0 },
-    { x0: x + gap, y0: y - 8, textAnchor: "start", priority: 1 },
-    { x0: x + gap, y0: y + 9, textAnchor: "start", priority: 2 },
-    { x0: x - width - gap, y0: y - 22, textAnchor: "end", priority: 3 },
-    { x0: x - width - gap, y0: y - 8, textAnchor: "end", priority: 4 },
-    { x0: x - width - gap, y0: y + 9, textAnchor: "end", priority: 5 },
-    { x0: x - width / 2, y0: y - 34, textAnchor: "middle", priority: 6 },
-    { x0: x - width / 2, y0: y + 16, textAnchor: "middle", priority: 7 }
-  ];
+  const rawCandidates: Array<{ x0: number; y0: number; textAnchor: LabelPlacement["textAnchor"]; priority: number }> =
+    kind === "source"
+      ? [
+          { x0: x - width / 2, y0: y - 34, textAnchor: "middle", priority: 0 },
+          { x0: x + gap, y0: y - 22, textAnchor: "start", priority: 1 },
+          { x0: x - width / 2, y0: y + 16, textAnchor: "middle", priority: 2 },
+          { x0: x + gap, y0: y - 8, textAnchor: "start", priority: 3 },
+          { x0: x + gap, y0: y + 9, textAnchor: "start", priority: 4 },
+          { x0: x - width - gap, y0: y - 22, textAnchor: "end", priority: 5 },
+          { x0: x - width - gap, y0: y - 8, textAnchor: "end", priority: 6 },
+          { x0: x - width - gap, y0: y + 9, textAnchor: "end", priority: 7 }
+        ]
+      : [
+          { x0: x + gap, y0: y - 22, textAnchor: "start", priority: 0 },
+          { x0: x + gap, y0: y - 8, textAnchor: "start", priority: 1 },
+          { x0: x + gap, y0: y + 9, textAnchor: "start", priority: 2 },
+          { x0: x - width - gap, y0: y - 22, textAnchor: "end", priority: 3 },
+          { x0: x - width - gap, y0: y - 8, textAnchor: "end", priority: 4 },
+          { x0: x - width - gap, y0: y + 9, textAnchor: "end", priority: 5 },
+          { x0: x - width / 2, y0: y - 34, textAnchor: "middle", priority: 6 },
+          { x0: x - width / 2, y0: y + 16, textAnchor: "middle", priority: 7 }
+        ];
 
   return rawCandidates
     .map((candidate) => {
@@ -669,7 +681,7 @@ function labelCandidateBoxes(record: PlotRecord, x: number, y: number, text: str
         box,
         text,
         kind,
-        score: leaderLength + clampedDistance * 0.7 + candidate.priority * 1.2
+        score: leaderLength + clampedDistance * 0.7 + candidate.priority * 2.4
       };
     })
     .filter((candidate) => Math.hypot(candidate.leaderX - x, candidate.leaderY - y) <= MAX_LABEL_LEADER_LENGTH)
