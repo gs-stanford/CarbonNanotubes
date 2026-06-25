@@ -73,7 +73,20 @@ DOI_OVERRIDES = {
     "https://www.sciencedirect.com/science/article/pii/S0008622316310752": "10.1016/j.carbon.2016.12.006",
     "https://www.sciencedirect.com/science/article/pii/S0008622321004140": "10.1016/j.carbon.2021.04.033",
     "https://www.sciencedirect.com/science/article/pii/S0008622322003189": "10.1016/j.carbon.2022.04.040",
+    "https://www.nature.com/articles/s41563-025-02384-7": "10.1038/s41563-025-02384-7",
     "cho, y. s. et al. superstrong carbon nanotube yarns": "10.1002/advs.202204250",
+}
+
+RADAR_REFERENCE_DOIS = {
+    "13": ["10.1016/j.carbon.2018.03.006"],
+    "20": ["10.1126/science.1228061"],
+    "36": ["10.1016/j.carbon.2020.07.058"],
+    "37": ["10.1021/am401524q"],
+    "39": ["10.1126/sciadv.abn0939"],
+    "58": ["10.1021/acsami.7b10968"],
+    "60": ["10.1016/j.carbon.2022.04.040"],
+    "61": ["10.1016/j.carbon.2021.04.033"],
+    "62": ["10.1016/j.carbon.2018.04.071"],
 }
 
 BEHABTU_SCIENCE_DOI = "10.1126/science.1228061"
@@ -112,6 +125,37 @@ CANONICAL_DUPLICATE_FIELDS = [
     "g_d_ratio",
     "ampacity_A_m2",
 ]
+
+RAW_MEASUREMENT_FIELDS = {
+    "density_g_cm3_raw",
+    "density_g_cm3_error_raw",
+    "specific_volume_cm3_g_raw",
+    "diameter_um_raw",
+    "diameter_um_error_raw",
+    "linear_density_tex_raw",
+    "linear_density_tex_error_raw",
+    "tenacity_N_tex_raw",
+    "tenacity_N_tex_error_raw",
+    "tensile_strength_GPa_raw",
+    "tensile_strength_GPa_error_raw",
+    "initial_modulus_N_tex_raw",
+    "initial_modulus_N_tex_error_raw",
+    "initial_modulus_GPa_raw",
+    "initial_modulus_GPa_error_raw",
+    "breaking_strain_pct_raw",
+    "breaking_strain_pct_error_raw",
+    "rupture_work_J_g_raw",
+    "rupture_work_J_g_error_raw",
+    "electrical_conductivity_S_cm_raw",
+    "electrical_conductivity_S_cm_error_raw",
+    "electrical_conductivity_MS_m_raw",
+    "specific_electrical_conductivity_MS_m2_g_raw",
+    "thermal_conductivity_W_mK_raw",
+    "thermal_conductivity_W_mK_error_raw",
+    "g_d_ratio_raw",
+    "ampacity_A_cm2_raw",
+    "ampacity_A_m2_raw",
+}
 
 
 XIAO_COLUMNS = [
@@ -281,21 +325,37 @@ def excluded_row(source_file: str, source_sheet: str, source_row: int, reason: s
     }
 
 
-def radar_exclusion_reason(raw: dict[str, Any]) -> str | None:
+def radar_exclusion_reason(raw: dict[str, Any], sheet_name: str, source_row: int) -> str | None:
     label = raw.get("Name")
     notes = raw.get("Comments")
     if clean(label) is None and clean(notes) is None:
         return "unlabeled_plot_cell"
     if is_derived_label(label, notes):
         return "derived_plot_header_score_or_maximum"
+    if sheet_name == "Radar" and source_row >= 76 and lower_text(label) == "graphene fibers":
+        return "derived_plot_header_score_or_maximum"
     return None
 
 
-def radar_citation_override(sheet_name: str, source_row: int, label: Any) -> str | None:
+def radar_citation_override(sheet_name: str, source_row: int, label: Any, notes: Any) -> str | None:
     """Recover citations for Radar workbook rows where adjacent source cells are blank."""
     label_key = str(clean(label) or "").strip().lower()
     if sheet_name in {"Radar", "Fibers With Error"} and source_row in {2, 3, 4, 5} and label_key in RADAR_DYNAMIC_STRENGTH_LABELS:
         return f"{RADAR_DYNAMIC_STRENGTH_2024['title']}. {RADAR_DYNAMIC_STRENGTH_2024['journal']} ({RADAR_DYNAMIC_STRENGTH_2024['year']}). https://doi.org/{RADAR_DYNAMIC_STRENGTH_2024['doi']}"
+    if sheet_name == "Fibers With Error" and source_row in {6, 82}:
+        return "https://doi.org/10.1126/sciadv.abq3515"
+    if sheet_name == "Fibers With Error" and source_row == 84:
+        return f"https://doi.org/{RADAR_DYNAMIC_STRENGTH_2024['doi']}"
+
+    ref_dois: list[str] = []
+    for refkey in extract_refkeys(norm_text(label, notes)):
+        ref_dois.extend(RADAR_REFERENCE_DOIS.get(refkey, []))
+    if ref_dois:
+        return " ".join(f"https://doi.org/{doi}" for doi in sorted(set(ref_dois)))
+
+    text = lower_text(label, notes)
+    if any(token in text for token in ["s·dw", "s&dw", "s-dwnt", "s·dwnt", "dwnt-raw", "dw:2700", "sw:2700", "swnt", "pristine s-dwnt", "pasquali paper"]):
+        return "https://doi.org/10.1126/sciadv.abn0939"
     return None
 
 
@@ -522,6 +582,10 @@ def base_record(source_file: str, source_sheet: str, source_row: int, label: Any
     material_family = classify_material(label, notes, group, source_file, citation)
     form_factor = infer_form_factor(material_family, label, notes)
     citation_text = correct_known_citation_errors(norm_text(citation), material_family)
+    publication_override: dict[str, Any] | None = None
+    if source_file == "New G fibre table Juan.xlsx" and "to be published" in lower_text(citation):
+        citation_text = f"{NATURE_2025['title']}. {NATURE_2025['journal']} ({NATURE_2025['published_date']}). https://doi.org/{NATURE_2025['doi']}"
+        publication_override = NATURE_2025
     dois = sorted(set(extract_dois(citation_text) + doi_overrides_for(citation_text)))
     urls = extract_urls(citation_text)
     refkeys = extract_refkeys(norm_text(label, notes))
@@ -598,18 +662,17 @@ def base_record(source_file: str, source_sheet: str, source_row: int, label: Any
         "confidence_score": None,
         "raw_payload_json": None,
     }
-    if source_file == "New G fibre table Juan.xlsx" and "to be published" in lower_text(citation):
+    if publication_override:
         record.update(
             {
-                "citation_raw": f"{NATURE_2025['title']}. {NATURE_2025['journal']} ({NATURE_2025['published_date']}). {NATURE_2025['url']}",
-                "doi_raw": NATURE_2025["doi"],
-                "url_raw": NATURE_2025["url"],
-                "publication_title": NATURE_2025["title"],
-                "publication_authors_short": NATURE_2025["authors_short"],
-                "publication_journal": NATURE_2025["journal"],
-                "publication_year": NATURE_2025["year"],
-                "publication_published_date": NATURE_2025["published_date"],
-                "publication_issue_pages": NATURE_2025["issue"],
+                "doi_raw": publication_override["doi"],
+                "url_raw": publication_override["url"],
+                "publication_title": publication_override["title"],
+                "publication_authors_short": publication_override["authors_short"],
+                "publication_journal": publication_override["journal"],
+                "publication_year": publication_override["year"],
+                "publication_published_date": publication_override["published_date"],
+                "publication_issue_pages": publication_override["issue"],
                 "internal_status": "needs_value_crosscheck",
             }
         )
@@ -753,7 +816,11 @@ def read_xiao() -> list[dict[str, Any]]:
         if not any(to_float(v) is not None for v in values[3:]):
             continue
         raw = dict(zip(XIAO_COLUMNS, values))
-        record = base_record("XiaO_DATA.xlsx", "Sheet1", row_idx, raw["record_label"], raw["notes"], raw["citation_raw"], group)
+        citation = raw["citation_raw"]
+        if row_idx == 4 and "fully dd" in lower_text(raw["record_label"], raw["notes"]):
+            citation = "https://doi.org/10.1126/sciadv.abq3515"
+        record = base_record("XiaO_DATA.xlsx", "Sheet1", row_idx, raw["record_label"], raw["notes"], citation, group)
+        raw["citation_raw"] = citation
         record.update(raw)
         record["source_citation_raw"] = raw["citation_raw"]
         citation_text = correct_known_citation_errors(norm_text(raw["citation_raw"]), record["material_family"])
@@ -786,13 +853,13 @@ def read_radar_sheet(sheet_name: str) -> list[dict[str, Any]]:
         if not any(v is not None for v in values):
             continue
         raw = dict(zip(headers, values))
-        reason = radar_exclusion_reason(raw)
+        reason = radar_exclusion_reason(raw, sheet_name, row_idx)
         if reason:
             EXCLUDED_ROWS.append(excluded_row("RadarFigureSource.xlsx", sheet_name, row_idx, reason, raw))
             continue
         label = raw.get("Name")
         notes = raw.get("Comments")
-        citation = radar_citation_override(sheet_name, row_idx, label) or raw.get("Publication") or raw.get("Unnamed: 14") or raw.get("Unnamed: 18") or raw.get("Unnamed: 19")
+        citation = radar_citation_override(sheet_name, row_idx, label, notes) or raw.get("Publication") or raw.get("Unnamed: 14") or raw.get("Unnamed: 18") or raw.get("Unnamed: 19")
         record = base_record("RadarFigureSource.xlsx", sheet_name, row_idx, label, notes, citation)
         if sheet_name == "Radar":
             record.update(
@@ -1125,7 +1192,7 @@ def read_james_metaanalysis() -> list[dict[str, Any]]:
         if ampacity_2 is not None:
             second = james_record_from_row(raw, source_row, lookup_row, suffix="secondary ampacity condition")
             for field in list(second):
-                if field.endswith("_raw") or field in {
+                if field in RAW_MEASUREMENT_FIELDS or field in {
                     "density_kg_m3",
                     "specific_volume_cm3_g",
                     "specific_volume_m3_kg",
@@ -1182,7 +1249,7 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
             if len(overlaps) < 2:
                 continue
             matches = sum(1 for field in overlaps if close_enough(record.get(field), other.get(field)))
-            if matches >= 2 and matches / len(overlaps) >= 0.75:
+            if matches == len(overlaps):
                 if best_match is None or matches > best_match[1]:
                     best_match = (other, matches, len(overlaps))
         if best_match:
@@ -1196,7 +1263,7 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
                     record,
                     "duplicate_candidate",
                     "duplicate_of_record_id",
-                    f"James/Bulmer secondary row is a likely duplicate of higher-priority record {other['record_id']} ({matches}/{overlaps} matching canonical properties).",
+                    f"James/Bulmer secondary row is an exact duplicate of higher-priority record {other['record_id']} ({matches}/{overlaps} matching canonical properties).",
                 )
             )
     return issues

@@ -24,46 +24,44 @@ Generated from the internal processed and curation tables.
 
 ## Counts
 
-- Internal records assessed: 1557
-- Public candidate records: 1171
-- Public candidate measurements: 4464
-- Public source/publication rows: 270
-- Excluded internal records: 386
+- Internal records assessed: 1556
+- Public candidate records: 1389
+- Public candidate measurements: 5461
+- Public source/publication rows: 271
+- Excluded internal records: 167
 - Strict-comparison-ready records: 3
-- Normalized/exploratory candidate records: 1171/1171
+- Normalized/exploratory candidate records: 1389/1389
 
 ## Public Records By Tier
 
 | Tier | Records |
 | --- | ---: |
-| `peer_reviewed_research` | 881 |
-| `peer_reviewed_contextual_comparator` | 243 |
-| `commercial_contextual_comparator` | 47 |
+| `peer_reviewed_research` | 1045 |
+| `peer_reviewed_contextual_comparator` | 281 |
+| `commercial_contextual_comparator` | 63 |
 
 ## Public Records By Material Family
 
 | Material family | Records |
 | --- | ---: |
-| `CNT_or_CNT_hybrid` | 859 |
-| `other_carbon_comparator` | 98 |
-| `polymer_fiber_comparator` | 86 |
-| `carbon_fiber_comparator` | 72 |
-| `metal_comparator` | 30 |
-| `CNT_metal_composite` | 13 |
-| `graphene_or_GO_fiber` | 9 |
+| `CNT_or_CNT_hybrid` | 1012 |
+| `other_carbon_comparator` | 102 |
+| `carbon_fiber_comparator` | 100 |
+| `polymer_fiber_comparator` | 94 |
+| `metal_comparator` | 44 |
+| `CNT_metal_composite` | 22 |
+| `graphene_or_GO_fiber` | 11 |
 | `ceramic_or_glass_comparator` | 4 |
 
 ## Exclusion Reasons
 
 | Reason | Records |
 | --- | ---: |
-| `duplicate_collapsed_into_canonical_public_record` | 204 |
-| `internal_seed_or_unresolved_source` | 126 |
-| `not_in_public_v0_release_rule` | 42 |
-| `secondary_duplicate_of_higher_priority_record` | 7 |
+| `internal_seed_or_unresolved_source` | 79 |
+| `duplicate_collapsed_into_canonical_public_record` | 77 |
 | `no_canonical_measurements` | 5 |
+| `secondary_duplicate_of_higher_priority_record` | 5 |
 | `no_canonical_measurements;internal_seed_or_unresolved_source` | 1 |
-| `research_record_url_only_needs_doi` | 1 |
 
 ## Interpretation
 

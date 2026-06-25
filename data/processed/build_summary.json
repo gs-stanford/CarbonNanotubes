@@ -1,13 +1,13 @@
 {
-  "records": 1557,
-  "measurements": 6480,
+  "records": 1556,
+  "measurements": 6471,
   "publications": 274,
-  "issues": 761,
+  "issues": 690,
   "annual_progression_points": 67,
-  "excluded_source_rows": 78,
+  "excluded_source_rows": 79,
   "by_source": {
     "20210409_Metaanalysis_database.xlsx": 1300,
-    "RadarFigureSource.xlsx": 137,
+    "RadarFigureSource.xlsx": 136,
     "XiaO_DATA.xlsx": 109,
     "literature_addendum_records.tsv": 8,
     "New G fibre table Juan.xlsx": 3
@@ -19,7 +19,7 @@
     "polymer_fiber_comparator": 98,
     "metal_comparator": 47,
     "CNT_metal_composite": 25,
-    "graphene_or_GO_fiber": 21,
+    "graphene_or_GO_fiber": 20,
     "ceramic_or_glass_comparator": 5
   },
   "outputs": [

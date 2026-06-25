@@ -386,6 +386,15 @@ def measurement_overlap(row_a: pd.Series, row_b: pd.Series) -> tuple[int, int, l
     return len(matches), len(overlaps), matches
 
 
+def row_label_aliases(row: pd.Series) -> set[str]:
+    aliases = {
+        normalized_text(row.get("public_sample_label")),
+        normalized_text(row.get("sample_name")),
+        normalized_text(row.get("record_label")),
+    }
+    return {alias for alias in aliases if alias and alias not in {"data", "score", "unknown"}}
+
+
 def duplicate_pair(row_a: pd.Series, row_b: pd.Series) -> tuple[bool, float, str]:
     if clean(row_a.get("material_family")) != clean(row_b.get("material_family")):
         return False, 0.0, "different_material_family"
@@ -402,19 +411,11 @@ def duplicate_pair(row_a: pd.Series, row_b: pd.Series) -> tuple[bool, float, str
     if overlaps == 0:
         return False, 0.0, "no_measurement_overlap"
     score = matches / overlaps
-    label_a = normalized_text(row_a.get("public_sample_label") or row_a.get("sample_name") or row_a.get("record_label"))
-    label_b = normalized_text(row_b.get("public_sample_label") or row_b.get("sample_name") or row_b.get("record_label"))
-    same_label = bool(label_a and label_b and label_a == label_b)
+    same_label = bool(row_label_aliases(row_a).intersection(row_label_aliases(row_b)))
     secondary_involved = bool(row_a.get("secondary_meta_analysis_record")) or bool(row_b.get("secondary_meta_analysis_record"))
 
-    if overlaps >= 4 and matches >= 3 and score >= 0.75:
-        return True, score, "same DOI/material/form and >=3 matching measurements"
     if overlaps >= 2 and matches == overlaps and (same_label or secondary_involved):
-        return True, score, "same DOI/material/form/sample and matching measurements"
-    if same_label and overlaps >= 2 and matches >= 2 and score >= 0.5:
-        return True, score, "same DOI/material/form/sample and majority-level matching measurements"
-    if overlaps == 1 and matches == 1 and same_label:
-        return True, score, f"same DOI/material/form/sample and matching {matched_fields[0]}"
+        return True, score, "same DOI/material/form/sample and all overlapping measurements match"
     return False, score, f"{matches}/{overlaps} measurements matched"
 
 
