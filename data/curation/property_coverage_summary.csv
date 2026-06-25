@@ -19,9 +19,9 @@ CNT_or_CNT_hybrid,density,density_kg_m3,460,1101,0.4178
 CNT_or_CNT_hybrid,specific_volume,specific_volume_m3_kg,460,1101,0.4178
 CNT_or_CNT_hybrid,diameter,diameter_m,358,1101,0.3252
 CNT_or_CNT_hybrid,linear_density,linear_density_kg_m,12,1101,0.0109
-CNT_or_CNT_hybrid,specific_strength,specific_strength_N_m_kg,325,1101,0.2952
+CNT_or_CNT_hybrid,specific_strength,specific_strength_N_m_kg,360,1101,0.327
 CNT_or_CNT_hybrid,tensile_strength,tensile_strength_Pa,520,1101,0.4723
-CNT_or_CNT_hybrid,specific_modulus,specific_modulus_N_m_kg,45,1101,0.0409
+CNT_or_CNT_hybrid,specific_modulus,specific_modulus_N_m_kg,77,1101,0.0699
 CNT_or_CNT_hybrid,initial_modulus,initial_modulus_Pa,299,1101,0.2716
 CNT_or_CNT_hybrid,breaking_strain,breaking_strain_fraction,36,1101,0.0327
 CNT_or_CNT_hybrid,work_of_rupture,rupture_work_J_kg,67,1101,0.0609
@@ -35,9 +35,9 @@ carbon_fiber_comparator,density,density_kg_m3,93,155,0.6
 carbon_fiber_comparator,specific_volume,specific_volume_m3_kg,93,155,0.6
 carbon_fiber_comparator,diameter,diameter_m,63,155,0.4065
 carbon_fiber_comparator,linear_density,linear_density_kg_m,38,155,0.2452
-carbon_fiber_comparator,specific_strength,specific_strength_N_m_kg,79,155,0.5097
+carbon_fiber_comparator,specific_strength,specific_strength_N_m_kg,101,155,0.6516
 carbon_fiber_comparator,tensile_strength,tensile_strength_Pa,50,155,0.3226
-carbon_fiber_comparator,specific_modulus,specific_modulus_N_m_kg,64,155,0.4129
+carbon_fiber_comparator,specific_modulus,specific_modulus_N_m_kg,87,155,0.5613
 carbon_fiber_comparator,initial_modulus,initial_modulus_Pa,49,155,0.3161
 carbon_fiber_comparator,breaking_strain,breaking_strain_fraction,63,155,0.4065
 carbon_fiber_comparator,work_of_rupture,rupture_work_J_kg,17,155,0.1097
@@ -67,9 +67,9 @@ graphene_or_GO_fiber,density,density_kg_m3,17,21,0.8095
 graphene_or_GO_fiber,specific_volume,specific_volume_m3_kg,17,21,0.8095
 graphene_or_GO_fiber,diameter,diameter_m,0,21,0.0
 graphene_or_GO_fiber,linear_density,linear_density_kg_m,0,21,0.0
-graphene_or_GO_fiber,specific_strength,specific_strength_N_m_kg,11,21,0.5238
+graphene_or_GO_fiber,specific_strength,specific_strength_N_m_kg,17,21,0.8095
 graphene_or_GO_fiber,tensile_strength,tensile_strength_Pa,17,21,0.8095
-graphene_or_GO_fiber,specific_modulus,specific_modulus_N_m_kg,8,21,0.381
+graphene_or_GO_fiber,specific_modulus,specific_modulus_N_m_kg,14,21,0.6667
 graphene_or_GO_fiber,initial_modulus,initial_modulus_Pa,4,21,0.1905
 graphene_or_GO_fiber,breaking_strain,breaking_strain_fraction,8,21,0.381
 graphene_or_GO_fiber,work_of_rupture,rupture_work_J_kg,14,21,0.6667
@@ -83,9 +83,9 @@ metal_comparator,density,density_kg_m3,34,47,0.7234
 metal_comparator,specific_volume,specific_volume_m3_kg,34,47,0.7234
 metal_comparator,diameter,diameter_m,15,47,0.3191
 metal_comparator,linear_density,linear_density_kg_m,0,47,0.0
-metal_comparator,specific_strength,specific_strength_N_m_kg,10,47,0.2128
+metal_comparator,specific_strength,specific_strength_N_m_kg,14,47,0.2979
 metal_comparator,tensile_strength,tensile_strength_Pa,12,47,0.2553
-metal_comparator,specific_modulus,specific_modulus_N_m_kg,1,47,0.0213
+metal_comparator,specific_modulus,specific_modulus_N_m_kg,5,47,0.1064
 metal_comparator,initial_modulus,initial_modulus_Pa,9,47,0.1915
 metal_comparator,breaking_strain,breaking_strain_fraction,1,47,0.0213
 metal_comparator,work_of_rupture,rupture_work_J_kg,4,47,0.0851

@@ -10045,6 +10045,46 @@
     },
     "validation_status_enriched": "verified_crossref_openalex"
   },
+  "10.1126/science.adj1082": {
+    "checked_utc": "2026-06-25T08:44:08.453372+00:00",
+    "crossref": {
+      "authors_full": "Xinshi Zhang; Xudong Lei; Xiangzheng Jia; Tongzhao Sun; Jiajun Luo; Shichen Xu; Lijun Li; Dan Yan; Yuanlong Shao; Zhenzhong Yong; Yongyi Zhang; Xianqian Wu; Enlai Gao; Muqiang Jian; Jin Zhang",
+      "authors_short": "Xinshi Zhang et al.",
+      "doi": "10.1126/science.adj1082",
+      "error": null,
+      "found": true,
+      "is_referenced_by_count": 128,
+      "issue_pages": "384, 6702, 1318-1323",
+      "journal": "Science",
+      "published_date": "2024-06-21",
+      "publisher": "American Association for the Advancement of Science (AAAS)",
+      "status_code": 200,
+      "title": "Carbon nanotube fibers with dynamic strength up to 14 GPa",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1126/science.adj1082",
+      "year": 2024
+    },
+    "doi": "10.1126/science.adj1082",
+    "openalex": {
+      "authors_full": "Xinshi Zhang; Xudong Lei; Xiangzheng Jia; Tongzhao Sun; Jiajun Luo; Shichen Xu; Lijun Li; Dan Yan; Yuanlong Shao; Zhenzhong Yong; Yongyi Zhang; Xianqian Wu; Enlai Gao; Muqiang Jian; Jin Zhang",
+      "authors_short": "Xinshi Zhang et al.",
+      "doi": "10.1126/science.adj1082",
+      "error": null,
+      "found": true,
+      "is_referenced_by_count": 129,
+      "issue_pages": null,
+      "journal": "Science",
+      "openalex_id": "https://openalex.org/W4399848836",
+      "published_date": "2024-06-20",
+      "publisher": "American Association for the Advancement of Science",
+      "status_code": 200,
+      "title": "Carbon nanotube fibers with dynamic strength up to 14 GPa",
+      "type": "article",
+      "url": "https://openalex.org/W4399848836",
+      "year": 2024
+    },
+    "validation_status_enriched": "verified_crossref_openalex"
+  },
   "10.1126/science.aeb0673": {
     "checked_utc": "2026-06-12T01:03:00.122127+00:00",
     "crossref": {

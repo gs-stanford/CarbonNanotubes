@@ -51,6 +51,22 @@ JAMES_META_2021 = {
     "source_export": "Bulmer/James CNT meta-analysis supporting workbook",
 }
 
+RADAR_DYNAMIC_STRENGTH_2024 = {
+    "doi": "10.1126/science.adj1082",
+    "url": "https://www.science.org/doi/10.1126/science.adj1082",
+    "title": "Carbon nanotube fibers with dynamic strength up to 14 GPa",
+    "journal": "Science",
+    "year": 2024,
+    "authors_short": "Xinshi Zhang et al.",
+}
+
+RADAR_DYNAMIC_STRENGTH_LABELS = {
+    "f-cntfs",
+    "csa-cntfs",
+    "pbo-cntfs",
+    "d-pbo-cntfs",
+}
+
 EXCLUDED_ROWS: list[dict[str, Any]] = []
 
 DOI_OVERRIDES = {
@@ -272,6 +288,14 @@ def radar_exclusion_reason(raw: dict[str, Any]) -> str | None:
         return "unlabeled_plot_cell"
     if is_derived_label(label, notes):
         return "derived_plot_header_score_or_maximum"
+    return None
+
+
+def radar_citation_override(sheet_name: str, source_row: int, label: Any) -> str | None:
+    """Recover citations for Radar workbook rows where adjacent source cells are blank."""
+    label_key = str(clean(label) or "").strip().lower()
+    if sheet_name in {"Radar", "Fibers With Error"} and source_row in {2, 3, 4, 5} and label_key in RADAR_DYNAMIC_STRENGTH_LABELS:
+        return f"{RADAR_DYNAMIC_STRENGTH_2024['title']}. {RADAR_DYNAMIC_STRENGTH_2024['journal']} ({RADAR_DYNAMIC_STRENGTH_2024['year']}). https://doi.org/{RADAR_DYNAMIC_STRENGTH_2024['doi']}"
     return None
 
 
@@ -768,15 +792,15 @@ def read_radar_sheet(sheet_name: str) -> list[dict[str, Any]]:
             continue
         label = raw.get("Name")
         notes = raw.get("Comments")
-        citation = raw.get("Publication") or raw.get("Unnamed: 14") or raw.get("Unnamed: 18") or raw.get("Unnamed: 19")
+        citation = radar_citation_override(sheet_name, row_idx, label) or raw.get("Publication") or raw.get("Unnamed: 14") or raw.get("Unnamed: 18") or raw.get("Unnamed: 19")
         record = base_record("RadarFigureSource.xlsx", sheet_name, row_idx, label, notes, citation)
         if sheet_name == "Radar":
             record.update(
                 {
                     "density_g_cm3_raw": raw.get("Density [g cm−3] ±"),
                     "specific_volume_cm3_g_raw": raw.get("Specific Volume [cm3g-1]"),
-                    "tenacity_N_tex_raw": raw.get("Tenacity  [N tex−1 = GPa/SG = GPa/(g/cm^3)] "),
-                    "initial_modulus_N_tex_raw": raw.get("Initial Modulus [N tex−1 = GPa/SG = GPa/(g/cm^3)] "),
+                    "tenacity_N_tex_raw": raw.get("Tenacity  [N tex−1 = GPa/SG = GPa/(g/cm^3)]") or raw.get("Tenacity  [N tex−1 = GPa/SG = GPa/(g/cm^3)] "),
+                    "initial_modulus_N_tex_raw": raw.get("Initial Modulus [N tex−1 = GPa/SG = GPa/(g/cm^3)]") or raw.get("Initial Modulus [N tex−1 = GPa/SG = GPa/(g/cm^3)] "),
                     "rupture_work_J_g_raw": raw.get("Work of Rupture [J g−1]"),
                     "specific_electrical_conductivity_MS_m2_g_raw": raw.get("E Cond [MS m^2/g]"),
                     "thermal_conductivity_W_mK_raw": raw.get("Thermal Conductivity [W m−1 K−1]"),
