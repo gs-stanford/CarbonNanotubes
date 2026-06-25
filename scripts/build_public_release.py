@@ -49,6 +49,20 @@ MEASUREMENT_FIELDS = [
     "ampacity_A_m2",
 ]
 
+NEAR_DUPLICATE_TOLERANCE = 0.09
+
+IDENTITY_MEASUREMENT_FIELDS = {
+    "density_kg_m3",
+    "specific_volume_m3_kg",
+    "diameter_m",
+    "linear_density_kg_m",
+    "electrical_conductivity_S_m",
+    "specific_electrical_conductivity_S_m2_kg",
+    "thermal_conductivity_W_mK",
+    "specific_thermal_conductivity_W_m2_K_kg",
+    "ampacity_A_m2",
+}
+
 PUBLIC_RECORD_COLUMNS = [
     "record_id",
     "public_release_status",
@@ -380,9 +394,9 @@ def close_enough(a: Any, b: Any, tolerance: float = 0.025) -> bool:
     return abs(av - bv) <= tolerance * scale
 
 
-def measurement_overlap(row_a: pd.Series, row_b: pd.Series) -> tuple[int, int, list[str]]:
+def measurement_overlap(row_a: pd.Series, row_b: pd.Series, tolerance: float = 0.025) -> tuple[int, int, list[str]]:
     overlaps = [field for field in MEASUREMENT_FIELDS if field in row_a.index and field in row_b.index and pd.notna(row_a.get(field)) and pd.notna(row_b.get(field))]
-    matches = [field for field in overlaps if close_enough(row_a.get(field), row_b.get(field))]
+    matches = [field for field in overlaps if close_enough(row_a.get(field), row_b.get(field), tolerance=tolerance)]
     return len(matches), len(overlaps), matches
 
 
@@ -412,10 +426,16 @@ def duplicate_pair(row_a: pd.Series, row_b: pd.Series) -> tuple[bool, float, str
         return False, 0.0, "no_measurement_overlap"
     score = matches / overlaps
     same_label = bool(row_label_aliases(row_a).intersection(row_label_aliases(row_b)))
-    secondary_involved = bool(row_a.get("secondary_meta_analysis_record")) or bool(row_b.get("secondary_meta_analysis_record"))
+    cross_source_extraction = clean(row_a.get("source_file")) != clean(row_b.get("source_file"))
 
-    if overlaps >= 2 and matches == overlaps and (same_label or secondary_involved):
+    if overlaps >= 2 and matches == overlaps and (same_label or cross_source_extraction):
         return True, score, "same DOI/material/form/sample and all overlapping measurements match"
+
+    near_matches, near_overlaps, near_fields = measurement_overlap(row_a, row_b, tolerance=NEAR_DUPLICATE_TOLERANCE)
+    near_score = near_matches / near_overlaps if near_overlaps else 0.0
+    identity_matches = set(near_fields).intersection(IDENTITY_MEASUREMENT_FIELDS)
+    if cross_source_extraction and near_overlaps >= 3 and near_matches >= 3 and near_score >= 0.75 and len(identity_matches) >= 2:
+        return True, near_score, "same DOI/material/form cross-source extraction with matching numeric profile"
     return False, score, f"{matches}/{overlaps} measurements matched"
 
 
@@ -423,7 +443,7 @@ def duplicate_priority(row: pd.Series) -> tuple[int, int, int, int, int]:
     source_file = clean(row.get("source_file")) or ""
     source_class = clean(row.get("source_citation_class")) or ""
     extraction_type = clean(row.get("value_extraction_type")) or ""
-    if source_class == "peer_reviewed_research_record" and source_file == "literature_addendum_records.tsv":
+    if source_class == "peer_reviewed_research_record" and source_file in {"literature_addendum_records.tsv", "New G fibre table Juan.xlsx"}:
         source_rank = 0
     elif source_class == "peer_reviewed_research_record":
         source_rank = 1
@@ -499,6 +519,12 @@ def apply_duplicate_canonicalization(enriched: pd.DataFrame) -> tuple[pd.DataFra
         if len(indices) == 1:
             continue
         canonical_idx = sorted(indices, key=lambda idx: duplicate_priority(candidates.loc[idx]))[0]
+        for idx in sorted(indices, key=lambda idx: duplicate_priority(candidates.loc[idx])):
+            if idx == canonical_idx:
+                continue
+            for field in MEASUREMENT_FIELDS:
+                if field in out.columns and pd.isna(out.at[canonical_idx, field]) and pd.notna(out.at[idx, field]):
+                    out.at[canonical_idx, field] = out.at[idx, field]
         group_id = stable_id("dupgrp", *sorted(candidates.loc[indices, "record_id"].astype(str).tolist()))
         canonical_record_id = clean(out.at[canonical_idx, "record_id"])
         for idx in indices:
