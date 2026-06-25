@@ -726,6 +726,8 @@ function PointMark({
         rx={0.6}
         tabIndex={0}
         role="button"
+        data-record-id={record.record_id}
+        data-sample-label={record.public_sample_label ?? record.record_label ?? ""}
         aria-label={pointAriaLabel(record)}
         onClick={() => onSelect(record)}
         onKeyDown={(event) => {
@@ -750,6 +752,8 @@ function PointMark({
         points={points}
         tabIndex={0}
         role="button"
+        data-record-id={record.record_id}
+        data-sample-label={record.public_sample_label ?? record.record_label ?? ""}
         aria-label={pointAriaLabel(record)}
         onClick={() => onSelect(record)}
         onKeyDown={(event) => {
@@ -767,6 +771,8 @@ function PointMark({
       r={radius}
       tabIndex={0}
       role="button"
+      data-record-id={record.record_id}
+      data-sample-label={record.public_sample_label ?? record.record_label ?? ""}
       aria-label={pointAriaLabel(record)}
       onClick={() => onSelect(record)}
       onKeyDown={(event) => {

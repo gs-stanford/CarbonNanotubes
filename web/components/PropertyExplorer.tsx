@@ -634,6 +634,24 @@ function compareBestRecords(a: PlotRecord, b: PlotRecord, xKey: PropertyKey, yKe
   return (b.publication_year_verified ?? 0) - (a.publication_year_verified ?? 0);
 }
 
+function paretoPriorityKeys(xKey: PropertyKey, yKey: PropertyKey): PropertyKey[] {
+  const keys = [xKey, yKey].filter((key) => PERFORMANCE_TARGET_SET.has(key));
+  return Array.from(new Set(keys));
+}
+
+function recordDominates(candidate: PlotRecord, target: PlotRecord, keys: PropertyKey[]): boolean {
+  let strictlyBetter = false;
+  for (const key of keys) {
+    const candidateValue = displayMetric(candidate, key);
+    const targetValue = displayMetric(target, key);
+    if (!Number.isFinite(candidateValue) || !Number.isFinite(targetValue)) return false;
+    const tolerance = Math.max(Math.abs(candidateValue), Math.abs(targetValue), 1) * 1e-9;
+    if (candidateValue + tolerance < targetValue) return false;
+    if (candidateValue > targetValue + tolerance) strictlyBetter = true;
+  }
+  return strictlyBetter;
+}
+
 function reduceToBestRecords(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey): PlotRecord[] {
   const best = new Map<string, PlotRecord>();
   for (const record of records) {
@@ -644,6 +662,31 @@ function reduceToBestRecords(records: PlotRecord[], xKey: PropertyKey, yKey: Pro
     }
   }
   return Array.from(best.values()).sort((a, b) => sourceRank(a) - sourceRank(b));
+}
+
+function reduceToParetoRecords(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey): PlotRecord[] {
+  const keys = paretoPriorityKeys(xKey, yKey);
+  if (keys.length < 2) return reduceToBestRecords(records, xKey, yKey);
+
+  const groups = new Map<string, PlotRecord[]>();
+  for (const record of records) {
+    const key = bestRecordGroupKey(record);
+    groups.set(key, [...(groups.get(key) ?? []), record]);
+  }
+
+  const retained: PlotRecord[] = [];
+  for (const group of groups.values()) {
+    const frontier = group.filter((record) => !group.some((other) => other.record_id !== record.record_id && recordDominates(other, record, keys)));
+    retained.push(...frontier.sort((a, b) => compareBestRecords(a, b, xKey, yKey)));
+  }
+  return retained.sort((a, b) => sourceRank(a) - sourceRank(b));
+}
+
+function reduceToRepresentativeRecords(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey, plotType: PlotType): PlotRecord[] {
+  if (plotType === "scatter" || plotType === "ashby") {
+    return reduceToParetoRecords(records, xKey, yKey);
+  }
+  return reduceToBestRecords(records, xKey, yKey);
 }
 
 function recordDisplayTitle(record: PlotRecord): string {
@@ -794,8 +837,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, numericFilters, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
 
   const filteredRecords = useMemo(() => {
-    return reduceToBestRecords(eligibleRecords, xKey, yKey);
-  }, [eligibleRecords, xKey, yKey]);
+    return reduceToRepresentativeRecords(eligibleRecords, xKey, yKey, plotType);
+  }, [eligibleRecords, plotType, xKey, yKey]);
 
   const plottedRecords = useMemo(() => {
     if (plotType !== "ranked") return filteredRecords;
