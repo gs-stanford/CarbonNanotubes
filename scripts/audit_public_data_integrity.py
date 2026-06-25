@@ -159,6 +159,46 @@ REQUIRED_XY_PLOT_RECORDS = [
     }
 ]
 
+MAX_PUBLIC_XY_RECORDS_BY_DOI = [
+    {
+        "doi": "10.1126/science.aeb0673",
+        "material_family": "CNT_or_CNT_hybrid",
+        "form_factor": "fiber_yarn",
+        "x": "tensile_strength",
+        "y": "specific_electrical_conductivity",
+        "max_records": 1,
+        "reason": "Science 2026 AlCl4-DWCNT values appear in both curated addendum and Radar source.",
+    },
+    {
+        "doi": "10.1016/j.carbon.2020.07.058",
+        "material_family": "CNT_or_CNT_hybrid",
+        "form_factor": "fiber_yarn",
+        "x": "tensile_strength",
+        "y": "specific_electrical_conductivity",
+        "max_records": 1,
+        "reason": "Rice 2021 solution-spun CNTF appears in Xiao and Radar sources.",
+    },
+    {
+        "doi": "10.1021/acsami.7b10968",
+        "material_family": "CNT_or_CNT_hybrid",
+        "form_factor": "fiber_yarn",
+        "label_contains": "Rice-2017",
+        "x": "tensile_strength",
+        "y": "specific_electrical_conductivity",
+        "max_records": 1,
+        "reason": "Rice 2017 solution-spun CNTF appears in Xiao, Radar, and secondary sources.",
+    },
+    {
+        "doi": "10.1038/s41563-025-02384-7",
+        "material_family": "graphene_or_GO_fiber",
+        "form_factor": "fiber_yarn",
+        "x": "tensile_strength",
+        "y": "specific_electrical_conductivity",
+        "max_records": 1,
+        "reason": "Nature Materials graphene fibre appears in Juan table and Radar source.",
+    },
+]
+
 DEFAULT_PUBLIC_TIERS = {"peer_reviewed_research", "peer_reviewed_contextual_comparator"}
 DEFAULT_EXTRACTION_TYPES = {"direct_or_source_table", "secondary_meta_analysis"}
 
@@ -312,7 +352,7 @@ def audit_semantic_publications(findings: list[Finding], public_records: pd.Data
             )
 
 
-def public_matches_source_value(public_records: pd.DataFrame, source_row: pd.Series, field: str, value: float) -> bool:
+def public_matches_source_value(public_records: pd.DataFrame, duplicate_audit: pd.DataFrame, source_row: pd.Series, field: str, value: float) -> bool:
     family = clean(source_row.get("material_family"))
     form = clean(source_row.get("form_factor"))
     doi = clean(source_row.get("doi_raw"))
@@ -327,13 +367,26 @@ def public_matches_source_value(public_records: pd.DataFrame, source_row: pd.Ser
         return False
     value_matches = candidates[candidates[field].map(lambda candidate: close_enough(candidate, value))]
     if value_matches.empty:
+        record_id = clean(source_row.get("record_id"))
+        if record_id and not duplicate_audit.empty:
+            collapsed = duplicate_audit[
+                duplicate_audit["record_id"].map(clean).eq(record_id)
+                & duplicate_audit["duplicate_group_role"].map(clean).eq("duplicate_collapsed")
+            ]
+            if not collapsed.empty:
+                canonical_id = clean(collapsed.iloc[0].get("canonical_record_id"))
+                canonical = public_records[public_records["record_id"].map(clean).eq(canonical_id)]
+                if not canonical.empty:
+                    canonical_value = to_number(canonical.iloc[0].get(field))
+                    if canonical_value is not None and (close_enough(canonical_value, value, rel_tol=0.09) or canonical_value >= value):
+                        return True
         return False
     if doi:
         return True
     return any(normalized_label(row.get("record_label")) == label for _, row in value_matches.iterrows())
 
 
-def audit_top_source_survival(findings: list[Finding], processed_records: pd.DataFrame, public_records: pd.DataFrame) -> None:
+def audit_top_source_survival(findings: list[Finding], processed_records: pd.DataFrame, public_records: pd.DataFrame, duplicate_audit: pd.DataFrame) -> None:
     primary = processed_records[processed_records["material_family"].isin(PRIMARY_MATERIALS)].copy()
     for property_key, rule in TOP_VALUE_RULES.items():
         field, unit = PROPERTY_FIELDS[property_key]
@@ -355,7 +408,7 @@ def audit_top_source_survival(findings: list[Finding], processed_records: pd.Dat
         top_rows = pd.concat(candidates, ignore_index=True)
         for _, row in top_rows.iterrows():
             value = float(row["_audit_value"])
-            represented = public_matches_source_value(public_records, row, field, value)
+            represented = public_matches_source_value(public_records, duplicate_audit, row, field, value)
             if represented:
                 continue
             severity = "error"
@@ -558,6 +611,41 @@ def audit_frontend_representative_extremes(findings: list[Finding], public_recor
             )
 
 
+def audit_known_cross_source_duplicate_collapse(findings: list[Finding], public_records: pd.DataFrame) -> None:
+    for rule in MAX_PUBLIC_XY_RECORDS_BY_DOI:
+        x_field = PROPERTY_FIELDS[rule["x"]][0]
+        y_field = PROPERTY_FIELDS[rule["y"]][0]
+        candidates = public_records[
+            public_records.apply(lambda row: same_doi(row, rule["doi"]), axis=1)
+            & public_records["material_family"].map(clean).eq(rule["material_family"])
+            & public_records["form_factor"].map(clean).eq(rule["form_factor"])
+        ].copy()
+        if rule.get("label_contains"):
+            candidates = candidates[
+                candidates["public_sample_label"].map(clean).str.contains(
+                    str(rule["label_contains"]), case=False, regex=False, na=False
+                )
+            ].copy()
+        candidates["_audit_x"] = candidates[x_field].map(to_number)
+        candidates["_audit_y"] = candidates[y_field].map(to_number)
+        plotted = candidates[candidates["_audit_x"].notna() & candidates["_audit_y"].notna()]
+        max_records = int(rule["max_records"])
+        if len(plotted) > max_records:
+            add(
+                findings,
+                "error",
+                "known_cross_source_duplicate_collapse",
+                "Known cross-source duplicate group has too many public XY records.",
+                doi=rule["doi"],
+                x=rule["x"],
+                y=rule["y"],
+                count=len(plotted),
+                max_records=max_records,
+                record_ids=sorted(plotted["record_id"].map(clean).dropna().tolist()),
+                reason=rule["reason"],
+            )
+
+
 def write_reports(findings: list[Finding]) -> None:
     REPORTS.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -594,14 +682,16 @@ def main() -> int:
     public_records = read_csv(PUBLIC / "public_records_v0.csv")
     public_measurements = read_csv(PUBLIC / "public_measurements_v0.csv")
     public_publications = read_csv(PUBLIC / "public_publications_v0.csv")
+    duplicate_audit = read_csv(PUBLIC / "public_duplicate_audit_v0.csv") if (PUBLIC / "public_duplicate_audit_v0.csv").exists() else pd.DataFrame()
 
     audit_public_sync(findings)
     audit_summary_counts(findings, public_records, public_measurements, public_publications)
     audit_required_public_records(findings, public_records)
     audit_semantic_publications(findings, public_records)
-    audit_top_source_survival(findings, processed_records, public_records)
+    audit_top_source_survival(findings, processed_records, public_records, duplicate_audit)
     audit_public_measurement_consistency(findings, public_records, public_measurements)
     audit_frontend_representative_extremes(findings, public_records)
+    audit_known_cross_source_duplicate_collapse(findings, public_records)
     write_reports(findings)
 
     errors = sum(1 for finding in findings if finding.severity == "error")
