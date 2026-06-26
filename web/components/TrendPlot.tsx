@@ -10,6 +10,7 @@ type TrendPlotProps = {
   yMeta: PropertyMeta;
   yScale: ScaleMode;
   selectedId: string | null;
+  highlightedIds?: Set<string>;
   onSelect: (record: PlotRecord) => void;
 };
 
@@ -312,9 +313,23 @@ function materialClass(record: PlotRecord): string {
   return "point-material-unknown";
 }
 
-function PointMark({ record, x, y, selected, onSelect }: { record: PlotRecord; x: number; y: number; selected: boolean; onSelect: (record: PlotRecord) => void }) {
+function PointMark({
+  record,
+  x,
+  y,
+  selected,
+  highlighted,
+  onSelect
+}: {
+  record: PlotRecord;
+  x: number;
+  y: number;
+  selected: boolean;
+  highlighted: boolean;
+  onSelect: (record: PlotRecord) => void;
+}) {
   const markerShape = formShape(record);
-  const className = `plot-point point-shape-${markerShape} ${materialClass(record)} ${selected ? "is-selected" : ""}`;
+  const className = `plot-point point-shape-${markerShape} ${materialClass(record)} ${selected ? "is-selected" : ""} ${highlighted ? "is-search-match" : ""}`;
   const radius = 4.2;
   const size = radius * 1.85;
   const trianglePoints = `${x},${y - size * 0.68} ${x - size * 0.62},${y + size * 0.46} ${x + size * 0.62},${y + size * 0.46}`;
@@ -339,7 +354,7 @@ function boxesOverlap(a: LabelPlacement["box"], b: LabelPlacement["box"]): boole
   return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 }
 
-export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, onSelect }: TrendPlotProps) {
+export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, highlightedIds = new Set<string>(), onSelect }: TrendPlotProps) {
   const plotRecords = records.filter((record) => {
     const value = record.values[yKey];
     const year = record.publication_year_verified;
@@ -438,7 +453,7 @@ export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, onSelect }
         {plotRecords.map((record) => {
           const x = scaleNumber(record.publication_year_verified as number, xDomain, xRange, "linear");
           const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
-          return <PointMark key={record.record_id} record={record} x={x} y={y} selected={record.record_id === selectedId} onSelect={onSelect} />;
+          return <PointMark key={record.record_id} record={record} x={x} y={y} selected={record.record_id === selectedId} highlighted={highlightedIds.has(record.record_id)} onSelect={onSelect} />;
         })}
 
         {labels.map((placement) => {

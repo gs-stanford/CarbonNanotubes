@@ -19,18 +19,23 @@ const searchInput = page.getByLabel("Search records by DOI, author, title, or ke
 
 await searchInput.fill("de Isidro-Gomez");
 await page.waitForTimeout(250);
+await page.locator(".plot-search-result-card.is-in-plot").first().click();
 const authorSearch = await page.evaluate(() => ({
-  notes: [...document.querySelectorAll(".search-note")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
-  hits: [...document.querySelectorAll(".search-hit-list button")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
+  status: document.querySelector(".plot-search-status")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+  hits: [...document.querySelectorAll(".plot-search-result-card")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
+  highlighted: document.querySelectorAll(".plot-point.is-search-match").length,
   plotted: document.querySelectorAll(".plot-point").length,
+  leftRailSearchInputs: document.querySelectorAll(".control-rail input[type='search']").length,
   selectedTitle: document.querySelector(".detail-rail h3")?.textContent?.trim() ?? "",
   overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth
 }));
 
 if (
   authorSearch.plotted < 1 ||
+  authorSearch.highlighted < 1 ||
+  authorSearch.leftRailSearchInputs !== 0 ||
   !authorSearch.selectedTitle.includes("Intercalated carbon nanotube fibers") ||
-  !authorSearch.notes.some((note) => /atlas records match/.test(note)) ||
+  !/atlas records match/.test(authorSearch.status) ||
   authorSearch.hits.some((hit) => /Peng Liu|Materials & Design/.test(hit)) ||
   authorSearch.overflowX
 ) {
@@ -39,9 +44,11 @@ if (
 
 await searchInput.fill("10.1038/srep00083");
 await page.waitForTimeout(250);
+await page.locator(".plot-search-result-card.is-in-plot").first().click();
 const doiSearch = await page.evaluate(() => ({
-  notes: [...document.querySelectorAll(".search-note")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
-  hits: [...document.querySelectorAll(".search-hit-list button")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
+  status: document.querySelector(".plot-search-status")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+  hits: [...document.querySelectorAll(".plot-search-result-card")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
+  highlighted: document.querySelectorAll(".plot-point.is-search-match").length,
   plotted: document.querySelectorAll(".plot-point").length,
   selectedTitle: document.querySelector(".detail-rail h3")?.textContent?.trim() ?? "",
   overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth
@@ -49,8 +56,9 @@ const doiSearch = await page.evaluate(() => ({
 
 if (
   doiSearch.plotted < 1 ||
+  doiSearch.highlighted < 1 ||
   !doiSearch.selectedTitle.includes("Iodine doped carbon nanotube cables") ||
-  !doiSearch.notes.some((note) => /atlas records match/.test(note)) ||
+  !/atlas records match/.test(doiSearch.status) ||
   doiSearch.overflowX
 ) {
   throw new Error(`DOI search QA failed: ${JSON.stringify(doiSearch)}`);
@@ -58,13 +66,15 @@ if (
 
 await searchInput.fill("iodine doped");
 await page.waitForTimeout(250);
+await page.locator(".plot-search-result-card.is-in-plot").first().click();
 const keywordSearch = await page.evaluate(() => ({
-  hits: [...document.querySelectorAll(".search-hit-list button")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
+  hits: [...document.querySelectorAll(".plot-search-result-card")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
+  highlighted: document.querySelectorAll(".plot-point.is-search-match").length,
   plotted: document.querySelectorAll(".plot-point").length,
   selectedTitle: document.querySelector(".detail-rail h3")?.textContent?.trim() ?? ""
 }));
 
-if (keywordSearch.plotted < 1 || !keywordSearch.selectedTitle.includes("Iodine doped carbon nanotube cables")) {
+if (keywordSearch.plotted < 1 || keywordSearch.highlighted < 1 || !keywordSearch.selectedTitle.includes("Iodine doped carbon nanotube cables")) {
   throw new Error(`Keyword search QA failed: ${JSON.stringify(keywordSearch)}`);
 }
 

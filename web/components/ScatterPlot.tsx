@@ -13,6 +13,7 @@ type ScatterPlotProps = {
   yScale: ScaleMode;
   variant?: "scatter" | "ashby";
   selectedId: string | null;
+  highlightedIds?: Set<string>;
   onSelect: (record: PlotRecord) => void;
 };
 
@@ -698,16 +699,18 @@ function PointMark({
   x,
   y,
   selected,
+  highlighted,
   onSelect
 }: {
   record: PlotRecord;
   x: number;
   y: number;
   selected: boolean;
+  highlighted: boolean;
   onSelect: (record: PlotRecord) => void;
 }) {
   const markerShape = formShape(record);
-  const className = `plot-point ${shapeClass(markerShape)} ${materialClass(record)} ${selected ? "is-selected" : ""}`;
+  const className = `plot-point ${shapeClass(markerShape)} ${materialClass(record)} ${selected ? "is-selected" : ""} ${highlighted ? "is-search-match" : ""}`;
   const radius = pointRadius(record);
   const size = radius * 1.85;
   const trianglePoints = `${x},${y - size * 0.68} ${x - size * 0.62},${y + size * 0.46} ${x + size * 0.62},${y + size * 0.46}`;
@@ -792,6 +795,7 @@ export function ScatterPlot({
   yScale,
   variant = "scatter",
   selectedId,
+  highlightedIds = new Set<string>(),
   onSelect
 }: ScatterPlotProps) {
   const plotRecords = records.filter((record) => {
@@ -966,7 +970,7 @@ export function ScatterPlot({
         {plotRecords.map((record) => {
           const x = scaleNumber(record.values[xKey] as number, xDomain, xRange, xScale);
           const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
-          return <PointMark key={record.record_id} record={record} x={x} y={y} selected={record.record_id === selectedId} onSelect={onSelect} />;
+          return <PointMark key={record.record_id} record={record} x={x} y={y} selected={record.record_id === selectedId} highlighted={highlightedIds.has(record.record_id)} onSelect={onSelect} />;
         })}
 
         {labels.map((placement) => {

@@ -563,6 +563,10 @@ function prepareFigureSvg(svg: SVGSVGElement, figureTitle: string, includeXmlDec
     const className = node.getAttribute("class") ?? "";
     node.setAttribute("class", className.replace(/\bis-selected\b/g, "").replace(/\s+/g, " ").trim());
   });
+  clone.querySelectorAll(".is-search-match").forEach((node) => {
+    const className = node.getAttribute("class") ?? "";
+    node.setAttribute("class", className.replace(/\bis-search-match\b/g, "").replace(/\s+/g, " ").trim());
+  });
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   clone.setAttribute("role", "img");
   clone.removeAttribute("style");
@@ -824,12 +828,10 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     () => (activeSearchQuery ? searchRecords(atlasData.records, activeSearchQuery, atlasData.properties, Math.max(atlasData.records.length, 1)) : []),
     [activeSearchQuery, atlasData.properties, atlasData.records]
   );
-  const searchResultIds = useMemo(() => new Set(searchResults.map((result) => result.record.record_id)), [searchResults]);
 
   const eligibleRecords = useMemo(() => {
     return atlasData.records
       .filter((record) => {
-        if (activeSearchQuery && !searchResultIds.has(record.record_id)) return false;
         const x = record.values[xKey];
         const y = record.values[yKey];
         if (typeof y !== "number") return false;
@@ -847,7 +849,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         return record.public_release_tier !== "commercial_contextual_comparator";
       })
       .sort((a, b) => sourceRank(a) - sourceRank(b));
-  }, [activeSearchQuery, atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, numericFilters, searchResultIds, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
+  }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, numericFilters, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
 
   const filteredRecords = useMemo(() => {
     return reduceToRepresentativeRecords(eligibleRecords, xKey, yKey, plotType);
@@ -858,11 +860,16 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     return filteredRecords.filter((record) => RANKED_MATERIAL_FAMILIES.has(record.material_family));
   }, [filteredRecords, plotType]);
 
+  const plottedRecordIds = useMemo(() => new Set(plottedRecords.map((record) => record.record_id)), [plottedRecords]);
   const searchVisibleHits = useMemo(() => {
     if (!activeSearchQuery) return [];
-    const plottedIds = new Set(plottedRecords.map((record) => record.record_id));
-    return searchResults.filter((result) => plottedIds.has(result.record.record_id)).slice(0, 5);
-  }, [activeSearchQuery, plottedRecords, searchResults]);
+    return searchResults.filter((result) => plottedRecordIds.has(result.record.record_id));
+  }, [activeSearchQuery, plottedRecordIds, searchResults]);
+  const highlightedSearchIds = useMemo(() => new Set(searchVisibleHits.map((result) => result.record.record_id)), [searchVisibleHits]);
+  const searchResultPreview = activeSearchQuery ? searchResults.slice(0, 10) : [];
+  const searchResultNoun = searchResults.length === 1 ? "record" : "records";
+  const searchResultVerb = searchResults.length === 1 ? "matches" : "match";
+  const searchVisibleVerb = searchVisibleHits.length === 1 ? "is" : "are";
 
   const selectedRecord = useMemo(() => {
     const explicit = plottedRecords.find((record) => record.record_id === selectedId);
@@ -1234,62 +1241,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
             </div>
           </section>
 
-          <section className="rail-section search-section">
-            <div className="rail-heading">
-              Search
-              {activeSearchQuery ? <span className="rail-heading-note">active</span> : null}
-            </div>
-            <div className="search-input-shell">
-              <Search size={14} strokeWidth={1.8} aria-hidden="true" />
-              <input
-                type="search"
-                value={searchQuery}
-                placeholder="DOI, author, title, keyword"
-                aria-label="Search records by DOI, author, title, or keyword"
-                onChange={(event) => {
-                  setSearchQuery(event.target.value);
-                  setSelectedId(null);
-                }}
-              />
-              {activeSearchQuery ? (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedId(null);
-                  }}
-                >
-                  <X size={13} strokeWidth={1.8} />
-                </button>
-              ) : null}
-            </div>
-            {activeSearchQuery ? (
-              <>
-                <p className="search-note">
-                  {searchResults.length} atlas records match; {plottedRecords.length} remain in the active plot.
-                </p>
-                {searchVisibleHits.length ? (
-                  <div className="search-hit-list" aria-label="Visible search matches">
-                    {searchVisibleHits.map((result) => (
-                      <button key={result.record.record_id} type="button" onClick={() => setSelectedId(result.record.record_id)}>
-                        <strong>{recordDisplayTitle(result.record)}</strong>
-                        <span>
-                          {formatPlainValue(result.record.publication_authors_short_verified, "Unknown authors")} / {formatYear(result.record.publication_year_verified)}
-                        </span>
-                        <small>{result.matchFields.join(", ")}</small>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="search-note">Matches exist, but none have the active axes and filter settings.</p>
-                )}
-              </>
-            ) : (
-              <p className="search-note">Search uses canonical DOI, title, author, sample, material, method, and property keywords.</p>
-            )}
-          </section>
-
           <section className="rail-section">
             <div className="rail-heading">Source class</div>
             {TIER_OPTIONS.map((tier) => (
@@ -1420,6 +1371,38 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                 ))}
               </div>
             </div>
+            <div className="plot-search-bar" role="search">
+              <div className="search-input-shell">
+                <Search size={15} strokeWidth={1.8} aria-hidden="true" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  placeholder="Search DOI, authors, title, keyword"
+                  aria-label="Search records by DOI, author, title, or keyword"
+                  onChange={(event) => {
+                    setSearchQuery(event.target.value);
+                    setSelectedId(null);
+                  }}
+                />
+                {activeSearchQuery ? (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedId(null);
+                    }}
+                  >
+                    <X size={13} strokeWidth={1.8} />
+                  </button>
+                ) : null}
+              </div>
+              <p className="plot-search-status" aria-live="polite">
+                {activeSearchQuery
+                  ? `${searchResults.length} atlas ${searchResultNoun} ${searchResultVerb}; ${searchVisibleHits.length} ${searchVisibleVerb} visible in the active plot.`
+                  : "Search locates records without changing the active axes or filters."}
+              </p>
+            </div>
             <div className="encoding-legend" aria-label="Visual encoding legend">
               <div className="legend-group">
                 <span className="legend-title">Color</span>
@@ -1453,6 +1436,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               yScale={effectiveYScale}
               variant={plotType === "ashby" ? "ashby" : "scatter"}
               selectedId={selectedRecord?.record_id ?? null}
+              highlightedIds={highlightedSearchIds}
               onSelect={(record) => setSelectedId(record.record_id)}
             />
           ) : null}
@@ -1464,11 +1448,62 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               yScale={effectiveYScale}
               referenceLines={rankedReferenceLines}
               selectedId={selectedRecord?.record_id ?? null}
+              highlightedIds={highlightedSearchIds}
               onSelect={(record) => setSelectedId(record.record_id)}
             />
           ) : null}
           {plotType === "trend" ? (
-            <TrendPlot records={plottedRecords} yKey={yKey} yMeta={yMeta} yScale={effectiveYScale} selectedId={selectedRecord?.record_id ?? null} onSelect={(record) => setSelectedId(record.record_id)} />
+            <TrendPlot
+              records={plottedRecords}
+              yKey={yKey}
+              yMeta={yMeta}
+              yScale={effectiveYScale}
+              selectedId={selectedRecord?.record_id ?? null}
+              highlightedIds={highlightedSearchIds}
+              onSelect={(record) => setSelectedId(record.record_id)}
+            />
+          ) : null}
+
+          {activeSearchQuery ? (
+            <div className="plot-search-results" aria-label="Search results">
+              <div className="plot-search-results-heading">
+                <span>Search results</span>
+                <strong>
+                  {searchResults.length} total / {searchVisibleHits.length} in active plot
+                </strong>
+              </div>
+              {searchResults.length ? (
+                <>
+                  <div className="plot-search-result-grid">
+                    {searchResultPreview.map((result) => {
+                      const inPlot = plottedRecordIds.has(result.record.record_id);
+                      return (
+                        <button
+                          key={result.record.record_id}
+                          type="button"
+                          className={inPlot ? "plot-search-result-card is-in-plot" : "plot-search-result-card is-out-of-plot"}
+                          disabled={!inPlot}
+                          onClick={() => {
+                            if (inPlot) setSelectedId(result.record.record_id);
+                          }}
+                        >
+                          <strong>{recordDisplayTitle(result.record)}</strong>
+                          <span>
+                            {formatPlainValue(result.record.publication_authors_short_verified, "Unknown authors")} / {formatYear(result.record.publication_year_verified)}
+                          </span>
+                          <small>
+                            {inPlot ? "visible in plot" : "outside active filters"} / {result.matchFields.slice(0, 3).join(", ")}
+                          </small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {searchResults.length > searchResultPreview.length ? <p className="plot-search-overflow">Showing first {searchResultPreview.length} matches.</p> : null}
+                </>
+              ) : (
+                <p className="plot-search-empty">No records match this DOI, author, title, or keyword query.</p>
+              )}
+            </div>
           ) : null}
 
         </section>
