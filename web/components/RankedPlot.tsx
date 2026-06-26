@@ -17,6 +17,7 @@ type RankedPlotProps = {
   yScale: ScaleMode;
   referenceLines?: RankedReferenceLine[];
   selectedId: string | null;
+  highlightedIds?: Set<string>;
   onSelect: (record: PlotRecord) => void;
 };
 
@@ -191,9 +192,23 @@ function materialClass(record: PlotRecord): string {
   return "point-material-unknown";
 }
 
-function PointMark({ record, x, y, selected, onSelect }: { record: PlotRecord; x: number; y: number; selected: boolean; onSelect: (record: PlotRecord) => void }) {
+function PointMark({
+  record,
+  x,
+  y,
+  selected,
+  highlighted,
+  onSelect
+}: {
+  record: PlotRecord;
+  x: number;
+  y: number;
+  selected: boolean;
+  highlighted: boolean;
+  onSelect: (record: PlotRecord) => void;
+}) {
   const markerShape = formShape(record);
-  const className = `plot-point point-shape-${markerShape} ${materialClass(record)} ${selected ? "is-selected" : ""}`;
+  const className = `plot-point point-shape-${markerShape} ${materialClass(record)} ${selected ? "is-selected" : ""} ${highlighted ? "is-search-match" : ""}`;
   const radius = 4.3;
   const size = radius * 1.95;
   const trianglePoints = `${x},${y - size * 0.68} ${x - size * 0.62},${y + size * 0.46} ${x + size * 0.62},${y + size * 0.46}`;
@@ -214,7 +229,7 @@ function PointMark({ record, x, y, selected, onSelect }: { record: PlotRecord; x
   return <circle className={className} cx={x} cy={y} r={radius} tabIndex={0} role="button" aria-label={sourceLabel(record)} onClick={() => onSelect(record)} onKeyDown={keyHandler} />;
 }
 
-export function RankedPlot({ records, yKey, yMeta, yScale, referenceLines = [], selectedId, onSelect }: RankedPlotProps) {
+export function RankedPlot({ records, yKey, yMeta, yScale, referenceLines = [], selectedId, highlightedIds = new Set<string>(), onSelect }: RankedPlotProps) {
   const plotRecords = records
     .filter((record) => {
       const value = record.values[yKey];
@@ -291,7 +306,7 @@ export function RankedPlot({ records, yKey, yMeta, yScale, referenceLines = [], 
                 {trimLabel(sourceLabel(record), 30)}
               </text>
               <line x1={baseline} x2={x} y1={y} y2={y} className="rank-value-line" />
-              <PointMark record={record} x={x} y={y} selected={record.record_id === selectedId} onSelect={onSelect} />
+              <PointMark record={record} x={x} y={y} selected={record.record_id === selectedId} highlighted={highlightedIds.has(record.record_id)} onSelect={onSelect} />
               <text x={Math.min(x + 10, WIDTH - MARGIN.right + 46)} y={y + 4} className="rank-value-text">
                 {formatValue(value, yMeta)}
               </text>
