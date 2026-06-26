@@ -450,6 +450,18 @@ export function TrendPlot({ records, yKey, yMeta, yScale, selectedId, highlighte
           CNT Property Atlas - cite original sources
         </text>
 
+        {plotRecords
+          .filter((record) => highlightedIds.has(record.record_id))
+          .map((record) => {
+            const x = scaleNumber(record.publication_year_verified as number, xDomain, xRange, "linear");
+            const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
+            return (
+              <g key={`trend-search-halo-${record.record_id}`} className="search-highlight-halo">
+                <circle cx={x} cy={y} r={13} />
+              </g>
+            );
+          })}
+
         {plotRecords.map((record) => {
           const x = scaleNumber(record.publication_year_verified as number, xDomain, xRange, "linear");
           const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);

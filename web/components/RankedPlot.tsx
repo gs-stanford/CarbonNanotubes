@@ -295,6 +295,19 @@ export function RankedPlot({ records, yKey, yMeta, yScale, referenceLines = [], 
           );
         })}
 
+        {plotRecords
+          .filter((record) => highlightedIds.has(record.record_id))
+          .map((record) => {
+            const value = record.values[yKey] as number;
+            const x = scaleNumber(value, xDomain, xRange, yScale);
+            const y = MARGIN.top + rowStep * (plotRecords.findIndex((item) => item.record_id === record.record_id) + 0.5);
+            return (
+              <g key={`rank-search-halo-${record.record_id}`} className="search-highlight-halo">
+                <circle cx={x} cy={y} r={13} />
+              </g>
+            );
+          })}
+
         {plotRecords.map((record, index) => {
           const value = record.values[yKey] as number;
           const x = scaleNumber(value, xDomain, xRange, yScale);

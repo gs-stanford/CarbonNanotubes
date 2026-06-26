@@ -967,6 +967,18 @@ export function ScatterPlot({
           CNT Property Atlas - cite original sources
         </text>
 
+        {plotRecords
+          .filter((record) => highlightedIds.has(record.record_id))
+          .map((record) => {
+            const x = scaleNumber(record.values[xKey] as number, xDomain, xRange, xScale);
+            const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);
+            return (
+              <g key={`search-halo-${record.record_id}`} className="search-highlight-halo">
+                <circle cx={x} cy={y} r={13} />
+              </g>
+            );
+          })}
+
         {plotRecords.map((record) => {
           const x = scaleNumber(record.values[xKey] as number, xDomain, xRange, xScale);
           const y = scaleNumber(record.values[yKey] as number, yDomain, yRange, yScale);

@@ -559,6 +559,7 @@ function prepareFigureSvg(svg: SVGSVGElement, figureTitle: string, includeXmlDec
   const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.querySelectorAll(".plot-watermark").forEach((node) => node.remove());
   clone.querySelectorAll(".selected-halo").forEach((node) => node.remove());
+  clone.querySelectorAll(".search-highlight-halo").forEach((node) => node.remove());
   clone.querySelectorAll(".is-selected").forEach((node) => {
     const className = node.getAttribute("class") ?? "";
     node.setAttribute("class", className.replace(/\bis-selected\b/g, "").replace(/\s+/g, " ").trim());
@@ -732,6 +733,17 @@ function recordSampleSummary(record: PlotRecord): string {
   return parts.join(" / ");
 }
 
+function searchResultGroupKey(record: PlotRecord): string {
+  const doi = doiValue(record.doi_verified ?? record.doi_raw);
+  if (doi) return `doi:${doi.toLowerCase()}`;
+  return [
+    "publication",
+    groupPart(record.publication_title_verified ?? record.citation_raw ?? record.public_sample_label ?? record.record_label),
+    groupPart(record.publication_authors_short_verified ?? record.original_reference_raw),
+    String(record.publication_year_verified ?? "unknown")
+  ].join(":");
+}
+
 function hasLowDensitySpecificMetricCaveat(record: PlotRecord): boolean {
   const density = record.values.density;
   const specificElectricalConductivity = record.values.specific_electrical_conductivity;
@@ -866,9 +878,37 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     return searchResults.filter((result) => plottedRecordIds.has(result.record.record_id));
   }, [activeSearchQuery, plottedRecordIds, searchResults]);
   const highlightedSearchIds = useMemo(() => new Set(searchVisibleHits.map((result) => result.record.record_id)), [searchVisibleHits]);
-  const searchResultPreview = activeSearchQuery ? searchResults.slice(0, 10) : [];
-  const searchResultNoun = searchResults.length === 1 ? "record" : "records";
-  const searchResultVerb = searchResults.length === 1 ? "matches" : "match";
+  const searchResultGroups = useMemo(() => {
+    const groups = new Map<
+      string,
+      {
+        key: string;
+        results: typeof searchResults;
+        visibleResults: typeof searchResults;
+        matchFields: Set<string>;
+      }
+    >();
+    for (const result of searchResults) {
+      const key = searchResultGroupKey(result.record);
+      const group = groups.get(key) ?? { key, results: [], visibleResults: [], matchFields: new Set<string>() };
+      group.results.push(result);
+      if (plottedRecordIds.has(result.record.record_id)) group.visibleResults.push(result);
+      result.matchFields.forEach((field) => group.matchFields.add(field));
+      groups.set(key, group);
+    }
+    return Array.from(groups.values())
+      .map((group) => ({
+        key: group.key,
+        primaryResult: group.visibleResults[0] ?? group.results[0],
+        rawCount: group.results.length,
+        visibleCount: group.visibleResults.length,
+        matchFields: Array.from(group.matchFields)
+      }))
+      .sort((a, b) => Number(b.visibleCount > 0) - Number(a.visibleCount > 0) || b.primaryResult.score - a.primaryResult.score);
+  }, [plottedRecordIds, searchResults]);
+  const searchResultPreview = activeSearchQuery ? searchResultGroups.slice(0, 10) : [];
+  const searchResultNoun = searchResultGroups.length === 1 ? "result" : "results";
+  const searchRawNoun = searchResults.length === 1 ? "row" : "rows";
   const searchVisibleVerb = searchVisibleHits.length === 1 ? "is" : "are";
 
   const selectedRecord = useMemo(() => {
@@ -1342,6 +1382,38 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
 
         <section className="plot-panel" aria-label="Property plot">
           <div className="plot-title-row">
+            <div className="plot-search-bar" role="search">
+              <div className="search-input-shell">
+                <Search size={15} strokeWidth={1.8} aria-hidden="true" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  placeholder="Search DOI, authors, title, keyword"
+                  aria-label="Search records by DOI, author, title, or keyword"
+                  onChange={(event) => {
+                    setSearchQuery(event.target.value);
+                    setSelectedId(null);
+                  }}
+                />
+                {activeSearchQuery ? (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedId(null);
+                    }}
+                  >
+                    <X size={13} strokeWidth={1.8} />
+                  </button>
+                ) : null}
+              </div>
+              <p className="plot-search-status" aria-live="polite">
+                {activeSearchQuery
+                  ? `${searchResultGroups.length} grouped ${searchResultNoun} from ${searchResults.length} matching atlas ${searchRawNoun}; ${searchVisibleHits.length} ${searchVisibleVerb} visible in the active plot.`
+                  : "Search locates records without changing the active axes or filters."}
+              </p>
+            </div>
             <div className="plot-heading">
               <h2>
                 {figureTitle}
@@ -1371,38 +1443,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                 ))}
               </div>
             </div>
-            <div className="plot-search-bar" role="search">
-              <div className="search-input-shell">
-                <Search size={15} strokeWidth={1.8} aria-hidden="true" />
-                <input
-                  type="search"
-                  value={searchQuery}
-                  placeholder="Search DOI, authors, title, keyword"
-                  aria-label="Search records by DOI, author, title, or keyword"
-                  onChange={(event) => {
-                    setSearchQuery(event.target.value);
-                    setSelectedId(null);
-                  }}
-                />
-                {activeSearchQuery ? (
-                  <button
-                    type="button"
-                    aria-label="Clear search"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedId(null);
-                    }}
-                  >
-                    <X size={13} strokeWidth={1.8} />
-                  </button>
-                ) : null}
-              </div>
-              <p className="plot-search-status" aria-live="polite">
-                {activeSearchQuery
-                  ? `${searchResults.length} atlas ${searchResultNoun} ${searchResultVerb}; ${searchVisibleHits.length} ${searchVisibleVerb} visible in the active plot.`
-                  : "Search locates records without changing the active axes or filters."}
-              </p>
-            </div>
             <div className="encoding-legend" aria-label="Visual encoding legend">
               <div className="legend-group">
                 <span className="legend-title">Color</span>
@@ -1424,6 +1464,49 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               </div>
             </div>
           </div>
+
+          {activeSearchQuery ? (
+            <div className="plot-search-results" aria-label="Search results">
+              <div className="plot-search-results-heading">
+                <span>Search results</span>
+                <strong>
+                  {searchResultGroups.length} grouped / {searchResults.length} rows / {searchVisibleHits.length} in active plot
+                </strong>
+              </div>
+              {searchResultGroups.length ? (
+                <>
+                  <div className="plot-search-result-grid">
+                    {searchResultPreview.map((group) => {
+                      const result = group.primaryResult;
+                      const inPlot = group.visibleCount > 0;
+                      return (
+                        <button
+                          key={group.key}
+                          type="button"
+                          className={inPlot ? "plot-search-result-card is-in-plot" : "plot-search-result-card is-out-of-plot"}
+                          disabled={!inPlot}
+                          onClick={() => {
+                            if (inPlot) setSelectedId(result.record.record_id);
+                          }}
+                        >
+                          <strong>{recordDisplayTitle(result.record)}</strong>
+                          <span>
+                            {formatPlainValue(result.record.publication_authors_short_verified, "Unknown authors")} / {formatYear(result.record.publication_year_verified)}
+                          </span>
+                          <small>
+                            {inPlot ? `${group.visibleCount} visible` : "outside active filters"} / {group.rawCount} matched {group.rawCount === 1 ? "row" : "rows"} / {group.matchFields.slice(0, 3).join(", ")}
+                          </small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {searchResultGroups.length > searchResultPreview.length ? <p className="plot-search-overflow">Showing first {searchResultPreview.length} grouped matches.</p> : null}
+                </>
+              ) : (
+                <p className="plot-search-empty">No records match this DOI, author, title, or keyword query.</p>
+              )}
+            </div>
+          ) : null}
 
           {plotType === "scatter" || plotType === "ashby" ? (
             <ScatterPlot
@@ -1462,48 +1545,6 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               highlightedIds={highlightedSearchIds}
               onSelect={(record) => setSelectedId(record.record_id)}
             />
-          ) : null}
-
-          {activeSearchQuery ? (
-            <div className="plot-search-results" aria-label="Search results">
-              <div className="plot-search-results-heading">
-                <span>Search results</span>
-                <strong>
-                  {searchResults.length} total / {searchVisibleHits.length} in active plot
-                </strong>
-              </div>
-              {searchResults.length ? (
-                <>
-                  <div className="plot-search-result-grid">
-                    {searchResultPreview.map((result) => {
-                      const inPlot = plottedRecordIds.has(result.record.record_id);
-                      return (
-                        <button
-                          key={result.record.record_id}
-                          type="button"
-                          className={inPlot ? "plot-search-result-card is-in-plot" : "plot-search-result-card is-out-of-plot"}
-                          disabled={!inPlot}
-                          onClick={() => {
-                            if (inPlot) setSelectedId(result.record.record_id);
-                          }}
-                        >
-                          <strong>{recordDisplayTitle(result.record)}</strong>
-                          <span>
-                            {formatPlainValue(result.record.publication_authors_short_verified, "Unknown authors")} / {formatYear(result.record.publication_year_verified)}
-                          </span>
-                          <small>
-                            {inPlot ? "visible in plot" : "outside active filters"} / {result.matchFields.slice(0, 3).join(", ")}
-                          </small>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {searchResults.length > searchResultPreview.length ? <p className="plot-search-overflow">Showing first {searchResultPreview.length} matches.</p> : null}
-                </>
-              ) : (
-                <p className="plot-search-empty">No records match this DOI, author, title, or keyword query.</p>
-              )}
-            </div>
           ) : null}
 
         </section>

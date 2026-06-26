@@ -626,8 +626,8 @@ textarea {
   justify-self: center;
   display: grid;
   gap: 5px;
-  width: min(680px, 100%);
-  margin-top: 1px;
+  width: min(760px, 100%);
+  margin: 0 0 3px;
 }
 
 .plot-search-bar .search-input-shell {
@@ -795,7 +795,8 @@ textarea {
 
 .plot-search-results {
   border-top: 1px solid var(--rule);
-  padding: 14px 22px 18px;
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 22px 14px;
   background: var(--paper);
 }
 
@@ -957,8 +958,18 @@ textarea {
 
 .plot-point.is-search-match {
   opacity: 1;
-  stroke-width: 2.35;
-  filter: drop-shadow(0 0 2px rgba(45, 119, 111, 0.42));
+  stroke: #005f57;
+  stroke-width: 3.2;
+  filter: drop-shadow(0 0 2px rgba(0, 95, 87, 0.8)) drop-shadow(0 0 7px rgba(45, 119, 111, 0.5));
+}
+
+.search-highlight-halo circle {
+  fill: rgba(45, 119, 111, 0.14);
+  stroke: #005f57;
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba(0, 95, 87, 0.55));
 }
 
 .point-material-cnt {
