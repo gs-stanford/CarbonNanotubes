@@ -123,12 +123,12 @@ export function searchRecords(records: PlotRecord[], query: string, properties: 
     const fields = new Set<SearchMatchField>();
     let score = 0;
 
-    const doiText = joined([...doiCandidates(record.doi_verified), ...doiCandidates(record.doi_raw), ...doiCandidates(record.secondary_source_doi_raw), record.url_raw]);
-    const titleText = joined([record.publication_title_verified, record.secondary_source_title, record.citation_raw]);
-    const authorText = joined([record.publication_authors_short_verified, record.publication_authors_full_verified, record.secondary_source_authors_short, record.original_reference_raw]);
+    const doiText = joined([...doiCandidates(record.doi_verified), ...doiCandidates(record.doi_raw), ...doiCandidates(record.compilation_source_doi_raw), record.url_raw]);
+    const titleText = joined([record.publication_title_verified, record.compilation_source_title, record.citation_raw]);
+    const authorText = joined([record.publication_authors_short_verified, record.publication_authors_full_verified, record.compilation_source_authors_short, record.original_reference_raw]);
     const sampleText = joined([record.public_sample_label, record.sample_name, record.record_label]);
-    const journalText = joined([record.publication_journal_verified, record.secondary_source_journal]);
-    const yearText = joined([record.publication_year_verified, record.publication_published_date_verified, record.secondary_source_year]);
+    const journalText = joined([record.publication_journal_verified, record.compilation_source_journal]);
+    const yearText = joined([record.publication_year_verified, record.publication_published_date_verified, record.compilation_source_year]);
     const keywordText = joined([
       FAMILY_KEYWORDS[record.material_family],
       FORM_KEYWORDS[record.form_factor],
@@ -168,7 +168,7 @@ export function searchRecords(records: PlotRecord[], query: string, properties: 
     if (!score) continue;
 
     if (record.public_release_tier === "peer_reviewed_research") score += 3;
-    if (record.value_extraction_type === "direct_or_source_table") score += 2;
+    if (!record.author_curated_compilation_record) score += 2;
     if (record.publication_year_verified) score += Math.min(Math.max(record.publication_year_verified - 1990, 0), 40) / 100;
 
     results.push({ record, score, matchFields: Array.from(fields) });

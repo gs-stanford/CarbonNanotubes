@@ -48,7 +48,7 @@ JAMES_META_2021 = {
     "journal": "Advanced Materials",
     "year": 2021,
     "authors_short": "John S. Bulmer et al.",
-    "source_export": "Bulmer/James CNT meta-analysis supporting workbook",
+    "source_export": "Bulmer, Kaniyoor and Elliott author-supplied meta-analysis workbook",
 }
 
 RADAR_DYNAMIC_STRENGTH_2024 = {
@@ -590,6 +590,18 @@ def base_record(source_file: str, source_sheet: str, source_row: int, label: Any
     urls = extract_urls(citation_text)
     refkeys = extract_refkeys(norm_text(label, notes))
     source_citation_class, evidence_tier, comparison_note = evidence_classification(material_family, citation_text, dois, urls)
+    dataset_provenance = {
+        "literature_addendum_records.tsv": "primary_source_manual_extraction",
+        "XiaO_DATA.xlsx": "published_source_table",
+        "RadarFigureSource.xlsx": "published_source_table",
+        "New G fibre table Juan.xlsx": "author_supplied_source_table",
+        JAMES_META_2021["source_file"]: "author_curated_published_compilation",
+    }.get(source_file, "source_table_or_direct_extraction")
+    primary_source_verification_status = (
+        "verified_against_primary_source"
+        if source_file == "literature_addendum_records.tsv"
+        else "not_assessed"
+    )
     record = {
         "record_id": stable_id("rec", source_file, source_sheet, source_row, label, notes),
         "source_file": source_file,
@@ -610,6 +622,14 @@ def base_record(source_file: str, source_sheet: str, source_row: int, label: Any
         "url_raw": ";".join(urls) if urls else None,
         "reference_keys": ";".join(refkeys) if refkeys else None,
         "source_citation_raw": None,
+        "dataset_provenance": dataset_provenance,
+        "primary_source_verification_status": primary_source_verification_status,
+        "compilation_source_doi_raw": None,
+        "compilation_source_title": None,
+        "compilation_source_authors_short": None,
+        "compilation_source_journal": None,
+        "compilation_source_year": None,
+        # Legacy aliases retained in processed data so old curation files can be rebuilt safely.
         "secondary_source_doi_raw": None,
         "secondary_source_title": None,
         "secondary_source_authors_short": None,
@@ -1083,7 +1103,7 @@ def james_has_measurement(raw: dict[str, Any]) -> bool:
 
 
 def james_record_from_row(raw: dict[str, Any], source_row: int, lookup_row: dict[str, Any], suffix: str = "") -> dict[str, Any]:
-    reference = clean(raw.get("Reference"))
+    reference = norm_text(raw.get("Reference")) or None
     category = clean(raw.get("Category"))
     notes = clean(raw.get("Notes"))
     year = clean(raw.get("Year")) or clean(lookup_row.get("resolved_year"))
@@ -1100,7 +1120,7 @@ def james_record_from_row(raw: dict[str, Any], source_row: int, lookup_row: dict
             "group_label": category,
             "sample_name": sample,
             "citation_raw": doi,
-            "source_citation_raw": f"Original DOI resolved from James/Bulmer workbook reference: {doi}; compiled data source DOI: {JAMES_META_2021['doi']}",
+            "source_citation_raw": f"Original DOI resolved from the Bulmer, Kaniyoor and Elliott author-supplied workbook: {doi}; compilation DOI: {JAMES_META_2021['doi']}",
             "doi_raw": doi,
             "url_raw": None,
             "secondary_source_doi_raw": JAMES_META_2021["doi"],
@@ -1108,6 +1128,13 @@ def james_record_from_row(raw: dict[str, Any], source_row: int, lookup_row: dict
             "secondary_source_authors_short": JAMES_META_2021["authors_short"],
             "secondary_source_journal": JAMES_META_2021["journal"],
             "secondary_source_year": JAMES_META_2021["year"],
+            "dataset_provenance": "author_curated_published_compilation",
+            "primary_source_verification_status": "verified_against_primary_source",
+            "compilation_source_doi_raw": JAMES_META_2021["doi"],
+            "compilation_source_title": JAMES_META_2021["title"],
+            "compilation_source_authors_short": JAMES_META_2021["authors_short"],
+            "compilation_source_journal": JAMES_META_2021["journal"],
+            "compilation_source_year": JAMES_META_2021["year"],
             "original_reference_raw": reference,
             "doi_resolution_status": clean(lookup_row.get("resolution_status")),
             "doi_resolution_score": to_float(lookup_row.get("match_score")),
@@ -1119,15 +1146,15 @@ def james_record_from_row(raw: dict[str, Any], source_row: int, lookup_row: dict
             "cnt_type": james_cnt_type(category, reference, notes),
             "synthesis_method": james_synthesis(raw, material_family),
             "postprocessing": james_postprocessing(raw),
-            "provenance_table_figure_page": "Bulmer/James meta-analysis supporting workbook, Main sheet",
+            "provenance_table_figure_page": "Bulmer, Kaniyoor and Elliott author-supplied meta-analysis workbook, Main sheet",
             "source_export": JAMES_META_2021["source_export"],
             "extraction_method": "peer_reviewed_meta_analysis_workbook",
             "comparison_scope": comparison_scope(material_family, form_factor),
-            "source_citation_class": "peer_reviewed_meta_analysis_record",
-            "evidence_tier": "secondary_meta_analysis_with_original_doi",
-            "comparison_note": "Peer-reviewed meta-analysis workbook row with original DOI resolved by Crossref/OpenAlex; not re-extracted from the primary paper in this pipeline.",
-            "public_status": "secondary_public_candidate",
-            "internal_status": "needs_primary_value_crosscheck",
+            "source_citation_class": "author_curated_compilation_record",
+            "evidence_tier": "author_curated_compilation_primary_sources_verified",
+            "comparison_note": "Official author-supplied dataset for the Bulmer, Kaniyoor and Elliott meta-analysis. Primary-source checks were completed during the author-curated compilation workflow.",
+            "public_status": "author_curated_compilation_candidate",
+            "internal_status": "author_curated_primary_sources_verified",
             "curator": "James_Bulmer_meta_analysis_workbook",
             "confidence_score": 3,
             "raw_payload_json": json.dumps(raw, ensure_ascii=False, default=str),
@@ -1257,13 +1284,13 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
             score = matches / overlaps
             record["duplicate_of_record_id"] = other["record_id"]
             record["duplicate_match_score"] = round(score, 4)
-            record["internal_status"] = "duplicate_candidate_lower_priority_secondary_source"
+            record["internal_status"] = "duplicate_candidate_lower_priority_compilation_source"
             issues.append(
                 issue(
                     record,
                     "duplicate_candidate",
                     "duplicate_of_record_id",
-                    f"James/Bulmer secondary row is an exact duplicate of higher-priority record {other['record_id']} ({matches}/{overlaps} matching canonical properties).",
+                    f"Elliott author-curated compilation row is an exact duplicate of higher-priority record {other['record_id']} ({matches}/{overlaps} matching canonical properties).",
                 )
             )
     return issues
@@ -1326,9 +1353,9 @@ def build_publications(records: list[dict[str, Any]]) -> pd.DataFrame:
             dois = str(record["doi_raw"]).split(";")
         if not urls and record.get("url_raw"):
             urls = str(record["url_raw"]).split(";")
-        secondary_doi = clean(record.get("secondary_source_doi_raw"))
-        if secondary_doi and secondary_doi not in dois:
-            dois.append(secondary_doi)
+        compilation_doi = clean(record.get("compilation_source_doi_raw")) or clean(record.get("secondary_source_doi_raw"))
+        if compilation_doi and compilation_doi not in dois:
+            dois.append(compilation_doi)
         keys = dois or urls or [record.get("citation_raw")]
         for key in keys:
             if not key:
@@ -1382,10 +1409,13 @@ def data_dictionary() -> pd.DataFrame:
         ("source_file/source_sheet/source_row", "Exact provenance of extracted row.", ""),
         ("citation_raw", "Normalized/corrected citation text used for DOI extraction and publication grouping.", ""),
         ("source_citation_raw", "Original citation text from the source workbook when preserved separately from normalized citation text.", ""),
-        ("secondary_source_*", "Secondary compilation source metadata, used when values entered through a peer-reviewed meta-analysis workbook rather than direct primary-paper extraction.", ""),
-        ("original_reference_raw", "Original reference text from the secondary workbook before DOI resolution.", ""),
-        ("doi_resolution_status/score", "Crossref/OpenAlex title-year resolution status and match score for secondary workbook references.", ""),
-        ("duplicate_of_record_id", "Higher-priority record that appears to duplicate this lower-priority secondary row.", ""),
+        ("dataset_provenance", "How the row entered the database, independently of whether the underlying primary article has been checked.", ""),
+        ("primary_source_verification_status", "Independent verification state for the underlying original article.", ""),
+        ("compilation_source_*", "Citation metadata for an author-curated published compilation such as the Bulmer, Kaniyoor and Elliott workbook.", ""),
+        ("secondary_source_*", "Deprecated compatibility aliases for compilation_source_*; not used in the public schema.", ""),
+        ("original_reference_raw", "Original reference text from a compilation workbook before DOI resolution.", ""),
+        ("doi_resolution_status/score", "Crossref/OpenAlex title-year resolution status and match score for compilation-workbook references.", ""),
+        ("duplicate_of_record_id", "Higher-priority record that appears to duplicate this row.", ""),
         ("*_raw", "Value as represented in source workbook after basic null cleaning.", "source unit"),
         ("density_kg_m3", "Canonical density.", "kg/m^3"),
         ("specific_volume_m3_kg", "Canonical specific volume calculated from density.", "m^3/kg"),

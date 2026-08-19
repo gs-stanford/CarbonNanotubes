@@ -46,13 +46,16 @@ export type PublicRecord = {
   default_plot_visibility: string;
   public_plot_badge: string;
   source_publication_type: string;
+  dataset_provenance: string;
+  dataset_provenance_detail: string;
+  primary_source_verification_status: string;
   value_extraction_type: string;
   source_disclosure: string;
   citation_requirement: string;
   peer_reviewed_measurement: boolean;
   contextual_benchmark: boolean;
   commercial_specsheet_benchmark: boolean;
-  secondary_meta_analysis_record: boolean;
+  author_curated_compilation_record: boolean;
   missing_conditions: boolean;
   unit_inference_review_needed: boolean;
   cross_form_comparison: boolean;
@@ -78,11 +81,11 @@ export type PublicRecord = {
   gauge_length_mm: number | null;
   strain_rate_s_inv: number | null;
   provenance_table_figure_page: string | null;
-  secondary_source_doi_raw: string | null;
-  secondary_source_title: string | null;
-  secondary_source_authors_short: string | null;
-  secondary_source_journal: string | null;
-  secondary_source_year: number | null;
+  compilation_source_doi_raw: string | null;
+  compilation_source_title: string | null;
+  compilation_source_authors_short: string | null;
+  compilation_source_journal: string | null;
+  compilation_source_year: number | null;
   original_reference_raw: string | null;
   doi_resolution_status: string | null;
   doi_resolution_score: number | null;
@@ -151,7 +154,9 @@ export type ExplorerPayload = {
     peerReviewedResearchRecords: number;
     peerReviewedComparatorRecords: number;
     commercialComparatorRecords: number;
-    secondaryExtractedRecords: number;
+    authorCuratedCompilationRecords: number;
+    primarySourceVerifiedCompilationRecords: number;
+    primarySourceCheckPendingRecords: number;
     strictReadyRecords: number;
     minYear: number | null;
     maxYear: number | null;
@@ -441,13 +446,24 @@ function recordFromRow(row: Record<string, string>): PublicRecord {
     default_plot_visibility: nullable(row.default_plot_visibility) ?? "default_on",
     public_plot_badge: nullable(row.public_plot_badge) ?? "Record",
     source_publication_type: nullable(row.source_publication_type) ?? "unknown",
-    value_extraction_type: nullable(row.value_extraction_type) ?? "direct_or_source_table",
+    dataset_provenance: nullable(row.dataset_provenance) ?? (
+      nullable(row.value_extraction_type) === "secondary_meta_analysis"
+        ? "author_curated_published_compilation"
+        : "source_table_or_direct_extraction"
+    ),
+    dataset_provenance_detail: nullable(row.dataset_provenance_detail) ?? nullable(row.dataset_provenance) ?? "unknown",
+    primary_source_verification_status: nullable(row.primary_source_verification_status) ?? (
+      bool(row.secondary_meta_analysis_record) ? "verified_against_primary_source" : "not_assessed"
+    ),
+    value_extraction_type: nullable(row.value_extraction_type) === "secondary_meta_analysis"
+      ? "author_curated_compilation"
+      : nullable(row.value_extraction_type) ?? "direct_or_source_table",
     source_disclosure: nullable(row.source_disclosure) ?? "",
     citation_requirement: nullable(row.citation_requirement) ?? "",
     peer_reviewed_measurement: bool(row.peer_reviewed_measurement),
     contextual_benchmark: bool(row.contextual_benchmark),
     commercial_specsheet_benchmark: bool(row.commercial_specsheet_benchmark),
-    secondary_meta_analysis_record: bool(row.secondary_meta_analysis_record),
+    author_curated_compilation_record: bool(row.author_curated_compilation_record) || bool(row.secondary_meta_analysis_record),
     missing_conditions: bool(row.missing_conditions),
     unit_inference_review_needed: bool(row.unit_inference_review_needed),
     cross_form_comparison: bool(row.cross_form_comparison),
@@ -473,11 +489,11 @@ function recordFromRow(row: Record<string, string>): PublicRecord {
     gauge_length_mm: num(row.gauge_length_mm),
     strain_rate_s_inv: num(row.strain_rate_s_inv),
     provenance_table_figure_page: nullable(row.provenance_table_figure_page),
-    secondary_source_doi_raw: nullable(row.secondary_source_doi_raw),
-    secondary_source_title: nullable(row.secondary_source_title),
-    secondary_source_authors_short: nullable(row.secondary_source_authors_short),
-    secondary_source_journal: nullable(row.secondary_source_journal),
-    secondary_source_year: num(row.secondary_source_year),
+    compilation_source_doi_raw: nullable(row.compilation_source_doi_raw) ?? nullable(row.secondary_source_doi_raw),
+    compilation_source_title: nullable(row.compilation_source_title) ?? nullable(row.secondary_source_title),
+    compilation_source_authors_short: nullable(row.compilation_source_authors_short) ?? nullable(row.secondary_source_authors_short),
+    compilation_source_journal: nullable(row.compilation_source_journal) ?? nullable(row.secondary_source_journal),
+    compilation_source_year: num(row.compilation_source_year) ?? num(row.secondary_source_year),
     original_reference_raw: nullable(row.original_reference_raw),
     doi_resolution_status: nullable(row.doi_resolution_status),
     doi_resolution_score: num(row.doi_resolution_score),
@@ -605,7 +621,14 @@ function buildExplorerPayload(communitySubmissions: CommunityAcceptedSubmission[
       peerReviewedResearchRecords: plotRecords.filter((record) => record.public_release_tier === "peer_reviewed_research").length,
       peerReviewedComparatorRecords: plotRecords.filter((record) => record.public_release_tier === "peer_reviewed_contextual_comparator").length,
       commercialComparatorRecords: plotRecords.filter((record) => record.public_release_tier === "commercial_contextual_comparator").length,
-      secondaryExtractedRecords: plotRecords.filter((record) => record.value_extraction_type === "secondary_meta_analysis").length,
+      authorCuratedCompilationRecords: plotRecords.filter((record) => record.author_curated_compilation_record).length,
+      primarySourceVerifiedCompilationRecords: plotRecords.filter(
+        (record) => record.author_curated_compilation_record
+          && record.primary_source_verification_status === "verified_against_primary_source"
+      ).length,
+      primarySourceCheckPendingRecords: plotRecords.filter(
+        (record) => record.primary_source_verification_status === "pending_independent_check"
+      ).length,
       strictReadyRecords: plotRecords.filter((record) => record.strict_comparison_ready).length,
       minYear: years.length ? Math.min(...years) : null,
       maxYear: years.length ? Math.max(...years) : null

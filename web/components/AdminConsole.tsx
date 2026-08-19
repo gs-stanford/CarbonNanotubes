@@ -26,7 +26,8 @@ type EditableRecord = {
   form_factor: string;
   cnt_type: string;
   public_plot_badge: string;
-  value_extraction_type: string;
+  dataset_provenance: string;
+  primary_source_verification_status: string;
   source_disclosure: string;
   citation_requirement: string;
   issue_types: string;
@@ -73,7 +74,8 @@ function editableFromSubmission(submission: AdminSubmission | null): EditableRec
     form_factor: record?.form_factor ?? "fiber_yarn",
     cnt_type: record?.cnt_type ?? "",
     public_plot_badge: record?.public_plot_badge ?? "DOI-verified research",
-    value_extraction_type: record?.value_extraction_type ?? "direct_or_source_table",
+    dataset_provenance: record?.dataset_provenance ?? "community_submission",
+    primary_source_verification_status: record?.primary_source_verification_status ?? "submitter_claimed_pending_curator_check",
     source_disclosure: record?.source_disclosure ?? "",
     citation_requirement: record?.citation_requirement ?? "Cite original publication and CNT Property Atlas.",
     issue_types: record?.issue_types ?? "",
@@ -453,14 +455,29 @@ export function AdminConsole() {
                 </label>
 
                 <label className="admin-field">
-                  <span>Extraction type</span>
+                  <span>Dataset provenance</span>
                   <select
-                    value={edit.value_extraction_type}
-                    onChange={(event) => setEdit((current) => ({ ...current, value_extraction_type: event.target.value }))}
+                    value={edit.dataset_provenance}
+                    onChange={(event) => setEdit((current) => ({ ...current, dataset_provenance: event.target.value }))}
                   >
-                    <option value="direct_or_source_table">Direct/source table</option>
-                    <option value="secondary_meta_analysis">Secondary/meta-analysis</option>
-                    <option value="digitized_from_figure">Digitized from figure</option>
+                    <option value="community_submission">Community submission</option>
+                    <option value="primary_source_manual_extraction">Primary-source manual extraction</option>
+                    <option value="source_table_or_direct_extraction">Direct / source table</option>
+                    <option value="author_supplied_source_table">Author-supplied source table</option>
+                    <option value="author_curated_published_compilation">Author-curated published compilation</option>
+                  </select>
+                </label>
+
+                <label className="admin-field">
+                  <span>Primary-source verification</span>
+                  <select
+                    value={edit.primary_source_verification_status}
+                    onChange={(event) => setEdit((current) => ({ ...current, primary_source_verification_status: event.target.value }))}
+                  >
+                    <option value="submitter_claimed_pending_curator_check">Pending curator check</option>
+                    <option value="pending_independent_check">Pending independent check</option>
+                    <option value="verified_against_primary_source">Verified against primary source</option>
+                    <option value="not_assessed">Not assessed</option>
                   </select>
                 </label>
 

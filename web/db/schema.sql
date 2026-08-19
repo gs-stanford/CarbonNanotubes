@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS atlas_submissions (
   record_id text NOT NULL UNIQUE,
   publication_id text NOT NULL REFERENCES atlas_publications(publication_id) ON DELETE RESTRICT,
   doi_verified text NOT NULL,
+  dataset_provenance text NOT NULL DEFAULT 'community_submission',
+  primary_source_verification_status text NOT NULL DEFAULT 'submitter_claimed_pending_curator_check',
   submitter_email text,
   submitter_name text,
   status text NOT NULL DEFAULT 'accepted'
@@ -65,8 +67,15 @@ CREATE TABLE IF NOT EXISTS atlas_ai_cleanup_runs (
   completed_at timestamptz
 );
 
+ALTER TABLE atlas_submissions
+  ADD COLUMN IF NOT EXISTS dataset_provenance text NOT NULL DEFAULT 'community_submission';
+
+ALTER TABLE atlas_submissions
+  ADD COLUMN IF NOT EXISTS primary_source_verification_status text NOT NULL DEFAULT 'submitter_claimed_pending_curator_check';
+
 CREATE INDEX IF NOT EXISTS atlas_submissions_doi_idx ON atlas_submissions (doi_verified);
 CREATE INDEX IF NOT EXISTS atlas_submissions_status_visible_idx ON atlas_submissions (status, public_visible);
 CREATE INDEX IF NOT EXISTS atlas_submissions_record_id_idx ON atlas_submissions (record_id);
+CREATE INDEX IF NOT EXISTS atlas_submissions_primary_verification_idx ON atlas_submissions (primary_source_verification_status);
 CREATE INDEX IF NOT EXISTS atlas_measurements_record_property_idx ON atlas_measurements (record_id, property);
 CREATE INDEX IF NOT EXISTS atlas_measurements_property_value_idx ON atlas_measurements (property, value_canonical);
