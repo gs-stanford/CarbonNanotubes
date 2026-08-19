@@ -6,17 +6,22 @@ Use one Render Web Service for the Next.js app.
 
 - Root directory: `web`
 - Build command: `npm ci && npm run build`
-- Start command: `npm run start`
+- Start command: `npm run db:migrate && npm run db:import-public && npm run start`
 - Required env vars:
   - `NODE_VERSION=22`
   - `DATABASE_URL=<Render Postgres internal connection string>`
   - `ADMIN_TOKEN=<long random token for /admin>`
 
-The app creates the Postgres schema lazily at runtime when `DATABASE_URL` is present. You can also run it explicitly:
+The app creates the Postgres schema lazily at runtime when `DATABASE_URL` is present. Render also migrates the schema and transactionally synchronizes the bundled canonical public release before every start:
 
 ```bash
 npm run db:migrate
+npm run db:import-public
 ```
+
+`db:import-public` validates IDs and foreign keys, replaces the canonical snapshot in one transaction, and verifies exact row-payload hashes and counts before commit. It is idempotent. Use `npm run db:verify-public` to compare PostgreSQL against the bundled CSV release without writing, or inspect `/api/health/data` for the active release and backend.
+
+When `DATABASE_URL` is configured, public records, measurements, and publications are read from PostgreSQL. Bundled CSV files are used only in environments without a configured database.
 
 ## Submission pipeline
 

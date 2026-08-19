@@ -176,6 +176,12 @@ export type CommunityAcceptedSubmission = {
   publication: Publication;
 };
 
+type PublicReleaseRows = {
+  records: Record<string, string>[];
+  measurements: Record<string, string>[];
+  publications: Record<string, string>[];
+};
+
 export const PROPERTY_META_BASE: Omit<PropertyMeta, "recordsWithValue">[] = [
   {
     key: "density",
@@ -552,33 +558,59 @@ function publicationFromRow(row: Record<string, string>): Publication {
   };
 }
 
-function buildExplorerPayload(communitySubmissions: CommunityAcceptedSubmission[]): ExplorerPayload {
-  const records = [
-    ...readCsv("public_records_v0.csv").map(recordFromRow),
-    ...communitySubmissions.map((submission) => submission.record)
-  ];
-  const measurements = [
-    ...readCsv("public_measurements_v0.csv")
-    .map(measurementFromRow)
-      .filter((row): row is Measurement => row !== null),
-    ...communitySubmissions.flatMap((submission) =>
-      submission.measurements
-        .map((measurement) => {
-          const meta = PROPERTY_BY_KEY.get(measurement.property);
-          if (!meta) return null;
-          return {
-            ...measurement,
-            value_display: measurement.value_canonical * meta.displayFactor,
-            unit_display: meta.displayUnit
-          };
-        })
-        .filter((measurement): measurement is Measurement => measurement !== null)
-    )
-  ];
-  const publications = [
-    ...readCsv("public_publications_v0.csv").map(publicationFromRow),
-    ...communitySubmissions.map((submission) => submission.publication)
-  ];
+function bundledPublicReleaseRows(): PublicReleaseRows {
+  return {
+    records: readCsv("public_records_v0.csv"),
+    measurements: readCsv("public_measurements_v0.csv"),
+    publications: readCsv("public_publications_v0.csv")
+  };
+}
+
+function uniqueBy<T>(items: T[], key: (item: T) => string): T[] {
+  const unique = new Map<string, T>();
+  items.forEach((item) => unique.set(key(item), item));
+  return Array.from(unique.values());
+}
+
+function buildExplorerPayload(
+  releaseRows: PublicReleaseRows,
+  communitySubmissions: CommunityAcceptedSubmission[]
+): ExplorerPayload {
+  const records = uniqueBy(
+    [
+      ...releaseRows.records.map(recordFromRow),
+      ...communitySubmissions.map((submission) => submission.record)
+    ],
+    (record) => record.record_id
+  );
+  const measurements = uniqueBy(
+    [
+      ...releaseRows.measurements
+        .map(measurementFromRow)
+        .filter((row): row is Measurement => row !== null),
+      ...communitySubmissions.flatMap((submission) =>
+        submission.measurements
+          .map((measurement) => {
+            const meta = PROPERTY_BY_KEY.get(measurement.property);
+            if (!meta) return null;
+            return {
+              ...measurement,
+              value_display: measurement.value_canonical * meta.displayFactor,
+              unit_display: meta.displayUnit
+            };
+          })
+          .filter((measurement): measurement is Measurement => measurement !== null)
+      )
+    ],
+    (measurement) => `${measurement.record_id}\u0000${measurement.property}`
+  );
+  const publications = uniqueBy(
+    [
+      ...releaseRows.publications.map(publicationFromRow),
+      ...communitySubmissions.map((submission) => submission.publication)
+    ],
+    (publication) => publication.publication_id
+  );
 
   const byRecord = new Map<string, PlotRecord>();
   records.forEach((record) => {
@@ -637,12 +669,26 @@ function buildExplorerPayload(communitySubmissions: CommunityAcceptedSubmission[
 }
 
 export function getExplorerPayload(): ExplorerPayload {
-  return buildExplorerPayload(readCommunitySubmissions());
+  return buildExplorerPayload(bundledPublicReleaseRows(), readCommunitySubmissions());
 }
 
 export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
+  const { hasDatabaseUrl } = await import("@/lib/db");
   const { readAcceptedSubmissions } = await import("@/lib/submission-store");
-  return buildExplorerPayload(await readAcceptedSubmissions());
+  const communitySubmissions = await readAcceptedSubmissions();
+  if (!hasDatabaseUrl()) {
+    return buildExplorerPayload(bundledPublicReleaseRows(), communitySubmissions);
+  }
+  const { readCanonicalReleaseRows } = await import("@/lib/canonical-store");
+  const canonicalRelease = await readCanonicalReleaseRows();
+  return buildExplorerPayload(
+    {
+      records: canonicalRelease.records,
+      measurements: canonicalRelease.measurements,
+      publications: canonicalRelease.publications
+    },
+    communitySubmissions
+  );
 }
 
 export function getPlotPointsFromPayload(payload: ExplorerPayload, x: PropertyKey, y: PropertyKey): PlotRecord[] {
