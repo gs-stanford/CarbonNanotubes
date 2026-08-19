@@ -3,10 +3,13 @@ record_id,Stable row identifier for a source record.,
 source_file/source_sheet/source_row,Exact provenance of extracted row.,
 citation_raw,Normalized/corrected citation text used for DOI extraction and publication grouping.,
 source_citation_raw,Original citation text from the source workbook when preserved separately from normalized citation text.,
-secondary_source_*,"Secondary compilation source metadata, used when values entered through a peer-reviewed meta-analysis workbook rather than direct primary-paper extraction.",
-original_reference_raw,Original reference text from the secondary workbook before DOI resolution.,
-doi_resolution_status/score,Crossref/OpenAlex title-year resolution status and match score for secondary workbook references.,
-duplicate_of_record_id,Higher-priority record that appears to duplicate this lower-priority secondary row.,
+dataset_provenance,"How the row entered the database, independently of whether the underlying primary article has been checked.",
+primary_source_verification_status,Independent verification state for the underlying original article.,
+compilation_source_*,"Citation metadata for an author-curated published compilation such as the Bulmer, Kaniyoor and Elliott workbook.",
+secondary_source_*,Deprecated compatibility aliases for compilation_source_*; not used in the public schema.,
+original_reference_raw,Original reference text from a compilation workbook before DOI resolution.,
+doi_resolution_status/score,Crossref/OpenAlex title-year resolution status and match score for compilation-workbook references.,
+duplicate_of_record_id,Higher-priority record that appears to duplicate this row.,
 *_raw,Value as represented in source workbook after basic null cleaning.,source unit
 density_kg_m3,Canonical density.,kg/m^3
 specific_volume_m3_kg,Canonical specific volume calculated from density.,m^3/kg

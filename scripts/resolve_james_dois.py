@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve DOI candidates for the Bulmer/James meta-analysis workbook references.
+"""Resolve DOI candidates for the Bulmer, Kaniyoor and Elliott author-supplied workbook references.
 
 The workbook stores row provenance mostly as "YEAR Title" strings rather than DOI
 values. This script queries Crossref and OpenAlex, scores title/year agreement,

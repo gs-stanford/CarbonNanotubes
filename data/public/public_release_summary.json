@@ -40,14 +40,17 @@
   "excluded_records_by_reason": {
     "duplicate_collapsed_into_canonical_public_record": 100,
     "internal_seed_or_unresolved_source": 79,
+    "duplicate_of_higher_priority_record": 5,
     "no_canonical_measurements": 5,
-    "secondary_duplicate_of_higher_priority_record": 5,
     "no_canonical_measurements;internal_seed_or_unresolved_source": 1
   },
   "strict_comparison_ready_records": 3,
   "records_requiring_missing_condition_warning": 513,
   "records_requiring_unit_inference_warning": 65,
   "commercial_or_specsheet_benchmark_records": 73,
+  "author_curated_compilation_records": 1238,
+  "primary_source_verified_compilation_records": 1238,
+  "primary_source_check_pending_records": 0,
   "duplicate_groups_detected": 57,
   "duplicate_records_collapsed": 100,
   "outputs": [

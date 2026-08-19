@@ -4,14 +4,17 @@ public_release_tier,"Peer-reviewed research, peer-reviewed contextual comparator
 default_plot_visibility,Frontend hint for whether the point should be visible by default.
 public_plot_badge,Short label for legends/tooltips.
 source_publication_type,"Publication/source quality: peer-reviewed journal, DOI-verified source, commercial/spec-sheet, or internal/unverified."
-value_extraction_type,Whether the plotted value was extracted directly from a source table/figure in this pipeline or imported from a peer-reviewed secondary/meta-analysis dataset.
+dataset_provenance,"How the row entered the Atlas: direct/source-table extraction, author-supplied table, or author-curated published compilation."
+dataset_provenance_detail,More specific import-path provenance retained behind the public provenance class.
+primary_source_verification_status,Independent verification state for the linked original article; this is separate from dataset provenance.
+value_extraction_type,Compatibility field distinguishing direct/source-table values from author-curated compilation values.
 public_sample_label,Clean public-facing sample label; raw workbook IDs such as `(39)` are not used as primary public titles.
 source_disclosure,Public wording explaining how to interpret the source.
 citation_requirement,Required citation instruction for use of plotted values.
 peer_reviewed_measurement,True only for DOI-verified CNT/graphene research records.
 contextual_benchmark,True for non-CNT comparator/reference materials.
 commercial_specsheet_benchmark,"True when commercial, MatWeb, manufacturer, or mixed commercial provenance is involved."
-secondary_meta_analysis_record,True when the row comes from a peer-reviewed secondary/meta-analysis workbook with original DOI resolved but values not independently re-extracted in this pipeline.
+author_curated_compilation_record,"True when the row comes from the official author-supplied dataset for a published compilation such as Bulmer, Kaniyoor and Elliott."
 missing_conditions,"True when method, atmosphere, gauge length, strain rate, or other strict-comparison metadata are missing."
 unit_inference_review_needed,True when a raw unit/scale was inferred and should be visibly reviewed before final official release.
 cross_form_comparison,True when form factor is not fiber_yarn; cross-form plots must be visually flagged.
@@ -25,7 +28,7 @@ normalized_plot_eligible,Measurement-level flag for normalized metrics on normal
 exploratory_plot_eligible,Measurement-level flag for v0 exploratory plotting.
 measurement_warning,Measurement-level warning text for inferred units or non-primary benchmark provenance.
 exclusion_reasons,Semicolon-delimited reason a source record was excluded from public v0.
-secondary_source_*,Citation metadata for a peer-reviewed compilation source such as the Bulmer/James meta-analysis workbook.
+compilation_source_*,"Citation metadata for an author-curated published compilation such as the Bulmer, Kaniyoor and Elliott workbook."
 duplicate_of_record_id,Higher-priority public/internal record that appears to duplicate this secondary row.
 duplicate_group_*,Canonicalized duplicate group metadata used to prevent duplicate source rows from plotting as independent scientific points.
 canonical_record_id,Record ID selected as the canonical plotted representative of a duplicate group.

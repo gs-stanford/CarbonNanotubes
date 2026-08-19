@@ -16,7 +16,7 @@ Generated from the internal processed and curation tables.
 ## Release Rules
 
 - Include DOI-verified CNT/graphene/CNT-metal records as `peer_reviewed_research` candidates.
-- Treat Crossref/OpenAlex-resolved James/Bulmer rows as DOI-backed source records with `value_extraction_type=secondary_meta_analysis`, not as a material or legend class.
+- Treat the Elliott/Bulmer author-supplied workbook as an `author_curated_published_compilation`; its linked primary sources were checked during the authors' compilation workflow.
 - Include DOI-backed non-target materials as `peer_reviewed_contextual_comparator` and manufacturer/MatWeb/spec-sheet rows as `commercial_contextual_comparator`.
 - Collapse duplicate source rows into a single canonical public record using DOI, material/form, and canonical measurement-vector agreement.
 - Exclude URL-only research records, unresolved internal seed rows, records with unverified DOI status, and rows without canonical measurements.
@@ -59,8 +59,8 @@ Generated from the internal processed and curation tables.
 | --- | ---: |
 | `duplicate_collapsed_into_canonical_public_record` | 100 |
 | `internal_seed_or_unresolved_source` | 79 |
+| `duplicate_of_higher_priority_record` | 5 |
 | `no_canonical_measurements` | 5 |
-| `secondary_duplicate_of_higher_priority_record` | 5 |
 | `no_canonical_measurements;internal_seed_or_unresolved_source` | 1 |
 
 ## Interpretation

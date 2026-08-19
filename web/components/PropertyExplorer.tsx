@@ -45,17 +45,23 @@ const TIER_OPTIONS = [
   }
 ];
 
-const EXTRACTION_OPTIONS = [
+const PROVENANCE_OPTIONS = [
   {
-    key: "direct_or_source_table",
-    label: "Direct/source-table values",
-    short: "Direct",
+    key: "source_table_or_direct_extraction",
+    label: "Direct / source-table records",
+    short: "Source",
     defaultOn: true
   },
   {
-    key: "secondary_meta_analysis",
-    label: "Secondary extracted values",
-    short: "Secondary",
+    key: "author_curated_published_compilation",
+    label: "Author-curated compilation",
+    short: "Compilation",
+    defaultOn: true
+  },
+  {
+    key: "community_submission",
+    label: "Community submissions",
+    short: "Submitted",
     defaultOn: true
   }
 ];
@@ -471,13 +477,13 @@ function formatNatureCitation(record: PlotRecord): string {
   return `${authors} ${title}. ${journalBlock} (${year}).${doiBlock}`.replace(/\s+/g, " ").trim();
 }
 
-function formatSecondaryCitation(record: PlotRecord): string | null {
-  if (!record.secondary_source_doi_raw) return null;
-  if (record.secondary_source_doi_raw === "10.1002/adma.202008432") {
+function formatCompilationCitation(record: PlotRecord): string | null {
+  if (!record.compilation_source_doi_raw) return null;
+  if (record.compilation_source_doi_raw === "10.1002/adma.202008432") {
     return "Bulmer, J. S., Kaniyoor, A. & Elliott, J. A. A meta-analysis of conductive and strong carbon nanotube materials. Advanced Materials 33, 2008432 (2021). https://doi.org/10.1002/adma.202008432";
   }
-  const year = record.secondary_source_year ?? 2021;
-  return `${formatShortNatureAuthors(record.secondary_source_authors_short ?? "Bulmer et al.")} ${record.secondary_source_title ?? "A Meta-Analysis of Conductive and Strong Carbon Nanotube Materials"}. ${record.secondary_source_journal ?? "Advanced Materials"} (${year}). https://doi.org/${record.secondary_source_doi_raw}`;
+  const year = record.compilation_source_year ?? 2021;
+  return `${formatShortNatureAuthors(record.compilation_source_authors_short ?? "Bulmer et al.")} ${record.compilation_source_title ?? "A Meta-Analysis of Conductive and Strong Carbon Nanotube Materials"}. ${record.compilation_source_journal ?? "Advanced Materials"} (${year}). https://doi.org/${record.compilation_source_doi_raw}`;
 }
 
 function formatAtlasCitation(): string {
@@ -510,7 +516,8 @@ function buildCsv(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey, x
     "material_family",
     "form_factor",
     "source_tier",
-    "value_extraction_type",
+    "dataset_provenance",
+    "primary_source_verification_status",
     `x_${xKey}_${xMeta.displayUnit}`,
     `y_${yKey}_${yMeta.displayUnit}`,
     "doi",
@@ -523,7 +530,8 @@ function buildCsv(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey, x
       record.material_family,
       record.form_factor,
       record.public_release_tier,
-      record.value_extraction_type,
+      record.dataset_provenance,
+      record.primary_source_verification_status,
       record.values[xKey],
       record.values[yKey],
       record.doi_verified ?? record.doi_raw ?? "",
@@ -586,7 +594,7 @@ function prepareFigureSvg(svg: SVGSVGElement, figureTitle: string, includeXmlDec
 }
 
 function sourceRank(record: PlotRecord): number {
-  if (record.public_release_tier === "peer_reviewed_research" && record.value_extraction_type !== "secondary_meta_analysis") return 0;
+  if (record.public_release_tier === "peer_reviewed_research" && !record.author_curated_compilation_record) return 0;
   if (record.public_release_tier === "peer_reviewed_research") return 1;
   if (record.public_release_tier === "peer_reviewed_contextual_comparator") return 2;
   return 3;
@@ -800,8 +808,8 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const [selectedTiers, setSelectedTiers] = useState<Set<string>>(
     () => new Set(TIER_OPTIONS.filter((tier) => tier.defaultOn).map((tier) => tier.key))
   );
-  const [selectedExtractions, setSelectedExtractions] = useState<Set<string>>(
-    () => new Set(EXTRACTION_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key))
+  const [selectedProvenance, setSelectedProvenance] = useState<Set<string>>(
+    () => new Set(PROVENANCE_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key))
   );
   const families = useMemo(() => uniqueSorted(atlasData.records.map((record) => record.material_family)), [atlasData.records]);
   const forms = useMemo(() => uniqueSorted(atlasData.records.map((record) => record.form_factor)), [atlasData.records]);
@@ -851,7 +859,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         if (isXyPlot && effectiveXScale === "log" && typeof x === "number" && x <= 0) return false;
         if (effectiveYScale === "log" && y <= 0) return false;
         if (!selectedTiers.has(record.public_release_tier)) return false;
-        if (!selectedExtractions.has(record.value_extraction_type)) return false;
+        if (!selectedProvenance.has(record.dataset_provenance)) return false;
         if (!selectedFamilies.has(record.material_family)) return false;
         if (!selectedForms.has(record.form_factor)) return false;
         const year = record.publication_year_verified;
@@ -861,7 +869,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
         return record.public_release_tier !== "commercial_contextual_comparator";
       })
       .sort((a, b) => sourceRank(a) - sourceRank(b));
-  }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, numericFilters, selectedExtractions, selectedFamilies, selectedForms, selectedTiers, xKey, yKey, yearMax, yearMin]);
+  }, [atlasData.records, effectiveXScale, effectiveYScale, isXyPlot, normalizedComparisonView, numericFilters, selectedFamilies, selectedForms, selectedProvenance, selectedTiers, xKey, yKey, yearMax, yearMin]);
 
   const filteredRecords = useMemo(() => {
     return reduceToRepresentativeRecords(eligibleRecords, xKey, yKey, plotType);
@@ -977,7 +985,7 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     setXScale(ashbyAxisLocked ? "log" : DEFAULT_SCALE);
     setYScale(ashbyAxisLocked ? "log" : DEFAULT_SCALE);
     setSelectedTiers(new Set(TIER_OPTIONS.filter((tier) => tier.defaultOn).map((tier) => tier.key)));
-    setSelectedExtractions(new Set(EXTRACTION_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key)));
+    setSelectedProvenance(new Set(PROVENANCE_OPTIONS.filter((option) => option.defaultOn).map((option) => option.key)));
     setSelectedFamilies(new Set(families));
     setSelectedForms(new Set(forms));
     setYearMin(initialYearMin);
@@ -1047,9 +1055,9 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
     ...tier,
     count: plottedRecords.filter((record) => record.public_release_tier === tier.key).length
   }));
-  const extractionCounts = EXTRACTION_OPTIONS.map((option) => ({
+  const provenanceCounts = PROVENANCE_OPTIONS.map((option) => ({
     ...option,
-    count: plottedRecords.filter((record) => record.value_extraction_type === option.key).length
+    count: plottedRecords.filter((record) => record.dataset_provenance === option.key).length
   }));
   const familyOptions = plotType === "ranked" ? families.filter((family) => RANKED_MATERIAL_FAMILIES.has(family)) : families;
   const familyCounts = familyOptions.map((family) => ({
@@ -1079,11 +1087,11 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
   const selectedAtlasBibtex = formatAtlasBibtex();
   const selectedLowDensityCaveat = selectedRecord ? hasLowDensitySpecificMetricCaveat(selectedRecord) : false;
   const figureSourceCitations = useMemo(() => uniqueText(plottedRecords.map(formatNatureCitation)), [plottedRecords]);
-  const figureSecondaryCitations = useMemo(() => uniqueText(plottedRecords.map(formatSecondaryCitation)), [plottedRecords]);
+  const figureCompilationCitations = useMemo(() => uniqueText(plottedRecords.map(formatCompilationCitation)), [plottedRecords]);
   const figureBibtex = useMemo(() => uniqueText(plottedRecords.map(formatBibtex)), [plottedRecords]);
   const figureNatureCitations = useMemo(
-    () => uniqueText([...figureSourceCitations, ...figureSecondaryCitations, selectedAtlasCitation]),
-    [figureSecondaryCitations, figureSourceCitations, selectedAtlasCitation]
+    () => uniqueText([...figureSourceCitations, ...figureCompilationCitations, selectedAtlasCitation]),
+    [figureCompilationCitations, figureSourceCitations, selectedAtlasCitation]
   );
   const figureCitationText = useMemo(() => {
     const lines = [
@@ -1297,16 +1305,16 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
           </section>
 
           <section className="rail-section">
-            <div className="rail-heading">Value extraction</div>
-            {EXTRACTION_OPTIONS.map((option) => (
+            <div className="rail-heading">Data provenance</div>
+            {PROVENANCE_OPTIONS.map((option) => (
               <label key={option.key} className="check-row">
                 <input
                   type="checkbox"
-                  checked={selectedExtractions.has(option.key)}
-                  onChange={() => toggleSetValue(option.key, setSelectedExtractions, selectedExtractions)}
+                  checked={selectedProvenance.has(option.key)}
+                  onChange={() => toggleSetValue(option.key, setSelectedProvenance, selectedProvenance)}
                 />
                 <span>{option.label}</span>
-                <span className="count">{extractionCounts.find((item) => item.key === option.key)?.count ?? 0}</span>
+                <span className="count">{provenanceCounts.find((item) => item.key === option.key)?.count ?? 0}</span>
               </label>
             ))}
           </section>
@@ -1562,7 +1570,14 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
                   <span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>
                     {selectedRecord.public_plot_badge}
                   </span>
-                  {selectedRecord.value_extraction_type === "secondary_meta_analysis" ? <span className="tier-badge secondary">secondary extraction</span> : null}
+                  {selectedRecord.author_curated_compilation_record ? <span className="tier-badge secondary">author-curated compilation</span> : null}
+                  {selectedRecord.author_curated_compilation_record
+                    && selectedRecord.primary_source_verification_status === "verified_against_primary_source" ? (
+                      <span className="tier-badge primary">primary-source verified</span>
+                    ) : null}
+                  {selectedRecord.primary_source_verification_status === "pending_independent_check" ? (
+                    <span className="tier-badge warning">primary source check pending</span>
+                  ) : null}
                   {selectedRecord.duplicate_group_id ? <span className="tier-badge primary">canonicalized</span> : null}
                   {selectedLowDensityCaveat ? <span className="tier-badge warning">low-density basis</span> : null}
                   {selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}
@@ -1689,15 +1704,15 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
               </section>
 
               <section>
-                <div className="rail-heading">Compilation / secondary sources</div>
-                {figureSecondaryCitations.length ? (
+                <div className="rail-heading">Author-curated compilation datasets</div>
+                {figureCompilationCitations.length ? (
                   <ol className="citation-source-list">
-                    {figureSecondaryCitations.map((citation) => (
+                    {figureCompilationCitations.map((citation) => (
                       <li key={citation}>{citation}</li>
                     ))}
                   </ol>
                 ) : (
-                  <p>No secondary compilation source is active in this figure.</p>
+                  <p>No author-curated compilation dataset is active in this figure.</p>
                 )}
               </section>
 
@@ -1903,7 +1918,9 @@ export function PropertyExplorer({ initialData }: PropertyExplorerProps) {
           <span>
             Research: {atlasData.summary.peerReviewedResearchRecords} / DOI comparators: {atlasData.summary.peerReviewedComparatorRecords} / commercial: {atlasData.summary.commercialComparatorRecords}
           </span>
-          <span>Secondary-extracted values: {atlasData.summary.secondaryExtractedRecords}</span>
+          <span>
+            Author-curated compilation records: {atlasData.summary.authorCuratedCompilationRecords} / primary-source verified: {atlasData.summary.primarySourceVerifiedCompilationRecords}
+          </span>
         </div>
       </footer>
     </main>

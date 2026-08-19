@@ -51,6 +51,8 @@ export type AdminSubmissionPatch = {
     | "public_release_tier"
     | "default_plot_visibility"
     | "public_plot_badge"
+    | "dataset_provenance"
+    | "primary_source_verification_status"
     | "value_extraction_type"
     | "source_disclosure"
     | "citation_requirement"
@@ -138,7 +140,37 @@ function normalizeAcceptedSubmission(row: StoredSubmissionRow, measurements: unk
     measurements,
     publication: row.canonical_publication
   });
-  return candidate;
+  if (!candidate) return null;
+  const legacyRecord = candidate.record as PublicRecord & {
+    secondary_meta_analysis_record?: boolean;
+    secondary_source_doi_raw?: string | null;
+    secondary_source_title?: string | null;
+    secondary_source_authors_short?: string | null;
+    secondary_source_journal?: string | null;
+    secondary_source_year?: number | null;
+  };
+  const authorCurated = Boolean(
+    legacyRecord.author_curated_compilation_record || legacyRecord.secondary_meta_analysis_record
+  );
+  return {
+    ...candidate,
+    record: {
+      ...legacyRecord,
+      dataset_provenance: legacyRecord.dataset_provenance
+        ?? (authorCurated ? "author_curated_published_compilation" : "community_submission"),
+      dataset_provenance_detail: legacyRecord.dataset_provenance_detail
+        ?? legacyRecord.dataset_provenance
+        ?? (authorCurated ? "author_curated_published_compilation" : "community_submission"),
+      primary_source_verification_status: legacyRecord.primary_source_verification_status
+        ?? (authorCurated ? "verified_against_primary_source" : "submitter_claimed_pending_curator_check"),
+      author_curated_compilation_record: authorCurated,
+      compilation_source_doi_raw: legacyRecord.compilation_source_doi_raw ?? legacyRecord.secondary_source_doi_raw ?? null,
+      compilation_source_title: legacyRecord.compilation_source_title ?? legacyRecord.secondary_source_title ?? null,
+      compilation_source_authors_short: legacyRecord.compilation_source_authors_short ?? legacyRecord.secondary_source_authors_short ?? null,
+      compilation_source_journal: legacyRecord.compilation_source_journal ?? legacyRecord.secondary_source_journal ?? null,
+      compilation_source_year: legacyRecord.compilation_source_year ?? legacyRecord.secondary_source_year ?? null
+    }
+  };
 }
 
 function toIsoDate(value: Date | string | null): string | null {
@@ -187,7 +219,8 @@ function splitTags(value: string | null | undefined): string[] {
 function flagsForRecord(record: PublicRecord): string[] {
   return [
     record.public_plot_badge,
-    record.value_extraction_type,
+    record.dataset_provenance,
+    record.primary_source_verification_status,
     record.missing_conditions ? "missing_conditions" : "",
     record.unit_inference_review_needed ? "unit_review" : ""
   ].filter(Boolean);
@@ -209,6 +242,8 @@ const RECORD_STRING_PATCH_FIELDS = [
   "public_release_tier",
   "default_plot_visibility",
   "public_plot_badge",
+  "dataset_provenance",
+  "primary_source_verification_status",
   "value_extraction_type",
   "source_disclosure",
   "citation_requirement",
@@ -463,7 +498,9 @@ export async function updateSubmissionReview(submissionId: string, patch: AdminS
             public_visible = $3,
             issue_types = $4::text[],
             flags = $5::text[],
-            canonical_record = $6::jsonb,
+            dataset_provenance = $6,
+            primary_source_verification_status = $7,
+            canonical_record = $8::jsonb,
             updated_at = now()
           WHERE submission_id = $1
         `,
@@ -473,6 +510,8 @@ export async function updateSubmissionReview(submissionId: string, patch: AdminS
           nextVisible,
           issueTypes,
           flags,
+          nextRecord.dataset_provenance,
+          nextRecord.primary_source_verification_status,
           JSON.stringify(nextRecord)
         ]
       );
@@ -583,6 +622,8 @@ export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmis
             record_id,
             publication_id,
             doi_verified,
+            dataset_provenance,
+            primary_source_verification_status,
             status,
             public_visible,
             duplicate_match_record_ids,
@@ -595,7 +636,7 @@ export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmis
             accepted_at,
             updated_at
           )
-          VALUES ($1, $2, $3, $4, 'accepted', true, $5::text[], $6::text[], $7::text[], $8::jsonb, $9::jsonb, $10::jsonb, $11::jsonb, $12::timestamptz, now())
+          VALUES ($1, $2, $3, $4, $5, $6, 'accepted', true, $7::text[], $8::text[], $9::text[], $10::jsonb, $11::jsonb, $12::jsonb, $13::jsonb, $14::timestamptz, now())
           ON CONFLICT (record_id) DO NOTHING
         `,
         [
@@ -603,11 +644,14 @@ export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmis
           submission.record.record_id,
           submission.publication.publication_id,
           submission.record.doi_verified,
+          submission.record.dataset_provenance,
+          submission.record.primary_source_verification_status,
           submission.duplicate_check.matched_records,
           submission.record.issue_types ? submission.record.issue_types.split(";").map((item) => item.trim()).filter(Boolean) : [],
           [
             submission.record.public_plot_badge,
-            submission.record.value_extraction_type,
+            submission.record.dataset_provenance,
+            submission.record.primary_source_verification_status,
             submission.record.missing_conditions ? "missing_conditions" : "",
             submission.record.unit_inference_review_needed ? "unit_review" : ""
           ].filter(Boolean),

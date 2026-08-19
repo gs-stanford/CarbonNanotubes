@@ -70,13 +70,16 @@ PUBLIC_RECORD_COLUMNS = [
     "default_plot_visibility",
     "public_plot_badge",
     "source_publication_type",
+    "dataset_provenance",
+    "dataset_provenance_detail",
+    "primary_source_verification_status",
     "value_extraction_type",
     "source_disclosure",
     "citation_requirement",
     "peer_reviewed_measurement",
     "contextual_benchmark",
     "commercial_specsheet_benchmark",
-    "secondary_meta_analysis_record",
+    "author_curated_compilation_record",
     "missing_conditions",
     "unit_inference_review_needed",
     "cross_form_comparison",
@@ -138,11 +141,11 @@ PUBLIC_RECORD_COLUMNS = [
     "strain_rate_s_inv",
     "provenance_table_figure_page",
     "publication_authors_short_verified",
-    "secondary_source_doi_raw",
-    "secondary_source_title",
-    "secondary_source_authors_short",
-    "secondary_source_journal",
-    "secondary_source_year",
+    "compilation_source_doi_raw",
+    "compilation_source_title",
+    "compilation_source_authors_short",
+    "compilation_source_journal",
+    "compilation_source_year",
     "original_reference_raw",
     "doi_resolution_status",
     "doi_resolution_score",
@@ -253,31 +256,38 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
         and pub_status == "verified_crossref_openalex"
     )
     commercial_benchmark = source_class == "commercial_or_web_specsheet_comparator"
-    secondary_meta_analysis = (
-        source_class == "peer_reviewed_meta_analysis_record"
+    author_curated_compilation = (
+        source_class in {"author_curated_compilation_record", "peer_reviewed_meta_analysis_record"}
         and pub_status == "verified_crossref_openalex"
         and clean(row.get("doi_resolution_status")) == "accepted"
     )
-    secondary_research = secondary_meta_analysis and material_family in PRIMARY_RESEARCH_MATERIALS
-    secondary_contextual_benchmark = secondary_meta_analysis and material_family not in PRIMARY_RESEARCH_MATERIALS
-    contextual_benchmark = literature_backed_benchmark or commercial_benchmark or secondary_contextual_benchmark
+    compilation_research = author_curated_compilation and material_family in PRIMARY_RESEARCH_MATERIALS
+    compilation_contextual_benchmark = author_curated_compilation and material_family not in PRIMARY_RESEARCH_MATERIALS
+    contextual_benchmark = literature_backed_benchmark or commercial_benchmark or compilation_contextual_benchmark
     peer_reviewed_publication = pub_status == "verified_crossref_openalex" and (
-        peer_reviewed_measurement or literature_backed_benchmark or secondary_meta_analysis
+        peer_reviewed_measurement or literature_backed_benchmark or author_curated_compilation
     )
-    value_extraction_type = "secondary_meta_analysis" if secondary_meta_analysis else "direct_or_source_table"
+    dataset_provenance_detail = clean(row.get("dataset_provenance")) or "source_table_or_direct_extraction"
+    dataset_provenance = (
+        "author_curated_published_compilation" if author_curated_compilation else "source_table_or_direct_extraction"
+    )
+    primary_source_verification_status = clean(row.get("primary_source_verification_status")) or (
+        "verified_against_primary_source" if author_curated_compilation else "not_assessed"
+    )
+    value_extraction_type = "author_curated_compilation" if author_curated_compilation else "direct_or_source_table"
 
     missing_conditions = "missing_conditions" in issues
     unit_inference = "unit_inference" in issues
     cross_form = clean(row.get("form_factor")) not in {None, "fiber_yarn"}
     strict_candidate = clean(row.get("comparison_scope")) == "strict_candidate_missing_conditions"
     strict_ready = peer_reviewed_measurement and strict_candidate and not missing_conditions and not unit_inference
-    normalized_eligible = peer_reviewed_measurement or secondary_research or contextual_benchmark
+    normalized_eligible = peer_reviewed_measurement or compilation_research or contextual_benchmark
 
     exclusion_reasons: list[str] = []
     if not has_values:
         exclusion_reasons.append("no_canonical_measurements")
     if "duplicate_candidate" in issues or clean(row.get("duplicate_of_record_id")):
-        exclusion_reasons.append("secondary_duplicate_of_higher_priority_record")
+        exclusion_reasons.append("duplicate_of_higher_priority_record")
     if source_class == "url_only_research_record":
         exclusion_reasons.append("research_record_url_only_needs_doi")
     if source_class == "unresolved_or_internal_source":
@@ -287,17 +297,22 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
     if source_class == "unknown":
         exclusion_reasons.append("unknown_source_class")
 
-    include = has_values and (peer_reviewed_measurement or contextual_benchmark or secondary_meta_analysis) and "secondary_duplicate_of_higher_priority_record" not in exclusion_reasons
+    include = has_values and (peer_reviewed_measurement or contextual_benchmark or author_curated_compilation) and "duplicate_of_higher_priority_record" not in exclusion_reasons
     if not include and not exclusion_reasons:
         exclusion_reasons.append("not_in_public_v0_release_rule")
 
-    if peer_reviewed_measurement or secondary_research:
+    if peer_reviewed_measurement or compilation_research:
         tier = "peer_reviewed_research"
         status = "include_v0_primary_literature_candidate"
         default_visibility = "default_on"
         badge = "Peer-reviewed research"
-        disclosure = "DOI-backed peer-reviewed research record. Secondary-extracted values carry a separate extraction warning."
-    elif literature_backed_benchmark or secondary_contextual_benchmark:
+        disclosure = (
+            "Official author-curated dataset from the published Bulmer, Kaniyoor and Elliott meta-analysis; "
+            "primary-source checks were completed in the authors' compilation workflow."
+            if author_curated_compilation
+            else "DOI-backed peer-reviewed research record."
+        )
+    elif literature_backed_benchmark or compilation_contextual_benchmark:
         tier = "peer_reviewed_contextual_comparator"
         status = "include_v0_peer_reviewed_contextual_comparator"
         default_visibility = "default_on_as_benchmark"
@@ -332,19 +347,26 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
         "default_plot_visibility": default_visibility,
         "public_plot_badge": badge,
         "source_publication_type": source_publication_type,
+        "dataset_provenance": dataset_provenance,
+        "dataset_provenance_detail": dataset_provenance_detail,
+        "primary_source_verification_status": primary_source_verification_status,
         "value_extraction_type": value_extraction_type,
         "source_disclosure": disclosure,
-        "citation_requirement": "Cite the original source and the CNT property database when using plotted values.",
+        "citation_requirement": (
+            "Cite the original publication, the Bulmer, Kaniyoor and Elliott compilation, and the CNT Property Atlas when using this value."
+            if author_curated_compilation
+            else "Cite the original source and the CNT Property Atlas when using plotted values."
+        ),
         "peer_reviewed_measurement": peer_reviewed_measurement,
         "contextual_benchmark": contextual_benchmark,
         "commercial_specsheet_benchmark": commercial_benchmark or source_class == "mixed_peer_reviewed_and_commercial_comparator",
-        "secondary_meta_analysis_record": secondary_meta_analysis,
+        "author_curated_compilation_record": author_curated_compilation,
         "missing_conditions": missing_conditions,
         "unit_inference_review_needed": unit_inference,
         "cross_form_comparison": cross_form,
         "strict_comparison_candidate": strict_candidate,
         "strict_comparison_ready": strict_ready,
-        "normalized_comparison_eligible": normalized_eligible or secondary_meta_analysis,
+        "normalized_comparison_eligible": normalized_eligible or author_curated_compilation,
         "exploratory_comparison_eligible": include,
         "exclusion_reasons": ";".join(exclusion_reasons),
         "public_sample_label": public_sample_label(row),
@@ -353,6 +375,11 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
         "duplicate_group_size": 1,
         "duplicate_group_role": "unique",
         "duplicate_exclusion_reason": None,
+        "compilation_source_doi_raw": clean(row.get("compilation_source_doi_raw")) or clean(row.get("secondary_source_doi_raw")),
+        "compilation_source_title": clean(row.get("compilation_source_title")) or clean(row.get("secondary_source_title")),
+        "compilation_source_authors_short": clean(row.get("compilation_source_authors_short")) or clean(row.get("secondary_source_authors_short")),
+        "compilation_source_journal": clean(row.get("compilation_source_journal")) or clean(row.get("secondary_source_journal")),
+        "compilation_source_year": clean(row.get("compilation_source_year")) or clean(row.get("secondary_source_year")),
     }
 
 
@@ -447,7 +474,7 @@ def duplicate_priority(row: pd.Series) -> tuple[int, int, int, int, int]:
         source_rank = 0
     elif source_class == "peer_reviewed_research_record":
         source_rank = 1
-    elif extraction_type == "secondary_meta_analysis":
+    elif extraction_type == "author_curated_compilation":
         source_rank = 4
     elif bool(row.get("contextual_benchmark")):
         source_rank = 5
@@ -617,7 +644,9 @@ def build_public_measurements(measurements: pd.DataFrame, public_records: pd.Dat
             "peer_reviewed_measurement",
             "contextual_benchmark",
             "commercial_specsheet_benchmark",
-            "secondary_meta_analysis_record",
+            "author_curated_compilation_record",
+            "dataset_provenance",
+            "primary_source_verification_status",
             "missing_conditions",
             "unit_inference_review_needed",
             "cross_form_comparison",
@@ -644,10 +673,14 @@ def build_public_measurements(measurements: pd.DataFrame, public_records: pd.Dat
         public_measurements["commercial_specsheet_benchmark"] & public_measurements["measurement_warning"].eq("none"),
         "measurement_warning",
     ] = "contextual_benchmark_not_primary_peer_reviewed_measurement"
+    compilation_check_pending = (
+        public_measurements["author_curated_compilation_record"]
+        & ~public_measurements["primary_source_verification_status"].eq("verified_against_primary_source")
+    )
     public_measurements.loc[
-        public_measurements["secondary_meta_analysis_record"] & public_measurements["measurement_warning"].eq("none"),
+        compilation_check_pending & public_measurements["measurement_warning"].eq("none"),
         "measurement_warning",
-    ] = "secondary_meta_analysis_value_needs_primary_source_crosscheck"
+    ] = "author_curated_compilation_primary_source_check_pending"
     sort_cols = ["property", "public_release_tier", "material_family", "record_id"]
     return public_measurements.sort_values(sort_cols)
 
@@ -658,7 +691,7 @@ def build_public_publications(public_records: pd.DataFrame, pubs: pd.DataFrame) 
     for _, row in public_records.iterrows():
         dois.update(extract_dois(row.get("doi_raw")))
         dois.update(extract_dois(row.get("doi_verified")))
-        dois.update(extract_dois(row.get("secondary_source_doi_raw")))
+        dois.update(extract_dois(row.get("compilation_source_doi_raw")))
         urls.update(split_values(row.get("url_raw")))
 
     public_pubs = pubs[
@@ -677,7 +710,7 @@ def build_public_publications(public_records: pd.DataFrame, pubs: pd.DataFrame) 
         count = 0
         for _, record in public_records.iterrows():
             record_dois = set(extract_dois(record.get("doi_raw")) + extract_dois(record.get("doi_verified")))
-            record_dois.update(extract_dois(record.get("secondary_source_doi_raw")))
+            record_dois.update(extract_dois(record.get("compilation_source_doi_raw")))
             record_urls = set(split_values(record.get("url_raw")))
             if doi_values.intersection(record_dois) or url_values.intersection(record_urls):
                 count += 1
@@ -694,14 +727,17 @@ def build_public_schema() -> pd.DataFrame:
         ("default_plot_visibility", "Frontend hint for whether the point should be visible by default."),
         ("public_plot_badge", "Short label for legends/tooltips."),
         ("source_publication_type", "Publication/source quality: peer-reviewed journal, DOI-verified source, commercial/spec-sheet, or internal/unverified."),
-        ("value_extraction_type", "Whether the plotted value was extracted directly from a source table/figure in this pipeline or imported from a peer-reviewed secondary/meta-analysis dataset."),
+        ("dataset_provenance", "How the row entered the Atlas: direct/source-table extraction, author-supplied table, or author-curated published compilation."),
+        ("dataset_provenance_detail", "More specific import-path provenance retained behind the public provenance class."),
+        ("primary_source_verification_status", "Independent verification state for the linked original article; this is separate from dataset provenance."),
+        ("value_extraction_type", "Compatibility field distinguishing direct/source-table values from author-curated compilation values."),
         ("public_sample_label", "Clean public-facing sample label; raw workbook IDs such as `(39)` are not used as primary public titles."),
         ("source_disclosure", "Public wording explaining how to interpret the source."),
         ("citation_requirement", "Required citation instruction for use of plotted values."),
         ("peer_reviewed_measurement", "True only for DOI-verified CNT/graphene research records."),
         ("contextual_benchmark", "True for non-CNT comparator/reference materials."),
         ("commercial_specsheet_benchmark", "True when commercial, MatWeb, manufacturer, or mixed commercial provenance is involved."),
-        ("secondary_meta_analysis_record", "True when the row comes from a peer-reviewed secondary/meta-analysis workbook with original DOI resolved but values not independently re-extracted in this pipeline."),
+        ("author_curated_compilation_record", "True when the row comes from the official author-supplied dataset for a published compilation such as Bulmer, Kaniyoor and Elliott."),
         ("missing_conditions", "True when method, atmosphere, gauge length, strain rate, or other strict-comparison metadata are missing."),
         ("unit_inference_review_needed", "True when a raw unit/scale was inferred and should be visibly reviewed before final official release."),
         ("cross_form_comparison", "True when form factor is not fiber_yarn; cross-form plots must be visually flagged."),
@@ -715,7 +751,7 @@ def build_public_schema() -> pd.DataFrame:
         ("exploratory_plot_eligible", "Measurement-level flag for v0 exploratory plotting."),
         ("measurement_warning", "Measurement-level warning text for inferred units or non-primary benchmark provenance."),
         ("exclusion_reasons", "Semicolon-delimited reason a source record was excluded from public v0."),
-        ("secondary_source_*", "Citation metadata for a peer-reviewed compilation source such as the Bulmer/James meta-analysis workbook."),
+        ("compilation_source_*", "Citation metadata for an author-curated published compilation such as the Bulmer, Kaniyoor and Elliott workbook."),
         ("duplicate_of_record_id", "Higher-priority public/internal record that appears to duplicate this secondary row."),
         ("duplicate_group_*", "Canonicalized duplicate group metadata used to prevent duplicate source rows from plotting as independent scientific points."),
         ("canonical_record_id", "Record ID selected as the canonical plotted representative of a duplicate group."),
@@ -750,7 +786,7 @@ def write_report(summary: dict[str, Any], public_records: pd.DataFrame, exclusio
         "## Release Rules",
         "",
         "- Include DOI-verified CNT/graphene/CNT-metal records as `peer_reviewed_research` candidates.",
-        "- Treat Crossref/OpenAlex-resolved James/Bulmer rows as DOI-backed source records with `value_extraction_type=secondary_meta_analysis`, not as a material or legend class.",
+        "- Treat the Elliott/Bulmer author-supplied workbook as an `author_curated_published_compilation`; its linked primary sources were checked during the authors' compilation workflow.",
         "- Include DOI-backed non-target materials as `peer_reviewed_contextual_comparator` and manufacturer/MatWeb/spec-sheet rows as `commercial_contextual_comparator`.",
         "- Collapse duplicate source rows into a single canonical public record using DOI, material/form, and canonical measurement-vector agreement.",
         "- Exclude URL-only research records, unresolved internal seed rows, records with unverified DOI status, and rows without canonical measurements.",
@@ -831,6 +867,16 @@ def main() -> None:
         "records_requiring_missing_condition_warning": int(public_records["missing_conditions"].sum()),
         "records_requiring_unit_inference_warning": int(public_records["unit_inference_review_needed"].sum()),
         "commercial_or_specsheet_benchmark_records": int(public_records["commercial_specsheet_benchmark"].sum()),
+        "author_curated_compilation_records": int(public_records["author_curated_compilation_record"].sum()),
+        "primary_source_verified_compilation_records": int(
+            (
+                public_records["author_curated_compilation_record"]
+                & public_records["primary_source_verification_status"].eq("verified_against_primary_source")
+            ).sum()
+        ),
+        "primary_source_check_pending_records": int(
+            public_records["primary_source_verification_status"].eq("pending_independent_check").sum()
+        ),
         "duplicate_groups_detected": int(duplicate_audit["duplicate_group_id"].nunique()) if not duplicate_audit.empty else 0,
         "duplicate_records_collapsed": int((duplicate_audit["duplicate_group_role"] == "duplicate_collapsed").sum()) if not duplicate_audit.empty else 0,
         "outputs": sorted(

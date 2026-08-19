@@ -186,7 +186,7 @@ MAX_PUBLIC_XY_RECORDS_BY_DOI = [
         "x": "tensile_strength",
         "y": "specific_electrical_conductivity",
         "max_records": 1,
-        "reason": "Rice 2017 solution-spun CNTF appears in Xiao, Radar, and secondary sources.",
+        "reason": "Rice 2017 solution-spun CNTF appears in Xiao, Radar, and the Elliott author-curated compilation.",
     },
     {
         "doi": "10.1038/s41563-025-02384-7",
@@ -200,7 +200,7 @@ MAX_PUBLIC_XY_RECORDS_BY_DOI = [
 ]
 
 DEFAULT_PUBLIC_TIERS = {"peer_reviewed_research", "peer_reviewed_contextual_comparator"}
-DEFAULT_EXTRACTION_TYPES = {"direct_or_source_table", "secondary_meta_analysis"}
+DEFAULT_EXTRACTION_TYPES = {"direct_or_source_table", "author_curated_compilation"}
 
 
 @dataclass

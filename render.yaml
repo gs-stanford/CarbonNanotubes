@@ -5,7 +5,7 @@ services:
     plan: starter
     rootDir: web
     buildCommand: npm ci && npm run build
-    startCommand: npm run start
+    startCommand: npm run db:migrate && npm run start
     autoDeploy: true
     envVars:
       - key: NODE_VERSION

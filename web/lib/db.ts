@@ -43,7 +43,7 @@ export async function ensureDatabaseSchema(): Promise<void> {
     await getPool().query(sql);
     await getPool().query(
       "INSERT INTO atlas_schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
-      ["schema-v0.1"]
+      ["schema-v0.2-provenance"]
     );
   })();
   await migrationPromise;

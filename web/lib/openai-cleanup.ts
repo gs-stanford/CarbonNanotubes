@@ -81,7 +81,8 @@ function cleanupSchema() {
           enum: [
             "peer-reviewed research",
             "direct/source-table values",
-            "secondary extraction",
+            "author-curated compilation",
+            "primary source check pending",
             "canonicalized",
             "missing conditions",
             "low-density basis",
@@ -103,7 +104,7 @@ function cleanupSchema() {
       },
       citation_notes: {
         type: "string",
-        description: "Human-readable note about original and secondary citations. No fabricated citation fields."
+        description: "Human-readable note about original-publication and author-curated compilation citations. No fabricated citation fields."
       },
       unit_warnings: {
         type: "array",
