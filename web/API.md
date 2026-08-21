@@ -35,6 +35,8 @@ GET  /api/v1/openapi.json
 
 The response contains rendered artifacts, aggregate counts, one focused record for the interactive website, temporary-point ranks, a complete citation bundle, and no more than ten explicitly requested top rows. It does not return the canonical record table or a complete coordinate array.
 
+Curator-approved community submissions are included only when their review status is `official` and their public-visibility flag is enabled. DOI validation or automated duplicate checks alone never place a submitted value in a public figure.
+
 ## Units and filters
 
 Figure axes and temporary-point coordinates use the display units returned by `/api/v1/properties`. Measurement-range filters use canonical SI units. Repeated values are accepted for material family, form factor, release tier, provenance, and verification filters.

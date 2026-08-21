@@ -39,6 +39,55 @@ try {
     publications: 271
   });
 
+  await database.query(`
+    INSERT INTO atlas_publications (
+      publication_id, doi_verified, title_verified, metadata_json
+    ) VALUES (
+      'test-publication', '10.0000/cpt-curator-gate', 'Curator gate fixture', '{}'::jsonb
+    )
+  `);
+  await database.query(`
+    INSERT INTO atlas_submissions (
+      submission_id,
+      record_id,
+      publication_id,
+      doi_verified,
+      raw_payload,
+      canonical_record,
+      canonical_publication,
+      duplicate_check
+    ) VALUES (
+      'test-submission',
+      'test-record',
+      'test-publication',
+      '10.0000/cpt-curator-gate',
+      '{}'::jsonb,
+      '{}'::jsonb,
+      '{}'::jsonb,
+      '{}'::jsonb
+    )
+  `);
+  const pendingSubmission = await database.query(`
+    SELECT status, public_visible
+    FROM atlas_submissions
+    WHERE submission_id = 'test-submission'
+  `);
+  assert.deepEqual(
+    pendingSubmission.rows[0],
+    { status: "accepted", public_visible: false },
+    "Automated acceptance must remain hidden pending curator review."
+  );
+  await assert.rejects(
+    () => database.query(`UPDATE atlas_submissions SET public_visible = true WHERE submission_id = 'test-submission'`),
+    /atlas_submissions_official_visibility_check/,
+    "PostgreSQL must reject public visibility for a non-official submission."
+  );
+  await database.query(`
+    UPDATE atlas_submissions
+    SET status = 'official', public_visible = true
+    WHERE submission_id = 'test-submission'
+  `);
+
   const multiPropertyPlan = buildCanonicalRecordQuery({
     limit: 20,
     doi: "https://doi.org/10.1126/science.adj1082",

@@ -227,7 +227,7 @@ function flagsForRecord(record: PublicRecord): string[] {
 }
 
 function publicVisibilityForStatus(status: ReviewStatus): boolean {
-  return status === "accepted" || status === "official";
+  return status === "official";
 }
 
 const RECORD_STRING_PATCH_FIELDS = [
@@ -350,7 +350,7 @@ export async function listAdminSubmissions(): Promise<AdminSubmission[]> {
       ...submission,
       review: {
         status: "accepted",
-        public_visible: true,
+        public_visible: false,
         ai_cleanup_status: "not_requested",
         issue_types: splitTags(submission.record.issue_types),
         flags: flagsForRecord(submission.record),
@@ -472,8 +472,9 @@ export async function updateSubmissionReview(submissionId: string, patch: AdminS
       }
 
       const nextStatus = patch.status ?? row.status;
-      const nextVisible =
+      const requestedVisibility =
         typeof patch.public_visible === "boolean" ? patch.public_visible : publicVisibilityForStatus(nextStatus);
+      const nextVisible = nextStatus === "official" && requestedVisibility;
       const currentRecord = assertAcceptedSubmission({
         schema_version: "cnt-property-atlas-community-v0.1",
         accepted_at: typeof row.accepted_at === "string" ? row.accepted_at : row.accepted_at.toISOString(),
@@ -487,6 +488,12 @@ export async function updateSubmissionReview(submissionId: string, patch: AdminS
       }
 
       const nextRecord = sanitizeRecordPatch(currentRecord, patch.record_patch);
+      if (nextStatus === "official") {
+        nextRecord.primary_source_verification_status = "verified_against_primary_source";
+        nextRecord.public_plot_badge = "Curator-verified research";
+        nextRecord.evidence_tier = "curator_verified_community_submission";
+        nextRecord.source_disclosure = "Community-submitted record verified against the primary publication by a Carbon Property Tables curator.";
+      }
       const issueTypes = splitTags(nextRecord.issue_types);
       const flags = flagsForRecord(nextRecord);
 
@@ -526,43 +533,49 @@ export async function updateSubmissionReview(submissionId: string, patch: AdminS
   });
 }
 
+async function readSubmissionSet(client: PoolClient, visibilityClause: string): Promise<CommunityAcceptedSubmission[]> {
+  const submissions = await client.query<StoredSubmissionRow>(
+    `
+      SELECT submission_id, accepted_at, duplicate_check, canonical_record, canonical_publication
+      FROM atlas_submissions
+      WHERE ${visibilityClause}
+      ORDER BY accepted_at ASC
+    `
+  );
+  if (!submissions.rowCount) return [];
+
+  const ids = submissions.rows.map((row) => row.submission_id);
+  const measurementRows = await client.query<StoredMeasurementRow>(
+    `
+      SELECT submission_id, measurement_json
+      FROM atlas_measurements
+      WHERE submission_id = ANY($1::text[])
+      ORDER BY measurement_id ASC
+    `,
+    [ids]
+  );
+  const bySubmission = new Map<string, unknown[]>();
+  for (const row of measurementRows.rows) {
+    const list = bySubmission.get(row.submission_id) ?? [];
+    list.push(row.measurement_json);
+    bySubmission.set(row.submission_id, list);
+  }
+
+  return submissions.rows
+    .map((row) => normalizeAcceptedSubmission(row, bySubmission.get(row.submission_id) ?? []))
+    .filter((submission): submission is CommunityAcceptedSubmission => submission !== null);
+}
+
 export async function readAcceptedSubmissions(): Promise<CommunityAcceptedSubmission[]> {
   if (!hasDatabaseUrl()) return readCommunitySubmissions();
-
   await ensureDatabaseSchema();
-  return withDb(async (client) => {
-    const submissions = await client.query<StoredSubmissionRow>(
-      `
-        SELECT submission_id, accepted_at, duplicate_check, canonical_record, canonical_publication
-        FROM atlas_submissions
-        WHERE public_visible = true
-          AND status IN ('accepted', 'official')
-        ORDER BY accepted_at ASC
-      `
-    );
-    if (!submissions.rowCount) return [];
+  return withDb((client) => readSubmissionSet(client, "status IN ('accepted', 'curator_hold', 'official')"));
+}
 
-    const ids = submissions.rows.map((row) => row.submission_id);
-    const measurementRows = await client.query<StoredMeasurementRow>(
-      `
-        SELECT submission_id, measurement_json
-        FROM atlas_measurements
-        WHERE submission_id = ANY($1::text[])
-        ORDER BY measurement_id ASC
-      `,
-      [ids]
-    );
-    const bySubmission = new Map<string, unknown[]>();
-    for (const row of measurementRows.rows) {
-      const list = bySubmission.get(row.submission_id) ?? [];
-      list.push(row.measurement_json);
-      bySubmission.set(row.submission_id, list);
-    }
-
-    return submissions.rows
-      .map((row) => normalizeAcceptedSubmission(row, bySubmission.get(row.submission_id) ?? []))
-      .filter((submission): submission is CommunityAcceptedSubmission => submission !== null);
-  });
+export async function readPublicSubmissions(): Promise<CommunityAcceptedSubmission[]> {
+  if (!hasDatabaseUrl()) return [];
+  await ensureDatabaseSchema();
+  return withDb((client) => readSubmissionSet(client, "status = 'official' AND public_visible = true"));
 }
 
 export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmission, rawPayload: unknown): Promise<"postgres" | "file"> {
@@ -636,7 +649,7 @@ export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmis
             accepted_at,
             updated_at
           )
-          VALUES ($1, $2, $3, $4, $5, $6, 'accepted', true, $7::text[], $8::text[], $9::text[], $10::jsonb, $11::jsonb, $12::jsonb, $13::jsonb, $14::timestamptz, now())
+          VALUES ($1, $2, $3, $4, $5, $6, 'accepted', false, $7::text[], $8::text[], $9::text[], $10::jsonb, $11::jsonb, $12::jsonb, $13::jsonb, $14::timestamptz, now())
           ON CONFLICT (record_id) DO NOTHING
         `,
         [
