@@ -8,14 +8,12 @@ export async function GET() {
     return publicJson({
       ...apiMeta(release),
       name: "Carbon Property Tables API",
-      scope: "Read-only access to the active, immutable CNT Property Atlas canonical release.",
-      units: "Canonical measurement values use the SI unit declared on each property.",
+      scope: "Citation-backed figure artifacts and bounded top-point extraction from the active canonical release.",
+      units: "Figure axes use the display units declared by the property catalog; filters use canonical SI units.",
       endpoints: {
         release: "/api/v1/release",
         properties: "/api/v1/properties",
-        records: "/api/v1/records",
-        record: "/api/v1/records/{record_id}",
-        plot: "/api/v1/plot?x=specific_strength&y=specific_electrical_conductivity",
+        figures: "/api/v1/figures",
         citations: "/api/v1/citations?record_id={record_id}",
         openapi: "/api/v1/openapi.json"
       }

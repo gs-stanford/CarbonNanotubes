@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "carbon-property-tables"
-version = "0.2.0"
+version = "0.3.0"
 description = "Citation-preserving scientific figure client for Carbon Property Tables"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -30,7 +30,7 @@ classifiers = [
   "Topic :: Scientific/Engineering",
   "Typing :: Typed"
 ]
-dependencies = ["adjustText>=1.4", "matplotlib>=3.8"]
+dependencies = []
 
 [project.urls]
 Source = "https://github.com/gs-stanford/CarbonNanotubes"

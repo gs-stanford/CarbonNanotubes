@@ -126,6 +126,7 @@ export function parseRecordQuery(
     requiredProperties: options.requiredProperties,
     materialFamilies: listParameter(params, "material_family"),
     formFactors: listParameter(params, "form_factor"),
+    releaseTiers: listParameter(params, "release_tier"),
     doi: stringParameter(params, "doi", 300),
     author: stringParameter(params, "author"),
     journal: stringParameter(params, "journal"),
@@ -139,7 +140,8 @@ export function parseRecordQuery(
     verification: listParameter(params, "verification"),
     q: stringParameter(params, "q"),
     strictReady: booleanParameter(params, "strict_ready"),
-    peerReviewed: booleanParameter(params, "peer_reviewed")
+    peerReviewed: booleanParameter(params, "peer_reviewed"),
+    normalizedEligible: booleanParameter(params, "normalized_eligible")
   };
 }
 

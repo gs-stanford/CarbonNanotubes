@@ -1,8 +1,8 @@
 import type { PlotRecord } from "@/lib/data";
 
-export const ATLAS_CITATION = "Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026).";
+export const ATLAS_CITATION = "Sharma, G. & Boies, A. M. Carbon Property Tables, version 0.1 (2026).";
 export const ATLAS_CITATION_REQUIREMENT =
-  "Cite every original publication represented by the values used and cite the CNT Property Atlas. " +
+  "Cite every original publication represented by the values used and cite Carbon Property Tables. " +
   "For author-curated compilation records, also cite the compilation publication.";
 
 export type CitationRole = "original" | "compilation" | "atlas";
@@ -180,7 +180,7 @@ function formatCompilationBibtex(record: PlotRecord): string | null {
 }
 
 export function formatAtlasBibtex(): string {
-  return "@misc{sharma_boies_cnt_property_atlas_2026,\n  title = {CNT Property Atlas},\n  author = {Sharma, Gaurav and Boies, Adam M.},\n  year = {2026},\n  version = {0.1}\n}";
+  return "@misc{sharma_boies_carbon_property_tables_2026,\n  title = {Carbon Property Tables},\n  author = {Sharma, Gaurav and Boies, Adam M.},\n  year = {2026},\n  version = {0.1}\n}";
 }
 
 type PendingCitation = Omit<CitationEntry, "roles" | "record_ids"> & {
@@ -223,7 +223,7 @@ export function citationBundleForRecords(records: PlotRecord[]): CitationBundle 
   });
   if (records.length) {
     pending.push({
-      citation_id: "atlas:cnt-property-atlas-v0.1",
+      citation_id: "atlas:carbon-property-tables-v0.1",
       role: "atlas",
       doi: null,
       text: formatAtlasCitation(),

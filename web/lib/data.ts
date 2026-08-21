@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { ExplorerBootstrap } from "@/lib/figure-api";
 
 export type PropertyKey =
   | "density"
@@ -693,6 +694,16 @@ export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
     },
     communitySubmissions
   );
+}
+
+export async function getRuntimeExplorerBootstrap(): Promise<ExplorerBootstrap> {
+  const payload = await getRuntimeExplorerPayload();
+  return {
+    properties: payload.properties,
+    families: Array.from(new Set(payload.records.map((record) => record.material_family))).sort(),
+    forms: Array.from(new Set(payload.records.map((record) => record.form_factor))).sort(),
+    summary: payload.summary
+  };
 }
 
 export function getPlotPointsFromPayload(payload: ExplorerPayload, x: PropertyKey, y: PropertyKey): PlotRecord[] {

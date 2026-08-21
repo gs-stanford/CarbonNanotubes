@@ -1,7 +1,8 @@
-"""Controlled figure client for the Carbon Property Tables API v1."""
+"""Controlled artifact client for the Carbon Property Tables API v1."""
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 from collections.abc import Mapping, Sequence
@@ -12,14 +13,13 @@ from urllib.request import Request, urlopen
 
 from ._version import __version__
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
-from .models import CitationBundle, CitationEntry, PlotResult, RenderedFigure, TemporaryPoint
-from .plotting import render_figure, representative_points
+from .models import RenderedFigure, TemporaryPoint
 
 
 class CPTClient:
-    """Create citation-backed figures without exposing the full canonical table."""
+    """Create citation-backed figures without downloading canonical point tables."""
 
-    def __init__(self, base_url: str | None = None, *, timeout: float = 30.0, user_agent: str | None = None) -> None:
+    def __init__(self, base_url: str | None = None, *, timeout: float = 60.0, user_agent: str | None = None) -> None:
         configured = base_url or os.environ.get("CPT_API_URL") or "http://localhost:3000/api/v1"
         self.base_url = configured.rstrip("/")
         if not self.base_url.endswith("/api/v1"):
@@ -86,68 +86,12 @@ class CPTClient:
         return urlencode(pairs, doseq=True)
 
     def release(self) -> dict[str, Any]:
-        """Return the active release identity, hashes, and aggregate row counts."""
+        """Return the active release identity, hashes, and aggregate counts."""
         return self._request("release")
 
     def properties(self) -> tuple[dict[str, Any], ...]:
-        """Return supported plot-property keys and their units."""
+        """Return supported figure-property keys and units."""
         return tuple(self._request("properties").get("properties", []))
-
-    def _plot_result(self, x: str, y: str, filters: Mapping[str, Any]) -> PlotResult:
-        x_key = x.strip()
-        y_key = y.strip()
-        if not x_key or not y_key or x_key == y_key:
-            raise CPTValidationError("x and y must be two different property keys.")
-        reserved = {"x", "y", "limit", "after"}.intersection(filters)
-        if reserved:
-            names = ", ".join(sorted(reserved))
-            raise CPTValidationError(f"Figure filters cannot override reserved parameters: {names}.")
-        payload = self._request("plot", params={"x": x_key, "y": y_key, "limit": 2000, **filters})
-        result = PlotResult.from_dict(payload)
-        if result.has_more:
-            raise CPTError(
-                "The requested figure exceeds the API's complete-result limit. "
-                "Narrow the material, form-factor, year, or measurement filters."
-            )
-        return result
-
-    def _citation_bundle(self, record_ids: Sequence[str]) -> CitationBundle:
-        if not record_ids:
-            return CitationBundle.from_dict(None)
-        merged: dict[str, CitationEntry] = {}
-        requirement = ""
-        style = "nature"
-        for start in range(0, len(record_ids), 500):
-            chunk = list(dict.fromkeys(record_ids[start : start + 500]))
-            payload = self._request("citations", method="POST", body={"record_ids": chunk})
-            bundle = CitationBundle.from_dict(payload.get("citations"))
-            requirement = requirement or bundle.requirement
-            style = bundle.style or style
-            for entry in bundle.entries:
-                existing = merged.get(entry.citation_id)
-                if existing is None:
-                    merged[entry.citation_id] = entry
-                    continue
-                merged[entry.citation_id] = CitationEntry(
-                    citation_id=existing.citation_id,
-                    roles=tuple(dict.fromkeys((*existing.roles, *entry.roles))),
-                    doi=existing.doi or entry.doi,
-                    text=existing.text or entry.text,
-                    bibtex=existing.bibtex or entry.bibtex,
-                    record_ids=tuple(dict.fromkeys((*existing.record_ids, *entry.record_ids))),
-                )
-        ordered = list(merged.values())
-        entries = tuple(
-            [entry for entry in ordered if "atlas" not in entry.roles]
-            + [entry for entry in ordered if "atlas" in entry.roles]
-        )
-        return CitationBundle(
-            requirement=requirement,
-            style=style,
-            entries=entries,
-            copy_all="\n".join(f"{index}. {entry.text}" for index, entry in enumerate(entries, start=1)),
-            bibtex="\n\n".join(entry.bibtex for entry in entries if entry.bibtex),
-        )
 
     def figure(
         self,
@@ -160,42 +104,74 @@ class CPTClient:
         temporary: TemporaryPoint | None = None,
         log_x: bool = False,
         log_y: bool = False,
-        colors: Mapping[str, str] | None = None,
+        formats: Sequence[str] = ("svg",),
         **filters: Any,
     ) -> RenderedFigure:
-        """Render a bounded figure package for one same-record property pairing."""
+        """Request a rendered figure and, optionally, at most ten exact top rows."""
         normalized_kind = kind.strip().lower()
-        if normalized_kind not in {"scatter", "ranked", "ashby"}:
-            raise CPTValidationError("kind must be 'scatter', 'ranked', or 'ashby'.")
-        result = self._plot_result(x, y, filters)
-        selected = representative_points(result.points, x.strip(), y.strip(), normalized_kind)
-        citations = self._citation_bundle([point.record_id for point in selected])
-        return render_figure(
-            selected,
-            citations,
-            kind=normalized_kind,
-            x_property=x.strip(),
-            y_property=y.strip(),
-            top=top,
-            top_by=top_by,
-            temporary=temporary,
-            log_x=log_x,
-            log_y=log_y,
-            colors=colors,
-            release=result.release,
-            points_are_representative=True,
-        )
+        if normalized_kind not in {"scatter", "ranked", "trend", "ashby"}:
+            raise CPTValidationError("kind must be 'scatter', 'ranked', 'trend', or 'ashby'.")
+        x_key = x.strip()
+        y_key = y.strip()
+        if not x_key or not y_key or (normalized_kind in {"scatter", "ashby"} and x_key == y_key):
+            raise CPTValidationError("x and y must be two different property keys for an x-y figure.")
+        if not isinstance(top, int) or top < 0 or top > 10:
+            raise CPTValidationError("top must be an integer from 0 to 10.")
+        if top_by not in {"auto", "x", "y"}:
+            raise CPTValidationError("top_by must be 'auto', 'x', or 'y'.")
+        normalized_formats = tuple(dict.fromkeys(str(item).lower() for item in formats))
+        if not normalized_formats or any(item not in {"svg", "png", "pdf"} for item in normalized_formats):
+            raise CPTValidationError("formats must contain only 'svg', 'png', and/or 'pdf'.")
+        reserved = {
+            "kind", "x", "y", "x_scale", "y_scale", "top", "top_by", "temporary",
+            "selected_record_id", "highlight_record_ids", "formats", "filters", "limit", "after"
+        }.intersection(filters)
+        if reserved:
+            raise CPTValidationError(f"Figure filters cannot override reserved parameters: {', '.join(sorted(reserved))}.")
+        if normalized_kind == "ashby":
+            log_x = True
+            log_y = True
+        body: dict[str, Any] = {
+            "kind": normalized_kind,
+            "x": x_key,
+            "y": y_key,
+            "x_scale": "log" if log_x else "linear",
+            "y_scale": "log" if log_y else "linear",
+            "top": top,
+            "top_by": top_by,
+            "formats": list(normalized_formats),
+            "filters": dict(filters),
+        }
+        if temporary is not None:
+            body["temporary"] = {"x": temporary.x, "y": temporary.y, "label": temporary.label}
+        payload = self._request("figures", method="POST", body=body)
+        images = payload.get("images", {})
+        if not isinstance(images, Mapping):
+            raise CPTError("CPT API omitted the rendered image package.")
+        decoded: dict[str, bytes] = {}
+        if isinstance(images.get("svg"), str):
+            decoded["svg"] = images["svg"].encode("utf-8")
+        for name in ("png", "pdf"):
+            encoded = images.get(f"{name}_base64")
+            if isinstance(encoded, str):
+                try:
+                    decoded[name] = base64.b64decode(encoded, validate=True)
+                except ValueError as error:
+                    raise CPTError(f"CPT API returned invalid {name.upper()} data.") from error
+        return RenderedFigure.from_dict(payload, decoded)
 
     def scatter(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
         """Render a publication-oriented scatter figure."""
         return self.figure("scatter", x, y, **kwargs)
 
     def ashby(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
-        """Render an Ashby-style comparison with logarithmic axes enforced."""
-        kwargs["log_x"] = True
-        kwargs["log_y"] = True
+        """Render an Ashby comparison with logarithmic axes enforced server-side."""
         return self.figure("ashby", x, y, **kwargs)
 
     def ranked(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
-        """Rank the y property across records that also contain the x property."""
+        """Rank the selected y property for the eligible representative set."""
         return self.figure("ranked", x, y, **kwargs)
+
+    def trend(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
+        """Render the selected y property against publication year."""
+        return self.figure("trend", x, y, **kwargs)

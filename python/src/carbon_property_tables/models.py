@@ -1,4 +1,4 @@
-"""Typed response objects for the Carbon Property Tables API."""
+"""Typed bounded-artifact responses for Carbon Property Tables."""
 
 from __future__ import annotations
 
@@ -50,145 +50,8 @@ class CitationBundle:
 
 
 @dataclass(frozen=True)
-class Measurement:
-    measurement_id: str
-    property: str
-    property_label: str
-    value: float
-    unit: str
-    display_value: float
-    display_unit: str
-    warning: str
-    eligibility: Mapping[str, bool] = field(default_factory=dict)
-
-    @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "Measurement":
-        return cls(
-            measurement_id=str(value.get("measurement_id", "")),
-            property=str(value.get("property", "")),
-            property_label=str(value.get("property_label", value.get("property", ""))),
-            value=float(value["value"]),
-            unit=str(value.get("unit", "")),
-            display_value=float(value.get("display_value", value["value"])),
-            display_unit=str(value.get("display_unit", value.get("unit", ""))),
-            warning=str(value.get("warning", "none")),
-            eligibility=dict(value.get("eligibility", {})),
-        )
-
-
-@dataclass(frozen=True)
-class Record:
-    record_id: str
-    label: str
-    sample: Mapping[str, Any]
-    publication: Mapping[str, Any]
-    measurements: tuple[Measurement, ...]
-    conditions: Mapping[str, Any]
-    provenance: Mapping[str, Any]
-    comparison: Mapping[str, Any]
-    source_class: Mapping[str, Any]
-    quality_flags: Mapping[str, Any]
-    citations: CitationBundle
-    raw: Mapping[str, Any] = field(repr=False)
-
-    @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "Record":
-        return cls(
-            record_id=str(value.get("record_id", "")),
-            label=str(value.get("label", "")),
-            sample=dict(value.get("sample", {})),
-            publication=dict(value.get("publication", {})),
-            measurements=tuple(Measurement.from_dict(item) for item in value.get("measurements", [])),
-            conditions=dict(value.get("conditions", {})),
-            provenance=dict(value.get("provenance", {})),
-            comparison=dict(value.get("comparison", {})),
-            source_class=dict(value.get("source_class", {})),
-            quality_flags=dict(value.get("quality_flags", {})),
-            citations=CitationBundle.from_dict(value.get("citations")),
-            raw=dict(value),
-        )
-
-    def measurement(self, property_key: str) -> Measurement | None:
-        """Return one canonical measurement by property key."""
-        return next((item for item in self.measurements if item.property == property_key), None)
-
-
-@dataclass(frozen=True)
-class RecordPage:
-    records: tuple[Record, ...]
-    next_cursor: str | None
-    has_more: bool
-    release: Mapping[str, Any]
-    raw: Mapping[str, Any] = field(repr=False)
-
-    @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "RecordPage":
-        pagination = value.get("pagination", {})
-        return cls(
-            records=tuple(Record.from_dict(item) for item in value.get("records", [])),
-            next_cursor=str(pagination["next_cursor"]) if pagination.get("next_cursor") else None,
-            has_more=bool(pagination.get("has_more", False)),
-            release=dict(value.get("release", {})),
-            raw=dict(value),
-        )
-
-
-@dataclass(frozen=True)
-class PlotPoint:
-    record_id: str
-    label: str
-    material_family: str
-    form_factor: str
-    cnt_type: str | None
-    publication: Mapping[str, Any]
-    provenance: Mapping[str, Any]
-    x: Measurement
-    y: Measurement
-    raw: Mapping[str, Any] = field(repr=False)
-
-    @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "PlotPoint":
-        return cls(
-            record_id=str(value.get("record_id", "")),
-            label=str(value.get("label", "")),
-            material_family=str(value.get("material_family", "")),
-            form_factor=str(value.get("form_factor", "")),
-            cnt_type=str(value["cnt_type"]) if value.get("cnt_type") else None,
-            publication=dict(value.get("publication", {})),
-            provenance=dict(value.get("provenance", {})),
-            x=Measurement.from_dict(value.get("x", {})),
-            y=Measurement.from_dict(value.get("y", {})),
-            raw=dict(value),
-        )
-
-
-@dataclass(frozen=True)
-class PlotResult:
-    axes: Mapping[str, Any]
-    points: tuple[PlotPoint, ...]
-    citations: CitationBundle
-    next_cursor: str | None
-    has_more: bool
-    release: Mapping[str, Any]
-    raw: Mapping[str, Any] = field(repr=False)
-
-    @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> "PlotResult":
-        pagination = value.get("pagination", {})
-        return cls(
-            axes=dict(value.get("axes", {})),
-            points=tuple(PlotPoint.from_dict(item) for item in value.get("points", [])),
-            citations=CitationBundle.from_dict(value.get("citations")),
-            next_cursor=str(pagination["next_cursor"]) if pagination.get("next_cursor") else None,
-            has_more=bool(pagination.get("has_more", False)),
-            release=dict(value.get("release", {})),
-            raw=dict(value),
-        )
-
-
-@dataclass(frozen=True)
 class TemporaryPoint:
-    """A user-supplied point expressed in the active figure's display units."""
+    """A user-supplied point in the display units printed on the active axes."""
 
     x: float
     y: float
@@ -197,8 +60,6 @@ class TemporaryPoint:
 
 @dataclass(frozen=True)
 class TemporaryPointRank:
-    """Bounded comparison of a temporary point against the plotted reference set."""
-
     label: str
     x: float
     y: float
@@ -210,16 +71,31 @@ class TemporaryPointRank:
     dominated_by: int | None
     on_pareto_frontier: bool | None
 
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "TemporaryPointRank":
+        return cls(
+            label=str(value.get("label", "User input")),
+            x=float(value.get("x", 0)),
+            y=float(value.get("y", 0)),
+            total_with_temporary=int(value.get("total_with_temporary", 0)),
+            x_rank=int(value["x_rank"]) if value.get("x_rank") is not None else None,
+            y_rank=int(value["y_rank"]) if value.get("y_rank") is not None else None,
+            x_percentile=float(value["x_percentile"]) if value.get("x_percentile") is not None else None,
+            y_percentile=float(value["y_percentile"]) if value.get("y_percentile") is not None else None,
+            dominated_by=int(value["dominated_by"]) if value.get("dominated_by") is not None else None,
+            on_pareto_frontier=bool(value["on_pareto_frontier"]) if value.get("on_pareto_frontier") is not None else None,
+        )
+
 
 @dataclass(frozen=True)
 class TopPoint:
-    """One exact, citation-backed row from the bounded top-point table."""
+    """One exact, citation-backed row from the capped top-point response."""
 
     rank: int
     label: str
     material_family: str
     form_factor: str
-    x_value: float
+    x_value: float | None
     x_unit: str
     y_value: float
     y_unit: str
@@ -227,6 +103,23 @@ class TopPoint:
     publication_title: str | None
     publication_year: int | None
     citation: str
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "TopPoint":
+        return cls(
+            rank=int(value.get("rank", 0)),
+            label=str(value.get("label", "")),
+            material_family=str(value.get("material_family", "")),
+            form_factor=str(value.get("form_factor", "")),
+            x_value=float(value["x_value"]) if value.get("x_value") is not None else None,
+            x_unit=str(value.get("x_unit", "")),
+            y_value=float(value.get("y_value", 0)),
+            y_unit=str(value.get("y_unit", "")),
+            doi=str(value["doi"]) if value.get("doi") else None,
+            publication_title=str(value["publication_title"]) if value.get("publication_title") else None,
+            publication_year=int(value["publication_year"]) if value.get("publication_year") is not None else None,
+            citation=str(value.get("citation", "")),
+        )
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -247,7 +140,7 @@ class TopPoint:
 
 @dataclass(frozen=True)
 class RenderedFigure:
-    """Publication-oriented figure output without exposing the complete point table."""
+    """Server-rendered figure package without the complete coordinate table."""
 
     kind: str
     x_property: str
@@ -259,32 +152,54 @@ class RenderedFigure:
     release: Mapping[str, Any]
     _images: Mapping[str, bytes] = field(repr=False)
 
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any], images: Mapping[str, bytes]) -> "RenderedFigure":
+        axes = value.get("axes", {})
+        x_axis = axes.get("x", {}) if isinstance(axes, Mapping) else {}
+        y_axis = axes.get("y", {}) if isinstance(axes, Mapping) else {}
+        temporary = value.get("temporary_point")
+        return cls(
+            kind=str(value.get("kind", "")),
+            x_property=str(x_axis.get("key", "")) if isinstance(x_axis, Mapping) else "",
+            y_property=str(y_axis.get("key", "")) if isinstance(y_axis, Mapping) else "",
+            point_count=int(value.get("point_count", 0)),
+            top_points=tuple(TopPoint.from_dict(item) for item in value.get("top_points", [])),
+            citations=CitationBundle.from_dict(value.get("citations")),
+            temporary_point=TemporaryPointRank.from_dict(temporary) if isinstance(temporary, Mapping) else None,
+            release=dict(value.get("release", {})),
+            _images=dict(images),
+        )
+
     def _repr_svg_(self) -> str:
-        """Render directly in Jupyter without returning underlying coordinates."""
+        """Render directly in Jupyter when SVG was requested."""
+        if "svg" not in self._images:
+            return "<p>SVG was not requested for this Carbon Property Tables figure.</p>"
         return self._images["svg"].decode("utf-8")
 
+    @property
+    def available_formats(self) -> tuple[str, ...]:
+        return tuple(self._images)
+
     def top_table(self) -> tuple[dict[str, Any], ...]:
-        """Return only the explicitly bounded top rows represented by this figure."""
+        """Return only the explicitly requested, capped top rows."""
         return tuple(point.as_dict() for point in self.top_points)
 
     def save(self, path: str | Path) -> Path:
-        """Save SVG, PDF, or PNG plus mandatory citation sidecars."""
+        """Save a requested SVG, PDF, or PNG plus citation sidecars."""
         destination = Path(path)
         format_name = destination.suffix.lower().lstrip(".")
-        if format_name not in self._images:
+        if format_name not in {"svg", "pdf", "png"}:
             raise ValueError("Figure path must end in .svg, .pdf, or .png.")
+        if format_name not in self._images:
+            raise ValueError(f"{format_name.upper()} was not requested; available formats: {', '.join(self.available_formats)}.")
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(self._images[format_name])
-        destination.with_name(f"{destination.stem}.citations.txt").write_text(
-            self.citations.copy_all + "\n", encoding="utf-8"
-        )
-        destination.with_name(f"{destination.stem}.bib").write_text(
-            self.citations.bibtex + "\n", encoding="utf-8"
-        )
+        destination.with_name(f"{destination.stem}.citations.txt").write_text(self.citations.copy_all + "\n", encoding="utf-8")
+        destination.with_name(f"{destination.stem}.bib").write_text(self.citations.bibtex + "\n", encoding="utf-8")
         return destination
 
     def save_top_table(self, path: str | Path) -> Path:
-        """Save the bounded top rows as CSV; the full plotted dataset is not exported."""
+        """Save the bounded top rows as CSV; the complete plotted dataset is unavailable."""
         destination = Path(path)
         if destination.suffix.lower() != ".csv":
             raise ValueError("Top-point table path must end in .csv.")
@@ -295,7 +210,5 @@ class RenderedFigure:
             writer = csv.DictWriter(handle, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(rows)
-        destination.with_name(f"{destination.stem}.citations.txt").write_text(
-            self.citations.copy_all + "\n", encoding="utf-8"
-        )
+        destination.with_name(f"{destination.stem}.citations.txt").write_text(self.citations.copy_all + "\n", encoding="utf-8")
         return destination

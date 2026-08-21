@@ -29,6 +29,7 @@ export function buildCanonicalRecordQuery(query) {
   if (query.recordIds?.length) where.push(`r.record_id = ANY(${parameter(query.recordIds)}::text[])`);
   if (query.materialFamilies?.length) where.push(`r.material_family = ANY(${parameter(query.materialFamilies)}::text[])`);
   if (query.formFactors?.length) where.push(`r.form_factor = ANY(${parameter(query.formFactors)}::text[])`);
+  if (query.releaseTiers?.length) where.push(`r.public_release_tier = ANY(${parameter(query.releaseTiers)}::text[])`);
   if (query.provenance?.length) where.push(`r.dataset_provenance = ANY(${parameter(query.provenance)}::text[])`);
   if (query.verification?.length) {
     where.push(`r.primary_source_verification_status = ANY(${parameter(query.verification)}::text[])`);
@@ -59,6 +60,9 @@ export function buildCanonicalRecordQuery(query) {
   if (query.temperatureMinC !== undefined) where.push(`${temperatureSql} >= ${parameter(query.temperatureMinC)}`);
   if (query.temperatureMaxC !== undefined) where.push(`${temperatureSql} <= ${parameter(query.temperatureMaxC)}`);
   if (query.strictReady !== undefined) where.push(`r.strict_comparison_ready = ${parameter(query.strictReady)}`);
+  if (query.normalizedEligible !== undefined) {
+    where.push(`(r.payload_json->>'normalized_comparison_eligible')::boolean = ${parameter(query.normalizedEligible)}`);
+  }
   if (query.peerReviewed !== undefined) {
     const peerReviewedSql = `r.public_release_tier IN ('peer_reviewed_research', 'peer_reviewed_contextual_comparator')`;
     where.push(query.peerReviewed ? peerReviewedSql : `NOT (${peerReviewedSql})`);

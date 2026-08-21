@@ -35,6 +35,7 @@ export type RecordQuery = {
   requiredProperties?: PropertyKey[];
   materialFamilies?: string[];
   formFactors?: string[];
+  releaseTiers?: string[];
   doi?: string;
   author?: string;
   journal?: string;
@@ -49,6 +50,7 @@ export type RecordQuery = {
   q?: string;
   strictReady?: boolean;
   peerReviewed?: boolean;
+  normalizedEligible?: boolean;
 };
 
 export type CanonicalRecord = {
@@ -145,6 +147,7 @@ function matchesFallback(record: PlotRecord, query: RecordQuery): boolean {
   if (query.recordIds?.length && !query.recordIds.includes(record.record_id)) return false;
   if (query.materialFamilies?.length && !query.materialFamilies.includes(record.material_family)) return false;
   if (query.formFactors?.length && !query.formFactors.includes(record.form_factor)) return false;
+  if (query.releaseTiers?.length && !query.releaseTiers.includes(record.public_release_tier)) return false;
   if (query.provenance?.length && !query.provenance.includes(record.dataset_provenance)) return false;
   if (query.verification?.length && !query.verification.includes(record.primary_source_verification_status)) return false;
   if (query.doi && normalizeDoi(record.doi_verified ?? record.doi_raw ?? "") !== normalizeDoi(query.doi)) return false;
@@ -157,6 +160,7 @@ function matchesFallback(record: PlotRecord, query: RecordQuery): boolean {
   if (query.temperatureMinC !== undefined && (record.condition_temperature_C ?? -Infinity) < query.temperatureMinC) return false;
   if (query.temperatureMaxC !== undefined && (record.condition_temperature_C ?? Infinity) > query.temperatureMaxC) return false;
   if (query.strictReady !== undefined && record.strict_comparison_ready !== query.strictReady) return false;
+  if (query.normalizedEligible !== undefined && record.normalized_comparison_eligible !== query.normalizedEligible) return false;
   const peerReviewedRelease = record.public_release_tier === "peer_reviewed_research"
     || record.public_release_tier === "peer_reviewed_contextual_comparator";
   if (query.peerReviewed !== undefined && peerReviewedRelease !== query.peerReviewed) return false;
