@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .client import CPTClient
+from .convenience import resolve_property
 from .exceptions import CPTValidationError
 from .models import RenderedFigure, TemporaryPoint
 
@@ -64,6 +65,21 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
     _require(release_payload.get("api_version") == "v1", "Unexpected CPT API version.")
     _require(int(release.get("record_count", 0)) > 0, "The active release contains no records.")
     _require(bool(properties), "The API returned no supported properties.")
+
+    property_aliases = {
+        "specific strength": resolve_property("Specific Strength"),
+        "specific cond": resolve_property("Specific cond"),
+        "tenacity": resolve_property("tenacity"),
+    }
+    _require(
+        property_aliases
+        == {
+            "specific strength": "specific_strength",
+            "specific cond": "specific_electrical_conductivity",
+            "tenacity": "specific_strength",
+        },
+        "Readable property-name resolution failed.",
+    )
 
     figures = {
         "scatter": client.scatter(
@@ -161,6 +177,7 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
             "publication_count": release.get("publication_count"),
         },
         "property_count": len(properties),
+        "property_aliases": property_aliases,
         "figures": figure_report,
         "temporary_point": {
             "label": scatter.temporary_point.label,
