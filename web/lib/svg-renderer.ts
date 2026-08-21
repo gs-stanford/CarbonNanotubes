@@ -617,11 +617,11 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
   const markerBoxes = new Map(
     Array.from(points, ([recordId, point]) => [
       recordId,
-      { x0: point.x - 7, y0: point.y - 7, x1: point.x + 7, y1: point.y + 7 }
+      { x0: point.x - 8, y0: point.y - 8, x1: point.x + 8, y1: point.y + 8 }
     ])
   );
   const output: string[] = [];
-  for (const record of [...metals, ...sources]) {
+  for (const record of [...sources, ...metals]) {
     const point = points.get(record.record_id);
     if (!point) continue;
     const text = metalLabel(record) ?? sourceLabel(record);
@@ -649,6 +649,7 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
     }).filter((candidate, index, all) => (
       all.findIndex((other) => other.x0 === candidate.x0 && other.y0 === candidate.y0) === index
     ));
+    const labelMarkers = Array.from(markerBoxes.values());
     const otherMarkers = Array.from(markerBoxes.entries())
       .filter(([recordId]) => recordId !== record.record_id)
       .map(([, box]) => box);
@@ -660,15 +661,20 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
       const leaderBounds = segmentBounds(point, leader);
       const labelCollisions = occupied.filter((existing) => overlaps(box, existing)).length;
       const labelOverlap = occupied.reduce((total, existing) => total + overlapArea(box, existing), 0);
-      const markerOverlap = otherMarkers.reduce((total, marker) => total + overlapArea(box, marker), 0);
+      const markerOverlap = labelMarkers.reduce((total, marker) => total + overlapArea(box, marker), 0);
       const crossedLabels = occupied.filter((existing) => overlaps(leaderBounds, existing)).length;
       const crossedMarkers = otherMarkers.filter((marker) => overlaps(leaderBounds, marker)).length;
       const distance = Math.hypot(leader.x - point.x, leader.y - point.y);
+      const edgePenalty = Number(box.x0 <= margin.left + 4.5)
+        + Number(box.x1 >= WIDTH - margin.right - 4.5)
+        + Number(box.y0 <= margin.top + 4.5)
+        + Number(box.y1 >= HEIGHT - margin.bottom - 4.5);
       return labelCollisions * 1_000_000_000_000
         + labelOverlap * 1_000_000
         + markerOverlap * 100_000
         + crossedLabels * 50_000
         + crossedMarkers * 2_000
+        + edgePenalty * 500
         + distance
         + preference;
     };
