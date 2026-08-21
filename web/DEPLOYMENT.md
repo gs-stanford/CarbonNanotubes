@@ -11,7 +11,11 @@ Use one Render Web Service for the Next.js app.
   - `NODE_VERSION=22`
   - `DATABASE_URL=<Render Postgres internal connection string>`
   - `ADMIN_TOKEN=<long random token for /admin>`
-  - `CPT_INTERNAL_API_TOKEN=<separate long random token for trusted data tooling>`
+  - `CPT_INTERNAL_API_TOKEN=<Render-generated 256-bit token for trusted data tooling>`
+
+The Blueprint generates `CPT_INTERNAL_API_TOKEN` when it is first applied to a service. Render preserves an existing value, so Blueprint syncs do not rotate the token. Retrieve it from the Render dashboard only when trusted administrative tooling needs authenticated access; never expose it to the browser or public SDK.
+
+Render uses `/api/v1/release` as the HTTP health check and promotes a deployment only after that endpoint returns successfully.
 
 The app creates the Postgres schema lazily at runtime when `DATABASE_URL` is present. Render also migrates the schema and transactionally synchronizes the bundled canonical public release before every start:
 
