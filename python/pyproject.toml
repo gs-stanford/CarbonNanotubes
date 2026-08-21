@@ -12,11 +12,33 @@ authors = [
   { name = "Gaurav Sharma" },
   { name = "Adam M. Boies" }
 ]
+keywords = [
+  "materials science",
+  "carbon nanotubes",
+  "materials properties",
+  "scientific data",
+  "citations"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed"
+]
 dependencies = []
+
+[project.urls]
+Source = "https://github.com/gs-stanford/CarbonNanotubes"
+Issues = "https://github.com/gs-stanford/CarbonNanotubes/issues"
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
-dev = ["build>=1.2"]
+dev = ["build>=1.2", "pytest>=8", "twine>=6"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

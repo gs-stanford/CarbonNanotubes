@@ -1,6 +1,6 @@
 import unittest
 
-from carbon_property_tables import CPTClient, CPTValidationError
+from carbon_property_tables import CPTClient, CPTValidationError, __version__
 
 
 def citation_bundle():
@@ -102,6 +102,7 @@ class CPTClientTests(unittest.TestCase):
     def test_base_url_normalization(self):
         self.assertEqual(CPTClient("https://example.test/").base_url, "https://example.test/api/v1")
         self.assertEqual(CPTClient("https://example.test/api/v1").base_url, "https://example.test/api/v1")
+        self.assertEqual(CPTClient("https://example.test").user_agent, f"carbon-property-tables-python/{__version__}")
 
     def test_parameter_encoding(self):
         encoded = CPTClient._encode_params({"peer_reviewed": True, "material_family": ["CNT", "carbon"], "empty": None})
