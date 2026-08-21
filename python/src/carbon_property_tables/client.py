@@ -1,22 +1,23 @@
-"""HTTP client for Carbon Property Tables API v1."""
+"""Controlled figure client for the Carbon Property Tables API v1."""
 
 from __future__ import annotations
 
 import json
 import os
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlencode
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from ._version import __version__
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
-from .models import CitationBundle, PlotResult, Record, RecordPage
+from .models import CitationBundle, CitationEntry, PlotResult, RenderedFigure, TemporaryPoint
+from .plotting import render_figure, representative_points
 
 
 class CPTClient:
-    """Read-only client for canonical property records and citation bundles."""
+    """Create citation-backed figures without exposing the full canonical table."""
 
     def __init__(self, base_url: str | None = None, *, timeout: float = 30.0, user_agent: str | None = None) -> None:
         configured = base_url or os.environ.get("CPT_API_URL") or "http://localhost:3000/api/v1"
@@ -85,51 +86,116 @@ class CPTClient:
         return urlencode(pairs, doseq=True)
 
     def release(self) -> dict[str, Any]:
-        """Return the active release identity, hashes, and row counts."""
+        """Return the active release identity, hashes, and aggregate row counts."""
         return self._request("release")
 
     def properties(self) -> tuple[dict[str, Any], ...]:
-        """Return property keys and their canonical/display units."""
+        """Return supported plot-property keys and their units."""
         return tuple(self._request("properties").get("properties", []))
 
-    def records(self, **filters: Any) -> RecordPage:
-        """Return one bounded page of canonical records."""
-        return RecordPage.from_dict(self._request("records", params=filters))
-
-    def iter_records(self, **filters: Any) -> Iterator[Record]:
-        """Iterate through all pages matching the supplied filters."""
-        after = filters.pop("after", None)
-        while True:
-            page = self.records(after=after, **filters)
-            yield from page.records
-            if not page.has_more or not page.next_cursor:
-                return
-            after = page.next_cursor
-
-    def record(self, record_id: str) -> Record:
-        """Retrieve one record by immutable record ID."""
-        clean = record_id.strip()
-        if not clean:
-            raise CPTValidationError("record_id cannot be empty.")
-        payload = self._request(f"records/{quote(clean, safe='')}")
-        return Record.from_dict(payload["record"])
-
-    def plot_data(self, x: str, y: str, **filters: Any) -> PlotResult:
-        """Retrieve same-record paired measurements and a complete citation bundle."""
-        if not x.strip() or not y.strip() or x == y:
+    def _plot_result(self, x: str, y: str, filters: Mapping[str, Any]) -> PlotResult:
+        x_key = x.strip()
+        y_key = y.strip()
+        if not x_key or not y_key or x_key == y_key:
             raise CPTValidationError("x and y must be two different property keys.")
-        return PlotResult.from_dict(self._request("plot", params={"x": x, "y": y, **filters}))
+        reserved = {"x", "y", "limit", "after"}.intersection(filters)
+        if reserved:
+            names = ", ".join(sorted(reserved))
+            raise CPTValidationError(f"Figure filters cannot override reserved parameters: {names}.")
+        payload = self._request("plot", params={"x": x_key, "y": y_key, "limit": 2000, **filters})
+        result = PlotResult.from_dict(payload)
+        if result.has_more:
+            raise CPTError(
+                "The requested figure exceeds the API's complete-result limit. "
+                "Narrow the material, form-factor, year, or measurement filters."
+            )
+        return result
 
-    def citations(self, record_ids: Sequence[str]) -> CitationBundle:
-        """Return deduplicated Nature-style and BibTeX citations for records."""
-        ids = [record_id.strip() for record_id in record_ids if record_id.strip()]
-        if not ids:
-            raise CPTValidationError("At least one record_id is required.")
-        payload = self._request("citations", method="POST", body={"record_ids": ids})
-        return CitationBundle.from_dict(payload.get("citations"))
+    def _citation_bundle(self, record_ids: Sequence[str]) -> CitationBundle:
+        if not record_ids:
+            return CitationBundle.from_dict(None)
+        merged: dict[str, CitationEntry] = {}
+        requirement = ""
+        style = "nature"
+        for start in range(0, len(record_ids), 500):
+            chunk = list(dict.fromkeys(record_ids[start : start + 500]))
+            payload = self._request("citations", method="POST", body={"record_ids": chunk})
+            bundle = CitationBundle.from_dict(payload.get("citations"))
+            requirement = requirement or bundle.requirement
+            style = bundle.style or style
+            for entry in bundle.entries:
+                existing = merged.get(entry.citation_id)
+                if existing is None:
+                    merged[entry.citation_id] = entry
+                    continue
+                merged[entry.citation_id] = CitationEntry(
+                    citation_id=existing.citation_id,
+                    roles=tuple(dict.fromkeys((*existing.roles, *entry.roles))),
+                    doi=existing.doi or entry.doi,
+                    text=existing.text or entry.text,
+                    bibtex=existing.bibtex or entry.bibtex,
+                    record_ids=tuple(dict.fromkeys((*existing.record_ids, *entry.record_ids))),
+                )
+        ordered = list(merged.values())
+        entries = tuple(
+            [entry for entry in ordered if "atlas" not in entry.roles]
+            + [entry for entry in ordered if "atlas" in entry.roles]
+        )
+        return CitationBundle(
+            requirement=requirement,
+            style=style,
+            entries=entries,
+            copy_all="\n".join(f"{index}. {entry.text}" for index, entry in enumerate(entries, start=1)),
+            bibtex="\n\n".join(entry.bibtex for entry in entries if entry.bibtex),
+        )
 
-    def scatter(self, x: str, y: str, **kwargs: Any):
-        """Create an optional Matplotlib scatter plot and return (figure, axes, PlotResult)."""
-        from .plotting import scatter
+    def figure(
+        self,
+        kind: str,
+        x: str,
+        y: str,
+        *,
+        top: int = 0,
+        top_by: str = "auto",
+        temporary: TemporaryPoint | None = None,
+        log_x: bool = False,
+        log_y: bool = False,
+        colors: Mapping[str, str] | None = None,
+        **filters: Any,
+    ) -> RenderedFigure:
+        """Render a bounded figure package for one same-record property pairing."""
+        normalized_kind = kind.strip().lower()
+        if normalized_kind not in {"scatter", "ranked", "ashby"}:
+            raise CPTValidationError("kind must be 'scatter', 'ranked', or 'ashby'.")
+        result = self._plot_result(x, y, filters)
+        selected = representative_points(result.points, x.strip(), y.strip(), normalized_kind)
+        citations = self._citation_bundle([point.record_id for point in selected])
+        return render_figure(
+            selected,
+            citations,
+            kind=normalized_kind,
+            x_property=x.strip(),
+            y_property=y.strip(),
+            top=top,
+            top_by=top_by,
+            temporary=temporary,
+            log_x=log_x,
+            log_y=log_y,
+            colors=colors,
+            release=result.release,
+            points_are_representative=True,
+        )
 
-        return scatter(self, x, y, **kwargs)
+    def scatter(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
+        """Render a publication-oriented scatter figure."""
+        return self.figure("scatter", x, y, **kwargs)
+
+    def ashby(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
+        """Render an Ashby-style comparison with logarithmic axes enforced."""
+        kwargs["log_x"] = True
+        kwargs["log_y"] = True
+        return self.figure("ashby", x, y, **kwargs)
+
+    def ranked(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
+        """Rank the y property across records that also contain the x property."""
+        return self.figure("ranked", x, y, **kwargs)
