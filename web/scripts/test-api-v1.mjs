@@ -75,6 +75,10 @@ assert.ok(figure.images.svg.includes("<svg"));
 assert.ok(!figure.images.svg.includes("data-record-id="));
 assert.ok(!figure.images.svg.includes("plot-watermark"));
 assert.ok(figure.images.svg.includes('baseline-shift="super"'));
+assert.ok(
+  figure.images.svg.includes('class="plot-point point-material-cnt point-shape-circle"'),
+  "CNT markers must retain their material color class in exported SVGs."
+);
 const png = Buffer.from(figure.images.png_base64, "base64");
 assert.ok(png.subarray(0, 8).equals(Buffer.from("89504e470d0a1a0a", "hex")));
 assert.equal(png.readUInt32BE(16), 920);
