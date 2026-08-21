@@ -1,6 +1,6 @@
 # Carbon Property Tables Python SDK
 
-The SDK queries the versioned Carbon Property Tables API without scraping the website. Every returned record contains canonical SI measurements, provenance status, and its required citation bundle.
+The SDK creates citation-backed comparison figures from the verified Carbon Property Tables release. It is a figure and benchmarking interface, not a bulk database-download client.
 
 ## Install locally
 
@@ -8,71 +8,78 @@ The SDK queries the versioned Carbon Property Tables API without scraping the we
 python -m pip install -e ./python
 ```
 
-Add the optional Matplotlib helper with:
+Set `CPT_API_URL` to the deployed service URL, or pass the URL to `CPTClient`. The local default is `http://localhost:3000/api/v1`.
 
-```bash
-python -m pip install -e './python[plot]'
-```
-
-## Query
+## Plot and benchmark a temporary result
 
 ```python
-from carbon_property_tables import CPTClient
+from carbon_property_tables import CPTClient, TemporaryPoint
 
 cpt = CPTClient("https://YOUR-SERVICE.onrender.com")
 
-for record in cpt.iter_records(
-    property="tensile_strength",
-    min_value=5e9,  # Pa: the API always filters in canonical SI
-    material_family="CNT_or_CNT_hybrid",
-):
-    strength = record.measurement("tensile_strength")
-    print(record.label, strength.value, strength.unit)
-    print(record.citations.copy_all)
-```
-
-The client also accepts `CPT_API_URL`; without either setting it uses `http://localhost:3000/api/v1`.
-
-## Paired plot data
-
-```python
-result = cpt.plot_data(
-    "specific_strength",
-    "specific_electrical_conductivity",
-    peer_reviewed=True,
-)
-
-for point in result.points:
-    print(point.x.value, point.x.unit, point.y.value, point.y.unit)
-
-print(result.citations.copy_all)
-```
-
-Multiple property ranges can be combined without changing units:
-
-```python
-records = cpt.records(
-    measurement_filter=[
-        "density:1000:1500",      # kg/m^3
-        "diameter::0.000020",     # m; no lower bound
-    ],
-    gauge_length_min_mm=10,
-)
-```
-
-The `/plot` contract only returns values paired on the same canonical record. It does not synthesize values from different specimens.
-
-## Optional figure
-
-```python
-fig, ax, result = cpt.scatter(
+figure = cpt.scatter(
     "specific_strength",
     "specific_electrical_conductivity",
     log_x=True,
     log_y=True,
+    peer_reviewed=True,
+    material_family=["CNT_or_CNT_hybrid", "CNT_metal_composite"],
+    top=5,
+    top_by="y",
+    temporary=TemporaryPoint(
+        x=1.8,
+        y=12.0,
+        label="My CNT fiber",
+    ),
 )
-fig.savefig("cpt.svg")
-print(result.citations.bibtex)
+
+figure.save("conductivity-strength.svg")
+print(figure.temporary_point)
 ```
 
-Plotting is intentionally separate from retrieval. The returned `PlotResult` remains the source of record IDs, units, provenance, and citations used in the figure.
+Temporary coordinates use the display units printed on the active axes. They are rendered and ranked against the visible representative material set, but are never written to Carbon Property Tables.
+
+In Jupyter, returning `figure` from a cell displays its SVG directly. `save()` accepts `.svg`, `.pdf`, or `.png` and automatically writes matching `.citations.txt` and `.bib` files.
+
+## Extract a bounded top table
+
+Exact values can be requested only for the selected top subset, with a hard maximum of ten rows:
+
+```python
+for row in figure.top_table():
+    print(row["rank"], row["label"], row["y_value"], row["y_unit"], row["doi"])
+
+figure.save_top_table("top-five.csv")
+```
+
+`top_by="x"` or `top_by="y"` must name a higher-is-better performance axis. Density and dimensions are filter or normalization variables, not optimization targets.
+
+## Figure types
+
+```python
+scatter = cpt.scatter("tensile_strength", "electrical_conductivity")
+ranked = cpt.ranked("density", "tensile_strength", top=10)
+ashby = cpt.ashby("density", "specific_strength")
+```
+
+- `scatter` compares any two same-record properties.
+- `ranked` ranks the y property among records that also contain the selected x property.
+- `ashby` enforces logarithmic axes and shows robust material-family regions where enough data exist.
+
+All API filters supported by the plotting service can be passed as keyword arguments. For example:
+
+```python
+figure = cpt.scatter(
+    "density",
+    "tensile_strength",
+    measurement_filter=["diameter::0.000020"],
+    gauge_length_min_mm=10,
+    year_min=2015,
+)
+```
+
+Measurement-range filters use canonical SI units. Axis values and temporary-point inputs use the display units printed on the figure.
+
+## Deliberate access boundary
+
+The public SDK does not expose canonical-record pagination, arbitrary record retrieval, or full plot-coordinate tables. A rendered vector figure can still be digitized, so this is an access and citation boundary rather than digital-rights management. Publication use requires the automatically supplied original-source and Atlas citations.

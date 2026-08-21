@@ -3,7 +3,7 @@
 from ._version import __version__
 from .client import CPTClient
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
-from .models import CitationBundle, CitationEntry, Measurement, PlotResult, Record, RecordPage
+from .models import CitationBundle, CitationEntry, RenderedFigure, TemporaryPoint, TemporaryPointRank, TopPoint
 
 __all__ = [
     "CPTClient",
@@ -12,9 +12,9 @@ __all__ = [
     "CPTValidationError",
     "CitationBundle",
     "CitationEntry",
-    "Measurement",
-    "PlotResult",
-    "Record",
-    "RecordPage",
+    "RenderedFigure",
+    "TemporaryPoint",
+    "TemporaryPointRank",
+    "TopPoint",
     "__version__",
 ]

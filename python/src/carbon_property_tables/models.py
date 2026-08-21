@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Mapping
 
 
@@ -182,3 +184,118 @@ class PlotResult:
             release=dict(value.get("release", {})),
             raw=dict(value),
         )
+
+
+@dataclass(frozen=True)
+class TemporaryPoint:
+    """A user-supplied point expressed in the active figure's display units."""
+
+    x: float
+    y: float
+    label: str = "User input"
+
+
+@dataclass(frozen=True)
+class TemporaryPointRank:
+    """Bounded comparison of a temporary point against the plotted reference set."""
+
+    label: str
+    x: float
+    y: float
+    total_with_temporary: int
+    x_rank: int | None
+    y_rank: int | None
+    x_percentile: float | None
+    y_percentile: float | None
+    dominated_by: int | None
+    on_pareto_frontier: bool | None
+
+
+@dataclass(frozen=True)
+class TopPoint:
+    """One exact, citation-backed row from the bounded top-point table."""
+
+    rank: int
+    label: str
+    material_family: str
+    form_factor: str
+    x_value: float
+    x_unit: str
+    y_value: float
+    y_unit: str
+    doi: str | None
+    publication_title: str | None
+    publication_year: int | None
+    citation: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "rank": self.rank,
+            "label": self.label,
+            "material_family": self.material_family,
+            "form_factor": self.form_factor,
+            "x_value": self.x_value,
+            "x_unit": self.x_unit,
+            "y_value": self.y_value,
+            "y_unit": self.y_unit,
+            "doi": self.doi,
+            "publication_title": self.publication_title,
+            "publication_year": self.publication_year,
+            "citation": self.citation,
+        }
+
+
+@dataclass(frozen=True)
+class RenderedFigure:
+    """Publication-oriented figure output without exposing the complete point table."""
+
+    kind: str
+    x_property: str
+    y_property: str
+    point_count: int
+    top_points: tuple[TopPoint, ...]
+    citations: CitationBundle
+    temporary_point: TemporaryPointRank | None
+    release: Mapping[str, Any]
+    _images: Mapping[str, bytes] = field(repr=False)
+
+    def _repr_svg_(self) -> str:
+        """Render directly in Jupyter without returning underlying coordinates."""
+        return self._images["svg"].decode("utf-8")
+
+    def top_table(self) -> tuple[dict[str, Any], ...]:
+        """Return only the explicitly bounded top rows represented by this figure."""
+        return tuple(point.as_dict() for point in self.top_points)
+
+    def save(self, path: str | Path) -> Path:
+        """Save SVG, PDF, or PNG plus mandatory citation sidecars."""
+        destination = Path(path)
+        format_name = destination.suffix.lower().lstrip(".")
+        if format_name not in self._images:
+            raise ValueError("Figure path must end in .svg, .pdf, or .png.")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(self._images[format_name])
+        destination.with_name(f"{destination.stem}.citations.txt").write_text(
+            self.citations.copy_all + "\n", encoding="utf-8"
+        )
+        destination.with_name(f"{destination.stem}.bib").write_text(
+            self.citations.bibtex + "\n", encoding="utf-8"
+        )
+        return destination
+
+    def save_top_table(self, path: str | Path) -> Path:
+        """Save the bounded top rows as CSV; the full plotted dataset is not exported."""
+        destination = Path(path)
+        if destination.suffix.lower() != ".csv":
+            raise ValueError("Top-point table path must end in .csv.")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        rows = self.top_table()
+        fieldnames = list(rows[0]) if rows else ["rank"]
+        with destination.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        destination.with_name(f"{destination.stem}.citations.txt").write_text(
+            self.citations.copy_all + "\n", encoding="utf-8"
+        )
+        return destination
