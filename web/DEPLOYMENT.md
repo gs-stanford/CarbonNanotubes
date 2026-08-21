@@ -32,7 +32,7 @@ When `DATABASE_URL` is configured, canonical records, measurements, and publicat
 
 The versioned artifact API is served under `/api/v1`; its OpenAPI document is `/api/v1/openapi.json`. Production filters execute against indexed canonical PostgreSQL fields, while representative-record selection and plotting remain server-side. Public responses contain rendered figures, citations, temporary-point ranks, and at most ten exact top rows. Canonical record and coordinate routes require `CPT_INTERNAL_API_TOKEN` and are not advertised. See [`API.md`](./API.md) for examples.
 
-The Python package in `../python` consumes only this artifact contract. Set `CPT_API_URL` to the deployed service URL or pass the URL to `CPTClient`.
+The Python package in `../python` consumes only this artifact contract. It defaults to `https://carbonnanotubes.onrender.com`; set `CPT_API_URL` or pass a URL to `CPTClient` for another deployment.
 
 ## Submission pipeline
 
@@ -40,8 +40,11 @@ The Python package in `../python` consumes only this artifact contract. Set `CPT
 2. Backend verifies DOI through Crossref.
 3. Backend canonicalizes values and units deterministically.
 4. Backend checks duplicates against the seed dataset plus accepted Postgres submissions.
-5. Backend writes canonical publication, record, measurement, and raw payload rows to Postgres.
+5. Backend writes canonical publication, record, measurement, and raw payload rows to Postgres with `status=accepted` and `public_visible=false`.
 6. Optional OpenAI cleanup runs only after persistence succeeds.
+7. A curator verifies the values against the primary publication and marks the row `official`; only then can it appear in public search and figures.
+
+Production submissions return HTTP 503 when `DATABASE_URL` is absent. The app never treats Render's ephemeral filesystem as durable submission storage.
 
 OpenAI cleanup is proposal-only. It stores suggested labels, flags, and curator notes in `atlas_ai_cleanup_runs`; it does not directly modify canonical measurements, DOI metadata, or public citations.
 
@@ -61,7 +64,7 @@ The admin surface can:
 
 - list accepted submissions from Postgres
 - change status between `accepted`, `curator_hold`, `official`, `rejected`, and `hidden`
-- toggle public visibility
+- make a submission public only by marking it `official`; PostgreSQL rejects public visibility for every other status
 - edit public point title, material family, form factor, display badge, issue tags, and comparison flags
 - manually run OpenAI cleanup after the submission already exists in Postgres
 

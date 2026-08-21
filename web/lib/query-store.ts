@@ -3,9 +3,11 @@ import {
   getBundledExplorerBootstrap,
   getBundledReleaseSummary,
   measurementFromRow,
+  PROPERTY_BY_KEY,
   PROPERTY_META_BASE,
   publicationFromRow,
   recordFromRow,
+  type CommunityAcceptedSubmission,
   type Measurement,
   type PlotRecord,
   type PropertyKey,
@@ -15,6 +17,7 @@ import type { ExplorerBootstrap } from "@/lib/figure-api";
 import { readCanonicalReleaseMetadata } from "@/lib/canonical-store";
 import { ensureDatabaseSchema, hasDatabaseUrl, withDb } from "@/lib/db";
 import { buildCanonicalRecordQuery } from "@/lib/query-sql.mjs";
+import { readPublicSubmissions } from "@/lib/submission-store";
 
 export type ReleaseDescriptor = {
   release_id: string;
@@ -123,6 +126,32 @@ function canonicalRecordFromPayloads(row: QueryRow): CanonicalRecord {
   return { record, measurements, publication };
 }
 
+function canonicalRecordFromSubmission(submission: CommunityAcceptedSubmission): CanonicalRecord {
+  const measurements = submission.measurements
+    .map((measurement) => {
+      const meta = PROPERTY_BY_KEY.get(measurement.property);
+      if (!meta) return null;
+      return {
+        ...measurement,
+        value_display: measurement.value_canonical * meta.displayFactor,
+        unit_display: meta.displayUnit
+      } satisfies Measurement;
+    })
+    .filter((measurement): measurement is Measurement => measurement !== null);
+  const record: PlotRecord = {
+    ...submission.record,
+    values: {},
+    canonicalValues: {},
+    measurementWarnings: {}
+  };
+  for (const measurement of measurements) {
+    record.values[measurement.property] = measurement.value_display;
+    record.canonicalValues[measurement.property] = measurement.value_canonical;
+    record.measurementWarnings[measurement.property] = measurement.measurement_warning;
+  }
+  return { record, measurements, publication: submission.publication };
+}
+
 function normalizeDoi(value: string): string {
   return value
     .trim()
@@ -144,18 +173,30 @@ function queryTokens(value: string): string[] {
 
 async function queryPostgres(query: RecordQuery): Promise<RecordQueryPage> {
   await ensureDatabaseSchema();
-  return withDb(async (client) => {
-    const plan = buildCanonicalRecordQuery(query);
-    const result = await client.query<QueryRow>(plan.text, plan.values);
-    const hasMore = result.rows.length > query.limit;
-    const selected = hasMore ? result.rows.slice(0, query.limit) : result.rows;
-    const records = selected.map(canonicalRecordFromPayloads);
-    return {
-      records,
-      hasMore,
-      nextCursor: hasMore ? records.at(-1)?.record.record_id ?? null : null
-    };
-  });
+  const plan = buildCanonicalRecordQuery(query);
+  const [canonicalRows, publicSubmissions] = await Promise.all([
+    withDb(async (client) => (await client.query<QueryRow>(plan.text, plan.values)).rows),
+    readPublicSubmissions()
+  ]);
+  const merged = new Map<string, CanonicalRecord>();
+  for (const row of canonicalRows) {
+    const record = canonicalRecordFromPayloads(row);
+    merged.set(record.record.record_id, record);
+  }
+  for (const submission of publicSubmissions) {
+    const record = canonicalRecordFromSubmission(submission);
+    if (matchesFallback(record.record, query) && !merged.has(record.record.record_id)) {
+      merged.set(record.record.record_id, record);
+    }
+  }
+  const eligible = Array.from(merged.values()).sort((a, b) => a.record.record_id.localeCompare(b.record.record_id));
+  const hasMore = eligible.length > query.limit;
+  const records = hasMore ? eligible.slice(0, query.limit) : eligible;
+  return {
+    records,
+    hasMore,
+    nextCursor: hasMore ? records.at(-1)?.record.record_id ?? null : null
+  };
 }
 
 function includesText(value: string | null | undefined, query: string | undefined): boolean {
@@ -292,9 +333,9 @@ export async function getReleaseDescriptor(): Promise<ReleaseDescriptor> {
 export async function getExplorerBootstrap(): Promise<ExplorerBootstrap> {
   if (!hasDatabaseUrl()) return getBundledExplorerBootstrap();
   await ensureDatabaseSchema();
-  const [release, properties, row] = await Promise.all([
+  const [release, baseProperties, row, publicSubmissions] = await Promise.all([
     readCanonicalReleaseMetadata(),
-    getPropertyCatalog(),
+    getCanonicalPropertyCatalog(),
     withDb(async (client) => {
       const result = await client.query<BootstrapRow>(
         `
@@ -325,40 +366,63 @@ export async function getExplorerBootstrap(): Promise<ExplorerBootstrap> {
       );
       if (result.rowCount !== 1) throw new Error("Canonical PostgreSQL bootstrap query returned no aggregate row.");
       return result.rows[0];
-    })
+    }),
+    readPublicSubmissions()
   ]);
   const count = (value: number | string) => Number(value);
   if (count(row.record_count) !== release.recordCount) {
     throw new Error("Canonical PostgreSQL bootstrap count does not match the active release metadata.");
   }
+  const publicRecords = publicSubmissions.map((submission) => canonicalRecordFromSubmission(submission));
+  const publicPlotRecords = publicRecords.map((item) => item.record);
+  const properties = baseProperties.map((property) => ({
+    ...property,
+    recordsWithValue: property.recordsWithValue
+      + publicPlotRecords.filter((record) => typeof record.values[property.key] === "number").length
+  })).filter((property) => property.recordsWithValue > 0);
+  const publicYears = publicPlotRecords
+    .map((record) => record.publication_year_verified)
+    .filter((year): year is number => typeof year === "number" && Number.isFinite(year));
+  const allYears = [
+    ...(row.min_year === null ? [] : [count(row.min_year)]),
+    ...(row.max_year === null ? [] : [count(row.max_year)]),
+    ...publicYears
+  ];
+  const countPublic = (predicate: (record: PlotRecord) => boolean) => publicPlotRecords.filter(predicate).length;
   return {
     properties,
-    families: row.material_families ?? [],
-    forms: row.form_factors ?? [],
+    families: Array.from(new Set([...(row.material_families ?? []), ...publicPlotRecords.map((record) => record.material_family)])).sort(),
+    forms: Array.from(new Set([...(row.form_factors ?? []), ...publicPlotRecords.map((record) => record.form_factor)])).sort(),
     summary: {
-      recordCount: release.recordCount,
-      measurementCount: release.measurementCount,
-      primaryRecords: count(row.primary_records),
-      benchmarkRecords: count(row.benchmark_records),
-      peerReviewedResearchRecords: count(row.peer_reviewed_research_records),
-      peerReviewedComparatorRecords: count(row.peer_reviewed_comparator_records),
-      commercialComparatorRecords: count(row.commercial_comparator_records),
-      authorCuratedCompilationRecords: count(row.author_curated_compilation_records),
-      primarySourceVerifiedCompilationRecords: count(row.primary_source_verified_compilation_records),
-      primarySourceCheckPendingRecords: count(row.primary_source_check_pending_records),
-      strictReadyRecords: count(row.strict_ready_records),
-      minYear: row.min_year === null ? null : count(row.min_year),
-      maxYear: row.max_year === null ? null : count(row.max_year)
+      recordCount: release.recordCount + publicPlotRecords.length,
+      measurementCount: release.measurementCount + publicRecords.reduce((total, item) => total + item.measurements.length, 0),
+      primaryRecords: count(row.primary_records) + countPublic((record) => record.peer_reviewed_measurement),
+      benchmarkRecords: count(row.benchmark_records) + countPublic((record) => record.contextual_benchmark),
+      peerReviewedResearchRecords: count(row.peer_reviewed_research_records)
+        + countPublic((record) => record.public_release_tier === "peer_reviewed_research"),
+      peerReviewedComparatorRecords: count(row.peer_reviewed_comparator_records)
+        + countPublic((record) => record.public_release_tier === "peer_reviewed_contextual_comparator"),
+      commercialComparatorRecords: count(row.commercial_comparator_records)
+        + countPublic((record) => record.public_release_tier === "commercial_contextual_comparator"),
+      authorCuratedCompilationRecords: count(row.author_curated_compilation_records)
+        + countPublic((record) => record.author_curated_compilation_record),
+      primarySourceVerifiedCompilationRecords: count(row.primary_source_verified_compilation_records)
+        + countPublic((record) => record.author_curated_compilation_record
+          && record.primary_source_verification_status === "verified_against_primary_source"),
+      primarySourceCheckPendingRecords: count(row.primary_source_check_pending_records)
+        + countPublic((record) => record.primary_source_verification_status === "pending_independent_check"),
+      strictReadyRecords: count(row.strict_ready_records) + countPublic((record) => record.strict_comparison_ready),
+      minYear: allYears.length ? Math.min(...allYears) : null,
+      maxYear: allYears.length ? Math.max(...allYears) : null
     }
   };
 }
 
-export async function getPropertyCatalog() {
+async function getCanonicalPropertyCatalog() {
   if (!hasDatabaseUrl()) {
     const summary = getBundledReleaseSummary();
     return PROPERTY_META_BASE
-      .map((meta) => ({ ...meta, recordsWithValue: summary.measurementsByProperty[meta.key] ?? 0 }))
-      .filter((meta) => meta.recordsWithValue > 0);
+      .map((meta) => ({ ...meta, recordsWithValue: summary.measurementsByProperty[meta.key] ?? 0 }));
   }
   await ensureDatabaseSchema();
   const counts = await withDb(async (client) => {
@@ -374,6 +438,18 @@ export async function getPropertyCatalog() {
     return new Map(result.rows.map((row) => [row.property, Number(row.record_count)]));
   });
   return PROPERTY_META_BASE
-    .map((meta) => ({ ...meta, recordsWithValue: counts.get(meta.key) ?? 0 }))
-    .filter((meta) => meta.recordsWithValue > 0);
+    .map((meta) => ({ ...meta, recordsWithValue: counts.get(meta.key) ?? 0 }));
+}
+
+export async function getPropertyCatalog() {
+  const [baseProperties, publicSubmissions] = await Promise.all([
+    getCanonicalPropertyCatalog(),
+    readPublicSubmissions()
+  ]);
+  const publicRecords = publicSubmissions.map((submission) => canonicalRecordFromSubmission(submission).record);
+  return baseProperties.map((property) => ({
+    ...property,
+    recordsWithValue: property.recordsWithValue
+      + publicRecords.filter((record) => typeof record.values[property.key] === "number").length
+  })).filter((property) => property.recordsWithValue > 0);
 }

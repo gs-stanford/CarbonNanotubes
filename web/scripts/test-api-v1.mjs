@@ -36,6 +36,10 @@ assert.ok(index.endpoints.figures.endsWith("/figures"));
 assert.equal(index.endpoints.records, undefined);
 assert.equal(index.endpoints.plot, undefined);
 
+const release = await getJson("/api/v1/release");
+assert.equal(release.release.record_count, index.release.record_count);
+assert.ok(["bundled_csv", "postgresql"].includes(release.release.backend));
+
 const properties = await getJson("/api/v1/properties");
 const tensileStrength = properties.properties.find((property) => property.key === "tensile_strength");
 assert.equal(tensileStrength.canonical_unit, "Pa");
@@ -121,6 +125,17 @@ assert.equal(openapi.openapi, "3.1.0");
 assert.ok(openapi.paths["/api/v1/figures"]);
 assert.equal(openapi.paths["/api/v1/records"], undefined);
 assert.equal(openapi.paths["/api/v1/plot"], undefined);
+
+if (release.release.backend === "bundled_csv") {
+  const unavailableSubmissionResponse = await fetch(`${baseUrl}/api/submissions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ publication: { doi: "10.1038/srep00083" } })
+  });
+  assert.equal(unavailableSubmissionResponse.status, 503);
+  const unavailableSubmission = await unavailableSubmissionResponse.json();
+  assert.equal(unavailableSubmission.error.code, "submission_storage_unavailable");
+}
 
 console.log(
   `CPT bounded API passed: ${properties.properties.length} properties, ${figure.point_count} rendered representative points, ` +

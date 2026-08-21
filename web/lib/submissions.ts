@@ -1,5 +1,5 @@
 import {
-  getRuntimeExplorerPayload,
+  getRuntimeValidationPayload,
   PROPERTY_BY_KEY,
   type CommunityAcceptedSubmission,
   type Measurement,
@@ -8,6 +8,7 @@ import {
   type Publication,
   type PublicRecord
 } from "@/lib/data";
+import { hasDatabaseUrl } from "@/lib/db";
 import { maybeCleanupSubmissionWithOpenAI } from "@/lib/openai-cleanup";
 import { hasStoredSubmission, saveAcceptedSubmission } from "@/lib/submission-store";
 
@@ -77,6 +78,11 @@ type DoiMetadata = {
 type AcceptedSubmissionResult = {
   record: PublicRecord;
   submissionId: string;
+  review: {
+    status: "accepted";
+    publicVisible: false;
+    nextAction: "curator_review";
+  };
   checks: {
     doi: "verified";
     duplicate: "passed";
@@ -387,6 +393,13 @@ function buildMeasurements(record: PublicRecord, entries: Array<{ property: Prop
 }
 
 export async function acceptSubmission(payload: SubmissionPayload): Promise<AcceptedSubmissionResult> {
+  if (process.env.NODE_ENV === "production" && !hasDatabaseUrl()) {
+    throw new SubmissionError(
+      503,
+      "submission_storage_unavailable",
+      "Submissions are temporarily unavailable while persistent database storage is being configured."
+    );
+  }
   const doi = normalizeDoi(payload.publication?.doi);
   const metadata = await validateDoi(doi);
   const measurements = measurementEntries(payload);
@@ -394,7 +407,7 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
     throw new SubmissionError(422, "missing_measurements", "At least one numeric measurement is required.");
   }
 
-  const currentPayload = await getRuntimeExplorerPayload();
+  const currentPayload = await getRuntimeValidationPayload();
   const duplicates = duplicateCandidates(currentPayload.records, metadata.doi, payload, measurements);
   if (duplicates.length) {
     throw new SubmissionError(409, "duplicate_submission", "A matching DOI/sample/measurement record already exists.", {
@@ -444,6 +457,11 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
   return {
     record,
     submissionId,
+    review: {
+      status: "accepted",
+      publicVisible: false,
+      nextAction: "curator_review"
+    },
     checks: {
       doi: "verified",
       duplicate: "passed",

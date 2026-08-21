@@ -759,10 +759,8 @@ export function getBundledExplorerPayload(): ExplorerPayload {
   return bundledExplorerPayloadCache;
 }
 
-export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
+async function getRuntimeExplorerPayloadWith(communitySubmissions: CommunityAcceptedSubmission[]): Promise<ExplorerPayload> {
   const { hasDatabaseUrl } = await import("@/lib/db");
-  const { readAcceptedSubmissions } = await import("@/lib/submission-store");
-  const communitySubmissions = await readAcceptedSubmissions();
   if (!hasDatabaseUrl()) {
     return communitySubmissions.length
       ? buildExplorerPayload(bundledPublicReleaseRows(), communitySubmissions)
@@ -778,6 +776,16 @@ export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
     },
     communitySubmissions
   );
+}
+
+export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
+  const { readPublicSubmissions } = await import("@/lib/submission-store");
+  return getRuntimeExplorerPayloadWith(await readPublicSubmissions());
+}
+
+export async function getRuntimeValidationPayload(): Promise<ExplorerPayload> {
+  const { readAcceptedSubmissions } = await import("@/lib/submission-store");
+  return getRuntimeExplorerPayloadWith(await readAcceptedSubmissions());
 }
 
 export async function getRuntimeExplorerBootstrap(): Promise<ExplorerBootstrap> {

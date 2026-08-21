@@ -199,7 +199,6 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const [figure, setFigure] = useState<FigureResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [figureError, setFigureError] = useState<string | null>(null);
-  const [revision, setRevision] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -291,7 +290,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [requestBody, revision]);
+  }, [requestBody]);
 
   useEffect(() => {
     const query = searchQuery.trim();
@@ -420,9 +419,14 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
         setSubmissionPacket(JSON.stringify({ status: "rejected", response: result }, null, 2));
         return;
       }
-      setSelectedId(result.record.record_id);
-      setRevision((value) => value + 1);
-      setSubmissionPacket(JSON.stringify({ status: "accepted_and_plotted", record_id: result.record.record_id, checks: result.checks, doi: result.record.doi_verified }, null, 2));
+      setSubmissionPacket(JSON.stringify({
+        status: "accepted_pending_curator_review",
+        submission_id: result.submissionId,
+        record_id: result.record.record_id,
+        public_visible: false,
+        checks: result.checks,
+        doi: result.record.doi_verified
+      }, null, 2));
       form.reset();
     } catch {
       setSubmissionPacket(JSON.stringify({ status: "failed", error: "Network or server error during submission." }, null, 2));
