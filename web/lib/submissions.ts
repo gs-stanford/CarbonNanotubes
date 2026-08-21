@@ -2,7 +2,6 @@ import {
   getRuntimeExplorerPayload,
   PROPERTY_BY_KEY,
   type CommunityAcceptedSubmission,
-  type ExplorerPayload,
   type Measurement,
   type PlotRecord,
   type PropertyKey,
@@ -76,7 +75,6 @@ type DoiMetadata = {
 };
 
 type AcceptedSubmissionResult = {
-  payload: ExplorerPayload;
   record: PublicRecord;
   submissionId: string;
   checks: {
@@ -298,7 +296,7 @@ function buildRecord(payload: SubmissionPayload, metadata: DoiMetadata, measurem
     primary_source_verification_status: "submitter_claimed_pending_curator_check",
     value_extraction_type: "direct_or_source_table",
     source_disclosure: "Community-submitted DOI-verified record accepted by automated duplicate checks.",
-    citation_requirement: "Cite original publication and CNT Property Atlas.",
+    citation_requirement: "Cite the original publication and Carbon Property Tables.",
     peer_reviewed_measurement: true,
     contextual_benchmark: false,
     commercial_specsheet_benchmark: false,
@@ -444,7 +442,6 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
   const cleanup = await maybeCleanupSubmissionWithOpenAI(acceptedSubmission);
 
   return {
-    payload: await getRuntimeExplorerPayload(),
     record,
     submissionId,
     checks: {

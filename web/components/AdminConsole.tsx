@@ -77,7 +77,7 @@ function editableFromSubmission(submission: AdminSubmission | null): EditableRec
     dataset_provenance: record?.dataset_provenance ?? "community_submission",
     primary_source_verification_status: record?.primary_source_verification_status ?? "submitter_claimed_pending_curator_check",
     source_disclosure: record?.source_disclosure ?? "",
-    citation_requirement: record?.citation_requirement ?? "Cite original publication and CNT Property Atlas.",
+    citation_requirement: record?.citation_requirement ?? "Cite the original publication and Carbon Property Tables.",
     issue_types: record?.issue_types ?? "",
     missing_conditions: Boolean(record?.missing_conditions),
     unit_inference_review_needed: Boolean(record?.unit_inference_review_needed),
@@ -251,7 +251,7 @@ export function AdminConsole() {
     <main className="admin-shell">
       <header className="admin-topbar">
         <div>
-          <p className="admin-kicker">CNT Property Atlas</p>
+          <p className="admin-kicker">Carbon Property Tables</p>
           <h1>Submission curation</h1>
         </div>
         <form className="admin-token-form" onSubmit={loadSubmissions}>

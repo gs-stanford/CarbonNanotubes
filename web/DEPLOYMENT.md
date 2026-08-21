@@ -1,4 +1,4 @@
-# CNT Property Atlas Deployment
+# Carbon Property Tables Deployment
 
 ## Render service
 
@@ -11,6 +11,7 @@ Use one Render Web Service for the Next.js app.
   - `NODE_VERSION=22`
   - `DATABASE_URL=<Render Postgres internal connection string>`
   - `ADMIN_TOKEN=<long random token for /admin>`
+  - `CPT_INTERNAL_API_TOKEN=<separate long random token for trusted data tooling>`
 
 The app creates the Postgres schema lazily at runtime when `DATABASE_URL` is present. Render also migrates the schema and transactionally synchronizes the bundled canonical public release before every start:
 
@@ -21,13 +22,13 @@ npm run db:import-public
 
 `db:import-public` validates IDs and foreign keys, replaces the canonical snapshot in one transaction, and verifies exact row-payload hashes and counts before commit. It is idempotent. Use `npm run db:verify-public` to compare PostgreSQL against the bundled CSV release without writing, or inspect `/api/health/data` for the active release and backend.
 
-When `DATABASE_URL` is configured, public records, measurements, and publications are read from PostgreSQL. Bundled CSV files are used only in environments without a configured database.
+When `DATABASE_URL` is configured, canonical records, measurements, and publications are read from PostgreSQL. Bundled CSV files are used only in environments without a configured database.
 
-## Public query API
+## Public figure API
 
-The versioned read API is served under `/api/v1`; its OpenAPI document is `/api/v1/openapi.json`. Production filters execute against indexed canonical PostgreSQL fields and always return explicit units, provenance status, and citations. The API is read-only and CORS-enabled. See [`API.md`](./API.md) for examples.
+The versioned artifact API is served under `/api/v1`; its OpenAPI document is `/api/v1/openapi.json`. Production filters execute against indexed canonical PostgreSQL fields, while representative-record selection and plotting remain server-side. Public responses contain rendered figures, citations, temporary-point ranks, and at most ten exact top rows. Canonical record and coordinate routes require `CPT_INTERNAL_API_TOKEN` and are not advertised. See [`API.md`](./API.md) for examples.
 
-The Python package in `../python` consumes this contract directly. Set `CPT_API_URL` to the deployed service URL or pass the URL to `CPTClient`.
+The Python package in `../python` consumes only this artifact contract. Set `CPT_API_URL` to the deployed service URL or pass the URL to `CPTClient`.
 
 ## Submission pipeline
 

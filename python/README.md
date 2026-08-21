@@ -1,6 +1,6 @@
 # Carbon Property Tables Python SDK
 
-The SDK creates citation-backed comparison figures from the verified Carbon Property Tables release. It is a figure and benchmarking interface, not a bulk database-download client.
+The SDK requests citation-backed comparison figures rendered by the Carbon Property Tables service. It is a figure and benchmarking interface, not a bulk database-download client or a local copy of the canonical dataset.
 
 ## Install locally
 
@@ -26,6 +26,7 @@ figure = cpt.scatter(
     material_family=["CNT_or_CNT_hybrid", "CNT_metal_composite"],
     top=5,
     top_by="y",
+    formats=("svg", "png", "pdf"),
     temporary=TemporaryPoint(
         x=1.8,
         y=12.0,
@@ -39,7 +40,7 @@ print(figure.temporary_point)
 
 Temporary coordinates use the display units printed on the active axes. They are rendered and ranked against the visible representative material set, but are never written to Carbon Property Tables.
 
-In Jupyter, returning `figure` from a cell displays its SVG directly. `save()` accepts `.svg`, `.pdf`, or `.png` and automatically writes matching `.citations.txt` and `.bib` files.
+In Jupyter, returning `figure` from a cell displays its SVG directly. `save()` accepts any format requested through `formats` and automatically writes matching `.citations.txt` and `.bib` files. SVG alone is requested by default to keep routine calls small.
 
 ## Extract a bounded top table
 
@@ -66,7 +67,7 @@ ashby = cpt.ashby("density", "specific_strength")
 - `ranked` ranks the y property among records that also contain the selected x property.
 - `ashby` enforces logarithmic axes and shows robust material-family regions where enough data exist.
 
-All API filters supported by the plotting service can be passed as keyword arguments. For example:
+All bounded figure filters supported by the service can be passed as keyword arguments. For example:
 
 ```python
 figure = cpt.scatter(
@@ -82,4 +83,4 @@ Measurement-range filters use canonical SI units. Axis values and temporary-poin
 
 ## Deliberate access boundary
 
-The public SDK does not expose canonical-record pagination, arbitrary record retrieval, or full plot-coordinate tables. A rendered vector figure can still be digitized, so this is an access and citation boundary rather than digital-rights management. Publication use requires the automatically supplied original-source and Atlas citations.
+The public SDK does not expose canonical-record pagination, arbitrary record retrieval, full plot-coordinate tables, or a local plotting engine. Exact tabular output is limited to the explicitly requested top subset and capped at ten rows. A rendered vector figure can still be digitized, so this is an access and citation boundary rather than digital-rights management. Publication use requires the automatically supplied original-source and Carbon Property Tables citations.

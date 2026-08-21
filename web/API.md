@@ -1,34 +1,52 @@
 # Carbon Property Tables API v1
 
-The read API exposes the active immutable CNT Property Atlas release at `/api/v1`. Production requests are resolved against PostgreSQL. Local development without `DATABASE_URL` uses the bundled release files with the same response contract.
+The public API serves citation-backed figure artifacts from the active immutable Carbon Property Tables release. Production requests are resolved against PostgreSQL; local development without `DATABASE_URL` uses the bundled release files through the same contract.
 
-## Guarantees
-
-- Numerical `value` fields use the explicit canonical SI `unit` returned beside them.
-- Display conversions are separate `display_value` and `display_unit` fields.
-- Plot points pair properties from the same canonical record; the API does not combine values from different specimens.
-- Every record includes its original-source, compilation-source (when applicable), and Atlas citation bundle.
-- Cursor pagination is deterministic by immutable `record_id`.
-- The API is read-only, CORS-enabled, and bounded to 200 records per query or 2,000 points per plot request.
-
-## Core requests
+## Public surface
 
 ```text
-GET /api/v1/release
-GET /api/v1/properties
-GET /api/v1/records?property=tensile_strength&min_value=5e9&material_family=CNT_or_CNT_hybrid
-GET /api/v1/records?measurement_filter=density:1000:1500&measurement_filter=diameter::2e-5
-GET /api/v1/records?doi=10.1126/science.adj1082
-GET /api/v1/records/{record_id}
-GET /api/v1/plot?x=specific_strength&y=specific_electrical_conductivity
-GET /api/v1/citations?record_id={record_id}
-POST /api/v1/citations  {"record_ids":["rec_...","rec_..."]}
+GET  /api/v1
+GET  /api/v1/release
+GET  /api/v1/properties
+POST /api/v1/figures
+GET  /api/v1/openapi.json
 ```
 
-`min_value` and `max_value` always refer to the canonical SI unit shown by `/api/v1/properties`, never the display unit. Use repeated `measurement_filter=property:min:max` parameters to constrain several properties in one request; either bound may be blank. Gauge-length filters use millimetres and temperature filters use degrees Celsius because those units are explicit in their parameter names. Repeated or comma-separated values are accepted for `material_family`, `form_factor`, `provenance`, `verification`, and `record_id`.
+`POST /api/v1/figures` accepts `scatter`, `ranked`, `trend`, and `ashby` requests. Rendering, representative-record selection, comparison references, temporary-point ranking, and citation assembly all run on the server.
 
-The machine-readable contract is available at `/api/v1/openapi.json`.
+```json
+{
+  "kind": "scatter",
+  "x": "specific_strength",
+  "y": "specific_electrical_conductivity",
+  "x_scale": "log",
+  "y_scale": "log",
+  "top": 5,
+  "top_by": "y",
+  "temporary": { "x": 1.8, "y": 12.0, "label": "Candidate" },
+  "formats": ["svg", "png", "pdf"],
+  "filters": {
+    "material_family": ["CNT_or_CNT_hybrid", "CNT_metal_composite"],
+    "year_min": 2010,
+    "peer_reviewed": true
+  }
+}
+```
+
+The response contains rendered artifacts, aggregate counts, one focused record for the interactive website, temporary-point ranks, a complete citation bundle, and no more than ten explicitly requested top rows. It does not return the canonical record table or a complete coordinate array.
+
+## Units and filters
+
+Figure axes and temporary-point coordinates use the display units returned by `/api/v1/properties`. Measurement-range filters use canonical SI units. Repeated values are accepted for material family, form factor, release tier, provenance, and verification filters.
+
+Ashby requests always use logarithmic axes. Top-row extraction is allowed only for higher-is-better performance properties; density and dimensions are filtering or normalization variables, not optimization targets.
+
+## Internal data routes
+
+Canonical record and raw plot routes are retained only for trusted administration and migration tooling. They require `CPT_INTERNAL_API_TOKEN`, are omitted from discovery and OpenAPI, and return `404` to unauthenticated requests. The public Python SDK does not implement those routes.
 
 ## Citation rule
 
-Downstream users must cite every original publication represented by the values they use and the CNT Property Atlas. When a value is supplied through an author-curated published compilation, the compilation publication is included as an additional citation. The `citations` response contains deduplicated Nature-style text and BibTeX for exactly this purpose.
+Every figure package includes deduplicated Nature-style text and BibTeX for all represented original publications, any required author-curated compilation, and Carbon Property Tables. Saved SDK artifacts automatically write citation sidecars.
+
+The vector output can still be digitized. This contract is an access and citation boundary, not digital-rights management.

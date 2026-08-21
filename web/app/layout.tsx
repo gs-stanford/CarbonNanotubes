@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CNT Property Atlas",
-  description: "Interactive carbon nanotube property explorer for literature-backed comparison."
+  title: "Carbon Property Tables",
+  description: "Citation-backed carbon-material property figures and performance benchmarking."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

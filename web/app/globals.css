@@ -793,6 +793,38 @@ textarea {
   overflow: hidden;
 }
 
+.bounded-figure {
+  position: relative;
+  min-height: 470px;
+}
+
+.server-figure-svg {
+  width: 100%;
+}
+
+.server-figure-svg > svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.figure-status,
+.figure-error {
+  position: absolute;
+  inset: 20px 18px 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.figure-error {
+  color: #9a3d26;
+  background: rgba(255, 251, 249, 0.94);
+}
+
 .plot-search-results {
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
@@ -1760,6 +1792,18 @@ textarea {
 
   .atlas-workspace {
     grid-template-columns: 1fr;
+  }
+
+  .plot-panel {
+    order: -2;
+  }
+
+  .detail-rail {
+    order: -1;
+  }
+
+  .control-rail {
+    order: 0;
   }
 
   .control-rail,

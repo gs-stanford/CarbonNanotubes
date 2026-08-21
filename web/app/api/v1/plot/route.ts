@@ -4,8 +4,11 @@ import { apiMeta, ApiInputError, parseRecordQuery, serializePlotPoint } from "@/
 import { apiError, publicJson, publicOptions } from "@/lib/api-response";
 import { isPropertyKey, PROPERTY_BY_KEY } from "@/lib/data";
 import { getReleaseDescriptor, queryCanonicalRecords } from "@/lib/query-store";
+import { requireInternalDataAccess } from "@/lib/internal-api";
 
 export async function GET(request: NextRequest) {
+  const denied = requireInternalDataAccess(request);
+  if (denied) return denied;
   try {
     const xRaw = request.nextUrl.searchParams.get("x");
     const yRaw = request.nextUrl.searchParams.get("y");
