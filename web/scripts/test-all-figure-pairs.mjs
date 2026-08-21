@@ -19,13 +19,26 @@ async function figure(body) {
 
 function calloutBoxes(svg) {
   return Array.from(
-    svg.matchAll(/<text class="point-label" x="([^"]+)" y="([^"]+)">([^<]+)<\/text>/g),
+    svg.matchAll(/<line class="label-leader" x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"\/><text class="point-label" x="([^"]+)" y="([^"]+)">([^<]+)<\/text>/g),
     (match) => {
-      const text = match[3];
-      const x0 = Number(match[1]);
-      const y0 = Number(match[2]) - 11;
+      const text = match[7];
+      const pointX = Number(match[1]);
+      const pointY = Number(match[2]);
+      const leaderX = Number(match[3]);
+      const leaderY = Number(match[4]);
+      const x0 = Number(match[5]);
+      const y0 = Number(match[6]) - 11;
       const width = Math.min(Math.max(text.length * 5.7 + 4, 32), 210);
-      return { text, x0, y0, x1: x0 + width, y1: y0 + 16 };
+      return {
+        text,
+        pointX,
+        pointY,
+        leaderLength: Math.hypot(leaderX - pointX, leaderY - pointY),
+        x0,
+        y0,
+        x1: x0 + width,
+        y1: y0 + 16
+      };
     }
   );
 }
@@ -34,6 +47,9 @@ function validateCallouts(svg, label) {
   const callouts = calloutBoxes(svg);
   for (const metal of ["Al", "Cu", "Ag", "Au", "Ni", "Steel"]) {
     assert.ok(callouts.filter((item) => item.text === metal).length <= 1, `${label}: duplicate ${metal} callout`);
+  }
+  for (const callout of callouts) {
+    assert.ok(callout.leaderLength >= 5, `${label}: '${callout.text}' label covers its own marker`);
   }
   for (let index = 0; index < callouts.length; index += 1) {
     for (let other = index + 1; other < callouts.length; other += 1) {
