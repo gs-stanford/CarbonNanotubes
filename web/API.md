@@ -9,10 +9,13 @@ GET  /api/v1
 GET  /api/v1/release
 GET  /api/v1/properties
 POST /api/v1/figures
+GET /api/v1/doi-status?doi={doi}
 GET  /api/v1/openapi.json
 ```
 
 `POST /api/v1/figures` accepts `scatter`, `ranked`, `trend`, and `ashby` requests. Rendering, representative-record selection, comparison references, temporary-point ranking, and citation assembly all run on the server.
+
+`GET /api/v1/doi-status` performs an exact, rate-limited coverage check. It returns only presence and bibliographic identity, never record IDs, properties, measurements, coordinates, or sample counts.
 
 ```json
 {

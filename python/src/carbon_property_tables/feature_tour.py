@@ -28,11 +28,11 @@ def _require(condition: bool, message: str) -> None:
 
 
 def _save_figure(figure: RenderedFigure, stem: Path) -> list[Path]:
-    saved: list[Path] = []
-    for format_name in figure.available_formats:
-        saved.append(figure.save(stem.with_suffix(f".{format_name}")))
+    bundle = figure.save_bundle(stem)
+    saved = list(bundle.values())
     _require(stem.with_suffix(".citations.txt").is_file(), f"Missing citation text for {stem.name}.")
     _require(stem.with_suffix(".bib").is_file(), f"Missing BibTeX for {stem.name}.")
+    _require(stem.with_suffix(".manifest.json").is_file(), f"Missing reproducibility manifest for {stem.name}.")
     return saved
 
 
@@ -65,6 +65,10 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
     _require(release_payload.get("api_version") == "v1", "Unexpected CPT API version.")
     _require(int(release.get("record_count", 0)) > 0, "The active release contains no records.")
     _require(bool(properties), "The API returned no supported properties.")
+    known_doi = client.doi_status("10.1126/science.adj1082")
+    _require(known_doi.in_database, "Known DOI was not found by the bounded DOI lookup.")
+    _require(known_doi.title is not None, "Known DOI lookup omitted publication metadata.")
+    _require(not client.has_doi("10.5555/cpt.definitely-absent"), "Absent DOI was reported as present.")
 
     property_aliases = {
         "specific strength": resolve_property("Specific Strength"),
@@ -131,7 +135,6 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
         for path in saved:
             _validate_image(path)
         artifact_paths.extend(saved)
-        artifact_paths.extend((destination / f"{name}.citations.txt", destination / f"{name}.bib"))
         figure_report[name] = {
             "point_count": figure.point_count,
             "top_rows": len(figure.top_points),
@@ -178,6 +181,11 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
         },
         "property_count": len(properties),
         "property_aliases": property_aliases,
+        "doi_lookup": {
+            "query_doi": known_doi.query_doi,
+            "in_database": known_doi.in_database,
+            "title": known_doi.title,
+        },
         "figures": figure_report,
         "temporary_point": {
             "label": scatter.temporary_point.label,

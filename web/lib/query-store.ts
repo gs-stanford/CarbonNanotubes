@@ -10,6 +10,7 @@ import {
   type CommunityAcceptedSubmission,
   type Measurement,
   type PlotRecord,
+  type PublicRecord,
   type PropertyKey,
   type Publication
 } from "@/lib/data";
@@ -71,10 +72,24 @@ export type RecordQueryPage = {
   hasMore: boolean;
 };
 
+export type DoiMetadata = {
+  doi: string;
+  title: string | null;
+  authors_short: string | null;
+  journal: string | null;
+  year: number | null;
+  role: "original" | "compilation";
+};
+
 type QueryRow = {
   record_payload: unknown;
   publication_payload: unknown;
   measurement_payloads: unknown;
+};
+
+type DoiLookupRow = {
+  record_payload: unknown;
+  publication_payload: unknown;
 };
 
 type BootstrapRow = {
@@ -154,10 +169,35 @@ function canonicalRecordFromSubmission(submission: CommunityAcceptedSubmission):
 
 function normalizeDoi(value: string): string {
   return value
+    .split(";")[0]
     .trim()
     .replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")
     .replace(/^doi:\s*/i, "")
     .toLowerCase();
+}
+
+function doiMetadataFromRecord(record: PublicRecord, publication: Publication | null, doi: string): DoiMetadata | null {
+  if (normalizeDoi(record.doi_verified ?? record.doi_raw ?? "") === doi) {
+    return {
+      doi,
+      title: publication?.title_verified ?? record.publication_title_verified,
+      authors_short: publication?.authors_short_verified ?? record.publication_authors_short_verified,
+      journal: publication?.journal_verified ?? record.publication_journal_verified,
+      year: publication?.year_verified ?? record.publication_year_verified,
+      role: "original"
+    };
+  }
+  if (normalizeDoi(record.compilation_source_doi_raw ?? "") === doi) {
+    return {
+      doi,
+      title: record.compilation_source_title,
+      authors_short: record.compilation_source_authors_short,
+      journal: record.compilation_source_journal,
+      year: record.compilation_source_year,
+      role: "compilation"
+    };
+  }
+  return null;
 }
 
 function queryTokens(value: string): string[] {
@@ -301,6 +341,70 @@ export async function queryCanonicalRecords(query: RecordQuery): Promise<RecordQ
 export async function getCanonicalRecord(recordId: string): Promise<CanonicalRecord | null> {
   const page = await queryCanonicalRecords({ limit: 1, recordIds: [recordId] });
   return page.records[0] ?? null;
+}
+
+export async function lookupDoiMetadata(value: string): Promise<DoiMetadata | null> {
+  const doi = normalizeDoi(value);
+  if (hasDatabaseUrl()) {
+    await ensureDatabaseSchema();
+    const [row, publicSubmissions] = await Promise.all([
+      withDb(async (client) => {
+        const result = await client.query<DoiLookupRow>(
+          `
+            SELECT
+              r.payload_json AS record_payload,
+              p.payload_json AS publication_payload
+            FROM atlas_dataset_releases rel
+            JOIN atlas_canonical_records r ON r.release_id = rel.release_id
+            LEFT JOIN atlas_canonical_publications p ON p.publication_id = r.publication_id
+            WHERE rel.active = true
+              AND (
+                lower(COALESCE(p.doi_verified, r.doi_verified, '')) = $1
+                OR lower(
+                  regexp_replace(
+                    regexp_replace(COALESCE(r.payload_json->>'compilation_source_doi_raw', ''), '^https?://(dx\\.)?doi\\.org/', '', 'i'),
+                    '^doi:\\s*',
+                    '',
+                    'i'
+                  )
+                ) = $1
+              )
+            ORDER BY CASE WHEN lower(COALESCE(p.doi_verified, r.doi_verified, '')) = $1 THEN 0 ELSE 1 END
+            LIMIT 1
+          `,
+          [doi]
+        );
+        return result.rows[0] ?? null;
+      }),
+      readPublicSubmissions()
+    ]);
+    if (row) {
+      const record = recordFromRow(payloadToStringRecord(row.record_payload, "DOI lookup record payload"));
+      const publication = row.publication_payload
+        ? publicationFromRow(payloadToStringRecord(row.publication_payload, "DOI lookup publication payload"))
+        : null;
+      const metadata = doiMetadataFromRecord(record, publication, doi);
+      if (metadata) return metadata;
+    }
+    for (const submission of publicSubmissions) {
+      const metadata = doiMetadataFromRecord(submission.record, submission.publication, doi);
+      if (metadata) return metadata;
+    }
+    return null;
+  }
+
+  const payload = getBundledExplorerPayload();
+  const publicationByDoi = new Map(
+    payload.publications
+      .filter((publication) => publication.doi_verified)
+      .map((publication) => [normalizeDoi(publication.doi_verified ?? ""), publication])
+  );
+  for (const record of payload.records) {
+    const publication = publicationByDoi.get(normalizeDoi(record.doi_verified ?? "")) ?? null;
+    const metadata = doiMetadataFromRecord(record, publication, doi);
+    if (metadata) return metadata;
+  }
+  return null;
 }
 
 export async function getReleaseDescriptor(): Promise<ReleaseDescriptor> {

@@ -8,7 +8,7 @@ from typing import Any
 
 from .client import CPTClient
 from .exceptions import CPTValidationError
-from .models import RenderedFigure
+from .models import DoiStatus, RenderedFigure
 
 
 PROPERTY_KEYS = (
@@ -111,6 +111,16 @@ def release() -> dict[str, Any]:
 def properties() -> tuple[dict[str, Any], ...]:
     """Return the live property catalog."""
     return get_client().properties()
+
+
+def doi_status(doi: str) -> DoiStatus:
+    """Return exact DOI coverage and citation metadata without property values."""
+    return get_client().doi_status(doi)
+
+
+def has_doi(doi: str) -> bool:
+    """Return whether an exact DOI is represented in the active release."""
+    return get_client().has_doi(doi)
 
 
 def scatter(x: str, y: str, **kwargs: Any) -> RenderedFigure:

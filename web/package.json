@@ -13,6 +13,7 @@
     "db:validate-public-files": "node scripts/db-import-public.mjs --dry-run",
     "db:test-public-import": "node scripts/test-db-import-public.mjs",
     "test:api-v1": "node scripts/test-api-v1.mjs",
+    "test:all-figures": "node scripts/test-all-figure-pairs.mjs",
     "test:figure-selection": "node scripts/test-figure-selection.mjs",
     "typecheck": "tsc --noEmit",
     "sync:data": "node scripts/sync-public-data.mjs"

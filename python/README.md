@@ -5,7 +5,7 @@ The SDK requests citation-backed comparison figures rendered by the Carbon Prope
 ## Install
 
 ```bash
-python -m pip install carbon-property-tables==0.3.3
+python -m pip install carbon-property-tables==0.3.4
 ```
 
 ## Make a figure
@@ -20,9 +20,11 @@ figure = cpt.scatter(
     log_y=True,
 )
 
-figure.save("conductivity-strength.svg")
+figure.save_bundle("conductivity-strength")
 figure
 ```
+
+`save_bundle()` writes editable SVG, publication-resolution PNG, Nature-style citation text, BibTeX, and a value-free reproducibility manifest tied to the exact database release. SVG and PNG are requested together by default. Request PDF explicitly with `formats=("svg", "png", "pdf")` when needed.
 
 The first property is the x-axis and the second is the y-axis. Readable names are accepted, including `"specific cond"`, `"tenacity"`, `"tensile strength"`, and `"thermal conductivity"`. Misspelled or unknown properties fail explicitly instead of being guessed.
 
@@ -85,7 +87,21 @@ print(comparison.temporary_point)
 
 Temporary coordinates use the display units printed on the active axes. They are rendered and ranked against the visible representative material set, but are never written to Carbon Property Tables.
 
-In Jupyter, returning `figure` from a cell displays its SVG directly. `save()` accepts any format requested through `formats` and automatically writes matching `.citations.txt` and `.bib` files. SVG alone is requested by default to keep routine calls small.
+In Jupyter, returning `figure` from a cell displays its SVG directly. `save()` writes one requested format with matching citation sidecars. `save_bundle()` writes all requested formats once, plus `.citations.txt`, `.bib`, and `.manifest.json` sidecars.
+
+## Check DOI coverage without extracting values
+
+```python
+import carbon_property_tables as cpt
+
+if cpt.has_doi("10.1126/science.adj1082"):
+    print("Represented in Carbon Property Tables")
+
+status = cpt.doi_status("https://doi.org/10.1126/science.adj1082")
+print(status.title, status.journal, status.year)
+```
+
+The DOI lookup is exact and rate-limited. It returns only presence and bibliographic identity; it does not return record IDs, available properties, measurements, coordinates, or sample counts.
 
 ## Extract a bounded top table
 

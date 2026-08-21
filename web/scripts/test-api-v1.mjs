@@ -40,6 +40,25 @@ const release = await getJson("/api/v1/release");
 assert.equal(release.release.record_count, index.release.record_count);
 assert.ok(["bundled_csv", "postgresql"].includes(release.release.backend));
 
+const knownDoi = await getJson(`/api/v1/doi-status?doi=${encodeURIComponent("https://doi.org/10.1126/science.adj1082")}`);
+assert.equal(knownDoi.in_database, true);
+assert.equal(knownDoi.query_doi, "10.1126/science.adj1082");
+assert.ok(knownDoi.publication.title);
+assert.equal(knownDoi.record_ids, undefined);
+assert.equal(knownDoi.measurements, undefined);
+assert.equal(knownDoi.properties, undefined);
+
+const compilationDoi = await getJson(`/api/v1/doi-status?doi=${encodeURIComponent("10.1002/adma.202008432")}`);
+assert.equal(compilationDoi.in_database, true);
+assert.equal(compilationDoi.publication.role, "compilation");
+assert.ok(compilationDoi.publication.title);
+
+const absentDoi = await getJson(`/api/v1/doi-status?doi=${encodeURIComponent("10.5555/cpt.definitely-absent")}`);
+assert.equal(absentDoi.in_database, false);
+assert.equal(absentDoi.publication, null);
+const invalidDoi = await getJson(`/api/v1/doi-status?doi=${encodeURIComponent("not-a-doi")}`, 400);
+assert.equal(invalidDoi.error.code, "invalid_request");
+
 const properties = await getJson("/api/v1/properties");
 const tensileStrength = properties.properties.find((property) => property.key === "tensile_strength");
 assert.equal(tensileStrength.canonical_unit, "Pa");
@@ -127,6 +146,7 @@ assert.ok(!pageHtml.includes("rec_f8e2b6a26ecb"));
 const openapi = await getJson("/api/v1/openapi.json");
 assert.equal(openapi.openapi, "3.1.0");
 assert.ok(openapi.paths["/api/v1/figures"]);
+assert.ok(openapi.paths["/api/v1/doi-status"]);
 assert.equal(openapi.paths["/api/v1/records"], undefined);
 assert.equal(openapi.paths["/api/v1/plot"], undefined);
 

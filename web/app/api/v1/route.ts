@@ -14,6 +14,7 @@ export async function GET() {
         release: "/api/v1/release",
         properties: "/api/v1/properties",
         figures: "/api/v1/figures",
+        doi_status: "/api/v1/doi-status?doi={doi}",
         citations: "/api/v1/citations?record_id={record_id}",
         openapi: "/api/v1/openapi.json"
       }

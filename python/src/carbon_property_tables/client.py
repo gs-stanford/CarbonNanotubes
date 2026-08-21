@@ -16,7 +16,7 @@ import certifi
 
 from ._version import __version__
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
-from .models import RenderedFigure, TemporaryPoint
+from .models import DoiStatus, RenderedFigure, TemporaryPoint
 
 DEFAULT_API_URL = "https://carbonnanotubes.onrender.com/api/v1"
 
@@ -99,6 +99,16 @@ class CPTClient:
         """Return supported figure-property keys and units."""
         return tuple(self._request("properties").get("properties", []))
 
+    def doi_status(self, doi: str) -> DoiStatus:
+        """Check exact DOI coverage without returning record IDs, properties, or measurements."""
+        if not isinstance(doi, str) or not doi.strip():
+            raise CPTValidationError("doi must be a non-empty string.")
+        return DoiStatus.from_dict(self._request("doi-status", params={"doi": doi.strip()}))
+
+    def has_doi(self, doi: str) -> bool:
+        """Return whether an exact DOI is represented in the active release."""
+        return self.doi_status(doi).in_database
+
     def figure(
         self,
         kind: str,
@@ -110,7 +120,7 @@ class CPTClient:
         temporary: TemporaryPoint | None = None,
         log_x: bool = False,
         log_y: bool = False,
-        formats: Sequence[str] = ("svg",),
+        formats: Sequence[str] = ("svg", "png"),
         **filters: Any,
     ) -> RenderedFigure:
         """Request a rendered figure and, optionally, at most ten exact top rows."""
@@ -164,7 +174,7 @@ class CPTClient:
                     decoded[name] = base64.b64decode(encoded, validate=True)
                 except ValueError as error:
                     raise CPTError(f"CPT API returned invalid {name.upper()} data.") from error
-        return RenderedFigure.from_dict(payload, decoded)
+        return RenderedFigure.from_dict(payload, decoded, body)
 
     def scatter(self, x: str, y: str, **kwargs: Any) -> RenderedFigure:
         """Render a publication-oriented scatter figure."""

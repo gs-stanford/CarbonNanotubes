@@ -188,6 +188,12 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
     ? Array.from(new Set(body.highlight_record_ids.map(String).filter(Boolean))).slice(0, MAX_HIGHLIGHTS)
     : [];
   filterSearchParams(body.filters);
+  if (temporary && (kind === "scatter" || kind === "ashby") && xScale === "log" && temporary.x <= 0) {
+    throw new ApiInputError("temporary x must be positive on a logarithmic x-axis.");
+  }
+  if (temporary && yScale === "log" && temporary.y <= 0) {
+    throw new ApiInputError("temporary y must be positive on a logarithmic y-axis.");
+  }
   return {
     kind,
     x,
