@@ -67,6 +67,17 @@ const FAMILY_COLORS: Record<string, { fill: string; stroke: string }> = {
   ceramic_or_glass_comparator: { fill: "#6a3d9a", stroke: "#432667" }
 };
 
+const FAMILY_POINT_CLASSES: Record<string, string> = {
+  CNT_or_CNT_hybrid: "point-material-cnt",
+  CNT_metal_composite: "point-material-cnt-metal",
+  graphene_or_GO_fiber: "point-material-graphene",
+  carbon_fiber_comparator: "point-material-carbon-fiber",
+  other_carbon_comparator: "point-material-other-carbon",
+  polymer_fiber_comparator: "point-material-polymer",
+  metal_comparator: "point-material-metal",
+  ceramic_or_glass_comparator: "point-material-ceramic"
+};
+
 const FORM_LABELS: Record<string, string> = {
   buckypaper: "Buckypaper",
   fiber_yarn: "Fiber / yarn",
@@ -273,12 +284,18 @@ function pointMarkup(record: PlotRecord, x: number, y: number, options: SvgFigur
   const selected = options.interactive && record.record_id === options.selectedId;
   const highlighted = options.interactive && options.highlightedIds.has(record.record_id);
   const radius = record.public_release_tier === "peer_reviewed_research" ? 4.4 : 4;
-  const pointClasses = ["plot-point", selected ? "is-selected" : "", highlighted ? "is-search-match" : ""]
+  const pointClasses = [
+    "plot-point",
+    FAMILY_POINT_CLASSES[record.material_family] ?? "point-material-unknown",
+    `point-shape-${shape}`,
+    selected ? "is-selected" : "",
+    highlighted ? "is-search-match" : ""
+  ]
     .filter(Boolean)
     .join(" ");
   const attributes = options.interactive
     ? `class="${pointClasses}" data-record-id="${xml(record.record_id)}" role="button" tabindex="0" aria-label="${xml(record.public_sample_label || record.record_label)}"`
-    : `class="plot-point"`;
+    : `class="${pointClasses}"`;
   const layers = [
     highlighted ? `<circle class="search-highlight-halo" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="12" fill="none" stroke="#00a6a6" stroke-width="3.4" opacity="0.88"/>` : "",
     selected ? `<circle class="selected-halo" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="9.5" fill="none" stroke="#126f6d" stroke-width="1.8"/>` : "",
