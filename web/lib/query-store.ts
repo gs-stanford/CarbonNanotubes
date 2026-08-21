@@ -1,5 +1,7 @@
 import {
   getBundledExplorerPayload,
+  getBundledExplorerBootstrap,
+  getBundledReleaseSummary,
   measurementFromRow,
   PROPERTY_META_BASE,
   publicationFromRow,
@@ -9,6 +11,7 @@ import {
   type PropertyKey,
   type Publication
 } from "@/lib/data";
+import type { ExplorerBootstrap } from "@/lib/figure-api";
 import { readCanonicalReleaseMetadata } from "@/lib/canonical-store";
 import { ensureDatabaseSchema, hasDatabaseUrl, withDb } from "@/lib/db";
 import { buildCanonicalRecordQuery } from "@/lib/query-sql.mjs";
@@ -69,6 +72,23 @@ type QueryRow = {
   record_payload: unknown;
   publication_payload: unknown;
   measurement_payloads: unknown;
+};
+
+type BootstrapRow = {
+  record_count: number | string;
+  material_families: string[] | null;
+  form_factors: string[] | null;
+  primary_records: number | string;
+  benchmark_records: number | string;
+  peer_reviewed_research_records: number | string;
+  peer_reviewed_comparator_records: number | string;
+  commercial_comparator_records: number | string;
+  author_curated_compilation_records: number | string;
+  primary_source_verified_compilation_records: number | string;
+  primary_source_check_pending_records: number | string;
+  strict_ready_records: number | string;
+  min_year: number | string | null;
+  max_year: number | string | null;
 };
 
 function payloadToStringRecord(value: unknown, label: string): Record<string, string> {
@@ -256,21 +276,90 @@ export async function getReleaseDescriptor(): Promise<ReleaseDescriptor> {
       backend: "postgresql"
     };
   }
-  const payload = getBundledExplorerPayload();
+  const summary = getBundledReleaseSummary();
   return {
     release_id: "bundled-public-v0",
     schema_version: "cnt-property-atlas-public-v0.3",
     source_hash: null,
-    record_count: payload.summary.recordCount,
-    measurement_count: payload.summary.measurementCount,
-    publication_count: payload.publications.length,
+    record_count: summary.recordCount,
+    measurement_count: summary.measurementCount,
+    publication_count: summary.publicationCount,
     imported_at: null,
     backend: "bundled_csv"
   };
 }
 
+export async function getExplorerBootstrap(): Promise<ExplorerBootstrap> {
+  if (!hasDatabaseUrl()) return getBundledExplorerBootstrap();
+  await ensureDatabaseSchema();
+  const [release, properties, row] = await Promise.all([
+    readCanonicalReleaseMetadata(),
+    getPropertyCatalog(),
+    withDb(async (client) => {
+      const result = await client.query<BootstrapRow>(
+        `
+          SELECT
+            count(*) AS record_count,
+            array_agg(DISTINCT r.material_family ORDER BY r.material_family) AS material_families,
+            array_agg(DISTINCT r.form_factor ORDER BY r.form_factor) AS form_factors,
+            count(*) FILTER (WHERE r.peer_reviewed_measurement) AS primary_records,
+            count(*) FILTER (WHERE r.contextual_benchmark) AS benchmark_records,
+            count(*) FILTER (WHERE r.public_release_tier = 'peer_reviewed_research') AS peer_reviewed_research_records,
+            count(*) FILTER (WHERE r.public_release_tier = 'peer_reviewed_contextual_comparator') AS peer_reviewed_comparator_records,
+            count(*) FILTER (WHERE r.public_release_tier = 'commercial_contextual_comparator') AS commercial_comparator_records,
+            count(*) FILTER (WHERE r.author_curated_compilation_record) AS author_curated_compilation_records,
+            count(*) FILTER (
+              WHERE r.author_curated_compilation_record
+                AND r.primary_source_verification_status = 'verified_against_primary_source'
+            ) AS primary_source_verified_compilation_records,
+            count(*) FILTER (
+              WHERE r.primary_source_verification_status = 'pending_independent_check'
+            ) AS primary_source_check_pending_records,
+            count(*) FILTER (WHERE r.strict_comparison_ready) AS strict_ready_records,
+            min(r.publication_year) AS min_year,
+            max(r.publication_year) AS max_year
+          FROM atlas_dataset_releases rel
+          JOIN atlas_canonical_records r ON r.release_id = rel.release_id
+          WHERE rel.active = true
+        `
+      );
+      if (result.rowCount !== 1) throw new Error("Canonical PostgreSQL bootstrap query returned no aggregate row.");
+      return result.rows[0];
+    })
+  ]);
+  const count = (value: number | string) => Number(value);
+  if (count(row.record_count) !== release.recordCount) {
+    throw new Error("Canonical PostgreSQL bootstrap count does not match the active release metadata.");
+  }
+  return {
+    properties,
+    families: row.material_families ?? [],
+    forms: row.form_factors ?? [],
+    summary: {
+      recordCount: release.recordCount,
+      measurementCount: release.measurementCount,
+      primaryRecords: count(row.primary_records),
+      benchmarkRecords: count(row.benchmark_records),
+      peerReviewedResearchRecords: count(row.peer_reviewed_research_records),
+      peerReviewedComparatorRecords: count(row.peer_reviewed_comparator_records),
+      commercialComparatorRecords: count(row.commercial_comparator_records),
+      authorCuratedCompilationRecords: count(row.author_curated_compilation_records),
+      primarySourceVerifiedCompilationRecords: count(row.primary_source_verified_compilation_records),
+      primarySourceCheckPendingRecords: count(row.primary_source_check_pending_records),
+      strictReadyRecords: count(row.strict_ready_records),
+      minYear: row.min_year === null ? null : count(row.min_year),
+      maxYear: row.max_year === null ? null : count(row.max_year)
+    }
+  };
+}
+
 export async function getPropertyCatalog() {
-  if (!hasDatabaseUrl()) return getBundledExplorerPayload().properties;
+  if (!hasDatabaseUrl()) {
+    const summary = getBundledReleaseSummary();
+    return PROPERTY_META_BASE
+      .map((meta) => ({ ...meta, recordsWithValue: summary.measurementsByProperty[meta.key] ?? 0 }))
+      .filter((meta) => meta.recordsWithValue > 0);
+  }
   await ensureDatabaseSchema();
   const counts = await withDb(async (client) => {
     const result = await client.query<{ property: string; record_count: number | string }>(

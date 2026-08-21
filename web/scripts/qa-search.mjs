@@ -18,8 +18,13 @@ await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
 const searchInput = page.getByLabel("Search records by DOI, author, title, or keyword");
 
 await searchInput.fill("de Isidro-Gomez");
-await page.waitForTimeout(250);
-await page.locator(".plot-search-result-card.is-in-plot").first().click();
+const deIsidroResult = page.locator(".plot-search-result-card.is-in-plot", { hasText: "Intercalated carbon nanotube fibers" }).first();
+await deIsidroResult.waitFor();
+await deIsidroResult.click();
+await page.waitForFunction(() => (
+  document.querySelector(".detail-rail h3")?.textContent?.includes("Intercalated carbon nanotube fibers")
+  && document.querySelectorAll(".search-highlight-halo").length > 0
+));
 const authorSearch = await page.evaluate(() => ({
   status: document.querySelector(".plot-search-status")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
   hits: [...document.querySelectorAll(".plot-search-result-card")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
@@ -43,7 +48,7 @@ if (
   authorSearch.leftRailSearchInputs !== 0 ||
   !authorSearch.resultsBeforeFigure ||
   !authorSearch.selectedTitle.includes("Intercalated carbon nanotube fibers") ||
-  !/matching atlas rows/.test(authorSearch.status) ||
+  !/publications found/.test(authorSearch.status) ||
   authorSearch.hits.some((hit) => /Peng Liu|Materials & Design/.test(hit)) ||
   authorSearch.overflowX
 ) {
@@ -51,8 +56,13 @@ if (
 }
 
 await searchInput.fill("10.1038/srep00083");
-await page.waitForTimeout(250);
-await page.locator(".plot-search-result-card.is-in-plot").first().click();
+const zhaoDoiResult = page.locator(".plot-search-result-card.is-in-plot", { hasText: "Iodine doped carbon nanotube cables" }).first();
+await zhaoDoiResult.waitFor();
+await zhaoDoiResult.click();
+await page.waitForFunction(() => (
+  document.querySelector(".detail-rail h3")?.textContent?.includes("Iodine doped carbon nanotube cables")
+  && document.querySelectorAll(".search-highlight-halo").length > 0
+));
 const doiSearch = await page.evaluate(() => ({
   status: document.querySelector(".plot-search-status")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
   hits: [...document.querySelectorAll(".plot-search-result-card")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
@@ -68,17 +78,22 @@ if (
   doiSearch.highlighted < 1 ||
   doiSearch.halos < 1 ||
   doiSearch.hits.length !== 1 ||
-  !doiSearch.hits[0].includes("3 matched rows") ||
+  !doiSearch.hits[0].includes("3 samples") ||
   !doiSearch.selectedTitle.includes("Iodine doped carbon nanotube cables") ||
-  !/1 grouped result from 3 matching atlas rows/.test(doiSearch.status) ||
+  !/1 publications found; 1 represented/.test(doiSearch.status) ||
   doiSearch.overflowX
 ) {
   throw new Error(`DOI search QA failed: ${JSON.stringify(doiSearch)}`);
 }
 
 await searchInput.fill("iodine doped");
-await page.waitForTimeout(250);
-await page.locator(".plot-search-result-card.is-in-plot").first().click();
+const zhaoKeywordResult = page.locator(".plot-search-result-card.is-in-plot", { hasText: "Iodine doped carbon nanotube cables" }).first();
+await zhaoKeywordResult.waitFor();
+await zhaoKeywordResult.click();
+await page.waitForFunction(() => (
+  document.querySelector(".detail-rail h3")?.textContent?.includes("Iodine doped carbon nanotube cables")
+  && document.querySelectorAll(".search-highlight-halo").length > 0
+));
 const keywordSearch = await page.evaluate(() => ({
   hits: [...document.querySelectorAll(".plot-search-result-card")].map((node) => node.textContent?.replace(/\s+/g, " ").trim()).filter(Boolean),
   highlighted: document.querySelectorAll(".plot-point.is-search-match").length,

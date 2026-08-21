@@ -183,6 +183,19 @@ type PublicReleaseRows = {
   publications: Record<string, string>[];
 };
 
+export type BundledReleaseSummary = {
+  recordCount: number;
+  measurementCount: number;
+  publicationCount: number;
+  measurementsByProperty: Partial<Record<PropertyKey, number>>;
+  recordsByMaterialFamily: Record<string, number>;
+  recordsByFormFactor: Record<string, number>;
+  explorerSummary: ExplorerBootstrap["summary"];
+};
+
+let bundledExplorerPayloadCache: ExplorerPayload | null = null;
+let bundledReleaseSummaryCache: BundledReleaseSummary | null = null;
+
 export const PROPERTY_META_BASE: Omit<PropertyMeta, "recordsWithValue">[] = [
   {
     key: "density",
@@ -567,6 +580,71 @@ function bundledPublicReleaseRows(): PublicReleaseRows {
   };
 }
 
+export function getBundledReleaseSummary(): BundledReleaseSummary {
+  if (bundledReleaseSummaryCache) return bundledReleaseSummaryCache;
+  const file = path.join(dataDir(), "public_release_summary.json");
+  const parsed = JSON.parse(fs.readFileSync(file, "utf8")) as Record<string, unknown>;
+  const propertyCounts = parsed.public_measurements_by_property;
+  const familyCounts = parsed.public_records_by_material_family;
+  const formCounts = parsed.public_records_by_form_factor;
+  const tierCounts = parsed.public_records_by_tier;
+  for (const [label, counts] of [
+    ["property", propertyCounts],
+    ["material-family", familyCounts],
+    ["form-factor", formCounts],
+    ["release-tier", tierCounts]
+  ] as const) {
+    if (!counts || typeof counts !== "object" || Array.isArray(counts)) {
+      throw new Error(`Bundled public release summary is missing ${label} counts.`);
+    }
+  }
+  const numericCounts = (counts: object) => Object.fromEntries(
+    Object.entries(counts).map(([key, count]) => [key, Number(count)])
+  );
+  const releases = numericCounts(tierCounts as object);
+  bundledReleaseSummaryCache = {
+    recordCount: Number(parsed.public_records),
+    measurementCount: Number(parsed.public_measurements),
+    publicationCount: Number(parsed.public_publications),
+    measurementsByProperty: numericCounts(propertyCounts as object) as Partial<Record<PropertyKey, number>>,
+    recordsByMaterialFamily: numericCounts(familyCounts as object),
+    recordsByFormFactor: numericCounts(formCounts as object),
+    explorerSummary: {
+      recordCount: Number(parsed.public_records),
+      measurementCount: Number(parsed.public_measurements),
+      primaryRecords: Number(parsed.peer_reviewed_measurement_records),
+      benchmarkRecords: Number(parsed.contextual_benchmark_records),
+      peerReviewedResearchRecords: releases.peer_reviewed_research ?? 0,
+      peerReviewedComparatorRecords: releases.peer_reviewed_contextual_comparator ?? 0,
+      commercialComparatorRecords: releases.commercial_contextual_comparator ?? 0,
+      authorCuratedCompilationRecords: Number(parsed.author_curated_compilation_records),
+      primarySourceVerifiedCompilationRecords: Number(parsed.primary_source_verified_compilation_records),
+      primarySourceCheckPendingRecords: Number(parsed.primary_source_check_pending_records),
+      strictReadyRecords: Number(parsed.strict_comparison_ready_records),
+      minYear: Number.isFinite(Number(parsed.min_publication_year)) ? Number(parsed.min_publication_year) : null,
+      maxYear: Number.isFinite(Number(parsed.max_publication_year)) ? Number(parsed.max_publication_year) : null
+    }
+  };
+  if (![bundledReleaseSummaryCache.recordCount, bundledReleaseSummaryCache.measurementCount, bundledReleaseSummaryCache.publicationCount]
+    .every((count) => Number.isInteger(count) && count >= 0)) {
+    bundledReleaseSummaryCache = null;
+    throw new Error("Bundled public release summary contains invalid counts.");
+  }
+  return bundledReleaseSummaryCache;
+}
+
+export function getBundledExplorerBootstrap(): ExplorerBootstrap {
+  const release = getBundledReleaseSummary();
+  return {
+    properties: PROPERTY_META_BASE
+      .map((meta) => ({ ...meta, recordsWithValue: release.measurementsByProperty[meta.key] ?? 0 }))
+      .filter((meta) => meta.recordsWithValue > 0),
+    families: Object.keys(release.recordsByMaterialFamily).sort(),
+    forms: Object.keys(release.recordsByFormFactor).sort(),
+    summary: release.explorerSummary
+  };
+}
+
 function uniqueBy<T>(items: T[], key: (item: T) => string): T[] {
   const unique = new Map<string, T>();
   items.forEach((item) => unique.set(key(item), item));
@@ -670,11 +748,15 @@ function buildExplorerPayload(
 }
 
 export function getExplorerPayload(): ExplorerPayload {
-  return buildExplorerPayload(bundledPublicReleaseRows(), readCommunitySubmissions());
+  const communitySubmissions = readCommunitySubmissions();
+  return communitySubmissions.length
+    ? buildExplorerPayload(bundledPublicReleaseRows(), communitySubmissions)
+    : getBundledExplorerPayload();
 }
 
 export function getBundledExplorerPayload(): ExplorerPayload {
-  return buildExplorerPayload(bundledPublicReleaseRows(), []);
+  bundledExplorerPayloadCache ??= buildExplorerPayload(bundledPublicReleaseRows(), []);
+  return bundledExplorerPayloadCache;
 }
 
 export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
@@ -682,7 +764,9 @@ export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {
   const { readAcceptedSubmissions } = await import("@/lib/submission-store");
   const communitySubmissions = await readAcceptedSubmissions();
   if (!hasDatabaseUrl()) {
-    return buildExplorerPayload(bundledPublicReleaseRows(), communitySubmissions);
+    return communitySubmissions.length
+      ? buildExplorerPayload(bundledPublicReleaseRows(), communitySubmissions)
+      : getBundledExplorerPayload();
   }
   const { readCanonicalReleaseRows } = await import("@/lib/canonical-store");
   const canonicalRelease = await readCanonicalReleaseRows();

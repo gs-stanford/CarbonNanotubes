@@ -853,6 +853,7 @@ def main() -> None:
     public_schema.to_csv(PUBLIC / "public_schema_v0.csv", index=False)
     duplicate_audit.to_csv(PUBLIC / "public_duplicate_audit_v0.csv", index=False)
 
+    publication_years = pd.to_numeric(public_records["publication_year_verified"], errors="coerce").dropna()
     summary = {
         "records_assessed": int(len(enriched)),
         "public_records": int(len(public_records)),
@@ -861,12 +862,15 @@ def main() -> None:
         "excluded_records": int(len(exclusions)),
         "public_records_by_tier": public_records["public_release_tier"].value_counts().to_dict(),
         "public_records_by_material_family": public_records["material_family"].value_counts().to_dict(),
+        "public_records_by_form_factor": public_records["form_factor"].value_counts().to_dict(),
         "public_measurements_by_property": public_measurements["property"].value_counts().to_dict(),
         "excluded_records_by_reason": exclusions["exclusion_reasons"].value_counts().to_dict(),
         "strict_comparison_ready_records": int(public_records["strict_comparison_ready"].sum()),
         "records_requiring_missing_condition_warning": int(public_records["missing_conditions"].sum()),
         "records_requiring_unit_inference_warning": int(public_records["unit_inference_review_needed"].sum()),
         "commercial_or_specsheet_benchmark_records": int(public_records["commercial_specsheet_benchmark"].sum()),
+        "peer_reviewed_measurement_records": int(public_records["peer_reviewed_measurement"].sum()),
+        "contextual_benchmark_records": int(public_records["contextual_benchmark"].sum()),
         "author_curated_compilation_records": int(public_records["author_curated_compilation_record"].sum()),
         "primary_source_verified_compilation_records": int(
             (
@@ -877,6 +881,8 @@ def main() -> None:
         "primary_source_check_pending_records": int(
             public_records["primary_source_verification_status"].eq("pending_independent_check").sum()
         ),
+        "min_publication_year": int(publication_years.min()) if not publication_years.empty else None,
+        "max_publication_year": int(publication_years.max()) if not publication_years.empty else None,
         "duplicate_groups_detected": int(duplicate_audit["duplicate_group_id"].nunique()) if not duplicate_audit.empty else 0,
         "duplicate_records_collapsed": int((duplicate_audit["duplicate_group_role"] == "duplicate_collapsed").sum()) if not duplicate_audit.empty else 0,
         "outputs": sorted(

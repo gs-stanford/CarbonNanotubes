@@ -995,7 +995,7 @@ textarea {
   filter: drop-shadow(0 0 2px rgba(0, 95, 87, 0.8)) drop-shadow(0 0 7px rgba(45, 119, 111, 0.5));
 }
 
-.search-highlight-halo circle {
+.search-highlight-halo {
   fill: rgba(45, 119, 111, 0.14);
   stroke: #005f57;
   stroke-width: 1.6;

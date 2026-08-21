@@ -1,6 +1,7 @@
 import { Resvg } from "@resvg/resvg-js";
 import PDFDocument from "pdfkit";
 import SVGtoPDF from "svg-to-pdfkit";
+import { join } from "node:path";
 import { citationBundleForRecords, stripMarkup, type CitationBundle } from "@/lib/citations";
 import { apiMeta, ApiInputError, parseRecordQuery } from "@/lib/api-v1";
 import { PROPERTY_BY_KEY, isPropertyKey, type PlotRecord, type PropertyKey, type ScaleMode } from "@/lib/data";
@@ -25,6 +26,10 @@ import { renderSvgFigure, type FigureReferenceLine } from "@/lib/svg-renderer";
 const FIGURE_WIDTH = 920;
 const FIGURE_HEIGHT = 632;
 const MAX_HIGHLIGHTS = 50;
+const RASTER_FONT_FILES = [
+  join(process.cwd(), "assets/fonts/Arimo-Regular.ttf"),
+  join(process.cwd(), "assets/fonts/Arimo-Bold.ttf")
+];
 
 const ALLOWED_FILTERS = new Set([
   "q",
@@ -317,7 +322,13 @@ async function renderBinaryImages(svg: string, formats: FigureFormat[]) {
   if (formats.includes("png")) {
     const png = new Resvg(svg, {
       background: "#ffffff",
-      fitTo: { mode: "width", value: FIGURE_WIDTH * 2 }
+      fitTo: { mode: "width", value: FIGURE_WIDTH },
+      font: {
+        loadSystemFonts: false,
+        fontFiles: RASTER_FONT_FILES,
+        defaultFontFamily: "Arimo",
+        sansSerifFamily: "Arimo"
+      }
     }).render().asPng();
     images.png_base64 = Buffer.from(png).toString("base64");
   }
