@@ -82,6 +82,23 @@ class FakeClient(CPTClient):
             return {"api_version": "v1", "release": {"release_id": "r1", "record_count": 4}}
         if path == "properties":
             return {"properties": [{"key": "specific_strength"}]}
+        if path == "doi-status":
+            normalized_doi = params["doi"].lower().replace("https://doi.org/", "")
+            present = normalized_doi in {"10.1/high", "10.1126/science.adj1082"}
+            return {
+                "api_version": "v1",
+                "release": {"release_id": "r1"},
+                "query_doi": normalized_doi,
+                "in_database": present,
+                "publication": {
+                    "doi": normalized_doi,
+                    "title": "Example high-performance publication",
+                    "authors_short": "Author, A.",
+                    "journal": "Journal 1",
+                    "year": 2024,
+                    "role": "original",
+                } if present else None,
+            }
         if path != "figures":
             return {}
 
@@ -134,6 +151,19 @@ class CPTClientTests(unittest.TestCase):
         self.assertEqual(client.release()["release"]["release_id"], "r1")
         self.assertEqual(client.properties()[0]["key"], "specific_strength")
 
+    def test_doi_presence_lookup_returns_no_material_values(self):
+        client = FakeClient()
+        status = client.doi_status("https://doi.org/10.1/high")
+        self.assertTrue(status.in_database)
+        self.assertEqual(status.title, "Example high-performance publication")
+        self.assertEqual(status.role, "original")
+        self.assertTrue(client.has_doi("10.1/high"))
+        self.assertFalse(client.has_doi("10.1/absent"))
+        self.assertFalse(hasattr(status, "measurements"))
+        self.assertFalse(hasattr(status, "record_ids"))
+        with self.assertRaises(CPTValidationError):
+            client.doi_status("")
+
     def test_parameter_encoding(self):
         encoded = CPTClient._encode_params(
             {"peer_reviewed": True, "material_family": ["CNT", "carbon"], "empty": None}
@@ -158,6 +188,7 @@ class CPTClientTests(unittest.TestCase):
         self.assertEqual(figure.temporary_point.x_rank, 3)
         self.assertEqual(figure.temporary_point.y_rank, 2)
         self.assertIn("<svg", figure._repr_svg_())
+        self.assertEqual(figure.available_formats, ("svg", "png"))
         self.assertEqual(len(client.calls), 1)
         path, params, method, body = client.calls[0]
         self.assertEqual((path, params, method), ("figures", None, "POST"))
@@ -187,6 +218,19 @@ class CPTClientTests(unittest.TestCase):
             self.assertTrue((root / "comparison.citations.txt").exists())
             self.assertTrue((root / "comparison.bib").exists())
             self.assertTrue((root / "top.citations.txt").exists())
+
+    def test_bundle_saves_svg_png_citations_and_reproducibility_manifest(self):
+        figure = FakeClient().scatter("specific_strength", "specific_electrical_conductivity")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            saved = figure.save_bundle(root / "comparison")
+            self.assertEqual(set(saved), {"svg", "png", "citations", "bibtex", "manifest"})
+            manifest = saved["manifest"].read_text(encoding="utf-8")
+            self.assertIn('"schema": "cpt-figure-manifest-v1"', manifest)
+            self.assertIn('"figure_fingerprint"', manifest)
+            self.assertIn('"specific_strength"', manifest)
+            self.assertNotIn('"measurements"', manifest)
+            self.assertNotIn('"record_ids"', manifest)
 
     def test_unrequested_format_is_not_synthesized_locally(self):
         figure = FakeClient().scatter("specific_strength", "specific_electrical_conductivity")

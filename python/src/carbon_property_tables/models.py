@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import csv
+import hashlib
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -56,6 +58,37 @@ class TemporaryPoint:
     x: float
     y: float
     label: str = "User input"
+
+
+@dataclass(frozen=True)
+class DoiStatus:
+    """Exact DOI-presence result without material-property values or record IDs."""
+
+    query_doi: str
+    in_database: bool
+    doi: str | None
+    title: str | None
+    authors_short: str | None
+    journal: str | None
+    year: int | None
+    role: str | None
+    release: Mapping[str, Any]
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "DoiStatus":
+        publication = value.get("publication")
+        metadata = publication if isinstance(publication, Mapping) else {}
+        return cls(
+            query_doi=str(value.get("query_doi", "")),
+            in_database=bool(value.get("in_database", False)),
+            doi=str(metadata["doi"]) if metadata.get("doi") else None,
+            title=str(metadata["title"]) if metadata.get("title") else None,
+            authors_short=str(metadata["authors_short"]) if metadata.get("authors_short") else None,
+            journal=str(metadata["journal"]) if metadata.get("journal") else None,
+            year=int(metadata["year"]) if metadata.get("year") is not None else None,
+            role=str(metadata["role"]) if metadata.get("role") else None,
+            release=dict(value.get("release", {})),
+        )
 
 
 @dataclass(frozen=True)
@@ -150,10 +183,17 @@ class RenderedFigure:
     citations: CitationBundle
     temporary_point: TemporaryPointRank | None
     release: Mapping[str, Any]
+    generated_at: str
+    request: Mapping[str, Any] = field(repr=False)
     _images: Mapping[str, bytes] = field(repr=False)
 
     @classmethod
-    def from_dict(cls, value: Mapping[str, Any], images: Mapping[str, bytes]) -> "RenderedFigure":
+    def from_dict(
+        cls,
+        value: Mapping[str, Any],
+        images: Mapping[str, bytes],
+        request: Mapping[str, Any] | None = None,
+    ) -> "RenderedFigure":
         axes = value.get("axes", {})
         x_axis = axes.get("x", {}) if isinstance(axes, Mapping) else {}
         y_axis = axes.get("y", {}) if isinstance(axes, Mapping) else {}
@@ -167,6 +207,8 @@ class RenderedFigure:
             citations=CitationBundle.from_dict(value.get("citations")),
             temporary_point=TemporaryPointRank.from_dict(temporary) if isinstance(temporary, Mapping) else None,
             release=dict(value.get("release", {})),
+            generated_at=str(value.get("generated_at", "")),
+            request=dict(request or {}),
             _images=dict(images),
         )
 
@@ -197,6 +239,58 @@ class RenderedFigure:
         destination.with_name(f"{destination.stem}.citations.txt").write_text(self.citations.copy_all + "\n", encoding="utf-8")
         destination.with_name(f"{destination.stem}.bib").write_text(self.citations.bibtex + "\n", encoding="utf-8")
         return destination
+
+    def reproducibility_manifest(self) -> dict[str, Any]:
+        """Return a value-free recipe tying the figure to its request, release, and citations."""
+        identity = {
+            "request": dict(self.request),
+            "release_id": self.release.get("release_id"),
+            "source_hash": self.release.get("source_hash"),
+        }
+        fingerprint = hashlib.sha256(
+            json.dumps(identity, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+        ).hexdigest()
+        return {
+            "schema": "cpt-figure-manifest-v1",
+            "figure_fingerprint": fingerprint,
+            "generated_at": self.generated_at,
+            "figure": {
+                "kind": self.kind,
+                "x_property": self.x_property,
+                "y_property": self.y_property,
+                "point_count": self.point_count,
+                "formats": list(self.available_formats),
+            },
+            "request": dict(self.request),
+            "release": dict(self.release),
+            "citation_policy": self.citations.requirement,
+            "citations": [
+                {"citation_id": entry.citation_id, "roles": list(entry.roles), "doi": entry.doi, "text": entry.text}
+                for entry in self.citations.entries
+            ],
+        }
+
+    def save_bundle(self, path: str | Path) -> dict[str, Path]:
+        """Save every requested image format plus citation and reproducibility sidecars."""
+        destination = Path(path)
+        stem = destination.with_suffix("") if destination.suffix else destination
+        stem.parent.mkdir(parents=True, exist_ok=True)
+        saved: dict[str, Path] = {}
+        for format_name, payload in self._images.items():
+            image_path = stem.with_suffix(f".{format_name}")
+            image_path.write_bytes(payload)
+            saved[format_name] = image_path
+        citations_path = stem.with_suffix(".citations.txt")
+        bibtex_path = stem.with_suffix(".bib")
+        manifest_path = stem.with_suffix(".manifest.json")
+        citations_path.write_text(self.citations.copy_all + "\n", encoding="utf-8")
+        bibtex_path.write_text(self.citations.bibtex + "\n", encoding="utf-8")
+        manifest_path.write_text(
+            json.dumps(self.reproducibility_manifest(), indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        saved.update({"citations": citations_path, "bibtex": bibtex_path, "manifest": manifest_path})
+        return saved
 
     def save_top_table(self, path: str | Path) -> Path:
         """Save the bounded top rows as CSV; the complete plotted dataset is unavailable."""

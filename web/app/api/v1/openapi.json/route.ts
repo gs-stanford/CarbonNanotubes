@@ -22,6 +22,18 @@ export function GET(request: NextRequest) {
       "/api/v1/properties": {
         get: { summary: "Property catalog and canonical units", responses: { "200": { description: "Supported property definitions." } } }
       },
+      "/api/v1/doi-status": {
+        get: {
+          summary: "Check whether an exact DOI is represented",
+          description: "Returns presence and bibliographic identity only. It never returns record IDs, properties, measurements, or coordinates.",
+          parameters: [{ name: "doi", in: "query", required: true, schema: { type: "string", maxLength: 300 } }],
+          responses: {
+            "200": { description: "DOI presence and, when present, citation metadata." },
+            "400": { description: "Malformed DOI." },
+            "429": { description: "Lookup rate limit reached." }
+          }
+        }
+      },
       "/api/v1/figures": {
         post: {
           summary: "Render a bounded scientific figure package",

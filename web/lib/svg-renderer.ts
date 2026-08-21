@@ -627,20 +627,28 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
     const text = metalLabel(record) ?? sourceLabel(record);
     const width = clamp(text.length * 5.7 + 4, 32, 210);
     const height = 16;
-    const candidates = [
-      { x0: point.x + 12, y0: point.y - 24 },
-      { x0: point.x + 12, y0: point.y + 7 },
-      { x0: point.x - width - 12, y0: point.y - 24 },
-      { x0: point.x - width - 12, y0: point.y + 7 },
-      { x0: point.x - width / 2, y0: point.y - 35 },
-      { x0: point.x - width / 2, y0: point.y + 17 },
-      { x0: point.x + 24, y0: point.y - height / 2 },
-      { x0: point.x - width - 24, y0: point.y - height / 2 }
-    ].map((candidate) => {
+    const rawCandidates: Array<{ x0: number; y0: number }> = [];
+    for (let lane = 0; lane < 12; lane += 1) {
+      const vertical = 24 + lane * 18;
+      const horizontal = 12 + lane * 20;
+      rawCandidates.push(
+        { x0: point.x + 12, y0: point.y - vertical },
+        { x0: point.x - width - 12, y0: point.y - vertical },
+        { x0: point.x + 12, y0: point.y + vertical - height },
+        { x0: point.x - width - 12, y0: point.y + vertical - height },
+        { x0: point.x - width / 2, y0: point.y - vertical - 8 },
+        { x0: point.x - width / 2, y0: point.y + vertical },
+        { x0: point.x + horizontal, y0: point.y - height / 2 },
+        { x0: point.x - width - horizontal, y0: point.y - height / 2 }
+      );
+    }
+    const candidates = rawCandidates.map((candidate) => {
       const x0 = clamp(candidate.x0, margin.left + 4, WIDTH - margin.right - width - 4);
       const y0 = clamp(candidate.y0, margin.top + 4, HEIGHT - margin.bottom - height - 4);
       return { x0, y0, x1: x0 + width, y1: y0 + height };
-    });
+    }).filter((candidate, index, all) => (
+      all.findIndex((other) => other.x0 === candidate.x0 && other.y0 === candidate.y0) === index
+    ));
     const otherMarkers = Array.from(markerBoxes.entries())
       .filter(([recordId]) => recordId !== record.record_id)
       .map(([, box]) => box);
@@ -650,12 +658,14 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
         y: clamp(point.y, box.y0, box.y1)
       };
       const leaderBounds = segmentBounds(point, leader);
+      const labelCollisions = occupied.filter((existing) => overlaps(box, existing)).length;
       const labelOverlap = occupied.reduce((total, existing) => total + overlapArea(box, existing), 0);
       const markerOverlap = otherMarkers.reduce((total, marker) => total + overlapArea(box, marker), 0);
       const crossedLabels = occupied.filter((existing) => overlaps(leaderBounds, existing)).length;
       const crossedMarkers = otherMarkers.filter((marker) => overlaps(leaderBounds, marker)).length;
       const distance = Math.hypot(leader.x - point.x, leader.y - point.y);
-      return labelOverlap * 1_000_000
+      return labelCollisions * 1_000_000_000_000
+        + labelOverlap * 1_000_000
         + markerOverlap * 100_000
         + crossedLabels * 50_000
         + crossedMarkers * 2_000
