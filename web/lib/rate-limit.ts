@@ -43,3 +43,12 @@ export function enforceDoiStatusRateLimit(request: Request) {
     "DOI lookup limit reached. Retry after the current hourly window."
   );
 }
+
+export function enforceSearchRateLimit(request: Request) {
+  return enforceRateLimit(
+    request,
+    "publication-search",
+    300,
+    "Publication search limit reached. Retry after the current hourly window."
+  );
+}

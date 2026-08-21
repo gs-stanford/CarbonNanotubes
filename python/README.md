@@ -5,7 +5,7 @@ The SDK requests citation-backed comparison figures rendered by the Carbon Prope
 ## Install
 
 ```bash
-python -m pip install carbon-property-tables==0.3.4
+python -m pip install carbon-property-tables==0.3.5
 ```
 
 ## Make a figure
@@ -42,7 +42,7 @@ ashby = cpt.ashby("density", "specific strength")
 cpt-feature-tour --output-dir cpt-feature-tour-output
 ```
 
-The command tests the production release and property endpoints, scatter/ranked/trend/Ashby figures, material filters, a temporary ranked point, the bounded top table, SVG/PNG/PDF exports, citation and BibTeX sidecars, and validation boundaries. It writes inspectable artifacts plus `feature-tour-report.json` to the selected directory and exits nonzero on any failure.
+The command tests the production release, property and publication-search endpoints, scatter/ranked/trend/Ashby figures, material filters, a temporary ranked point, the bounded top table, SVG/PNG/PDF exports, citation and BibTeX sidecars, and validation boundaries. It writes inspectable artifacts plus `feature-tour-report.json` to the selected directory and exits nonzero on any failure.
 
 The equivalent module command is:
 
@@ -102,6 +102,21 @@ print(status.title, status.journal, status.year)
 ```
 
 The DOI lookup is exact and rate-limited. It returns only presence and bibliographic identity; it does not return record IDs, available properties, measurements, coordinates, or sample counts.
+
+## Search represented publications
+
+```python
+import carbon_property_tables as cpt
+
+matches = cpt.search("Xinshi Zhang dynamic strength", limit=10)
+for publication in matches:
+    print(publication.title, publication.doi, publication.match_fields)
+
+exact = cpt.search("10.1126/science.adj1082")
+print(exact[0].journal, exact[0].year)
+```
+
+Search covers DOI, title, authors, journal, publication year, and indexed material/process keywords. Results are deterministically ranked and collapsed to one entry per publication. They contain bibliographic metadata only, with no record IDs, sample labels, available-property lists, values, measurements, or coordinates. Crossref and OpenAlex are used during curation and validation, not as live search fallbacks, so every returned result is actually represented in the active CPT release.
 
 ## Extract a bounded top table
 

@@ -10,12 +10,20 @@ GET  /api/v1/release
 GET  /api/v1/properties
 POST /api/v1/figures
 GET /api/v1/doi-status?doi={doi}
+GET  /api/v1/search?q={query}&limit={1..25}
 GET  /api/v1/openapi.json
 ```
 
 `POST /api/v1/figures` accepts `scatter`, `ranked`, `trend`, and `ashby` requests. Rendering, representative-record selection, comparison references, temporary-point ranking, and citation assembly all run on the server.
 
 `GET /api/v1/doi-status` performs an exact, rate-limited coverage check. It returns only presence and bibliographic identity, never record IDs, properties, measurements, coordinates, or sample counts.
+
+`GET /api/v1/search` searches only publications represented in the active release. It supports DOI, title, author, journal, year, and material/process keywords, then collapses all matching samples to one bibliographic result per publication. Search results contain citation metadata and match fields only; they never expose record IDs, samples, property availability, measurements, coordinates, or row counts.
+
+```text
+/api/v1/search?q=Xinshi%20Zhang%20dynamic%20strength&limit=10
+/api/v1/search?q=10.1126/science.adj1082
+```
 
 ```json
 {

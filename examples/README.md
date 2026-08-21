@@ -5,7 +5,7 @@ These notebooks use the public, bounded Carbon Property Tables Python API. They 
 ## Install
 
 ```bash
-python -m pip install carbon-property-tables==0.3.4 jupyterlab
+python -m pip install carbon-property-tables==0.3.5 jupyterlab
 jupyter lab examples/
 ```
 

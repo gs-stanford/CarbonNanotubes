@@ -407,6 +407,55 @@ export async function lookupDoiMetadata(value: string): Promise<DoiMetadata | nu
   return null;
 }
 
+export async function getPublicationSearchCorpus(): Promise<{ records: PublicRecord[]; publications: Publication[] }> {
+  const [canonical, publicSubmissions] = await Promise.all([
+    hasDatabaseUrl()
+      ? (async () => {
+          await ensureDatabaseSchema();
+          return withDb(async (client) => {
+            const recordResult = await client.query<{ payload_json: unknown }>(
+              `
+                SELECT r.payload_json
+                FROM atlas_dataset_releases rel
+                JOIN atlas_canonical_records r ON r.release_id = rel.release_id
+                WHERE rel.active = true
+                ORDER BY r.record_id
+              `
+            );
+            const publicationResult = await client.query<{ payload_json: unknown }>(
+              `
+                SELECT p.payload_json
+                FROM atlas_dataset_releases rel
+                JOIN atlas_canonical_publications p ON p.release_id = rel.release_id
+                WHERE rel.active = true
+                ORDER BY p.publication_id
+              `
+            );
+            return {
+              records: recordResult.rows.map((row, index) =>
+                recordFromRow(payloadToStringRecord(row.payload_json, `Publication-search record ${index + 1}`))
+              ),
+              publications: publicationResult.rows.map((row, index) =>
+                publicationFromRow(payloadToStringRecord(row.payload_json, `Publication-search publication ${index + 1}`))
+              )
+            };
+          });
+        })()
+      : Promise.resolve({
+          records: getBundledExplorerPayload().records,
+          publications: getBundledExplorerPayload().publications
+        }),
+    readPublicSubmissions()
+  ]);
+  const records = new Map<string, PublicRecord>();
+  canonical.records.forEach((record) => records.set(record.record_id, record));
+  publicSubmissions.forEach((submission) => records.set(submission.record.record_id, submission.record));
+  const publications = new Map<string, Publication>();
+  canonical.publications.forEach((publication) => publications.set(publication.publication_id, publication));
+  publicSubmissions.forEach((submission) => publications.set(submission.publication.publication_id, submission.publication));
+  return { records: Array.from(records.values()), publications: Array.from(publications.values()) };
+}
+
 export async function getReleaseDescriptor(): Promise<ReleaseDescriptor> {
   if (hasDatabaseUrl()) {
     const release = await readCanonicalReleaseMetadata();

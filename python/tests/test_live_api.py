@@ -20,6 +20,10 @@ class LiveApiTests(unittest.TestCase):
         status = self.client.doi_status("10.1126/science.adj1082")
         self.assertTrue(status.in_database)
         self.assertIsNotNone(status.title)
+        search = self.client.search("Xinshi Zhang dynamic strength", limit=5)
+        self.assertTrue(search)
+        self.assertEqual(search[0].doi, "10.1126/science.adj1082")
+        self.assertFalse(hasattr(search[0], "measurements"))
 
         figure = self.client.scatter(
             "specific_strength",

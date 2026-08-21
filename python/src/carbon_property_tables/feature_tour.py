@@ -69,6 +69,16 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
     _require(known_doi.in_database, "Known DOI was not found by the bounded DOI lookup.")
     _require(known_doi.title is not None, "Known DOI lookup omitted publication metadata.")
     _require(not client.has_doi("10.5555/cpt.definitely-absent"), "Absent DOI was reported as present.")
+    publication_search = client.search("Xinshi Zhang dynamic strength", limit=5)
+    _require(bool(publication_search), "Publication search returned no matches for a known author and title.")
+    _require(
+        publication_search[0].doi == "10.1126/science.adj1082",
+        "Publication search did not rank the expected deduplicated DOI first.",
+    )
+    _require(
+        not hasattr(publication_search[0], "measurements") and not hasattr(publication_search[0], "record_ids"),
+        "Publication search exposed record-level data.",
+    )
 
     property_aliases = {
         "specific strength": resolve_property("Specific Strength"),
@@ -185,6 +195,12 @@ def run_feature_tour(client: CPTClient, output_dir: str | Path) -> dict[str, Any
             "query_doi": known_doi.query_doi,
             "in_database": known_doi.in_database,
             "title": known_doi.title,
+        },
+        "publication_search": {
+            "query": publication_search.query,
+            "returned": len(publication_search),
+            "doi": publication_search[0].doi,
+            "title": publication_search[0].title,
         },
         "figures": figure_report,
         "temporary_point": {

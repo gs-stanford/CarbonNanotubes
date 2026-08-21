@@ -99,6 +99,25 @@ class FakeClient(CPTClient):
                     "role": "original",
                 } if present else None,
             }
+        if path == "search":
+            return {
+                "api_version": "v1",
+                "release": {"release_id": "r1"},
+                "query": params["q"],
+                "returned": 1,
+                "has_more": False,
+                "results": [
+                    {
+                        "doi": "10.1126/science.adj1082",
+                        "title": "Carbon nanotube fibers with dynamic strength up to 14 GPa",
+                        "authors_short": "Xinshi Zhang et al.",
+                        "journal": "Science",
+                        "year": 2024,
+                        "role": "original",
+                        "match_fields": ["title", "author"],
+                    }
+                ],
+            }
         if path != "figures":
             return {}
 
@@ -171,6 +190,23 @@ class CPTClientTests(unittest.TestCase):
         self.assertIn("peer_reviewed=true", encoded)
         self.assertEqual(encoded.count("material_family="), 2)
         self.assertNotIn("empty", encoded)
+
+    def test_publication_search_is_deduplicated_metadata_only(self):
+        client = FakeClient()
+        search = client.search("Xinshi Zhang dynamic strength", limit=5)
+        self.assertEqual(len(search), 1)
+        self.assertEqual(search[0].doi, "10.1126/science.adj1082")
+        self.assertEqual(search[0].journal, "Science")
+        self.assertIn("author", search[0].match_fields)
+        self.assertFalse(search.has_more)
+        self.assertFalse(hasattr(search[0], "measurements"))
+        self.assertFalse(hasattr(search[0], "record_ids"))
+        path, params, method, body = client.calls[-1]
+        self.assertEqual((path, method, body), ("search", "GET", None))
+        self.assertEqual(params, {"q": "Xinshi Zhang dynamic strength", "limit": 5})
+        for query, limit in (("", 10), ("x", 10), ("CNT", 0), ("CNT", 26), ("CNT", True)):
+            with self.assertRaises(CPTValidationError):
+                client.search(query, limit=limit)
 
     def test_scatter_uses_one_server_side_artifact_request(self):
         client = FakeClient()
@@ -276,6 +312,7 @@ class CPTClientTests(unittest.TestCase):
             self.assertTrue((root / "scatter.pdf").is_file())
             self.assertTrue((root / "scatter-top-five.csv").is_file())
             self.assertTrue((root / "feature-tour-report.json").is_file())
+            self.assertEqual(report["publication_search"]["doi"], "10.1126/science.adj1082")
             requested_kinds = {body["kind"] for path, _, _, body in client.calls if path == "figures"}
             self.assertEqual(requested_kinds, {"scatter", "ranked", "trend", "ashby"})
 
@@ -291,9 +328,11 @@ class CPTClientTests(unittest.TestCase):
             cpt.ranked("density", "Tensile Strength")
             cpt.trend("density", "strength")
             cpt.ashby("Density", "Tenacity")
+            search = cpt.search("Xinshi Zhang", limit=3)
 
         self.assertEqual(figure.x_property, "specific_strength")
         self.assertEqual(figure.y_property, "specific_electrical_conductivity")
+        self.assertEqual(search[0].doi, "10.1126/science.adj1082")
         requested_axes = [(body["x"], body["y"]) for path, _, _, body in client.calls if path == "figures"]
         self.assertEqual(
             requested_axes,

@@ -92,6 +92,59 @@ class DoiStatus:
 
 
 @dataclass(frozen=True)
+class PublicationSearchResult:
+    """One deduplicated publication match without record or measurement data."""
+
+    doi: str | None
+    title: str
+    authors_short: str | None
+    journal: str | None
+    year: int | None
+    role: str
+    match_fields: tuple[str, ...]
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "PublicationSearchResult":
+        return cls(
+            doi=str(value["doi"]) if value.get("doi") else None,
+            title=str(value.get("title", "")),
+            authors_short=str(value["authors_short"]) if value.get("authors_short") else None,
+            journal=str(value["journal"]) if value.get("journal") else None,
+            year=int(value["year"]) if value.get("year") is not None else None,
+            role=str(value.get("role", "original")),
+            match_fields=tuple(str(item) for item in value.get("match_fields", [])),
+        )
+
+
+@dataclass(frozen=True)
+class PublicationSearch:
+    """Iterable page of publication-level search results."""
+
+    query: str
+    results: tuple[PublicationSearchResult, ...]
+    has_more: bool
+    release: Mapping[str, Any]
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "PublicationSearch":
+        return cls(
+            query=str(value.get("query", "")),
+            results=tuple(PublicationSearchResult.from_dict(item) for item in value.get("results", [])),
+            has_more=bool(value.get("has_more", False)),
+            release=dict(value.get("release", {})),
+        )
+
+    def __iter__(self):
+        return iter(self.results)
+
+    def __len__(self) -> int:
+        return len(self.results)
+
+    def __getitem__(self, index: int) -> PublicationSearchResult:
+        return self.results[index]
+
+
+@dataclass(frozen=True)
 class TemporaryPointRank:
     label: str
     x: float
