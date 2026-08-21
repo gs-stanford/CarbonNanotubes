@@ -2,13 +2,10 @@
 
 The SDK requests citation-backed comparison figures rendered by the Carbon Property Tables service. It is a figure and benchmarking interface, not a bulk database-download client or a local copy of the canonical dataset.
 
-## Install from TestPyPI
+## Install
 
 ```bash
-python -m pip install \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple/ \
-  carbon-property-tables==0.3.2
+python -m pip install carbon-property-tables==0.3.3
 ```
 
 ## Make a figure
