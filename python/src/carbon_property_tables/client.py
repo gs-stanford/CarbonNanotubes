@@ -10,6 +10,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 
+from ._version import __version__
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
 from .models import CitationBundle, PlotResult, Record, RecordPage
 
@@ -23,7 +24,7 @@ class CPTClient:
         if not self.base_url.endswith("/api/v1"):
             self.base_url = f"{self.base_url}/api/v1"
         self.timeout = timeout
-        self.user_agent = user_agent or "carbon-property-tables-python/0.1.0"
+        self.user_agent = user_agent or f"carbon-property-tables-python/{__version__}"
 
     def _request(
         self,
