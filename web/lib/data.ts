@@ -437,7 +437,7 @@ function bool(value: string | undefined): boolean {
   return (value ?? "").trim().toLowerCase() === "true";
 }
 
-function recordFromRow(row: Record<string, string>): PublicRecord {
+export function recordFromRow(row: Record<string, string>): PublicRecord {
   return {
     record_id: row.record_id,
     record_label: nullable(row.record_label) ?? nullable(row.sample_name) ?? row.record_id,
@@ -519,7 +519,7 @@ function recordFromRow(row: Record<string, string>): PublicRecord {
   };
 }
 
-function measurementFromRow(row: Record<string, string>): Measurement | null {
+export function measurementFromRow(row: Record<string, string>): Measurement | null {
   const property = row.property as PropertyKey;
   const meta = PROPERTY_BY_KEY.get(property);
   const value = num(row.value_canonical);
@@ -541,7 +541,7 @@ function measurementFromRow(row: Record<string, string>): Measurement | null {
   };
 }
 
-function publicationFromRow(row: Record<string, string>): Publication {
+export function publicationFromRow(row: Record<string, string>): Publication {
   return {
     publication_id: row.publication_id,
     doi_verified: nullable(row.doi_verified),
@@ -670,6 +670,10 @@ function buildExplorerPayload(
 
 export function getExplorerPayload(): ExplorerPayload {
   return buildExplorerPayload(bundledPublicReleaseRows(), readCommunitySubmissions());
+}
+
+export function getBundledExplorerPayload(): ExplorerPayload {
+  return buildExplorerPayload(bundledPublicReleaseRows(), []);
 }
 
 export async function getRuntimeExplorerPayload(): Promise<ExplorerPayload> {

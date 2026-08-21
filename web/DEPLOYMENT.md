@@ -23,6 +23,12 @@ npm run db:import-public
 
 When `DATABASE_URL` is configured, public records, measurements, and publications are read from PostgreSQL. Bundled CSV files are used only in environments without a configured database.
 
+## Public query API
+
+The versioned read API is served under `/api/v1`; its OpenAPI document is `/api/v1/openapi.json`. Production filters execute against indexed canonical PostgreSQL fields and always return explicit units, provenance status, and citations. The API is read-only and CORS-enabled. See [`API.md`](./API.md) for examples.
+
+The Python package in `../python` consumes this contract directly. Set `CPT_API_URL` to the deployed service URL or pass the URL to `CPTClient`.
+
 ## Submission pipeline
 
 1. User submits DOI, sample metadata, property values, conditions, and provenance.

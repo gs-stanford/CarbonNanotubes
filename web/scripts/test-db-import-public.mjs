@@ -7,6 +7,7 @@ import {
   loadPublicRelease,
   verifyPublicRelease
 } from "./db-import-public.mjs";
+import { buildCanonicalRecordQuery } from "../lib/query-sql.mjs";
 
 const database = await PGlite.create({ dataDir: "memory://" });
 const schema = await fs.readFile(path.join(process.cwd(), "db", "schema.sql"), "utf8");
@@ -37,6 +38,46 @@ try {
     measurements: 5344,
     publications: 271
   });
+
+  const multiPropertyPlan = buildCanonicalRecordQuery({
+    limit: 20,
+    doi: "https://doi.org/10.1126/science.adj1082",
+    materialFamilies: ["CNT_or_CNT_hybrid"],
+    measurementRanges: [
+      { property: "density", minValue: 1300, maxValue: 1500 },
+      { property: "tensile_strength", minValue: 8e9 }
+    ]
+  });
+  const multiPropertyResult = await database.query(multiPropertyPlan.text, multiPropertyPlan.values);
+  assert.deepEqual(
+    multiPropertyResult.rows.map((row) => row.record_payload.record_id),
+    ["rec_f8e2b6a26ecb"],
+    "PostgreSQL query engine must apply same-record multi-property ranges."
+  );
+
+  const searchPlan = buildCanonicalRecordQuery({
+    limit: 20,
+    author: "Xinshi Zhang",
+    q: "dynamic strength",
+    requiredProperties: ["tensile_strength"]
+  });
+  const searchResult = await database.query(searchPlan.text, searchPlan.values);
+  assert.equal(searchResult.rows.length, 4, "PostgreSQL query engine must search publication metadata.");
+
+  const gaugeLengthPlan = buildCanonicalRecordQuery({ limit: 1, gaugeLengthMinMm: 0 });
+  const gaugeLengthResult = await database.query(gaugeLengthPlan.text, gaugeLengthPlan.values);
+  assert.equal(gaugeLengthResult.rows.length, 2, "PostgreSQL query engine must safely parse numeric condition fields.");
+
+  const curatedPeerReviewedPlan = buildCanonicalRecordQuery({
+    limit: 1,
+    peerReviewed: true,
+    provenance: ["author_curated_published_compilation"]
+  });
+  const curatedPeerReviewedResult = await database.query(curatedPeerReviewedPlan.text, curatedPeerReviewedPlan.values);
+  assert.ok(
+    curatedPeerReviewedResult.rows.length > 0,
+    "Peer-reviewed filtering must retain verified author-curated literature records."
+  );
 
   await database.query(`
     UPDATE atlas_canonical_records

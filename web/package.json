@@ -12,6 +12,7 @@
     "db:verify-public": "node scripts/db-import-public.mjs --verify-only",
     "db:validate-public-files": "node scripts/db-import-public.mjs --dry-run",
     "db:test-public-import": "node scripts/test-db-import-public.mjs",
+    "test:api-v1": "node scripts/test-api-v1.mjs",
     "typecheck": "tsc --noEmit",
     "sync:data": "node scripts/sync-public-data.mjs"
   },
