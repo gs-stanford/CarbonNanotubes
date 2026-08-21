@@ -5,27 +5,33 @@ from __future__ import annotations
 import base64
 import json
 import os
+import ssl
 from collections.abc import Mapping, Sequence
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+import certifi
+
 from ._version import __version__
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
 from .models import RenderedFigure, TemporaryPoint
+
+DEFAULT_API_URL = "https://carbonnanotubes.onrender.com/api/v1"
 
 
 class CPTClient:
     """Create citation-backed figures without downloading canonical point tables."""
 
     def __init__(self, base_url: str | None = None, *, timeout: float = 60.0, user_agent: str | None = None) -> None:
-        configured = base_url or os.environ.get("CPT_API_URL") or "http://localhost:3000/api/v1"
+        configured = base_url or os.environ.get("CPT_API_URL") or DEFAULT_API_URL
         self.base_url = configured.rstrip("/")
         if not self.base_url.endswith("/api/v1"):
             self.base_url = f"{self.base_url}/api/v1"
         self.timeout = timeout
         self.user_agent = user_agent or f"carbon-property-tables-python/{__version__}"
+        self._ssl_context = ssl.create_default_context(cafile=certifi.where())
 
     def _request(
         self,
@@ -47,7 +53,7 @@ class CPTClient:
             headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": self.user_agent},
         )
         try:
-            with urlopen(request, timeout=self.timeout) as response:
+            with urlopen(request, timeout=self.timeout, context=self._ssl_context) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except HTTPError as error:
             try:
