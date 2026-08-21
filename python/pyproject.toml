@@ -30,9 +30,11 @@ classifiers = [
   "Topic :: Scientific/Engineering",
   "Typing :: Typed"
 ]
-dependencies = []
+dependencies = ["certifi>=2024.7.4"]
 
 [project.urls]
+Homepage = "https://carbonnanotubes.onrender.com"
+Documentation = "https://carbonnanotubes.onrender.com/api/v1"
 Source = "https://github.com/gs-stanford/CarbonNanotubes"
 Issues = "https://github.com/gs-stanford/CarbonNanotubes/issues"
 

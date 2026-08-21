@@ -1,7 +1,9 @@
 import base64
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from carbon_property_tables import CPTClient, CPTValidationError, TemporaryPoint, __version__
 
@@ -118,6 +120,10 @@ class FakeClient(CPTClient):
 
 
 class CPTClientTests(unittest.TestCase):
+    def test_live_service_is_the_default_endpoint(self):
+        with patch.dict(os.environ, {"CPT_API_URL": ""}):
+            self.assertEqual(CPTClient().base_url, "https://carbonnanotubes.onrender.com/api/v1")
+
     def test_base_url_and_metadata_endpoints(self):
         client = FakeClient()
         self.assertEqual(client.base_url, "https://example.test/api/v1")

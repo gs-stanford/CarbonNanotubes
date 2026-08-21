@@ -8,14 +8,14 @@ The SDK requests citation-backed comparison figures rendered by the Carbon Prope
 python -m pip install -e ./python
 ```
 
-Set `CPT_API_URL` to the deployed service URL, or pass the URL to `CPTClient`. The local default is `http://localhost:3000/api/v1`.
+The default client uses the live service at `https://carbonnanotubes.onrender.com/api/v1`. Set `CPT_API_URL` or pass a URL to `CPTClient` to target a local or alternate deployment.
 
 ## Plot and benchmark a temporary result
 
 ```python
 from carbon_property_tables import CPTClient, TemporaryPoint
 
-cpt = CPTClient("https://YOUR-SERVICE.onrender.com")
+cpt = CPTClient()
 
 figure = cpt.scatter(
     "specific_strength",
