@@ -7,6 +7,7 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm run db:migrate && npm run db:import-public && npm run start
     autoDeploy: true
+    healthCheckPath: /api/v1/release
     envVars:
       - key: NODE_VERSION
         value: "22"
@@ -17,7 +18,7 @@ services:
       - key: ADMIN_TOKEN
         sync: false
       - key: CPT_INTERNAL_API_TOKEN
-        sync: false
+        generateValue: true
       - key: OPENAI_CLEANUP_ENABLED
         value: "false"
       - key: OPENAI_API_KEY
