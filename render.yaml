@@ -16,6 +16,8 @@ services:
           property: connectionString
       - key: ADMIN_TOKEN
         sync: false
+      - key: CPT_INTERNAL_API_TOKEN
+        sync: false
       - key: OPENAI_CLEANUP_ENABLED
         value: "false"
       - key: OPENAI_API_KEY
