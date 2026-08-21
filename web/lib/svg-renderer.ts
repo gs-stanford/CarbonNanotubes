@@ -579,8 +579,32 @@ function overlaps(a: Box, b: Box): boolean {
   return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 }
 
+function overlapArea(a: Box, b: Box): number {
+  const width = Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0));
+  const height = Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+  return width * height;
+}
+
+function segmentBounds(start: Point, end: Point, padding = 1): Box {
+  return {
+    x0: Math.min(start.x, end.x) - padding,
+    y0: Math.min(start.y, end.y) - padding,
+    x1: Math.max(start.x, end.x) + padding,
+    y1: Math.max(start.y, end.y) + padding
+  };
+}
+
 function renderCallouts(records: PlotRecord[], points: Map<string, Point>, valueKey: PropertyKey, margin: typeof BASE_MARGIN): string {
-  const metals = records.filter((record) => record.material_family === "metal_comparator").slice(0, 5);
+  const seenMetals = new Set<string>();
+  const metals = records
+    .filter((record) => record.material_family === "metal_comparator")
+    .filter((record) => {
+      const label = metalLabel(record) ?? "Metal";
+      if (seenMetals.has(label)) return false;
+      seenMetals.add(label);
+      return true;
+    })
+    .slice(0, 5);
   const sources = records
     .filter((record) => record.material_family !== "metal_comparator")
     .slice()
@@ -591,25 +615,57 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
     })
     .slice(0, 3);
   const occupied: Box[] = [];
+  const markerBoxes = new Map(
+    Array.from(points, ([recordId, point]) => [
+      recordId,
+      { x0: point.x - 7, y0: point.y - 7, x1: point.x + 7, y1: point.y + 7 }
+    ])
+  );
   const output: string[] = [];
   for (const record of [...metals, ...sources]) {
     const point = points.get(record.record_id);
     if (!point) continue;
     const text = metalLabel(record) ?? sourceLabel(record);
-    const width = clamp(text.length * 5.3, 28, 178);
+    const width = clamp(text.length * 5.7 + 4, 32, 210);
     const height = 16;
     const candidates = [
       { x0: point.x + 12, y0: point.y - 24 },
       { x0: point.x + 12, y0: point.y + 7 },
       { x0: point.x - width - 12, y0: point.y - 24 },
       { x0: point.x - width - 12, y0: point.y + 7 },
-      { x0: point.x - width / 2, y0: point.y - 34 }
+      { x0: point.x - width / 2, y0: point.y - 35 },
+      { x0: point.x - width / 2, y0: point.y + 17 },
+      { x0: point.x + 24, y0: point.y - height / 2 },
+      { x0: point.x - width - 24, y0: point.y - height / 2 }
     ].map((candidate) => {
       const x0 = clamp(candidate.x0, margin.left + 4, WIDTH - margin.right - width - 4);
       const y0 = clamp(candidate.y0, margin.top + 4, HEIGHT - margin.bottom - height - 4);
       return { x0, y0, x1: x0 + width, y1: y0 + height };
     });
-    const box = candidates.find((candidate) => occupied.every((existing) => !overlaps(candidate, existing))) ?? candidates[0];
+    const otherMarkers = Array.from(markerBoxes.entries())
+      .filter(([recordId]) => recordId !== record.record_id)
+      .map(([, box]) => box);
+    const score = (box: Box, preference: number): number => {
+      const leader = {
+        x: clamp(point.x, box.x0, box.x1),
+        y: clamp(point.y, box.y0, box.y1)
+      };
+      const leaderBounds = segmentBounds(point, leader);
+      const labelOverlap = occupied.reduce((total, existing) => total + overlapArea(box, existing), 0);
+      const markerOverlap = otherMarkers.reduce((total, marker) => total + overlapArea(box, marker), 0);
+      const crossedLabels = occupied.filter((existing) => overlaps(leaderBounds, existing)).length;
+      const crossedMarkers = otherMarkers.filter((marker) => overlaps(leaderBounds, marker)).length;
+      const distance = Math.hypot(leader.x - point.x, leader.y - point.y);
+      return labelOverlap * 1_000_000
+        + markerOverlap * 100_000
+        + crossedLabels * 50_000
+        + crossedMarkers * 2_000
+        + distance
+        + preference;
+    };
+    const box = candidates
+      .map((candidate, index) => ({ candidate, score: score(candidate, index) }))
+      .sort((a, b) => a.score - b.score)[0].candidate;
     occupied.push(box);
     const leaderX = clamp(point.x, box.x0, box.x1);
     const leaderY = clamp(point.y, box.y0, box.y1);

@@ -42,7 +42,27 @@ function publicationKey(record: PlotRecord): string {
   ].join("|");
 }
 
+function metalIdentity(record: PlotRecord): string | null {
+  if (record.material_family !== "metal_comparator") return null;
+  const label = stripMarkup(record.public_sample_label || record.sample_name || record.record_label);
+  if (/\b(aluminum|aluminium|al)\b/i.test(label)) return "aluminum";
+  if (/\b(copper|cu)\b/i.test(label)) return "copper";
+  if (/\b(silver|ag)\b/i.test(label)) return "silver";
+  if (/\b(gold|au)\b/i.test(label)) return "gold";
+  if (/\b(nickel|ni)\b/i.test(label)) return "nickel";
+  if (/\bsteel\b/i.test(label)) return "steel";
+  return null;
+}
+
+function benchmarkIdentity(record: PlotRecord): string {
+  return metalIdentity(record)
+    ?? cleanGroupPart(record.public_sample_label || record.sample_name || record.record_label);
+}
+
 function groupKey(record: PlotRecord): string {
+  if (record.contextual_benchmark || record.public_release_tier.includes("contextual_comparator")) {
+    return ["benchmark", record.material_family, record.form_factor, benchmarkIdentity(record)].join("|");
+  }
   return [publicationKey(record), record.material_family, record.form_factor, cleanGroupPart(record.cnt_type)].join("|");
 }
 
@@ -75,17 +95,20 @@ function compare(a: PlotRecord, b: PlotRecord, x: PropertyKey, y: PropertyKey): 
   return yearDifference || a.record_id.localeCompare(b.record_id);
 }
 
-function dominates(candidate: PlotRecord, target: PlotRecord, keys: PropertyKey[]): boolean {
-  let strictlyBetter = false;
-  for (const key of keys) {
-    const candidateValue = metric(candidate, key);
-    const targetValue = metric(target, key);
-    if (!Number.isFinite(candidateValue) || !Number.isFinite(targetValue)) return false;
-    const tolerance = Math.max(Math.abs(candidateValue), Math.abs(targetValue), 1) * 1e-9;
-    if (candidateValue + tolerance < targetValue) return false;
-    if (candidateValue > targetValue + tolerance) strictlyBetter = true;
-  }
-  return strictlyBetter;
+function nearlyEqualMetric(a: PlotRecord, b: PlotRecord, key: PropertyKey): boolean {
+  const aValue = metric(a, key);
+  const bValue = metric(b, key);
+  if (!Number.isFinite(aValue) || !Number.isFinite(bValue)) return false;
+  const tolerance = Math.max(Math.abs(aValue), Math.abs(bValue), 1e-12) * 0.002;
+  return Math.abs(aValue - bValue) <= tolerance;
+}
+
+function repeatedCoordinate(a: PlotRecord, b: PlotRecord, x: PropertyKey, y: PropertyKey): boolean {
+  return publicationKey(a) === publicationKey(b)
+    && a.material_family === b.material_family
+    && a.form_factor === b.form_factor
+    && nearlyEqualMetric(a, b, x)
+    && nearlyEqualMetric(a, b, y);
 }
 
 export function representativeRecords(
@@ -96,17 +119,17 @@ export function representativeRecords(
 ): PlotRecord[] {
   const groups = new Map<string, PlotRecord[]>();
   records.forEach((record) => groups.set(groupKey(record), [...(groups.get(groupKey(record)) ?? []), record]));
-  const performanceKeys = [x, y].filter((key) => PERFORMANCE_PROPERTIES.has(key));
   const selected: PlotRecord[] = [];
   for (const group of groups.values()) {
-    if ((kind === "scatter" || kind === "ashby") && performanceKeys.length === 2) {
-      selected.push(...group.filter((record) => !group.some((other) => other.record_id !== record.record_id && dominates(other, record, performanceKeys))));
-    } else {
-      selected.push(group.slice().sort((a, b) => compare(a, b, x, y))[0]);
-    }
+    selected.push(group.slice().sort((a, b) => compare(a, b, x, y))[0]);
   }
-  const allowed = kind === "ranked" ? selected.filter((record) => RANKED_MATERIAL_FAMILIES.has(record.material_family)) : selected;
-  return allowed.sort((a, b) => sourceRank(a) - sourceRank(b) || compare(a, b, x, y));
+  const ordered = selected.sort((a, b) => sourceRank(a) - sourceRank(b) || compare(a, b, x, y));
+  const deduplicated = ordered.filter(
+    (record, index, all) => !all.slice(0, index).some((candidate) => repeatedCoordinate(candidate, record, x, y))
+  );
+  return kind === "ranked"
+    ? deduplicated.filter((record) => RANKED_MATERIAL_FAMILIES.has(record.material_family))
+    : deduplicated;
 }
 
 function rankingAxis(topBy: FigureTopAxis, x: PropertyKey, y: PropertyKey): "x" | "y" {
