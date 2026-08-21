@@ -5,6 +5,15 @@ import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { RankedPlot, type RankedReferenceLine } from "@/components/RankedPlot";
 import { ScatterPlot } from "@/components/ScatterPlot";
 import { TrendPlot } from "@/components/TrendPlot";
+import {
+  doiValue,
+  formatAtlasBibtex,
+  formatAtlasCitation,
+  formatBibtex,
+  formatCompilationCitation,
+  formatNatureCitation,
+  stripMarkup
+} from "@/lib/citations";
 import type { ExplorerPayload, PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 import { searchRecords } from "@/lib/search";
 
@@ -366,17 +375,6 @@ function doiHref(value: string | null): string | null {
   return doi.startsWith("10.") ? `https://doi.org/${doi}` : null;
 }
 
-function stripMarkup(value: string | null | undefined): string {
-  return (value ?? "")
-    .replace(/<[^>]*>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function escapeXml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -384,129 +382,6 @@ function escapeXml(value: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
-}
-
-function doiValue(value: string | null | undefined): string | null {
-  const doi = value?.split(";")[0]?.trim();
-  return doi && doi.startsWith("10.") ? doi : null;
-}
-
-const NAME_PARTICLES = new Set(["da", "de", "del", "della", "der", "di", "dos", "du", "la", "le", "van", "von", "y"]);
-
-function normalizeInitials(value: string): string {
-  return value
-    .replace(/\b([A-Z])\b/g, "$1.")
-    .replace(/([A-Z])\.([A-Z])\./g, "$1. $2.")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function tokenInitial(token: string): string {
-  const cleaned = token.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ-]/g, "");
-  return cleaned ? `${cleaned[0].toUpperCase()}.` : "";
-}
-
-function formatNatureAuthorName(name: string): string {
-  const cleaned = name.replace(/\s+/g, " ").trim();
-  if (!cleaned) return "";
-  if (cleaned.includes(",")) {
-    const [family, given = ""] = cleaned.split(",", 2).map((part) => part.trim());
-    return [family, normalizeInitials(given)].filter(Boolean).join(", ");
-  }
-
-  const parts = cleaned.split(/\s+/).filter(Boolean);
-  if (parts.length < 2) return cleaned;
-  let familyStart = parts.length - 1;
-  while (familyStart > 0 && NAME_PARTICLES.has(parts[familyStart - 1].toLowerCase().replace(/\.$/, ""))) {
-    familyStart -= 1;
-  }
-  const family = parts.slice(familyStart).join(" ");
-  const initials = parts
-    .slice(0, familyStart)
-    .map((part) => {
-      if (/^[A-Z](\.)?$/.test(part)) return `${part[0]}.`;
-      if (/^([A-Z]\.)+$/.test(part)) return normalizeInitials(part);
-      return tokenInitial(part);
-    })
-    .filter(Boolean)
-    .join(" ");
-  return [family, initials].filter(Boolean).join(", ");
-}
-
-function formatShortNatureAuthors(short: string | null | undefined): string {
-  const cleaned = (short ?? "").replace(/\s+/g, " ").trim();
-  if (!cleaned) return "Unknown authors";
-  const etAl = /\bet\s+al\.?$/i.test(cleaned);
-  const firstAuthor = cleaned.replace(/\bet\s+al\.?$/i, "").trim();
-  const formatted = formatNatureAuthorName(firstAuthor);
-  return etAl ? `${formatted} et al.` : formatted;
-}
-
-function natureAuthors(full: string | null | undefined, short: string | null | undefined): string {
-  const names = (full ?? "")
-    .split(";")
-    .map((name) => name.trim())
-    .filter(Boolean);
-  if (!names.length) return formatShortNatureAuthors(short);
-  const formatted = names.map(formatNatureAuthorName).filter(Boolean);
-  if (formatted.length > 6) return `${formatted[0]} et al.`;
-  if (formatted.length === 1) return formatted[0];
-  return `${formatted.slice(0, -1).join(", ")} & ${formatted[formatted.length - 1]}`;
-}
-
-function formatJournalBlock(journal: string | null | undefined, issuePages: string | null | undefined): string {
-  const cleanJournal = stripMarkup(journal ?? "");
-  const parts = stripMarkup(issuePages ?? "")
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
-  if (!cleanJournal) return "";
-  if (parts.length >= 3) return `${cleanJournal} ${parts[0]}, ${parts.slice(2).join(", ")}`;
-  if (parts.length === 2) return `${cleanJournal} ${parts[0]}, ${parts[1]}`;
-  if (parts.length === 1) return `${cleanJournal} ${parts[0]}`;
-  return cleanJournal;
-}
-
-function formatNatureCitation(record: PlotRecord): string {
-  const doi = doiValue(record.doi_verified ?? record.doi_raw);
-  const authors = natureAuthors(record.publication_authors_full_verified, record.publication_authors_short_verified);
-  const title = stripMarkup(record.publication_title_verified ?? record.citation_raw ?? record.record_label);
-  const journalBlock = formatJournalBlock(record.publication_journal_verified, record.publication_issue_pages_verified);
-  const year = record.publication_year_verified ?? "n.d.";
-  const doiBlock = doi ? ` https://doi.org/${doi}` : "";
-  return `${authors} ${title}. ${journalBlock} (${year}).${doiBlock}`.replace(/\s+/g, " ").trim();
-}
-
-function formatCompilationCitation(record: PlotRecord): string | null {
-  if (!record.compilation_source_doi_raw) return null;
-  if (record.compilation_source_doi_raw === "10.1002/adma.202008432") {
-    return "Bulmer, J. S., Kaniyoor, A. & Elliott, J. A. A meta-analysis of conductive and strong carbon nanotube materials. Advanced Materials 33, 2008432 (2021). https://doi.org/10.1002/adma.202008432";
-  }
-  const year = record.compilation_source_year ?? 2021;
-  return `${formatShortNatureAuthors(record.compilation_source_authors_short ?? "Bulmer et al.")} ${record.compilation_source_title ?? "A Meta-Analysis of Conductive and Strong Carbon Nanotube Materials"}. ${record.compilation_source_journal ?? "Advanced Materials"} (${year}). https://doi.org/${record.compilation_source_doi_raw}`;
-}
-
-function formatAtlasCitation(): string {
-  return "Sharma, G. & Boies, A. M. CNT Property Atlas, version 0.1 (2026).";
-}
-
-function bibtexKey(record: PlotRecord): string {
-  const author = (record.publication_authors_short_verified ?? "source").split(/\s+/)[0]?.replace(/[^A-Za-z0-9]/g, "") || "source";
-  const year = record.publication_year_verified ?? "nd";
-  return `${author}${year}_${record.record_id.slice(-6)}`;
-}
-
-function formatBibtex(record: PlotRecord): string {
-  const doi = doiValue(record.doi_verified ?? record.doi_raw);
-  const title = stripMarkup(record.publication_title_verified ?? record.record_label);
-  const fullAuthors = record.publication_authors_full_verified
-    ? record.publication_authors_full_verified.split(";").map((name) => name.trim()).filter(Boolean).join(" and ")
-    : formatShortNatureAuthors(record.publication_authors_short_verified).replace(/\s+et al\.$/, " and others");
-  return `@article{${bibtexKey(record)},\n  title = {${title}},\n  author = {${fullAuthors}},\n  journal = {${stripMarkup(record.publication_journal_verified ?? "")}},\n  year = {${record.publication_year_verified ?? ""}},\n  doi = {${doi ?? ""}}\n}`;
-}
-
-function formatAtlasBibtex(): string {
-  return "@misc{sharma_boies_cnt_property_atlas_2026,\n  title = {CNT Property Atlas},\n  author = {Sharma, Gaurav and Boies, Adam M.},\n  year = {2026},\n  version = {0.1}\n}";
 }
 
 function buildCsv(records: PlotRecord[], xKey: PropertyKey, yKey: PropertyKey, xMeta: PropertyMeta, yMeta: PropertyMeta): string {

@@ -5,6 +5,8 @@ node_modules
 __pycache__/
 *.py[cod]
 *.tsbuildinfo
+*.egg-info/
+python/build/
 ~$*
 .DS_Store
 data/curation/previews/

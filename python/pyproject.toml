@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carbon-property-tables"
+version = "0.1.0"
+description = "Citation-preserving Python client for the Carbon Property Tables API"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Gaurav Sharma" },
+  { name = "Adam M. Boies" }
+]
+dependencies = []
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.8"]
+dev = ["build>=1.2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+carbon_property_tables = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

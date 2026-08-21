@@ -15,6 +15,8 @@ export type CanonicalReleaseRows = {
   publications: Record<string, string>[];
 };
 
+export type CanonicalReleaseMetadata = CanonicalReleaseRows["release"];
+
 type ReleaseRow = {
   release_id: string;
   schema_version: string;
@@ -30,6 +32,7 @@ type PayloadRow = {
 };
 
 let canonicalReleasePromise: Promise<CanonicalReleaseRows> | null = null;
+let canonicalReleaseMetadataPromise: Promise<CanonicalReleaseMetadata> | null = null;
 
 function payloadFromJson(value: unknown, label: string): Record<string, string> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -124,4 +127,38 @@ async function loadCanonicalRelease(): Promise<CanonicalReleaseRows> {
 export function readCanonicalReleaseRows(): Promise<CanonicalReleaseRows> {
   canonicalReleasePromise ??= loadCanonicalRelease();
   return canonicalReleasePromise;
+}
+
+async function loadCanonicalReleaseMetadata(): Promise<CanonicalReleaseMetadata> {
+  await ensureDatabaseSchema();
+  return withDb(async (client) => {
+    const result = await client.query<ReleaseRow>(
+      `
+        SELECT release_id, schema_version, source_hash, record_count,
+               measurement_count, publication_count, imported_at
+        FROM atlas_dataset_releases
+        WHERE active = true
+      `
+    );
+    if (result.rowCount !== 1) {
+      throw new Error(
+        `Canonical PostgreSQL release is unavailable: expected one active release, found ${result.rowCount ?? 0}. Run npm run db:import-public.`
+      );
+    }
+    const release = result.rows[0];
+    return {
+      releaseId: release.release_id,
+      schemaVersion: release.schema_version,
+      sourceHash: release.source_hash,
+      recordCount: Number(release.record_count),
+      measurementCount: Number(release.measurement_count),
+      publicationCount: Number(release.publication_count),
+      importedAt: new Date(release.imported_at).toISOString()
+    };
+  });
+}
+
+export function readCanonicalReleaseMetadata(): Promise<CanonicalReleaseMetadata> {
+  canonicalReleaseMetadataPromise ??= loadCanonicalReleaseMetadata();
+  return canonicalReleaseMetadataPromise;
 }
