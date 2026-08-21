@@ -16,7 +16,7 @@ import certifi
 
 from ._version import __version__
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
-from .models import DoiStatus, RenderedFigure, TemporaryPoint
+from .models import DoiStatus, PublicationSearch, RenderedFigure, TemporaryPoint
 
 DEFAULT_API_URL = "https://carbonnanotubes.onrender.com/api/v1"
 
@@ -108,6 +108,20 @@ class CPTClient:
     def has_doi(self, doi: str) -> bool:
         """Return whether an exact DOI is represented in the active release."""
         return self.doi_status(doi).in_database
+
+    def search(self, query: str, *, limit: int = 10) -> PublicationSearch:
+        """Search represented publications without returning records or measurements."""
+        if not isinstance(query, str) or not query.strip():
+            raise CPTValidationError("query must be a non-empty string.")
+        if len(query.strip()) > 300:
+            raise CPTValidationError("query must be 300 characters or fewer.")
+        if len(query.strip()) < 2:
+            raise CPTValidationError("query must contain at least two characters.")
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1 or limit > 25:
+            raise CPTValidationError("limit must be an integer from 1 to 25.")
+        return PublicationSearch.from_dict(
+            self._request("search", params={"q": query.strip(), "limit": limit})
+        )
 
     def figure(
         self,

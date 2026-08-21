@@ -8,7 +8,7 @@ from typing import Any
 
 from .client import CPTClient
 from .exceptions import CPTValidationError
-from .models import DoiStatus, RenderedFigure
+from .models import DoiStatus, PublicationSearch, RenderedFigure
 
 
 PROPERTY_KEYS = (
@@ -121,6 +121,11 @@ def doi_status(doi: str) -> DoiStatus:
 def has_doi(doi: str) -> bool:
     """Return whether an exact DOI is represented in the active release."""
     return get_client().has_doi(doi)
+
+
+def search(query: str, *, limit: int = 10) -> PublicationSearch:
+    """Search DOI, title, author, journal, year, and keywords in the active release."""
+    return get_client().search(query, limit=limit)
 
 
 def scatter(x: str, y: str, **kwargs: Any) -> RenderedFigure:

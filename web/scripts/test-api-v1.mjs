@@ -11,6 +11,18 @@ function assertPublicHeaders(response, path) {
   );
 }
 
+function allObjectKeys(value, keys = new Set()) {
+  if (Array.isArray(value)) {
+    value.forEach((item) => allObjectKeys(item, keys));
+  } else if (value && typeof value === "object") {
+    Object.entries(value).forEach(([key, item]) => {
+      keys.add(key);
+      allObjectKeys(item, keys);
+    });
+  }
+  return keys;
+}
+
 async function getJson(path, expectedStatus = 200) {
   const response = await fetch(`${baseUrl}${path}`);
   assert.equal(response.status, expectedStatus, `${path} returned HTTP ${response.status}`);
@@ -58,6 +70,40 @@ assert.equal(absentDoi.in_database, false);
 assert.equal(absentDoi.publication, null);
 const invalidDoi = await getJson(`/api/v1/doi-status?doi=${encodeURIComponent("not-a-doi")}`, 400);
 assert.equal(invalidDoi.error.code, "invalid_request");
+
+const exactSearch = await getJson(`/api/v1/search?q=${encodeURIComponent("https://doi.org/10.1126/science.adj1082")}`);
+assert.equal(exactSearch.results.length, 1);
+assert.equal(exactSearch.results[0].doi, "10.1126/science.adj1082");
+assert.deepEqual(exactSearch.results[0].match_fields, ["doi"]);
+
+const authorSearch = await getJson(`/api/v1/search?q=${encodeURIComponent("Xinshi Zhang dynamic strength")}&limit=10`);
+assert.ok(authorSearch.results.length > 0);
+assert.equal(authorSearch.results[0].doi, "10.1126/science.adj1082");
+assert.ok(authorSearch.results[0].match_fields.includes("author"));
+assert.equal(new Set(authorSearch.results.map((result) => result.doi ?? `${result.title}:${result.year}`)).size, authorSearch.results.length);
+
+const keywordSearch = await getJson(`/api/v1/search?q=${encodeURIComponent("iodine doped")}`);
+assert.equal(keywordSearch.results[0].doi, "10.1038/srep00083");
+
+const compilationSearch = await getJson(`/api/v1/search?q=${encodeURIComponent("10.1002/adma.202008432")}`);
+assert.equal(compilationSearch.results.length, 1);
+assert.equal(compilationSearch.results[0].role, "compilation");
+assert.ok(compilationSearch.results[0].title.includes("Meta"));
+const compilationAuthorSearch = await getJson(`/api/v1/search?q=${encodeURIComponent("James Elliott meta-analysis")}`);
+assert.equal(compilationAuthorSearch.results[0].doi, "10.1002/adma.202008432");
+assert.ok(compilationAuthorSearch.results[0].match_fields.includes("author"));
+
+const forbiddenSearchKeys = new Set([
+  "record_id", "record_ids", "sample", "samples", "measurements", "values", "coordinates",
+  "matched_rows", "material_families", "form_factors", "property", "properties"
+]);
+for (const key of allObjectKeys(authorSearch)) {
+  assert.ok(!forbiddenSearchKeys.has(key), `Public search leaked forbidden key '${key}'.`);
+}
+const missingSearch = await getJson("/api/v1/search", 400);
+assert.equal(missingSearch.error.code, "invalid_request");
+const invalidSearchLimit = await getJson(`/api/v1/search?q=CNT&limit=26`, 400);
+assert.equal(invalidSearchLimit.error.code, "invalid_request");
 
 const properties = await getJson("/api/v1/properties");
 const tensileStrength = properties.properties.find((property) => property.key === "tensile_strength");
@@ -147,6 +193,7 @@ const openapi = await getJson("/api/v1/openapi.json");
 assert.equal(openapi.openapi, "3.1.0");
 assert.ok(openapi.paths["/api/v1/figures"]);
 assert.ok(openapi.paths["/api/v1/doi-status"]);
+assert.ok(openapi.paths["/api/v1/search"]);
 assert.equal(openapi.paths["/api/v1/records"], undefined);
 assert.equal(openapi.paths["/api/v1/plot"], undefined);
 

@@ -9,7 +9,7 @@ export function GET(request: NextRequest) {
       title: "Carbon Property Tables API",
       version: "1.0.0",
       description:
-        "Citation-preserving figure artifacts, temporary-point benchmarking, and capped top-point extraction. The public API does not expose the canonical record or coordinate tables."
+        "Citation-preserving figure artifacts, temporary-point benchmarking, publication search, and capped top-point extraction. The public API does not expose the canonical record or coordinate tables."
     },
     servers: [{ url: origin }],
     paths: {
@@ -31,6 +31,22 @@ export function GET(request: NextRequest) {
             "200": { description: "DOI presence and, when present, citation metadata." },
             "400": { description: "Malformed DOI." },
             "429": { description: "Lookup rate limit reached." }
+          }
+        }
+      },
+      "/api/v1/search": {
+        get: {
+          summary: "Search publications represented in the active release",
+          description:
+            "Deterministic DOI, title, author, journal, year, and keyword search. Results are deduplicated to publication identity and never include record IDs, samples, properties, measurements, or coordinates.",
+          parameters: [
+            { name: "q", in: "query", required: true, schema: { type: "string", minLength: 2, maxLength: 300 } },
+            { name: "limit", in: "query", required: false, schema: { type: "integer", minimum: 1, maximum: 25, default: 10 } }
+          ],
+          responses: {
+            "200": { description: "Ranked, publication-level bibliographic matches." },
+            "400": { description: "Missing or invalid search query." },
+            "429": { description: "Search rate limit reached." }
           }
         }
       },

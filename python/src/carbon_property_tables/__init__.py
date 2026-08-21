@@ -2,9 +2,9 @@
 
 from ._version import __version__
 from .client import CPTClient
-from .convenience import ashby, configure, doi_status, get_client, has_doi, properties, ranked, release, resolve_property, scatter, trend
+from .convenience import ashby, configure, doi_status, get_client, has_doi, properties, ranked, release, resolve_property, scatter, search, trend
 from .exceptions import CPTError, CPTHTTPError, CPTValidationError
-from .models import CitationBundle, CitationEntry, DoiStatus, RenderedFigure, TemporaryPoint, TemporaryPointRank, TopPoint
+from .models import CitationBundle, CitationEntry, DoiStatus, PublicationSearch, PublicationSearchResult, RenderedFigure, TemporaryPoint, TemporaryPointRank, TopPoint
 
 __all__ = [
     "CPTClient",
@@ -14,6 +14,8 @@ __all__ = [
     "CitationBundle",
     "CitationEntry",
     "DoiStatus",
+    "PublicationSearch",
+    "PublicationSearchResult",
     "RenderedFigure",
     "TemporaryPoint",
     "TemporaryPointRank",
@@ -28,6 +30,7 @@ __all__ = [
     "release",
     "resolve_property",
     "scatter",
+    "search",
     "trend",
     "__version__",
 ]
