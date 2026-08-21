@@ -5,7 +5,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import carbon_property_tables as cpt
 from carbon_property_tables import CPTClient, CPTValidationError, TemporaryPoint, __version__
+from carbon_property_tables import convenience
 from carbon_property_tables.feature_tour import run_feature_tour
 
 
@@ -232,6 +234,36 @@ class CPTClientTests(unittest.TestCase):
             self.assertTrue((root / "feature-tour-report.json").is_file())
             requested_kinds = {body["kind"] for path, _, _, body in client.calls if path == "figures"}
             self.assertEqual(requested_kinds, {"scatter", "ranked", "trend", "ashby"})
+
+    def test_notebook_convenience_api_accepts_readable_property_names(self):
+        client = FakeClient()
+        with patch.object(convenience, "_default_client", client):
+            figure = cpt.scatter(
+                "Specific strength",
+                "Specific cond",
+                top=2,
+                temporary=TemporaryPoint(1.0, 2.0, "Candidate"),
+            )
+            cpt.ranked("density", "Tensile Strength")
+            cpt.trend("density", "strength")
+            cpt.ashby("Density", "Tenacity")
+
+        self.assertEqual(figure.x_property, "specific_strength")
+        self.assertEqual(figure.y_property, "specific_electrical_conductivity")
+        requested_axes = [(body["x"], body["y"]) for path, _, _, body in client.calls if path == "figures"]
+        self.assertEqual(
+            requested_axes,
+            [
+                ("specific_strength", "specific_electrical_conductivity"),
+                ("density", "tensile_strength"),
+                ("density", "tensile_strength"),
+                ("density", "specific_strength"),
+            ],
+        )
+
+    def test_readable_property_names_fail_loudly_when_unknown(self):
+        with self.assertRaisesRegex(CPTValidationError, "Unknown property"):
+            cpt.resolve_property("magic conductivity")
 
 
 if __name__ == "__main__":

@@ -8,10 +8,36 @@ The SDK requests citation-backed comparison figures rendered by the Carbon Prope
 python -m pip install \
   --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
-  carbon-property-tables==0.3.1
+  carbon-property-tables==0.3.2
 ```
 
-## Run the complete feature tour
+## Make a figure
+
+```python
+import carbon_property_tables as cpt
+
+figure = cpt.scatter(
+    "specific strength",
+    "specific conductivity",
+    log_x=True,
+    log_y=True,
+)
+
+figure.save("conductivity-strength.svg")
+figure
+```
+
+The first property is the x-axis and the second is the y-axis. Readable names are accepted, including `"specific cond"`, `"tenacity"`, `"tensile strength"`, and `"thermal conductivity"`. Misspelled or unknown properties fail explicitly instead of being guessed.
+
+The other figure modes use the same interface:
+
+```python
+ranked = cpt.ranked("density", "tensile strength", top=10)
+trend = cpt.trend("density", "tensile strength")
+ashby = cpt.ashby("density", "specific strength")
+```
+
+## Run the complete acceptance test
 
 ```bash
 cpt-feature-tour --output-dir cpt-feature-tour-output
@@ -33,14 +59,13 @@ python -m pip install -e ./python
 
 The default client uses the live service at `https://carbonnanotubes.onrender.com/api/v1`. Set `CPT_API_URL` or pass a URL to `CPTClient` to target a local or alternate deployment.
 
-## Plot and benchmark a temporary result
+## Benchmark a temporary result
 
 ```python
-from carbon_property_tables import CPTClient, TemporaryPoint
+import carbon_property_tables as cpt
+from carbon_property_tables import TemporaryPoint
 
-cpt = CPTClient()
-
-figure = cpt.scatter(
+comparison = cpt.scatter(
     "specific_strength",
     "specific_electrical_conductivity",
     log_x=True,
@@ -57,8 +82,8 @@ figure = cpt.scatter(
     ),
 )
 
-figure.save("conductivity-strength.svg")
-print(figure.temporary_point)
+comparison.save("conductivity-strength.svg")
+print(comparison.temporary_point)
 ```
 
 Temporary coordinates use the display units printed on the active axes. They are rendered and ranked against the visible representative material set, but are never written to Carbon Property Tables.
@@ -70,24 +95,19 @@ In Jupyter, returning `figure` from a cell displays its SVG directly. `save()` a
 Exact values can be requested only for the selected top subset, with a hard maximum of ten rows:
 
 ```python
-for row in figure.top_table():
+for row in comparison.top_table():
     print(row["rank"], row["label"], row["y_value"], row["y_unit"], row["doi"])
 
-figure.save_top_table("top-five.csv")
+comparison.save_top_table("top-five.csv")
 ```
 
 `top_by="x"` or `top_by="y"` must name a higher-is-better performance axis. Density and dimensions are filter or normalization variables, not optimization targets.
 
-## Figure types
-
-```python
-scatter = cpt.scatter("tensile_strength", "electrical_conductivity")
-ranked = cpt.ranked("density", "tensile_strength", top=10)
-ashby = cpt.ashby("density", "specific_strength")
-```
+## Figure modes
 
 - `scatter` compares any two same-record properties.
 - `ranked` ranks the y property among records that also contain the selected x property.
+- `trend` plots the selected y property against publication year.
 - `ashby` enforces logarithmic axes and shows robust material-family regions where enough data exist.
 
 All bounded figure filters supported by the service can be passed as keyword arguments. For example:
