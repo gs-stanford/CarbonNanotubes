@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from carbon_property_tables import CPTClient, CPTValidationError, TemporaryPoint, __version__
+from carbon_property_tables.feature_tour import run_feature_tour
 
 
 def citation_payload():
@@ -215,6 +216,22 @@ class CPTClientTests(unittest.TestCase):
             client.scatter("density", "tensile_strength", limit=5)
         with self.assertRaises(CPTValidationError):
             client.scatter("density", "tensile_strength", formats=("csv",))
+
+    def test_feature_tour_exercises_every_public_artifact_path(self):
+        client = FakeClient()
+        with tempfile.TemporaryDirectory() as directory:
+            report = run_feature_tour(client, directory)
+            root = Path(directory)
+            self.assertEqual(report["status"], "passed")
+            self.assertEqual(set(report["figures"]), {"scatter", "ranked", "trend", "ashby"})
+            self.assertEqual(set(report["validation_checks"].values()), {"passed"})
+            self.assertTrue((root / "scatter.svg").is_file())
+            self.assertTrue((root / "scatter.png").is_file())
+            self.assertTrue((root / "scatter.pdf").is_file())
+            self.assertTrue((root / "scatter-top-five.csv").is_file())
+            self.assertTrue((root / "feature-tour-report.json").is_file())
+            requested_kinds = {body["kind"] for path, _, _, body in client.calls if path == "figures"}
+            self.assertEqual(requested_kinds, {"scatter", "ranked", "trend", "ashby"})
 
 
 if __name__ == "__main__":
