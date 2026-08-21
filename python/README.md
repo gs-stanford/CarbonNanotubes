@@ -2,6 +2,29 @@
 
 The SDK requests citation-backed comparison figures rendered by the Carbon Property Tables service. It is a figure and benchmarking interface, not a bulk database-download client or a local copy of the canonical dataset.
 
+## Install from TestPyPI
+
+```bash
+python -m pip install \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ \
+  carbon-property-tables==0.3.1
+```
+
+## Run the complete feature tour
+
+```bash
+cpt-feature-tour --output-dir cpt-feature-tour-output
+```
+
+The command tests the production release and property endpoints, scatter/ranked/trend/Ashby figures, material filters, a temporary ranked point, the bounded top table, SVG/PNG/PDF exports, citation and BibTeX sidecars, and validation boundaries. It writes inspectable artifacts plus `feature-tour-report.json` to the selected directory and exits nonzero on any failure.
+
+The equivalent module command is:
+
+```bash
+python -m carbon_property_tables.feature_tour --output-dir cpt-feature-tour-output
+```
+
 ## Install locally
 
 ```bash

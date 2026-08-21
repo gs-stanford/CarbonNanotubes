@@ -29,8 +29,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
@@ -38,7 +38,7 @@ jobs:
       - name: Install test and build dependencies
         run: python -m pip install -e './python[dev]'
       - name: Run unit tests
-        run: python -m pytest python/tests/test_client.py
+        run: python -m pytest python/tests
       - name: Build distributions
         run: python -m build python
       - name: Check distribution metadata
@@ -48,10 +48,20 @@ jobs:
           python -m venv /tmp/cpt-wheel-test
           /tmp/cpt-wheel-test/bin/python -m pip install python/dist/*.whl
           /tmp/cpt-wheel-test/bin/python -c "import carbon_property_tables as cpt; print(cpt.__version__)"
-      - uses: actions/upload-artifact@v4
+          /tmp/cpt-wheel-test/bin/cpt-feature-tour --help
+      - name: Run the installed feature tour against production
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_target != 'none'
+        run: /tmp/cpt-wheel-test/bin/cpt-feature-tour --output-dir /tmp/cpt-feature-tour
+      - uses: actions/upload-artifact@v7
         with:
           name: python-distributions
           path: python/dist/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_target != 'none'
+        with:
+          name: sdk-feature-tour
+          path: /tmp/cpt-feature-tour/
           if-no-files-found: error
 
   publish-testpypi:
@@ -62,7 +72,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: python-distributions
           path: dist
@@ -78,7 +88,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: python-distributions
           path: dist

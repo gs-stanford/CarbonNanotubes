@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "carbon-property-tables"
-version = "0.3.0"
+version = "0.3.1"
 description = "Citation-preserving scientific figure client for Carbon Property Tables"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,9 @@ classifiers = [
   "Typing :: Typed"
 ]
 dependencies = ["certifi>=2024.7.4"]
+
+[project.scripts]
+cpt-feature-tour = "carbon_property_tables.feature_tour:main"
 
 [project.urls]
 Homepage = "https://carbonnanotubes.onrender.com"
