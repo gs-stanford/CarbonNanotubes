@@ -33,7 +33,13 @@ const callouts = Array.from(
   }
 );
 
-assert.equal(callouts.filter((callout) => callout.text === "Al").length, 1, "Al must have one benchmark callout.");
+for (const metal of ["Al", "Cu", "Ag", "Au", "Ni", "Steel"]) {
+  assert.equal(
+    callouts.filter((callout) => callout.text === metal).length,
+    1,
+    `${metal} must have exactly one benchmark callout.`
+  );
+}
 for (let index = 0; index < callouts.length; index += 1) {
   for (let other = index + 1; other < callouts.length; other += 1) {
     const a = callouts[index];

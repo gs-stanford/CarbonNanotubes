@@ -603,8 +603,7 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
       if (seenMetals.has(label)) return false;
       seenMetals.add(label);
       return true;
-    })
-    .slice(0, 5);
+    });
   const sources = records
     .filter((record) => record.material_family !== "metal_comparator")
     .slice()
