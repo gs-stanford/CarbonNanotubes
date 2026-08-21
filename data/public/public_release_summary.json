@@ -19,6 +19,13 @@
     "graphene_or_GO_fiber": 10,
     "ceramic_or_glass_comparator": 4
   },
+  "public_records_by_form_factor": {
+    "fiber_yarn": 841,
+    "sheet_mat_film": 298,
+    "individual_nanotube_or_bundle": 96,
+    "forest_array": 66,
+    "buckypaper": 65
+  },
   "public_measurements_by_property": {
     "electrical_conductivity": 986,
     "tensile_strength": 579,
@@ -48,9 +55,13 @@
   "records_requiring_missing_condition_warning": 513,
   "records_requiring_unit_inference_warning": 65,
   "commercial_or_specsheet_benchmark_records": 73,
+  "peer_reviewed_measurement_records": 55,
+  "contextual_benchmark_records": 344,
   "author_curated_compilation_records": 1238,
   "primary_source_verified_compilation_records": 1238,
   "primary_source_check_pending_records": 0,
+  "min_publication_year": 1888,
+  "max_publication_year": 2026,
   "duplicate_groups_detected": 57,
   "duplicate_records_collapsed": 100,
   "outputs": [

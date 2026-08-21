@@ -273,8 +273,11 @@ function pointMarkup(record: PlotRecord, x: number, y: number, options: SvgFigur
   const selected = options.interactive && record.record_id === options.selectedId;
   const highlighted = options.interactive && options.highlightedIds.has(record.record_id);
   const radius = record.public_release_tier === "peer_reviewed_research" ? 4.4 : 4;
+  const pointClasses = ["plot-point", selected ? "is-selected" : "", highlighted ? "is-search-match" : ""]
+    .filter(Boolean)
+    .join(" ");
   const attributes = options.interactive
-    ? `class="plot-point" data-record-id="${xml(record.record_id)}" role="button" tabindex="0" aria-label="${xml(record.public_sample_label || record.record_label)}"`
+    ? `class="${pointClasses}" data-record-id="${xml(record.record_id)}" role="button" tabindex="0" aria-label="${xml(record.public_sample_label || record.record_label)}"`
     : `class="plot-point"`;
   const layers = [
     highlighted ? `<circle class="search-highlight-halo" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="12" fill="none" stroke="#00a6a6" stroke-width="3.4" opacity="0.88"/>` : "",

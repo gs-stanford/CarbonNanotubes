@@ -1,9 +1,9 @@
 import { BoundedPropertyExplorer } from "@/components/BoundedPropertyExplorer";
-import { getRuntimeExplorerBootstrap } from "@/lib/data";
+import { getExplorerBootstrap } from "@/lib/query-store";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const payload = await getRuntimeExplorerBootstrap();
+  const payload = await getExplorerBootstrap();
   return <BoundedPropertyExplorer initialData={payload} />;
 }
