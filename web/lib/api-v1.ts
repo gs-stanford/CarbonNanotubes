@@ -1,6 +1,7 @@
 import { citationBundleForRecords } from "@/lib/citations";
 import { isPropertyKey, PROPERTY_BY_KEY, type Measurement, type PlotRecord, type PropertyKey } from "@/lib/data";
 import type { CanonicalRecord, RecordQuery, ReleaseDescriptor } from "@/lib/query-store";
+import { assessComparability } from "@/lib/comparability";
 
 export const API_VERSION = "v1";
 
@@ -155,6 +156,35 @@ function serializeMeasurement(measurement: Measurement) {
     unit: measurement.unit_canonical,
     display_value: measurement.value_display,
     display_unit: measurement.unit_display,
+    reported_value: measurement.reported_value,
+    reported_unit: measurement.reported_unit,
+    statistic_type: measurement.statistic_type,
+    uncertainty: {
+      type: measurement.uncertainty_type,
+      value_reported: measurement.uncertainty_value_reported,
+      value_canonical: measurement.uncertainty_value_canonical
+    },
+    sample_size_n: measurement.sample_size_n,
+    test_standard: measurement.test_standard,
+    specimen_id: measurement.specimen_id,
+    sample_batch_id: measurement.sample_batch_id,
+    specimen_linkage: measurement.specimen_linkage,
+    measurement_direction: measurement.measurement_direction,
+    normalization: {
+      basis: measurement.normalization_basis,
+      density_basis: measurement.density_basis,
+      density_value_kg_m3: measurement.density_value_kg_m3,
+      density_source_locator: measurement.density_source_locator
+    },
+    cross_section_method: measurement.cross_section_method,
+    value_bound_type: measurement.value_bound_type,
+    derivation: {
+      formula: measurement.derivation_formula,
+      inputs_json: measurement.derivation_inputs_json
+    },
+    reported_or_derived: measurement.reported_or_derived,
+    source_locator: measurement.source_locator,
+    extraction_method: measurement.extraction_method,
     warning: measurement.measurement_warning,
     eligibility: {
       strict: measurement.strict_plot_eligible,
@@ -189,7 +219,14 @@ export function serializeCanonicalRecord(canonical: CanonicalRecord) {
       form_factor: record.form_factor,
       cnt_type: record.cnt_type,
       synthesis_method: record.synthesis_method,
-      postprocessing: record.postprocessing
+      postprocessing: record.postprocessing,
+      specimen_id: record.specimen_id,
+      sample_batch_id: record.sample_batch_id,
+      specimen_linkage: record.specimen_linkage,
+      density_basis: record.density_basis,
+      cross_section_method: record.cross_section_method,
+      normalization_basis: record.normalization_basis,
+      value_bound_type: record.value_bound_type
     },
     publication: publicationFor(record, canonical),
     measurements: canonical.measurements.map(serializeMeasurement),
@@ -197,8 +234,10 @@ export function serializeCanonicalRecord(canonical: CanonicalRecord) {
       temperature_c: record.condition_temperature_C,
       atmosphere: record.condition_atmosphere,
       measurement_method: record.measurement_method,
+      test_standard: record.test_standard,
       gauge_length_mm: record.gauge_length_mm,
-      strain_rate_s_inv: record.strain_rate_s_inv
+      strain_rate_s_inv: record.strain_rate_s_inv,
+      measurement_direction: record.measurement_direction
     },
     provenance: {
       dataset: record.dataset_provenance,
@@ -218,7 +257,8 @@ export function serializeCanonicalRecord(canonical: CanonicalRecord) {
         : null
     },
     comparison: {
-      strict_ready: record.strict_comparison_ready,
+      model_version: record.comparability_model_version,
+      legacy_strict_ready_deprecated: record.strict_comparison_ready,
       normalized_eligible: record.normalized_comparison_eligible,
       exploratory_eligible: record.exploratory_comparison_eligible,
       cross_form: record.cross_form_comparison
@@ -259,7 +299,8 @@ export function serializePlotPoint(record: CanonicalRecord, x: PropertyKey, y: P
       source_location: record.record.provenance_table_figure_page
     },
     x: measurementFor(record, x),
-    y: measurementFor(record, y)
+    y: measurementFor(record, y),
+    comparability: assessComparability(record.record, x, y, "scatter")
   };
 }
 

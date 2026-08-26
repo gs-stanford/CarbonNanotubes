@@ -189,6 +189,7 @@ class TopPoint:
     publication_title: str | None
     publication_year: int | None
     citation: str
+    comparability_grade: str
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "TopPoint":
@@ -205,6 +206,7 @@ class TopPoint:
             publication_title=str(value["publication_title"]) if value.get("publication_title") else None,
             publication_year=int(value["publication_year"]) if value.get("publication_year") is not None else None,
             citation=str(value.get("citation", "")),
+            comparability_grade=str(value.get("comparability_grade", "D")),
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -221,6 +223,7 @@ class TopPoint:
             "publication_title": self.publication_title,
             "publication_year": self.publication_year,
             "citation": self.citation,
+            "comparability_grade": self.comparability_grade,
         }
 
 
@@ -235,6 +238,7 @@ class RenderedFigure:
     top_points: tuple[TopPoint, ...]
     citations: CitationBundle
     temporary_point: TemporaryPointRank | None
+    comparability: Mapping[str, Any]
     release: Mapping[str, Any]
     generated_at: str
     request: Mapping[str, Any] = field(repr=False)
@@ -259,6 +263,7 @@ class RenderedFigure:
             top_points=tuple(TopPoint.from_dict(item) for item in value.get("top_points", [])),
             citations=CitationBundle.from_dict(value.get("citations")),
             temporary_point=TemporaryPointRank.from_dict(temporary) if isinstance(temporary, Mapping) else None,
+            comparability=dict(value.get("comparability", {})),
             release=dict(value.get("release", {})),
             generated_at=str(value.get("generated_at", "")),
             request=dict(request or {}),
@@ -304,7 +309,7 @@ class RenderedFigure:
             json.dumps(identity, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
         ).hexdigest()
         return {
-            "schema": "cpt-figure-manifest-v1",
+            "schema": "cpt-figure-manifest-v2",
             "figure_fingerprint": fingerprint,
             "generated_at": self.generated_at,
             "figure": {
@@ -316,6 +321,7 @@ class RenderedFigure:
             },
             "request": dict(self.request),
             "release": dict(self.release),
+            "comparability": dict(self.comparability),
             "citation_policy": self.citations.requirement,
             "citations": [
                 {"citation_id": entry.citation_id, "roles": list(entry.roles), "doi": entry.doi, "text": entry.text}

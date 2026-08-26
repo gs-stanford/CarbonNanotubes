@@ -18,7 +18,11 @@ svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .ashby-region-ceramic { fill: #6a3d9a; stroke: #432667; }
 .ashby-region-unknown { fill: #979d95; stroke: #60665f; }
 .plot-point { cursor: pointer; stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: 0.95; }
-.plot-point.is-selected { stroke-width: 1.8; opacity: 1; }
+.plot-point.quality-a { opacity: 1; stroke-width: 1.65; }
+.plot-point.quality-b { opacity: 0.86; stroke-width: 1.35; }
+.plot-point.quality-c { opacity: 0.58; stroke-width: 1.15; }
+.plot-point.quality-d { opacity: 0.32; stroke-width: 1; stroke-dasharray: 2 1.5; }
+.plot-point.is-selected { stroke-width: 1.8; opacity: 1; stroke-dasharray: none; }
 .plot-point.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
 .plot-point.point-material-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
 .plot-point.point-material-graphene { fill: #009e73; stroke: #006b4f; }

@@ -25,19 +25,52 @@ export type SubmissionPayload = {
     cnt_type?: unknown;
     synthesis_method?: unknown;
     postprocessing?: unknown;
+    specimen_id?: unknown;
+    sample_batch_id?: unknown;
+    specimen_linkage?: unknown;
+    density_basis?: unknown;
+    cross_section_method?: unknown;
   };
   measurements?: Record<string, unknown>;
   conditions?: {
     temperature_C?: unknown;
     atmosphere?: unknown;
     measurement_method?: unknown;
+    test_standard?: unknown;
+    measurement_direction?: unknown;
     gauge_length_mm?: unknown;
     strain_rate_s_inv?: unknown;
   };
   provenance?: {
     table_figure_page?: unknown;
+    extraction_method?: unknown;
     notes?: unknown;
   };
+};
+
+type SubmissionMeasurement = {
+  property: PropertyKey;
+  displayValue: number;
+  canonicalValue: number;
+  statisticType: string;
+  uncertaintyType: string;
+  uncertaintyDisplayValue: number | null;
+  uncertaintyCanonicalValue: number | null;
+  sampleSizeN: number | null;
+  valueBoundType: string;
+  normalizationBasis: string;
+};
+
+const STATISTIC_TYPES = new Set(["individual", "mean", "median", "best_specimen", "maximum", "minimum", "range_endpoint", "unspecified"]);
+const UNCERTAINTY_TYPES = new Set(["standard_deviation", "standard_error", "confidence_interval", "range", "reported_unspecified", "not_reported"]);
+const VALUE_BOUND_TYPES = new Set(["point_estimate", "upper_bound", "lower_bound", "range_midpoint", "range_endpoint", "unspecified"]);
+const NORMALIZATION_BASES = new Set(["direct_mass_specific_linear_density", "directly_reported_mass_specific", "derived_from_density", "derived_from_linear_density", "not_applicable", "unknown"]);
+const SUBMITTER_LINKAGES = new Set(["same_specimen_submitter_claimed", "same_sample_batch_submitter_claimed", "mixed_specimens", "unknown"]);
+const DENSITY_DERIVED_NUMERATOR: Partial<Record<PropertyKey, PropertyKey>> = {
+  specific_strength: "tensile_strength",
+  specific_modulus: "initial_modulus",
+  specific_electrical_conductivity: "electrical_conductivity",
+  specific_thermal_conductivity: "thermal_conductivity"
 };
 
 type CrossrefAuthor = {
@@ -137,6 +170,11 @@ function parseOptionalNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function choice(value: unknown, allowed: Set<string>, fallback: string): string {
+  const clean = cleanString(value);
+  return allowed.has(clean) ? clean : fallback;
+}
+
 function datePartsToYear(parts: number[][] | undefined): number | null {
   const year = parts?.[0]?.[0];
   return typeof year === "number" && Number.isFinite(year) ? year : null;
@@ -223,20 +261,56 @@ async function validateDoi(doi: string): Promise<DoiMetadata> {
   };
 }
 
-function measurementEntries(payload: SubmissionPayload): Array<{ property: PropertyKey; displayValue: number; canonicalValue: number }> {
+function measurementEntries(payload: SubmissionPayload): SubmissionMeasurement[] {
   const measurements = payload.measurements ?? {};
-  const out: Array<{ property: PropertyKey; displayValue: number; canonicalValue: number }> = [];
+  const out: SubmissionMeasurement[] = [];
 
   for (const [key, raw] of Object.entries(measurements)) {
     if (!PROPERTY_BY_KEY.has(key as PropertyKey)) continue;
-    const displayValue = parseOptionalNumber(raw);
+    const structured = raw && typeof raw === "object" && !Array.isArray(raw)
+      ? raw as Record<string, unknown>
+      : { value: raw };
+    const displayValue = parseOptionalNumber(structured.value);
     if (displayValue === null) continue;
+    if (displayValue <= 0) {
+      throw new SubmissionError(422, "invalid_measurement", `${key} must be greater than zero.`);
+    }
     const meta = PROPERTY_BY_KEY.get(key as PropertyKey);
     if (!meta || meta.displayFactor === 0) continue;
+    const uncertaintyDisplayValue = parseOptionalNumber(structured.uncertainty_value);
+    if (uncertaintyDisplayValue !== null && uncertaintyDisplayValue < 0) {
+      throw new SubmissionError(422, "invalid_uncertainty", `${key} uncertainty must be zero or greater.`);
+    }
+    const sampleSize = parseOptionalNumber(structured.sample_size_n);
+    if (sampleSize !== null && (!Number.isInteger(sampleSize) || sampleSize < 1)) {
+      throw new SubmissionError(422, "invalid_sample_size", `${key} sample_size_n must be a positive integer.`);
+    }
+    const requestedUncertaintyType = choice(
+      structured.uncertainty_type,
+      UNCERTAINTY_TYPES,
+      uncertaintyDisplayValue === null ? "not_reported" : "reported_unspecified"
+    );
+    if (uncertaintyDisplayValue === null && requestedUncertaintyType !== "not_reported") {
+      throw new SubmissionError(422, "missing_uncertainty_value", `${key} declares an uncertainty type but no uncertainty value.`);
+    }
+    const uncertaintyType = uncertaintyDisplayValue !== null && requestedUncertaintyType === "not_reported"
+      ? "reported_unspecified"
+      : requestedUncertaintyType;
     out.push({
       property: key as PropertyKey,
       displayValue,
-      canonicalValue: displayValue / meta.displayFactor
+      canonicalValue: displayValue / meta.displayFactor,
+      statisticType: choice(structured.statistic_type, STATISTIC_TYPES, "unspecified"),
+      uncertaintyType,
+      uncertaintyDisplayValue,
+      uncertaintyCanonicalValue: uncertaintyDisplayValue === null ? null : uncertaintyDisplayValue / meta.displayFactor,
+      sampleSizeN: sampleSize,
+      valueBoundType: choice(structured.value_bound_type, VALUE_BOUND_TYPES, "unspecified"),
+      normalizationBasis: choice(
+        structured.normalization_basis,
+        NORMALIZATION_BASES,
+        key.startsWith("specific_") ? "unknown" : "not_applicable"
+      )
     });
   }
 
@@ -276,12 +350,21 @@ export function stableId(prefix: string, parts: string[]): string {
   return `${prefix}_${(hash >>> 0).toString(16).padStart(8, "0")}`;
 }
 
-function buildRecord(payload: SubmissionPayload, metadata: DoiMetadata, measurements: Array<{ property: PropertyKey }>, recordId: string): PublicRecord {
+function buildRecord(payload: SubmissionPayload, metadata: DoiMetadata, measurements: SubmissionMeasurement[], recordId: string): PublicRecord {
   const sampleLabel = cleanString(payload.sample?.sample_label) || metadata.title;
   const temperature = parseOptionalNumber(payload.conditions?.temperature_C);
   const gaugeLength = parseOptionalNumber(payload.conditions?.gauge_length_mm);
   const strainRate = parseOptionalNumber(payload.conditions?.strain_rate_s_inv);
-  const missingConditions = !cleanString(payload.conditions?.measurement_method) || !cleanString(payload.provenance?.table_figure_page);
+  const method = cleanString(payload.conditions?.measurement_method);
+  const testStandard = cleanString(payload.conditions?.test_standard);
+  const missingConditions = (!method && !testStandard) || !cleanString(payload.provenance?.table_figure_page);
+  const submittedLinkage = choice(payload.sample?.specimen_linkage, SUBMITTER_LINKAGES, "unknown");
+  const specimenLinkage = measurements.length === 1 ? "not_applicable_single_property" : submittedLinkage;
+  const statisticTypes = new Set(measurements.map((measurement) => measurement.statisticType));
+  const sampleSizes = new Set(measurements.map((measurement) => measurement.sampleSizeN).filter((value) => value !== null));
+  const normalizationBases = new Set(measurements.map((measurement) => measurement.normalizationBasis));
+  const boundTypes = new Set(measurements.map((measurement) => measurement.valueBoundType));
+  const linkagePending = measurements.length > 1 && !["mixed_specimens"].includes(specimenLinkage);
 
   return {
     record_id: recordId,
@@ -310,7 +393,7 @@ function buildRecord(payload: SubmissionPayload, metadata: DoiMetadata, measurem
     missing_conditions: missingConditions,
     unit_inference_review_needed: false,
     cross_form_comparison: false,
-    strict_comparison_ready: !missingConditions,
+    strict_comparison_ready: false,
     normalized_comparison_eligible: true,
     exploratory_comparison_eligible: true,
     source_citation_class: "community_doi_verified",
@@ -328,9 +411,21 @@ function buildRecord(payload: SubmissionPayload, metadata: DoiMetadata, measurem
     publication_issue_pages_verified: metadata.issuePages,
     condition_temperature_C: temperature,
     condition_atmosphere: cleanString(payload.conditions?.atmosphere) || null,
-    measurement_method: cleanString(payload.conditions?.measurement_method) || null,
+    measurement_method: method || null,
+    test_standard: testStandard || null,
     gauge_length_mm: gaugeLength,
     strain_rate_s_inv: strainRate,
+    specimen_id: cleanString(payload.sample?.specimen_id) || null,
+    sample_batch_id: cleanString(payload.sample?.sample_batch_id) || null,
+    specimen_linkage: specimenLinkage,
+    measurement_direction: cleanString(payload.conditions?.measurement_direction) || null,
+    density_basis: cleanString(payload.sample?.density_basis) || "unknown",
+    cross_section_method: cleanString(payload.sample?.cross_section_method) || null,
+    normalization_basis: normalizationBases.size === 1 ? [...normalizationBases][0] : "mixed",
+    value_bound_type: boundTypes.size === 1 ? [...boundTypes][0] : "mixed",
+    statistic_type: statisticTypes.size === 1 ? [...statisticTypes][0] : "mixed",
+    sample_size_n: sampleSizes.size === 1 ? [...sampleSizes][0] : null,
+    comparability_model_version: "cpt-property-pair-v1",
     provenance_table_figure_page: cleanString(payload.provenance?.table_figure_page) || null,
     compilation_source_doi_raw: null,
     compilation_source_title: null,
@@ -347,8 +442,8 @@ function buildRecord(payload: SubmissionPayload, metadata: DoiMetadata, measurem
     duplicate_of_record_id: null,
     duplicate_match_score: null,
     duplicate_exclusion_reason: null,
-    issue_types: missingConditions ? "missing_conditions" : null,
-    required_action: null,
+    issue_types: [missingConditions ? "missing_conditions" : "", linkagePending ? "curator_verify_specimen_linkage" : ""].filter(Boolean).join(";") || null,
+    required_action: "curator_verify_values_provenance_and_specimen_linkage",
     citation_raw: metadata.doi,
     source_file: "community_submissions_v0.json",
     source_sheet: "accepted",
@@ -373,19 +468,63 @@ function buildPublication(metadata: DoiMetadata, publicationId: string): Publica
   };
 }
 
-function buildMeasurements(record: PublicRecord, entries: Array<{ property: PropertyKey; canonicalValue: number }>): Array<Omit<Measurement, "value_display" | "unit_display">> {
+function buildMeasurements(record: PublicRecord, entries: SubmissionMeasurement[]): Array<Omit<Measurement, "value_display" | "unit_display">> {
+  const densityValue = entries.find((entry) => entry.property === "density")?.canonicalValue ?? null;
   return entries.map((entry) => {
     const meta = PROPERTY_BY_KEY.get(entry.property);
+    const densityDerived = entry.normalizationBasis === "derived_from_density";
+    const numeratorProperty = DENSITY_DERIVED_NUMERATOR[entry.property];
+    const numeratorValue = numeratorProperty
+      ? entries.find((candidate) => candidate.property === numeratorProperty)?.canonicalValue ?? null
+      : null;
+    const formula = densityDerived
+      ? entry.property === "specific_volume"
+        ? "specific_volume = 1 / density"
+        : numeratorProperty
+          ? `${entry.property} = ${numeratorProperty} / density`
+          : null
+      : null;
+    const derivationInputs = densityDerived && densityValue !== null
+      ? entry.property === "specific_volume"
+        ? { density_kg_m3: densityValue }
+        : numeratorProperty && numeratorValue !== null
+          ? { [numeratorProperty]: numeratorValue, density_kg_m3: densityValue }
+          : null
+      : null;
     return {
       measurement_id: stableId("meas", [record.record_id, entry.property, String(entry.canonicalValue)]),
       record_id: record.record_id,
       property: entry.property,
       value_canonical: entry.canonicalValue,
       unit_canonical: meta?.canonicalUnit ?? "",
+      reported_value: entry.displayValue,
+      reported_unit: meta?.displayUnit ?? null,
+      statistic_type: entry.statisticType,
+      uncertainty_type: entry.uncertaintyType,
+      uncertainty_value_reported: entry.uncertaintyDisplayValue,
+      uncertainty_value_canonical: entry.uncertaintyCanonicalValue,
+      sample_size_n: entry.sampleSizeN,
+      test_standard: record.test_standard,
+      specimen_id: record.specimen_id,
+      sample_batch_id: record.sample_batch_id,
+      specimen_linkage: record.specimen_linkage,
+      measurement_set_id: stableId("mset", [record.record_id]),
+      measurement_direction: record.measurement_direction,
+      density_basis: densityDerived ? record.density_basis : "not_applicable",
+      density_value_kg_m3: densityDerived ? densityValue : null,
+      density_source_locator: densityDerived ? record.provenance_table_figure_page : null,
+      cross_section_method: record.cross_section_method,
+      normalization_basis: entry.normalizationBasis,
+      value_bound_type: entry.valueBoundType,
+      derivation_formula: formula,
+      derivation_inputs_json: derivationInputs ? JSON.stringify(derivationInputs) : null,
+      reported_or_derived: densityDerived ? "derived" : "reported",
+      source_locator: record.provenance_table_figure_page,
+      extraction_method: "submitter_entered_from_source",
       public_release_tier: record.public_release_tier,
       public_plot_badge: record.public_plot_badge,
       measurement_warning: record.missing_conditions ? "community_submission_missing_conditions" : "none",
-      strict_plot_eligible: record.strict_comparison_ready,
+      strict_plot_eligible: false,
       normalized_plot_eligible: true,
       exploratory_plot_eligible: true
     };
@@ -405,6 +544,64 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
   const measurements = measurementEntries(payload);
   if (!measurements.length) {
     throw new SubmissionError(422, "missing_measurements", "At least one numeric measurement is required.");
+  }
+  const specimenLinkage = choice(payload.sample?.specimen_linkage, SUBMITTER_LINKAGES, "unknown");
+  if (measurements.length > 1 && specimenLinkage === "same_specimen_submitter_claimed" && !cleanString(payload.sample?.specimen_id)) {
+    throw new SubmissionError(422, "missing_specimen_id", "A same-specimen claim requires a specimen identifier from the publication.");
+  }
+  if (measurements.length > 1 && specimenLinkage === "same_sample_batch_submitter_claimed" && !cleanString(payload.sample?.sample_batch_id)) {
+    throw new SubmissionError(422, "missing_sample_batch_id", "A same-batch claim requires a sample batch identifier from the publication.");
+  }
+  if (measurements.some((measurement) => measurement.normalizationBasis === "derived_from_density")) {
+    const density = measurements.find((measurement) => measurement.property === "density");
+    if (!density || !cleanString(payload.sample?.density_basis) || cleanString(payload.sample?.density_basis) === "unknown") {
+      throw new SubmissionError(
+        422,
+        "incomplete_density_derivation",
+        "Density-derived specific properties require the density value and its density basis."
+      );
+    }
+    for (const measurement of measurements.filter((entry) => entry.normalizationBasis === "derived_from_density")) {
+      if (measurement.property === "specific_volume") {
+        const recomputed = 1 / density.canonicalValue;
+        const relativeDifference = Math.abs(recomputed - measurement.canonicalValue) / Math.max(Math.abs(recomputed), 1e-30);
+        if (relativeDifference > 0.05) {
+          throw new SubmissionError(422, "density_derivation_mismatch", "specific_volume does not match the submitted density within 5%.", {
+            submitted: measurement.canonicalValue,
+            recomputed,
+            relativeDifference
+          });
+        }
+        continue;
+      }
+      const numeratorProperty = DENSITY_DERIVED_NUMERATOR[measurement.property];
+      const numerator = numeratorProperty
+        ? measurements.find((entry) => entry.property === numeratorProperty)
+        : null;
+      if (!numeratorProperty || !numerator) {
+        throw new SubmissionError(
+          422,
+          "incomplete_density_derivation",
+          `${measurement.property} marked density-derived requires ${numeratorProperty ?? "its numerator property"} in the same submission.`
+        );
+      }
+      const recomputed = numerator.canonicalValue / density.canonicalValue;
+      const relativeDifference = Math.abs(recomputed - measurement.canonicalValue) / Math.max(Math.abs(recomputed), 1e-30);
+      if (relativeDifference > 0.05) {
+        throw new SubmissionError(422, "density_derivation_mismatch", `${measurement.property} does not match the submitted numerator and density within 5%.`, {
+          submitted: measurement.canonicalValue,
+          recomputed,
+          relativeDifference
+        });
+      }
+    }
+  }
+  if (measurements.some((measurement) => measurement.normalizationBasis === "derived_from_linear_density")) {
+    throw new SubmissionError(
+      422,
+      "unsupported_linear_density_derivation",
+      "Linear-density-derived submissions are not accepted until the corresponding force or stiffness numerator is captured as a canonical primitive. Use direct_mass_specific_linear_density only when the source directly reports the mass-specific value."
+    );
   }
 
   const currentPayload = await getRuntimeValidationPayload();
@@ -433,7 +630,7 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
   const record = buildRecord(payload, metadata, measurements, recordId);
   const publication = buildPublication(metadata, publicationId);
   const acceptedSubmission: CommunityAcceptedSubmission = {
-    schema_version: "cnt-property-atlas-community-v0.1",
+    schema_version: "carbon-property-tables-community-v0.2",
     submission_id: submissionId,
     accepted_at: new Date().toISOString(),
     duplicate_check: {

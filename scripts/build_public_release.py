@@ -7,6 +7,7 @@ Outputs:
   data/public/public_publications_v0.csv
   data/public/public_exclusions_v0.csv
   data/public/public_schema_v0.csv
+  data/public/public_provenance_census_v0.csv
   data/public/public_release_summary.json
   reports/public_release_v0_report.md
 """
@@ -87,6 +88,7 @@ PUBLIC_RECORD_COLUMNS = [
     "strict_comparison_ready",
     "normalized_comparison_eligible",
     "exploratory_comparison_eligible",
+    "comparability_model_version",
     "record_label",
     "sample_name",
     "public_sample_label",
@@ -137,8 +139,19 @@ PUBLIC_RECORD_COLUMNS = [
     "condition_temperature_C",
     "condition_atmosphere",
     "measurement_method",
+    "test_standard",
     "gauge_length_mm",
     "strain_rate_s_inv",
+    "specimen_id",
+    "sample_batch_id",
+    "specimen_linkage",
+    "measurement_direction",
+    "density_basis",
+    "cross_section_method",
+    "normalization_basis",
+    "value_bound_type",
+    "statistic_type",
+    "sample_size_n",
     "provenance_table_figure_page",
     "publication_authors_short_verified",
     "compilation_source_doi_raw",
@@ -280,7 +293,14 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
     unit_inference = "unit_inference" in issues
     cross_form = clean(row.get("form_factor")) not in {None, "fiber_yarn"}
     strict_candidate = clean(row.get("comparison_scope")) == "strict_candidate_missing_conditions"
-    strict_ready = peer_reviewed_measurement and strict_candidate and not missing_conditions and not unit_inference
+    specimen_linkage = clean(row.get("specimen_linkage")) or "unknown"
+    strict_ready = (
+        peer_reviewed_measurement
+        and strict_candidate
+        and specimen_linkage == "same_specimen_verified"
+        and not missing_conditions
+        and not unit_inference
+    )
     normalized_eligible = peer_reviewed_measurement or compilation_research or contextual_benchmark
 
     exclusion_reasons: list[str] = []
@@ -368,6 +388,7 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
         "strict_comparison_ready": strict_ready,
         "normalized_comparison_eligible": normalized_eligible or author_curated_compilation,
         "exploratory_comparison_eligible": include,
+        "comparability_model_version": "cpt-property-pair-v1",
         "exclusion_reasons": ";".join(exclusion_reasons),
         "public_sample_label": public_sample_label(row),
         "canonical_record_id": clean(row.get("record_id")),
@@ -666,6 +687,7 @@ def build_public_measurements(measurements: pd.DataFrame, public_records: pd.Dat
         public_measurements["normalized_metric"] & public_measurements["normalized_comparison_eligible"]
     )
     public_measurements["exploratory_plot_eligible"] = public_measurements["exploratory_comparison_eligible"]
+    public_measurements["comparability_model_version"] = "cpt-property-pair-v1"
     public_measurements["measurement_warning"] = "none"
     tensile_mask = public_measurements["property"].eq("tensile_strength") & public_measurements["unit_inference_review_needed"]
     public_measurements.loc[tensile_mask, "measurement_warning"] = "tensile_strength_unit_inferred_from_source_scale"
@@ -742,7 +764,7 @@ def build_public_schema() -> pd.DataFrame:
         ("unit_inference_review_needed", "True when a raw unit/scale was inferred and should be visibly reviewed before final official release."),
         ("cross_form_comparison", "True when form factor is not fiber_yarn; cross-form plots must be visually flagged."),
         ("strict_comparison_candidate", "True when the row could become strict-comparison eligible after condition metadata are curated."),
-        ("strict_comparison_ready", "True only when strict-comparison requirements are currently met."),
+        ("strict_comparison_ready", "Deprecated compatibility flag. True only for explicitly same-specimen, condition-complete legacy strict candidates; figure comparability is computed per active property pair."),
         ("normalized_comparison_eligible", "True when normalized/Ashby-style comparison is defensible with visible source flags."),
         ("exploratory_comparison_eligible", "True for all records included in public v0 exploratory plots."),
         ("normalized_metric", "Measurement-level flag for density/specific-property metrics used in normalized comparisons."),
@@ -750,6 +772,19 @@ def build_public_schema() -> pd.DataFrame:
         ("normalized_plot_eligible", "Measurement-level flag for normalized metrics on normalized-eligible records."),
         ("exploratory_plot_eligible", "Measurement-level flag for v0 exploratory plotting."),
         ("measurement_warning", "Measurement-level warning text for inferred units or non-primary benchmark provenance."),
+        ("comparability_model_version", "Version of the property-pair comparability rules used by the API and figures."),
+        ("specimen_id/sample_batch_id", "Identifiers required to prove same-specimen or same-batch pairing across properties."),
+        ("specimen_linkage", "Evidence-backed linkage among measurements in a record. Legacy multi-property rows are single_source_row_unverified, not assumed same specimen."),
+        ("reported_value/reported_unit", "Source-scale value and unit preserved before deterministic canonical conversion."),
+        ("statistic_type/sample_size_n", "Best specimen, individual, mean, median, range endpoint, or unspecified, plus reported n."),
+        ("uncertainty_*", "Reported uncertainty retained without assigning SD/SE/CI unless explicitly identified."),
+        ("test_standard/measurement_direction", "Test standard and material direction when reported."),
+        ("normalization_basis", "Direct mass-specific measurement, density-derived value, linear-density-derived value, not applicable, or unknown."),
+        ("density_basis/density_value_kg_m3", "Density convention and value used for density-derived metrics; unknown is never treated as a verified convention."),
+        ("cross_section_method", "Reported method used to determine cross-sectional area, when relevant."),
+        ("value_bound_type", "Point estimate, upper/lower bound, range-derived value, or unspecified."),
+        ("derivation_formula/derivation_inputs_json", "Deterministic formula and canonical source inputs needed to recompute a derived value."),
+        ("reported_or_derived", "Reported, reported with unit inference, or deterministically derived."),
         ("exclusion_reasons", "Semicolon-delimited reason a source record was excluded from public v0."),
         ("compilation_source_*", "Citation metadata for an author-curated published compilation such as the Bulmer, Kaniyoor and Elliott workbook."),
         ("duplicate_of_record_id", "Higher-priority public/internal record that appears to duplicate this secondary row."),
@@ -757,6 +792,49 @@ def build_public_schema() -> pd.DataFrame:
         ("canonical_record_id", "Record ID selected as the canonical plotted representative of a duplicate group."),
     ]
     return pd.DataFrame(rows, columns=["field", "description"])
+
+
+def build_provenance_census(public_records: pd.DataFrame, public_measurements: pd.DataFrame) -> pd.DataFrame:
+    """Count released records and measurements by their auditable import path."""
+    dimensions = [
+        "source_file",
+        "dataset_provenance",
+        "value_extraction_type",
+        "primary_source_verification_status",
+        "public_release_tier",
+    ]
+    records = public_records.copy()
+    for column in dimensions:
+        records[column] = records[column].fillna("unreported").astype(str)
+    records["publication_identity"] = (
+        records["doi_verified"].fillna(records["publication_group_key"]).fillna("unreported").astype(str)
+    )
+
+    record_counts = (
+        records.groupby(dimensions, dropna=False)
+        .agg(
+            record_count=("record_id", "nunique"),
+            publication_count=("publication_identity", "nunique"),
+        )
+        .reset_index()
+    )
+    measurement_counts = (
+        public_measurements[["measurement_id", "record_id"]]
+        .merge(records[["record_id", *dimensions]], on="record_id", how="left", validate="many_to_one")
+        .groupby(dimensions, dropna=False)
+        .agg(measurement_count=("measurement_id", "nunique"))
+        .reset_index()
+    )
+    census = record_counts.merge(measurement_counts, on=dimensions, how="left", validate="one_to_one")
+    census["measurement_count"] = census["measurement_count"].fillna(0).astype(int)
+    return census.sort_values(dimensions, kind="stable").reset_index(drop=True)
+
+
+def count_values(frame: pd.DataFrame, column: str) -> dict[str, int]:
+    return {
+        str(key): int(value)
+        for key, value in frame[column].fillna("unreported").astype(str).value_counts().sort_index().items()
+    }
 
 
 def write_report(summary: dict[str, Any], public_records: pd.DataFrame, exclusions: pd.DataFrame) -> None:
@@ -781,6 +859,7 @@ def write_report(summary: dict[str, Any], public_records: pd.DataFrame, exclusio
         "| `data/public/public_publications_v0.csv` | Source/publication rows referenced by public candidate records. |",
         "| `data/public/public_exclusions_v0.csv` | Internal records excluded from public v0 with explicit reasons. |",
         "| `data/public/public_schema_v0.csv` | Field descriptions for public release flags. |",
+        "| `data/public/public_provenance_census_v0.csv` | Record, publication, and measurement counts by source and verification path. |",
         "| `data/public/public_release_summary.json` | Machine-readable counts and release-rule summary. |",
         "",
         "## Release Rules",
@@ -845,12 +924,14 @@ def main() -> None:
     public_measurements = build_public_measurements(measurements, public_records)
     public_pubs = build_public_publications(public_records, pubs)
     public_schema = build_public_schema()
+    provenance_census = build_provenance_census(public_records, public_measurements)
 
     public_records.to_csv(PUBLIC / "public_records_v0.csv", index=False)
     public_measurements.to_csv(PUBLIC / "public_measurements_v0.csv", index=False)
     public_pubs.to_csv(PUBLIC / "public_publications_v0.csv", index=False)
     exclusions.to_csv(PUBLIC / "public_exclusions_v0.csv", index=False)
     public_schema.to_csv(PUBLIC / "public_schema_v0.csv", index=False)
+    provenance_census.to_csv(PUBLIC / "public_provenance_census_v0.csv", index=False)
     duplicate_audit.to_csv(PUBLIC / "public_duplicate_audit_v0.csv", index=False)
 
     publication_years = pd.to_numeric(public_records["publication_year_verified"], errors="coerce").dropna()
@@ -864,6 +945,12 @@ def main() -> None:
         "public_records_by_material_family": public_records["material_family"].value_counts().to_dict(),
         "public_records_by_form_factor": public_records["form_factor"].value_counts().to_dict(),
         "public_measurements_by_property": public_measurements["property"].value_counts().to_dict(),
+        "public_records_by_source_file": count_values(public_records, "source_file"),
+        "public_records_by_dataset_provenance": count_values(public_records, "dataset_provenance"),
+        "public_records_by_value_extraction_type": count_values(public_records, "value_extraction_type"),
+        "public_records_by_primary_source_verification_status": count_values(
+            public_records, "primary_source_verification_status"
+        ),
         "excluded_records_by_reason": exclusions["exclusion_reasons"].value_counts().to_dict(),
         "strict_comparison_ready_records": int(public_records["strict_comparison_ready"].sum()),
         "records_requiring_missing_condition_warning": int(public_records["missing_conditions"].sum()),

@@ -22,7 +22,7 @@ try {
   await pool.query(sql);
   await pool.query(
     "INSERT INTO atlas_schema_migrations (version) VALUES ($1) ON CONFLICT (version) DO NOTHING",
-    ["schema-v0.3-canonical-release"]
+    ["schema-v0.4-scientific-comparability"]
   );
   console.log("Database schema is up to date.");
 } finally {

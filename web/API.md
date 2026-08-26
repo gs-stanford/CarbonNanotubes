@@ -28,6 +28,7 @@ GET  /api/v1/openapi.json
 ```json
 {
   "kind": "scatter",
+  "release": "public-v0-<source-hash-prefix>",
   "x": "specific_strength",
   "y": "specific_electrical_conductivity",
   "x_scale": "log",
@@ -46,11 +47,15 @@ GET  /api/v1/openapi.json
 
 The response contains rendered artifacts, aggregate counts, one focused record for the interactive website, temporary-point ranks, a complete citation bundle, and no more than ten explicitly requested top rows. It does not return the canonical record table or a complete coordinate array.
 
+For reproducible work, first read the active identifier from `GET /api/v1/release` and pass it as `release` on every figure request. A mismatched release fails explicitly; the service never substitutes the active data silently. The current deployment serves one canonical snapshot, so old releases must be regenerated from the tagged archive rather than assumed to remain online.
+
 Curator-approved community submissions are included only when their review status is `official` and their public-visibility flag is enabled. DOI validation or automated duplicate checks alone never place a submitted value in a public figure.
 
 ## Units and filters
 
 Figure axes and temporary-point coordinates use the display units returned by `/api/v1/properties`. Measurement-range filters use canonical SI units. Repeated values are accepted for material family, form factor, release tier, provenance, and verification filters.
+
+`comparison_grades` accepts any non-empty subset of `A`, `B`, `C`, and `D`. Grades are computed for the active property pair under `cpt-property-pair-v1`; they are point-evidence grades and do not assert inter-record method equivalence.
 
 Ashby requests always use logarithmic axes. Top-row extraction is allowed only for higher-is-better performance properties; density and dimensions are filtering or normalization variables, not optimization targets.
 

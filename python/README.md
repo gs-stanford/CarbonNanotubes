@@ -5,7 +5,7 @@ The SDK requests citation-backed comparison figures rendered by the Carbon Prope
 ## Install
 
 ```bash
-python -m pip install carbon-property-tables==0.3.5
+python -m pip install carbon-property-tables==0.4.0
 ```
 
 ## Make a figure
@@ -16,15 +16,19 @@ import carbon_property_tables as cpt
 figure = cpt.scatter(
     "specific strength",
     "specific conductivity",
+    release="public-v0-<source-hash-prefix>",
     log_x=True,
     log_y=True,
+    comparison_grades=("A", "B", "C"),
 )
 
 figure.save_bundle("conductivity-strength")
 figure
 ```
 
-`save_bundle()` writes editable SVG, publication-resolution PNG, Nature-style citation text, BibTeX, and a value-free reproducibility manifest tied to the exact database release. SVG and PNG are requested together by default. Request PDF explicitly with `formats=("svg", "png", "pdf")` when needed.
+`save_bundle()` writes editable SVG, publication-resolution PNG, Nature-style citation text, BibTeX, and a value-free reproducibility manifest containing the release identity and property-pair evidence-rule version. SVG and PNG are requested together by default. Request PDF explicitly with `formats=("svg", "png", "pdf")` when needed.
+
+For exploratory work, `release` may be omitted and the active release is used. For a manuscript, read the exact ID once with `cpt.release()["release"]["release_id"]` and pass it to every figure call. A stale or unavailable pin raises an error instead of silently rendering a newer snapshot. Historical replay requires the corresponding tagged archive; the live service currently exposes one canonical snapshot.
 
 The first property is the x-axis and the second is the y-axis. Readable names are accepted, including `"specific cond"`, `"tenacity"`, `"tensile strength"`, and `"thermal conductivity"`. Misspelled or unknown properties fail explicitly instead of being guessed.
 
@@ -134,7 +138,7 @@ comparison.save_top_table("top-five.csv")
 ## Figure modes
 
 - `scatter` compares any two same-record properties.
-- `ranked` ranks the y property among records that also contain the selected x property.
+- `ranked` shows the highest reported y values among records that also contain the selected x property; it does not imply every source value is a best-specimen statistic.
 - `trend` plots the selected y property against publication year.
 - `ashby` enforces logarithmic axes and shows robust material-family regions where enough data exist.
 
@@ -149,6 +153,8 @@ figure = cpt.scatter(
     year_min=2015,
 )
 ```
+
+`comparison_grades` filters the query-time point evidence assessment. Grade A requires verified same-specimen pairing for two-property figures plus complete metadata; Grade D is context-only or critically unresolved. The response and manifest disclose that these point grades do not establish method equivalence across papers.
 
 Measurement-range filters use canonical SI units. Axis values and temporary-point inputs use the display units printed on the figure.
 

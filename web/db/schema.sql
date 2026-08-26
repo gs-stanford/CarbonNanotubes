@@ -64,6 +64,14 @@ CREATE TABLE IF NOT EXISTS atlas_canonical_records (
   commercial_specsheet_benchmark boolean NOT NULL,
   author_curated_compilation_record boolean NOT NULL,
   strict_comparison_ready boolean NOT NULL,
+  specimen_id text,
+  sample_batch_id text,
+  specimen_linkage text NOT NULL DEFAULT 'unknown',
+  density_basis text NOT NULL DEFAULT 'unknown',
+  cross_section_method text,
+  normalization_basis text NOT NULL DEFAULT 'unknown',
+  value_bound_type text NOT NULL DEFAULT 'unspecified',
+  comparability_model_version text NOT NULL DEFAULT 'cpt-property-pair-v1',
   row_hash text NOT NULL,
   payload_json jsonb NOT NULL,
   imported_at timestamptz NOT NULL DEFAULT now()
@@ -76,6 +84,30 @@ CREATE TABLE IF NOT EXISTS atlas_canonical_measurements (
   property text NOT NULL,
   value_canonical double precision NOT NULL,
   unit_canonical text NOT NULL,
+  reported_value double precision,
+  reported_unit text,
+  statistic_type text NOT NULL DEFAULT 'unspecified',
+  uncertainty_type text NOT NULL DEFAULT 'not_reported',
+  uncertainty_value_reported double precision,
+  uncertainty_value_canonical double precision,
+  sample_size_n integer,
+  test_standard text,
+  specimen_id text,
+  sample_batch_id text,
+  specimen_linkage text NOT NULL DEFAULT 'unknown',
+  measurement_set_id text,
+  measurement_direction text,
+  density_basis text NOT NULL DEFAULT 'unknown',
+  density_value_kg_m3 double precision,
+  density_source_locator text,
+  cross_section_method text,
+  normalization_basis text NOT NULL DEFAULT 'unknown',
+  value_bound_type text NOT NULL DEFAULT 'unspecified',
+  derivation_formula text,
+  derivation_inputs_json jsonb,
+  reported_or_derived text NOT NULL DEFAULT 'reported',
+  source_locator text,
+  extraction_method text,
   measurement_warning text NOT NULL DEFAULT 'none',
   strict_plot_eligible boolean NOT NULL,
   normalized_plot_eligible boolean NOT NULL,
@@ -85,6 +117,64 @@ CREATE TABLE IF NOT EXISTS atlas_canonical_measurements (
   imported_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (record_id, property)
 );
+
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS specimen_id text;
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS sample_batch_id text;
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS specimen_linkage text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS density_basis text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS cross_section_method text;
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS normalization_basis text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS value_bound_type text NOT NULL DEFAULT 'unspecified';
+ALTER TABLE atlas_canonical_records ADD COLUMN IF NOT EXISTS comparability_model_version text NOT NULL DEFAULT 'cpt-property-pair-v1';
+
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS reported_value double precision;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS reported_unit text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS statistic_type text NOT NULL DEFAULT 'unspecified';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS uncertainty_type text NOT NULL DEFAULT 'not_reported';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS uncertainty_value_reported double precision;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS uncertainty_value_canonical double precision;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS sample_size_n integer;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS test_standard text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS specimen_id text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS sample_batch_id text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS specimen_linkage text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS measurement_set_id text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS measurement_direction text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS density_basis text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS density_value_kg_m3 double precision;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS density_source_locator text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS cross_section_method text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS normalization_basis text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS value_bound_type text NOT NULL DEFAULT 'unspecified';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS derivation_formula text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS derivation_inputs_json jsonb;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS reported_or_derived text NOT NULL DEFAULT 'reported';
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS source_locator text;
+ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS extraction_method text;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'atlas_canonical_measurements_scientific_domain_check') THEN
+    ALTER TABLE atlas_canonical_measurements
+      ADD CONSTRAINT atlas_canonical_measurements_scientific_domain_check CHECK (
+        value_canonical > 0
+        AND (uncertainty_value_canonical IS NULL OR uncertainty_value_canonical >= 0)
+        AND (sample_size_n IS NULL OR sample_size_n > 0)
+        AND statistic_type IN ('individual', 'mean', 'median', 'best_specimen', 'maximum', 'minimum', 'range_endpoint', 'unspecified')
+        AND uncertainty_type IN ('standard_deviation', 'standard_error', 'confidence_interval', 'range', 'reported_unspecified', 'not_reported')
+        AND value_bound_type IN ('point_estimate', 'upper_bound', 'lower_bound', 'range_midpoint', 'range_endpoint', 'unspecified')
+        AND normalization_basis IN ('direct_mass_specific_linear_density', 'directly_reported_mass_specific', 'derived_from_density', 'derived_from_linear_density', 'not_applicable', 'unknown')
+        AND reported_or_derived IN ('reported', 'reported_with_unit_inference', 'derived')
+        AND specimen_linkage IN ('same_specimen_verified', 'same_sample_batch', 'mixed_specimens', 'aggregated_across_specimens', 'incompatible', 'single_source_row_unverified', 'not_applicable_single_property', 'unknown')
+        AND (uncertainty_type = 'not_reported' OR uncertainty_value_canonical IS NOT NULL)
+        AND (
+          normalization_basis <> 'derived_from_density'
+          OR (density_value_kg_m3 > 0 AND derivation_formula IS NOT NULL AND derivation_inputs_json IS NOT NULL)
+        )
+      );
+  END IF;
+END
+$$;
 
 CREATE INDEX IF NOT EXISTS atlas_canonical_records_release_idx
   ON atlas_canonical_records (release_id);
@@ -152,9 +242,80 @@ CREATE TABLE IF NOT EXISTS atlas_measurements (
   property text NOT NULL,
   value_canonical double precision NOT NULL,
   unit_canonical text NOT NULL,
+  reported_value double precision,
+  reported_unit text,
+  statistic_type text NOT NULL DEFAULT 'unspecified',
+  uncertainty_type text NOT NULL DEFAULT 'not_reported',
+  uncertainty_value_reported double precision,
+  uncertainty_value_canonical double precision,
+  sample_size_n integer,
+  test_standard text,
+  specimen_id text,
+  sample_batch_id text,
+  specimen_linkage text NOT NULL DEFAULT 'unknown',
+  measurement_direction text,
+  density_basis text NOT NULL DEFAULT 'unknown',
+  density_value_kg_m3 double precision,
+  density_source_locator text,
+  cross_section_method text,
+  normalization_basis text NOT NULL DEFAULT 'unknown',
+  value_bound_type text NOT NULL DEFAULT 'unspecified',
+  derivation_formula text,
+  derivation_inputs_json jsonb,
+  reported_or_derived text NOT NULL DEFAULT 'reported',
+  source_locator text,
+  extraction_method text,
   measurement_json jsonb NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS reported_value double precision;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS reported_unit text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS statistic_type text NOT NULL DEFAULT 'unspecified';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS uncertainty_type text NOT NULL DEFAULT 'not_reported';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS uncertainty_value_reported double precision;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS uncertainty_value_canonical double precision;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS sample_size_n integer;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS test_standard text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS specimen_id text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS sample_batch_id text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS specimen_linkage text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS measurement_direction text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS density_basis text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS density_value_kg_m3 double precision;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS density_source_locator text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS cross_section_method text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS normalization_basis text NOT NULL DEFAULT 'unknown';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS value_bound_type text NOT NULL DEFAULT 'unspecified';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS derivation_formula text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS derivation_inputs_json jsonb;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS reported_or_derived text NOT NULL DEFAULT 'reported';
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS source_locator text;
+ALTER TABLE atlas_measurements ADD COLUMN IF NOT EXISTS extraction_method text;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'atlas_measurements_scientific_domain_check') THEN
+    ALTER TABLE atlas_measurements
+      ADD CONSTRAINT atlas_measurements_scientific_domain_check CHECK (
+        value_canonical > 0
+        AND (uncertainty_value_canonical IS NULL OR uncertainty_value_canonical >= 0)
+        AND (sample_size_n IS NULL OR sample_size_n > 0)
+        AND statistic_type IN ('individual', 'mean', 'median', 'best_specimen', 'maximum', 'minimum', 'range_endpoint', 'unspecified')
+        AND uncertainty_type IN ('standard_deviation', 'standard_error', 'confidence_interval', 'range', 'reported_unspecified', 'not_reported')
+        AND value_bound_type IN ('point_estimate', 'upper_bound', 'lower_bound', 'range_midpoint', 'range_endpoint', 'unspecified')
+        AND normalization_basis IN ('direct_mass_specific_linear_density', 'directly_reported_mass_specific', 'derived_from_density', 'derived_from_linear_density', 'not_applicable', 'unknown')
+        AND reported_or_derived IN ('reported', 'reported_with_unit_inference', 'derived')
+        AND specimen_linkage IN ('same_specimen_submitter_claimed', 'same_sample_batch_submitter_claimed', 'mixed_specimens', 'unknown')
+        AND (uncertainty_type = 'not_reported' OR uncertainty_value_canonical IS NOT NULL)
+        AND (
+          normalization_basis <> 'derived_from_density'
+          OR (density_value_kg_m3 > 0 AND derivation_formula IS NOT NULL AND derivation_inputs_json IS NOT NULL)
+        )
+      );
+  END IF;
+END
+$$;
 
 CREATE TABLE IF NOT EXISTS atlas_ai_cleanup_runs (
   cleanup_run_id text PRIMARY KEY,

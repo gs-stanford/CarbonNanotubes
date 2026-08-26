@@ -19,7 +19,7 @@ async function figure(body) {
 
 function calloutBoxes(svg) {
   return Array.from(
-    svg.matchAll(/<line class="label-leader" x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"\/><text class="point-label" x="([^"]+)" y="([^"]+)">([^<]+)<\/text>/g),
+    svg.matchAll(/<line class="label-leader" x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"\/><text class="point-label" x="([^"]+)" y="([^"]+)"(?: text-anchor="[^"]+")?>([^<]+)<\/text>/g),
     (match) => {
       const text = match[7];
       const pointX = Number(match[1]);

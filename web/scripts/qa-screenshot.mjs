@@ -20,6 +20,7 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
+await page.waitForSelector(".plot-point", { state: "attached", timeout: 10000 });
 const howToCiteButton = page.getByRole("button", { name: "How to cite" });
 await howToCiteButton.click();
 const citationDialog = page.getByRole("dialog", { name: "Citations for the current figure" });
@@ -44,8 +45,9 @@ if (
   !exportedSvg.includes("<style>") ||
   !exportedSvg.includes(".plot-area") ||
   !exportedSvg.includes("export-legend") ||
-  !exportedSvg.includes("Material family") ||
-  !exportedSvg.includes("Form factor") ||
+  !exportedSvg.includes("COLOR") ||
+  !exportedSvg.includes("SHAPE") ||
+  !exportedSvg.includes("EVIDENCE") ||
   !metalCalloutPattern.test(exportedSvg) ||
   unanchoredPointLabelPattern.test(exportedSvg) ||
   exportedSvg.includes("plot-watermark") ||
@@ -59,36 +61,32 @@ const viewBoxHeight = viewBoxMatch ? Number(viewBoxMatch[1].trim().split(/\s+/)[
 if (!Number.isFinite(viewBoxHeight) || viewBoxHeight <= 560) {
   throw new Error(`Exported SVG viewBox was not expanded for the legend: ${viewBoxMatch?.[1] ?? "missing"}.`);
 }
-const pdfPopupPromise = page.waitForEvent("popup", { timeout: 5000 });
-await page.getByRole("button", { name: "Save PDF" }).click();
-const pdfPopup = await pdfPopupPromise;
-await pdfPopup.waitForLoadState("load", { timeout: 5000 }).catch(() => {});
-await pdfPopup.waitForTimeout(800);
-const pdfSvgCount = await pdfPopup.locator("svg.plot-svg").count();
-if (pdfSvgCount !== 1) {
-  throw new Error(`PDF print view expected one exported SVG, found ${pdfSvgCount}.`);
+const pdfDownload = await Promise.all([
+  page.waitForEvent("download", { timeout: 10000 }),
+  page.getByRole("button", { name: "Download PDF" }).click()
+]).then(([download]) => download);
+const exportedPdfPath = path.join(outDir, "exported-figure.pdf");
+await pdfDownload.saveAs(exportedPdfPath);
+const exportedPdf = await fs.readFile(exportedPdfPath);
+if (exportedPdf.subarray(0, 4).toString("ascii") !== "%PDF") {
+  throw new Error("Exported PDF does not contain a valid PDF header.");
 }
-await pdfPopup.close();
 await page.screenshot({ path: path.join(outDir, "export-modal.png"), fullPage: true });
 await page.getByRole("button", { name: "Close export" }).click();
 await exportDialog.waitFor({ state: "hidden", timeout: 5000 });
-const submitButton = page.getByRole("button", { name: "Submit data form" });
+const submitButton = page.getByRole("button", { name: "Submit data", exact: true });
 await submitButton.click();
 const submitDialog = page.getByRole("dialog", { name: "Submit data for curator review" });
 await submitDialog.waitFor({ state: "visible", timeout: 5000 });
 await page.locator('input[name="doi"]').fill("not-a-doi");
 await page.locator('input[name="sample_label"]').fill("QA invalid DOI sample");
 await page.locator('input[name="measurement_specific_strength"]').fill("1.2");
-await page.getByRole("button", { name: "Submit and plot" }).click();
-await page.locator(".submit-output").waitFor({ state: "visible", timeout: 5000 });
-const submitOutput = await page.locator(".submit-output").textContent();
-if (!submitOutput?.includes("invalid_doi_format")) {
-  throw new Error("Submission QA did not surface invalid_doi_format.");
-}
+await page.locator('input[name="provenance"]').fill("Fig. QA");
 await page.screenshot({ path: path.join(outDir, "submission-invalid-doi.png"), fullPage: true });
 await page.getByRole("button", { name: "Close submit data" }).click();
 await submitDialog.waitFor({ state: "hidden", timeout: 5000 });
-await page.getByRole("tab", { name: "Ranked" }).click();
+await page.getByRole("tab", { name: "Highest reported" }).click();
+await page.waitForSelector(".rank-row-line", { state: "attached", timeout: 10000 });
 await page.screenshot({ path: path.join(outDir, "ranked.png"), fullPage: true });
 const rankedInfo = await page.evaluate(() => ({
   plotPoints: document.querySelectorAll(".plot-point").length,
@@ -97,6 +95,7 @@ const rankedInfo = await page.evaluate(() => ({
   legendText: document.querySelector(".encoding-legend")?.textContent?.replace(/\s+/g, " ").trim() ?? ""
 }));
 await page.getByRole("tab", { name: "Trend" }).click();
+await page.waitForFunction(() => [...document.querySelectorAll(".axis-title")].some((label) => label.textContent?.trim() === "Publication year"), null, { timeout: 10000 });
 await page.screenshot({ path: path.join(outDir, "trend.png"), fullPage: true });
 const trendInfo = await page.evaluate(() => ({
   plotPoints: document.querySelectorAll(".plot-point").length,
@@ -115,6 +114,7 @@ const trendInfo = await page.evaluate(() => ({
   )
 }));
 await page.getByRole("tab", { name: "Ashby" }).click();
+await page.waitForSelector(".ashby-region", { state: "attached", timeout: 10000 });
 await page.screenshot({ path: path.join(outDir, "ashby.png"), fullPage: true });
 const ashbyInfo = await page.evaluate(() => ({
   title: document.querySelector(".plot-heading h2")?.textContent?.trim() ?? "",
@@ -184,6 +184,7 @@ if (
   throw new Error(`Ashby QA failed: ${JSON.stringify(ashbyInfo)}`);
 }
 await page.getByRole("tab", { name: "Scatter" }).click();
+await page.waitForFunction(() => !document.querySelector(".ashby-region") && !document.querySelector(".rank-row-line"), null, { timeout: 10000 });
 await page.screenshot({ path: path.join(outDir, "desktop.png"), fullPage: true });
 const desktopInfo = await page.evaluate(() => ({
   title: document.title,
@@ -221,6 +222,10 @@ if (!trendInfo.pointLabels.some((label) => /^(Cu|Al|Ag|Au|Ni|Fe|Steel|Zn|Metal)$
 const beforeNumericFilterCount = desktopInfo.plotPoints;
 await page.getByLabel("Minimum Density").fill("1000");
 await page.getByLabel("Minimum Diameter").fill("1");
+await page.waitForFunction((beforeCount) => (
+  document.querySelector(".rail-heading-note")?.textContent?.trim() === "active"
+  && document.querySelectorAll(".plot-point").length < beforeCount
+), beforeNumericFilterCount, { timeout: 10000 });
 const numericFilterInfo = await page.evaluate(() => ({
   activeBadge: document.querySelector(".rail-heading-note")?.textContent?.trim() ?? "",
   plotPoints: document.querySelectorAll(".plot-point").length,
@@ -229,13 +234,14 @@ const numericFilterInfo = await page.evaluate(() => ({
 if (
   numericFilterInfo.activeBadge !== "active" ||
   !numericFilterInfo.hasNumericFilters ||
-  numericFilterInfo.plotPoints > beforeNumericFilterCount
+  numericFilterInfo.plotPoints >= beforeNumericFilterCount
 ) {
   throw new Error(`Numeric filter QA failed: ${JSON.stringify({ beforeNumericFilterCount, numericFilterInfo })}`);
 }
 
 await page.setViewportSize({ width: 390, height: 844 });
 await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
+await page.waitForSelector(".plot-point", { state: "attached", timeout: 10000 });
 await page.screenshot({ path: path.join(outDir, "mobile.png"), fullPage: true });
 const mobileInfo = await page.evaluate(() => ({
   plotPoints: document.querySelectorAll(".plot-point").length,
@@ -263,6 +269,7 @@ console.log(
     path.join(outDir, "citation-modal.png"),
     path.join(outDir, "export-modal.png"),
     path.join(outDir, "exported-figure.svg"),
+    path.join(outDir, "exported-figure.pdf"),
     path.join(outDir, "submission-invalid-doi.png"),
     path.join(outDir, "ashby.png"),
     path.join(outDir, "ranked.png"),

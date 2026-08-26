@@ -135,6 +135,8 @@ class CPTClient:
         log_x: bool = False,
         log_y: bool = False,
         formats: Sequence[str] = ("svg", "png"),
+        comparison_grades: Sequence[str] = ("A", "B", "C", "D"),
+        release: str | None = None,
         **filters: Any,
     ) -> RenderedFigure:
         """Request a rendered figure and, optionally, at most ten exact top rows."""
@@ -152,9 +154,12 @@ class CPTClient:
         normalized_formats = tuple(dict.fromkeys(str(item).lower() for item in formats))
         if not normalized_formats or any(item not in {"svg", "png", "pdf"} for item in normalized_formats):
             raise CPTValidationError("formats must contain only 'svg', 'png', and/or 'pdf'.")
+        normalized_grades = tuple(dict.fromkeys(str(item).upper() for item in comparison_grades))
+        if not normalized_grades or any(item not in {"A", "B", "C", "D"} for item in normalized_grades):
+            raise CPTValidationError("comparison_grades must contain one or more of 'A', 'B', 'C', and 'D'.")
         reserved = {
             "kind", "x", "y", "x_scale", "y_scale", "top", "top_by", "temporary",
-            "selected_record_id", "highlight_record_ids", "formats", "filters", "limit", "after"
+            "selected_record_id", "highlight_record_ids", "formats", "filters", "limit", "after", "release"
         }.intersection(filters)
         if reserved:
             raise CPTValidationError(f"Figure filters cannot override reserved parameters: {', '.join(sorted(reserved))}.")
@@ -170,8 +175,13 @@ class CPTClient:
             "top": top,
             "top_by": top_by,
             "formats": list(normalized_formats),
+            "comparison_grades": list(normalized_grades),
             "filters": dict(filters),
         }
+        if release is not None:
+            if not isinstance(release, str) or not release.strip() or len(release.strip()) > 160:
+                raise CPTValidationError("release must be a non-empty string of at most 160 characters.")
+            body["release"] = release.strip()
         if temporary is not None:
             body["temporary"] = {"x": temporary.x, "y": temporary.y, "label": temporary.label}
         payload = self._request("figures", method="POST", body=body)

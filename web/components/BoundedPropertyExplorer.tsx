@@ -5,6 +5,7 @@ import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo
 import { formatAtlasBibtex, formatAtlasCitation, stripMarkup } from "@/lib/citations";
 import type { ExplorerBootstrap, FigureRequest, FigureResponse, FigureTopPoint } from "@/lib/figure-api";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
+import type { ComparabilityGrade } from "@/lib/comparability";
 
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
 type NumericFilterKey = "density" | "diameter" | "gauge_length_mm" | "temperature_C";
@@ -28,9 +29,16 @@ type SearchResult = {
 
 const PLOT_TYPES: Array<{ key: PlotType; label: string }> = [
   { key: "scatter", label: "Scatter" },
-  { key: "ranked", label: "Ranked" },
+  { key: "ranked", label: "Highest reported" },
   { key: "trend", label: "Trend" },
   { key: "ashby", label: "Ashby" }
+];
+
+const COMPARABILITY_OPTIONS: Array<{ key: ComparabilityGrade; label: string }> = [
+  { key: "A", label: "A · paired + complete" },
+  { key: "B", label: "B · qualified" },
+  { key: "C", label: "C · exploratory" },
+  { key: "D", label: "D · context-only" }
 ];
 
 const TIER_OPTIONS = [
@@ -91,6 +99,7 @@ const FORM_SHAPE_CLASS: Record<string, string> = {
 
 const RANKED_FAMILIES = new Set(["carbon_fiber_comparator", "CNT_or_CNT_hybrid", "CNT_metal_composite", "graphene_or_GO_fiber"]);
 const NORMALIZED_KEYS = new Set<PropertyKey>(["density", "specific_volume", "specific_strength", "specific_modulus", "specific_electrical_conductivity", "specific_thermal_conductivity"]);
+const MASS_SPECIFIC_KEYS = new Set<PropertyKey>(["specific_strength", "specific_modulus", "specific_electrical_conductivity", "specific_thermal_conductivity"]);
 
 const NUMERIC_FILTERS: Array<{ key: NumericFilterKey; label: string; unit: string }> = [
   { key: "density", label: "Density", unit: "kg m⁻³" },
@@ -119,7 +128,7 @@ function metaFor(properties: PropertyMeta[], key: PropertyKey): PropertyMeta {
   return found;
 }
 
-function toggle(value: string, current: Set<string>, setter: (next: Set<string>) => void) {
+function toggle<T extends string>(value: T, current: Set<T>, setter: (next: Set<T>) => void) {
   const next = new Set(current);
   if (next.has(value)) next.delete(value);
   else next.add(value);
@@ -169,7 +178,7 @@ function csvCell(value: unknown): string {
 }
 
 function topCsv(rows: FigureTopPoint[]): string {
-  const keys: Array<keyof FigureTopPoint> = ["rank", "label", "material_family", "form_factor", "x_value", "x_unit", "y_value", "y_unit", "doi", "publication_title", "publication_year", "citation"];
+  const keys: Array<keyof FigureTopPoint> = ["rank", "label", "material_family", "form_factor", "x_value", "x_unit", "y_value", "y_unit", "comparability_grade", "doi", "publication_title", "publication_year", "citation"];
   return [keys.join(","), ...rows.map((row) => keys.map((key) => csvCell(row[key])).join(","))].join("\n");
 }
 
@@ -192,6 +201,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const [selectedProvenance, setSelectedProvenance] = useState(() => new Set(PROVENANCE_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
   const [selectedFamilies, setSelectedFamilies] = useState(() => new Set(families));
   const [selectedForms, setSelectedForms] = useState(() => new Set(forms));
+  const [selectedGrades, setSelectedGrades] = useState<Set<ComparabilityGrade>>(() => new Set(["A", "B", "C", "D"]));
   const [yearMin, setYearMin] = useState(initialYearMin);
   const [yearMax, setYearMax] = useState(initialYearMax);
   const [numericFilters, setNumericFilters] = useState<NumericFilterState>(() => emptyNumericFilters());
@@ -209,6 +219,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const [exporting, setExporting] = useState<string | null>(null);
   const [submissionPacket, setSubmissionPacket] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const numericFiltersActive = Object.values(numericFilters).some((bounds) => bounds.min.trim() || bounds.max.trim());
 
   const xMeta = metaFor(properties, xKey);
   const yMeta = metaFor(properties, yKey);
@@ -262,8 +273,9 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     highlight_record_ids: highlightedIds,
     formats: ["svg"],
     top: 0,
+    comparison_grades: [...selectedGrades],
     filters
-  }), [filters, highlightedIds, plotType, selectedId, xEffective, xKey, yEffective, yKey]);
+  }), [filters, highlightedIds, plotType, selectedGrades, selectedId, xEffective, xKey, yEffective, yKey]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -318,10 +330,11 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
 
   const selectedRecord = figure?.selected_record ?? null;
   const counts = figure?.counts;
+  const selectedAssessment = selectedRecord ? figure?.comparability.points[selectedRecord.record_id] ?? null : null;
   const figureTitle = plotType === "trend"
     ? `${yMeta.label} by publication year`
     : plotType === "ranked"
-      ? `Ranked ${yMeta.label}`
+      ? `Highest reported values: ${yMeta.label}`
       : `${plotType === "ashby" ? "Ashby plot: " : ""}${yMeta.label} vs ${xMeta.label}`;
   const detailKeys = selectedRecord
     ? Array.from(new Set<PropertyKey>([xKey, yKey, "density", "diameter", "electrical_conductivity", "ampacity"])).filter((key) => typeof selectedRecord.values[key] === "number")
@@ -345,6 +358,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     setSelectedProvenance(new Set(PROVENANCE_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
     setSelectedFamilies(new Set(families));
     setSelectedForms(new Set(forms));
+    setSelectedGrades(new Set(["A", "B", "C", "D"]));
     setYearMin(initialYearMin);
     setYearMax(initialYearMax);
     setNumericFilters(emptyNumericFilters());
@@ -392,7 +406,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     const form = event.currentTarget;
     const data = new FormData(form);
     const packet = {
-      schema_version: "cnt-property-atlas-submission-v0.1",
+      schema_version: "carbon-property-tables-submission-v0.2",
       created_at: new Date().toISOString(),
       publication: { doi: String(data.get("doi") ?? "").trim(), title: String(data.get("title") ?? "").trim(), year: String(data.get("year") ?? "").trim() },
       sample: {
@@ -401,15 +415,33 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
         form_factor: String(data.get("form_factor") ?? "").trim(),
         cnt_type: String(data.get("cnt_type") ?? "").trim(),
         synthesis_method: String(data.get("synthesis_method") ?? "").trim(),
-        postprocessing: String(data.get("postprocessing") ?? "").trim()
+        postprocessing: String(data.get("postprocessing") ?? "").trim(),
+        specimen_id: String(data.get("specimen_id") ?? "").trim(),
+        sample_batch_id: String(data.get("sample_batch_id") ?? "").trim(),
+        specimen_linkage: String(data.get("specimen_linkage") ?? "").trim(),
+        density_basis: String(data.get("density_basis") ?? "").trim(),
+        cross_section_method: String(data.get("cross_section_method") ?? "").trim()
       },
-      measurements: Object.fromEntries(properties.map((property) => [property.key, String(data.get(`measurement_${property.key}`) ?? "").trim()])),
+      measurements: Object.fromEntries(properties.map((property) => [property.key, {
+        value: String(data.get(`measurement_${property.key}`) ?? "").trim(),
+        uncertainty_value: String(data.get(`uncertainty_${property.key}`) ?? "").trim(),
+        uncertainty_type: String(data.get(`uncertainty_type_${property.key}`) ?? "").trim(),
+        statistic_type: String(data.get(`statistic_${property.key}`) ?? "").trim(),
+        sample_size_n: String(data.get(`sample_size_${property.key}`) ?? "").trim(),
+        value_bound_type: String(data.get(`bound_${property.key}`) ?? "").trim(),
+        normalization_basis: String(data.get(`normalization_${property.key}`) ?? "").trim()
+      }])),
       conditions: {
         temperature_C: String(data.get("temperature_C") ?? "").trim(), atmosphere: String(data.get("atmosphere") ?? "").trim(),
         measurement_method: String(data.get("measurement_method") ?? "").trim(), gauge_length_mm: String(data.get("gauge_length_mm") ?? "").trim(),
-        strain_rate_s_inv: String(data.get("strain_rate_s_inv") ?? "").trim()
+        strain_rate_s_inv: String(data.get("strain_rate_s_inv") ?? "").trim(), test_standard: String(data.get("test_standard") ?? "").trim(),
+        measurement_direction: String(data.get("measurement_direction") ?? "").trim()
       },
-      provenance: { table_figure_page: String(data.get("provenance") ?? "").trim(), notes: String(data.get("notes") ?? "").trim() }
+      provenance: {
+        table_figure_page: String(data.get("provenance") ?? "").trim(),
+        extraction_method: "submitter_entered_from_source",
+        notes: String(data.get("notes") ?? "").trim()
+      }
     };
     setSubmitting(true);
     try {
@@ -477,6 +509,10 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
             </div>
           </section>
 
+          <section className="rail-section"><div className="rail-heading">Point evidence</div>
+            {COMPARABILITY_OPTIONS.map((item) => <label className="check-row compact" key={item.key}><input type="checkbox" checked={selectedGrades.has(item.key)} onChange={() => toggle(item.key, selectedGrades, setSelectedGrades)}/><span className={`quality-key quality-${item.key.toLowerCase()}`}>{item.key}</span><span>{item.label.slice(4)}</span><span className="count">{figure?.comparability.grade_counts[item.key] ?? 0}</span></label>)}
+            <p className="filter-note">Computed for the active properties. Grades do not assert that methods are equivalent across papers.</p>
+          </section>
           <section className="rail-section"><div className="rail-heading">Source class</div>
             {TIER_OPTIONS.map((item) => <label className="check-row" key={item.key}><input type="checkbox" checked={selectedTiers.has(item.key)} onChange={() => toggle(item.key, selectedTiers, setSelectedTiers)}/><span>{item.label}</span><span className="count">{counts?.release_tiers[item.key] ?? 0}</span></label>)}
           </section>
@@ -490,8 +526,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
             {forms.map((form) => <label className="check-row compact family-check-row" key={form}><input type="checkbox" checked={selectedForms.has(form)} onChange={() => toggle(form, selectedForms, setSelectedForms)}/><i className={`shape-swatch ${FORM_SHAPE_CLASS[form] ?? "shape-open-circle"}`}/><span>{FORM_LABELS[form] ?? form}</span><span className="count">{counts?.form_factors[form] ?? 0}</span></label>)}
           </section>
           <section className="rail-section"><div className="rail-heading">Year</div><div className="year-row"><input type="number" value={yearMin} onChange={(event) => setYearMin(Number(event.target.value))}/><span>to</span><input type="number" value={yearMax} onChange={(event) => setYearMax(Number(event.target.value))}/></div></section>
-          <section className="rail-section"><div className="rail-heading">Numeric filters</div><div className="numeric-filter-grid">
-            {NUMERIC_FILTERS.map((item) => <div className="numeric-filter-row" key={item.key}><div><span>{item.label}</span><small>{item.unit}</small></div><input type="number" placeholder="min" value={numericFilters[item.key].min} onChange={(event) => setNumericFilters((current) => ({ ...current, [item.key]: { ...current[item.key], min: event.target.value } }))}/><input type="number" placeholder="max" value={numericFilters[item.key].max} onChange={(event) => setNumericFilters((current) => ({ ...current, [item.key]: { ...current[item.key], max: event.target.value } }))}/></div>)}
+          <section className="rail-section"><div className="rail-heading">Numeric filters{numericFiltersActive ? <span className="rail-heading-note">active</span> : null}</div><div className="numeric-filter-grid">
+            {NUMERIC_FILTERS.map((item) => <div className="numeric-filter-row" key={item.key}><div><span>{item.label}</span><small>{item.unit}</small></div><input type="number" aria-label={`Minimum ${item.label}`} placeholder="min" value={numericFilters[item.key].min} onChange={(event) => setNumericFilters((current) => ({ ...current, [item.key]: { ...current[item.key], min: event.target.value } }))}/><input type="number" aria-label={`Maximum ${item.label}`} placeholder="max" value={numericFilters[item.key].max} onChange={(event) => setNumericFilters((current) => ({ ...current, [item.key]: { ...current[item.key], max: event.target.value } }))}/></div>)}
           </div><p className="filter-note">A numeric filter includes only records reporting that field.</p></section>
         </aside>
 
@@ -515,9 +551,10 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
         </section>
 
         <aside className="detail-rail" aria-label="Focused record">
-          <section className="detail-section"><div className="rail-heading">Selected point</div>{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{selectedRecord.author_curated_compilation_record ? <span className="tier-badge secondary">author-curated compilation</span> : null}{selectedRecord.duplicate_group_id ? <span className="tier-badge primary">canonicalized</span> : null}{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta">Select a plotted marker to inspect its source and reported conditions.</p>}</section>
+          <section className="detail-section"><div className="rail-heading">Selected point</div>{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line">{selectedAssessment ? <span className={`tier-badge quality-badge quality-${selectedAssessment.grade.toLowerCase()}`}>evidence grade {selectedAssessment.grade}</span> : null}<span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{selectedRecord.author_curated_compilation_record ? <span className="tier-badge secondary">author-curated compilation</span> : null}{selectedRecord.duplicate_group_id ? <span className="tier-badge primary">canonicalized</span> : null}{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta">Select a plotted marker to inspect its source and reported conditions.</p>}</section>
           {selectedRecord ? <><section className="detail-section"><div className="rail-heading">Source</div><p className="source-title">{titleFor(selectedRecord)}</p><p className="detail-meta">{selectedRecord.publication_authors_short_verified || "Authors unavailable"}</p><p className="detail-meta">{[selectedRecord.publication_journal_verified, selectedRecord.publication_year_verified].filter(Boolean).join(" / ")}</p>{doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ? <a className="doi-link" href={doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ?? undefined} target="_blank" rel="noreferrer">{selectedRecord.doi_verified || selectedRecord.doi_raw}<ExternalLink size={11}/></a> : <p className="doi-line">Source identifier pending</p>}</section>
           <section className="detail-section"><div className="rail-heading">Measurement conditions</div><dl className="detail-table"><div><dt>Temperature</dt><dd>{selectedRecord.condition_temperature_C !== null ? `${selectedRecord.condition_temperature_C} °C` : "-"}</dd></div><div><dt>Atmosphere</dt><dd>{selectedRecord.condition_atmosphere || "-"}</dd></div><div><dt>Method</dt><dd>{selectedRecord.measurement_method || "-"}</dd></div><div><dt>Gauge length</dt><dd>{selectedRecord.gauge_length_mm !== null ? `${selectedRecord.gauge_length_mm} mm` : "-"}</dd></div><div><dt>Strain rate</dt><dd>{selectedRecord.strain_rate_s_inv !== null ? `${selectedRecord.strain_rate_s_inv} s⁻¹` : "-"}</dd></div></dl></section>
+          {selectedAssessment ? <section className="detail-section"><div className="rail-heading">Active evidence assessment</div><dl className="detail-table"><div><dt>Specimen linkage</dt><dd>{selectedAssessment.specimen_linkage.replaceAll("_", " ")}</dd></div><div><dt>Conditions</dt><dd>{selectedAssessment.condition_status}</dd></div><div><dt>Method metadata</dt><dd>{selectedAssessment.method_status}</dd></div><div><dt>Statistic</dt><dd>{selectedAssessment.statistic_status}</dd></div><div><dt>Value type</dt><dd>{selectedAssessment.bound_status}</dd></div><div><dt>Normalization</dt><dd>{selectedAssessment.normalization_status}</dd></div><div><dt>Density basis</dt><dd>{selectedAssessment.density_basis_status}</dd></div><div><dt>Uncertainty</dt><dd>{selectedAssessment.uncertainty_status}</dd></div></dl>{selectedAssessment.issues.length ? <p className="caveat-text">{selectedAssessment.issues.join("; ")}.</p> : null}</section> : null}
           {lowDensityBasis ? <section className="detail-section"><div className="rail-heading">Comparison note</div><p className="caveat-text">Specific properties are mass-normalized. This low-density porous fiber may rank highly while retaining a substantial volumetric-performance penalty.</p></section> : null}
           <section className="detail-section"><div className="rail-heading">Citation</div><p className="citation-preview">{selectedCitation}</p><button className="citation-button" onClick={() => setCitationOpen(true)}><Quote size={14}/>Open citation tool</button></section></> : null}
         </aside>
@@ -525,11 +562,52 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
 
       <footer className="atlas-footer"><div><strong>Carbon Property Tables</strong><span>Boies Group, Stanford University v0.1</span><span>Please cite Sharma, G. &amp; Boies, A. M. Carbon Property Tables, version 0.1 (2026) when using information from this tool.</span></div><div className="footer-right"><strong>Database contains {initialData.summary.recordCount} public records</strong><span>Research: {initialData.summary.peerReviewedResearchRecords} / DOI comparators: {initialData.summary.peerReviewedComparatorRecords} / commercial: {initialData.summary.commercialComparatorRecords}</span><span>Author-curated compilation records: {initialData.summary.authorCuratedCompilationRecords}</span></div></footer>
 
-      {citationOpen ? <div className="citation-modal" role="dialog" aria-modal="true"><div className="citation-card citation-card-wide"><div className="citation-card-header"><div><p className="plot-kicker">Citation tool</p><h2>Citations for the current figure</h2></div><button className="icon-button" onClick={() => setCitationOpen(false)}><X/></button></div><div className="citation-list"><section><div className="rail-heading">Active citation set</div><p>{figure?.point_count ?? 0} plotted representative records. Copying returns one unified citation list.</p><button className="copy-button" onClick={copyCitations}>{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? "Copied" : "Copy all citations"}</button></section><section><div className="rail-heading">Publications</div><ol className="citation-source-list">{figure?.citations.entries.filter((entry) => !entry.roles.includes("atlas")).map((entry) => <li key={entry.citation_id}>{entry.text}</li>)}</ol></section><section><div className="rail-heading">Carbon Property Tables</div><p>{formatAtlasCitation()}</p></section><section className="bibtex-section"><div className="rail-heading">BibTeX</div><pre>{figure?.citations.bibtex || formatAtlasBibtex()}</pre></section></div></div></div> : null}
+      {citationOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="citation-dialog-title"><div className="citation-card citation-card-wide"><div className="citation-card-header"><div><p className="plot-kicker">Citation tool</p><h2 id="citation-dialog-title">Citations for the current figure</h2></div><button className="icon-button" aria-label="Close citation tool" onClick={() => setCitationOpen(false)}><X/></button></div><div className="citation-list"><section><div className="rail-heading">Active citation set</div><p>{figure?.point_count ?? 0} plotted representative records. Copying returns one unified citation list.</p><button className="copy-button" onClick={copyCitations}>{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? "Copied" : "Copy all citations"}</button></section><section><div className="rail-heading">Publications</div><ol className="citation-source-list">{figure?.citations.entries.filter((entry) => !entry.roles.includes("atlas")).map((entry) => <li key={entry.citation_id}>{entry.text}</li>)}</ol></section><section><div className="rail-heading">Carbon Property Tables</div><p>{formatAtlasCitation()}</p></section><section className="bibtex-section"><div className="rail-heading">BibTeX</div><pre>{figure?.citations.bibtex || formatAtlasBibtex()}</pre></section></div></div></div> : null}
 
-      {exportOpen ? <div className="citation-modal" role="dialog" aria-modal="true"><div className="citation-card export-card"><div className="citation-card-header"><div><p className="plot-kicker">Figure export</p><h2>Download figure and citations</h2></div><button className="icon-button" onClick={() => setExportOpen(false)}><X/></button></div><div className="export-list"><button className="export-option" disabled={Boolean(exporting)} onClick={() => requestExport("svg")}><FileText/><span><strong>SVG</strong><small>Editable vector artwork with publication legend; no selection halo or watermark.</small></span></button><button className="export-option" disabled={Boolean(exporting)} onClick={() => requestExport("pdf")}><FileText/><span><strong>PDF</strong><small>Publication-ready page with bundled citation sidecar.</small></span></button><button className="export-option" disabled={Boolean(exporting)} onClick={() => requestExport("png")}><ImageIcon/><span><strong>PNG</strong><small>High-resolution raster output with bundled citation sidecar.</small></span></button><button className="export-option" disabled={Boolean(exporting)} onClick={() => requestExport("csv")}><Download/><span><strong>Top 10 table</strong><small>Capped high-performance rows only; the full canonical table is not exported.</small></span></button></div></div></div> : null}
+      {exportOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="export-dialog-title"><div className="citation-card export-card"><div className="citation-card-header"><div><p className="plot-kicker">Figure export</p><h2 id="export-dialog-title">Download figure and citations</h2></div><button className="icon-button" aria-label="Close export" onClick={() => setExportOpen(false)}><X/></button></div><div className="export-list"><button className="export-option" aria-label="Download SVG" disabled={Boolean(exporting)} onClick={() => requestExport("svg")}><FileText/><span><strong>SVG</strong><small>Editable vector artwork with publication legend; no selection halo or watermark.</small></span></button><button className="export-option" aria-label="Download PDF" disabled={Boolean(exporting)} onClick={() => requestExport("pdf")}><FileText/><span><strong>PDF</strong><small>Publication-ready page with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download PNG" disabled={Boolean(exporting)} onClick={() => requestExport("png")}><ImageIcon/><span><strong>PNG</strong><small>High-resolution raster output with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download top 10 table" disabled={Boolean(exporting)} onClick={() => requestExport("csv")}><Download/><span><strong>Top 10 table</strong><small>Capped high-performance rows only; the full canonical table is not exported.</small></span></button></div></div></div> : null}
 
-      {submitOpen ? <div className="citation-modal" role="dialog" aria-modal="true"><div className="citation-card submit-card"><div className="citation-card-header"><div><p className="plot-kicker">Community contribution</p><h2>Submit data for curator review</h2></div><button className="icon-button" onClick={() => setSubmitOpen(false)}><X/></button></div><form className="submit-form" onSubmit={submitData}><section><div className="rail-heading">Publication</div><label className="form-field"><span>DOI *</span><input name="doi" required/></label><label className="form-field form-field-wide"><span>Title</span><input name="title"/></label><label className="form-field"><span>Year</span><input name="year" type="number"/></label></section><section><div className="rail-heading">Sample</div><label className="form-field form-field-wide"><span>Sample label *</span><input name="sample_label" required/></label><label className="form-field"><span>Material family *</span><select name="material_family" required>{families.map((family) => <option key={family} value={family}>{FAMILY_LABELS[family] ?? family}</option>)}</select></label><label className="form-field"><span>Form factor *</span><select name="form_factor" required>{forms.map((form) => <option key={form} value={form}>{FORM_LABELS[form] ?? form}</option>)}</select></label><label className="form-field"><span>CNT type</span><input name="cnt_type"/></label><label className="form-field"><span>Synthesis method</span><input name="synthesis_method"/></label><label className="form-field form-field-wide"><span>Postprocessing</span><input name="postprocessing"/></label></section><section><div className="rail-heading">Measurements in displayed units</div>{properties.map((property) => <label className="form-field" key={property.key}><span>{property.label} ({property.displayUnit})</span><input name={`measurement_${property.key}`} type="number" step="any"/></label>)}</section><section><div className="rail-heading">Conditions and provenance</div><label className="form-field"><span>Temperature (°C)</span><input name="temperature_C" type="number" step="any"/></label><label className="form-field"><span>Atmosphere</span><input name="atmosphere"/></label><label className="form-field"><span>Measurement method</span><input name="measurement_method"/></label><label className="form-field"><span>Gauge length (mm)</span><input name="gauge_length_mm" type="number" step="any"/></label><label className="form-field"><span>Strain rate (s⁻¹)</span><input name="strain_rate_s_inv" type="number" step="any"/></label><label className="form-field"><span>Table / figure / page *</span><input name="provenance" required/></label><label className="form-field form-field-wide"><span>Notes</span><textarea name="notes" rows={3}/></label></section><div className="submit-actions"><button className="citation-button" type="submit" disabled={submitting}><Send size={14}/>{submitting ? "Validating DOI" : "Submit for validation"}</button></div>{submissionPacket ? <pre className="submit-output">{submissionPacket}</pre> : null}</form></div></div> : null}
+      {submitOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="submit-dialog-title"><div className="citation-card submit-card">
+        <div className="citation-card-header"><div><p className="plot-kicker">Community contribution</p><h2 id="submit-dialog-title">Submit data for curator review</h2></div><button className="icon-button" aria-label="Close submit data" onClick={() => setSubmitOpen(false)}><X/></button></div>
+        <form className="submit-form" onSubmit={submitData}>
+          <section><div className="rail-heading">Publication</div><label className="form-field"><span>DOI *</span><input name="doi" required/></label></section>
+          <section><div className="rail-heading">Sample identity</div>
+            <label className="form-field form-field-wide"><span>Sample label *</span><input name="sample_label" required/></label>
+            <label className="form-field"><span>Material family *</span><select name="material_family" required>{families.map((family) => <option key={family} value={family}>{FAMILY_LABELS[family] ?? family}</option>)}</select></label>
+            <label className="form-field"><span>Form factor *</span><select name="form_factor" required>{forms.map((form) => <option key={form} value={form}>{FORM_LABELS[form] ?? form}</option>)}</select></label>
+            <label className="form-field"><span>CNT type</span><input name="cnt_type"/></label>
+            <label className="form-field"><span>Synthesis method</span><input name="synthesis_method"/></label>
+            <label className="form-field form-field-wide"><span>Postprocessing</span><input name="postprocessing"/></label>
+            <label className="form-field"><span>Specimen ID</span><input name="specimen_id"/></label>
+            <label className="form-field"><span>Sample batch ID</span><input name="sample_batch_id"/></label>
+            <label className="form-field"><span>Property linkage *</span><select name="specimen_linkage" required defaultValue="unknown"><option value="same_specimen_submitter_claimed">Same specimen</option><option value="same_sample_batch_submitter_claimed">Same sample batch</option><option value="mixed_specimens">Different specimens</option><option value="unknown">Not established</option></select></label>
+            <label className="form-field"><span>Density basis</span><select name="density_basis" defaultValue="unknown"><option value="unknown">Not reported</option><option value="bulk_envelope">Bulk / envelope</option><option value="skeletal_pycnometry">Skeletal / pycnometry</option><option value="assumed_graphitic">Assumed graphitic</option><option value="linear_density_cross_section">Linear density + cross-section</option><option value="other_reported">Other reported basis</option></select></label>
+            <label className="form-field form-field-wide"><span>Cross-section method</span><input name="cross_section_method"/></label>
+          </section>
+          <section className="submission-measurements"><div className="rail-heading">Measurements</div>{properties.map((property) => <div className="submission-measurement-row" key={property.key}>
+            <div className="submission-measurement-name"><strong>{property.label}</strong><span>{property.displayUnit}</span></div>
+            <label><span>Value</span><input name={`measurement_${property.key}`} type="number" step="any" min="0"/></label>
+            <label><span>Statistic</span><select name={`statistic_${property.key}`} defaultValue="unspecified"><option value="unspecified">Unspecified</option><option value="individual">Individual</option><option value="mean">Mean</option><option value="median">Median</option><option value="best_specimen">Best specimen</option><option value="maximum">Maximum</option><option value="minimum">Minimum</option><option value="range_endpoint">Range endpoint</option></select></label>
+            <label><span>Uncertainty</span><input name={`uncertainty_${property.key}`} type="number" step="any" min="0"/></label>
+            <label><span>Uncertainty type</span><select name={`uncertainty_type_${property.key}`} defaultValue="not_reported"><option value="not_reported">Not reported</option><option value="standard_deviation">SD</option><option value="standard_error">SE</option><option value="confidence_interval">Confidence interval</option><option value="range">Range</option><option value="reported_unspecified">Unspecified error</option></select></label>
+            <label><span>n</span><input name={`sample_size_${property.key}`} type="number" step="1" min="1"/></label>
+            <label><span>Value type</span><select name={`bound_${property.key}`} defaultValue="unspecified"><option value="unspecified">Unspecified</option><option value="point_estimate">Point estimate</option><option value="upper_bound">Upper bound / up to</option><option value="lower_bound">Lower bound</option><option value="range_midpoint">Range midpoint</option><option value="range_endpoint">Range endpoint</option></select></label>
+            {MASS_SPECIFIC_KEYS.has(property.key) ? <label><span>Normalization</span><select name={`normalization_${property.key}`} defaultValue="unknown"><option value="unknown">Not established</option><option value="direct_mass_specific_linear_density">Force / linear density</option><option value="directly_reported_mass_specific">Direct mass-specific</option><option value="derived_from_density">Derived from density</option><option value="derived_from_linear_density">Derived from linear density</option></select></label> : <input type="hidden" name={`normalization_${property.key}`} value="not_applicable"/>}
+          </div>)}</section>
+          <section><div className="rail-heading">Conditions and provenance</div>
+            <label className="form-field"><span>Temperature (°C)</span><input name="temperature_C" type="number" step="any"/></label>
+            <label className="form-field"><span>Atmosphere</span><input name="atmosphere"/></label>
+            <label className="form-field"><span>Measurement method</span><input name="measurement_method"/></label>
+            <label className="form-field"><span>Test standard</span><input name="test_standard"/></label>
+            <label className="form-field"><span>Measurement direction</span><input name="measurement_direction"/></label>
+            <label className="form-field"><span>Gauge length (mm)</span><input name="gauge_length_mm" type="number" step="any"/></label>
+            <label className="form-field"><span>Strain rate (s⁻¹)</span><input name="strain_rate_s_inv" type="number" step="any"/></label>
+            <label className="form-field"><span>Table / figure / page *</span><input name="provenance" required/></label>
+            <label className="form-field form-field-wide"><span>Notes</span><textarea name="notes" rows={3}/></label>
+          </section>
+          <div className="submit-actions"><button className="citation-button" type="submit" disabled={submitting}><Send size={14}/>{submitting ? "Validating DOI" : "Submit for validation"}</button></div>
+          {submissionPacket ? <pre className="submit-output">{submissionPacket}</pre> : null}
+        </form>
+      </div></div> : null}
     </main>
   );
 }
