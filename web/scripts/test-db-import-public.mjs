@@ -24,6 +24,40 @@ try {
     publications: 271
   });
 
+  // Reproduce an upgrade from the v0.3 snapshot, which still contained zero placeholders.
+  await database.query(
+    "ALTER TABLE atlas_canonical_measurements DROP CONSTRAINT atlas_canonical_measurements_scientific_domain_check"
+  );
+  await database.query(`
+    UPDATE atlas_canonical_measurements
+    SET value_canonical = 0
+    WHERE measurement_id = (SELECT measurement_id FROM atlas_canonical_measurements ORDER BY measurement_id LIMIT 1)
+  `);
+  await database.exec(schema);
+  const pendingConstraint = await database.query(`
+    SELECT convalidated
+    FROM pg_constraint
+    WHERE conname = 'atlas_canonical_measurements_scientific_domain_check'
+  `);
+  assert.equal(
+    pendingConstraint.rows[0]?.convalidated,
+    false,
+    "Schema migration must not scan and reject the legacy canonical snapshot."
+  );
+
+  const upgradedImport = await importPublicRelease(database, release, { acquireLock: false });
+  assert.deepEqual(upgradedImport, firstImport, "Upgrade import must replace legacy placeholders exactly.");
+  const validatedConstraint = await database.query(`
+    SELECT convalidated
+    FROM pg_constraint
+    WHERE conname = 'atlas_canonical_measurements_scientific_domain_check'
+  `);
+  assert.equal(
+    validatedConstraint.rows[0]?.convalidated,
+    true,
+    "Canonical scientific-domain constraint must be validated after snapshot replacement."
+  );
+
   const secondImport = await importPublicRelease(database, release, { acquireLock: false });
   assert.deepEqual(secondImport, firstImport, "Repeated import must be idempotent.");
 
