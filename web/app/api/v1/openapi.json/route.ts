@@ -63,12 +63,23 @@ export function GET(request: NextRequest) {
                   required: ["kind", "x", "y"],
                   properties: {
                     kind: { type: "string", enum: ["scatter", "ranked", "trend", "ashby"] },
+                    release: {
+                      type: "string",
+                      maxLength: 160,
+                      description: "Exact release ID. A mismatch fails rather than silently using newer data."
+                    },
                     x: { type: "string" },
                     y: { type: "string" },
                     x_scale: { type: "string", enum: ["linear", "log"] },
                     y_scale: { type: "string", enum: ["linear", "log"] },
                     top: { type: "integer", minimum: 0, maximum: 10 },
                     top_by: { type: "string", enum: ["auto", "x", "y"] },
+                    comparison_grades: {
+                      type: "array",
+                      minItems: 1,
+                      uniqueItems: true,
+                      items: { type: "string", enum: ["A", "B", "C", "D"] }
+                    },
                     formats: { type: "array", items: { type: "string", enum: ["svg", "png", "pdf"] } },
                     filters: { type: "object", additionalProperties: true }
                   }

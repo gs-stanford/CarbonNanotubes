@@ -22,6 +22,11 @@ import {
 } from "@/lib/representative";
 import { getReleaseDescriptor, queryCanonicalRecords } from "@/lib/query-store";
 import { renderSvgFigure, type FigureReferenceLine } from "@/lib/svg-renderer";
+import {
+  figureComparability,
+  type ComparabilityGrade,
+  type FigureComparability
+} from "@/lib/comparability";
 
 const FIGURE_WIDTH = 920;
 const FIGURE_HEIGHT = 632;
@@ -187,6 +192,21 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
   const highlights = Array.isArray(body.highlight_record_ids)
     ? Array.from(new Set(body.highlight_record_ids.map(String).filter(Boolean))).slice(0, MAX_HIGHLIGHTS)
     : [];
+  const comparisonGrades = body.comparison_grades === undefined
+    ? (["A", "B", "C", "D"] as ComparabilityGrade[])
+    : Array.from(new Set(
+        (Array.isArray(body.comparison_grades) ? body.comparison_grades : [])
+          .map((grade) => stringChoice(grade, ["A", "B", "C", "D"] as const, "comparison_grades"))
+      ));
+  if (!comparisonGrades.length) throw new ApiInputError("comparison_grades must contain at least one of A, B, C, or D.");
+  const requestedRelease = body.release === undefined
+    ? undefined
+    : (() => {
+        if (typeof body.release !== "string" || !body.release.trim() || body.release.trim().length > 160) {
+          throw new ApiInputError("release must be a non-empty string of at most 160 characters.");
+        }
+        return body.release.trim();
+      })();
   filterSearchParams(body.filters);
   if (temporary && (kind === "scatter" || kind === "ashby") && xScale === "log" && temporary.x <= 0) {
     throw new ApiInputError("temporary x must be positive on a logarithmic x-axis.");
@@ -198,6 +218,7 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
     kind,
     x,
     y,
+    release: requestedRelease,
     x_scale: xScale,
     y_scale: yScale,
     top,
@@ -205,6 +226,7 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
     temporary,
     selected_record_id: typeof body.selected_record_id === "string" ? body.selected_record_id.slice(0, 120) : null,
     highlight_record_ids: highlights,
+    comparison_grades: comparisonGrades,
     formats,
     filters: body.filters ? objectValue(body.filters, "filters") : {}
   };
@@ -236,7 +258,14 @@ function citationForRecord(citations: CitationBundle, recordId: string): string 
     .join(" | ");
 }
 
-function topPoint(record: PlotRecord, rank: number, x: PropertyKey, y: PropertyKey, citations: CitationBundle): FigureTopPoint {
+function topPoint(
+  record: PlotRecord,
+  rank: number,
+  x: PropertyKey,
+  y: PropertyKey,
+  citations: CitationBundle,
+  comparability: FigureComparability
+): FigureTopPoint {
   const xMeta = PROPERTY_BY_KEY.get(x);
   const yMeta = PROPERTY_BY_KEY.get(y);
   const xValue = record.values[x];
@@ -254,14 +283,17 @@ function topPoint(record: PlotRecord, rank: number, x: PropertyKey, y: PropertyK
     doi: record.doi_verified ?? record.doi_raw,
     publication_title: record.publication_title_verified,
     publication_year: record.publication_year_verified,
-    citation: citationForRecord(citations, record.record_id)
+    citation: citationForRecord(citations, record.record_id),
+    comparability_grade: comparability.points[record.record_id]?.grade ?? "D"
   };
 }
 
 function renderFigureSvg(
   records: PlotRecord[],
   request: ReturnType<typeof parseRequest>,
-  selectedId: string | null
+  selectedId: string | null,
+  comparability: FigureComparability,
+  release: Awaited<ReturnType<typeof getReleaseDescriptor>>
 ): { display: string; exportSvg: string } {
   const common = {
     records,
@@ -272,7 +304,16 @@ function renderFigureSvg(
     yScale: request.y_scale ?? "linear",
     selectedId,
     highlightedIds: new Set(request.highlight_record_ids),
-    temporary: request.temporary ?? null
+    temporary: request.temporary ?? null,
+    comparabilityGrades: new Map(
+      Object.values(comparability.points).map((assessment) => [assessment.record_id, assessment.grade])
+    ),
+    documentMetadata: {
+      releaseId: release.release_id,
+      sourceHash: release.source_hash,
+      comparabilityModel: comparability.model_version,
+      comparabilityDisclosure: comparability.disclosure
+    }
   };
   return {
     display: renderSvgFigure({ ...common, referenceLines: RANKED_REFERENCE_LINES[request.y] ?? [], interactive: true }),
@@ -350,6 +391,11 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
   const requiredProperties = request.kind === "scatter" || request.kind === "ashby" ? [request.x, request.y] : [request.y];
   const query = parseRecordQuery(filters, { defaultLimit: 2000, maxLimit: 2000, requiredProperties });
   const [release, page] = await Promise.all([getReleaseDescriptor(), queryCanonicalRecords(query)]);
+  if (request.release && request.release !== release.release_id) {
+    throw new ApiInputError(
+      `Requested release ${request.release} is not available from this deployment; active release is ${release.release_id}.`
+    );
+  }
   if (page.hasMore) {
     throw new ApiInputError("The requested figure exceeds 2,000 eligible records. Apply material, form-factor, year, or measurement filters.");
   }
@@ -365,13 +411,18 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
     records = records.filter((record) => (record.values[request.y] ?? 0) > 0);
   }
   if (!records.length) throw new ApiInputError("No positive records remain for the requested logarithmic axes.");
+  const requestedGrades = new Set(request.comparison_grades ?? ["A", "B", "C", "D"]);
+  let comparability = figureComparability(records, request.x, request.y, request.kind);
+  records = records.filter((record) => requestedGrades.has(comparability.points[record.record_id]?.grade ?? "D"));
+  if (!records.length) throw new ApiInputError("No records remain after applying the comparison-grade filter.");
+  comparability = figureComparability(records, request.x, request.y, request.kind);
   const requestedSelection = request.selected_record_id
     ? records.find((record) => record.record_id === request.selected_record_id) ?? null
     : null;
   const selected = requestedSelection ?? defaultSelectedRecord(records, request.x, request.y);
   const citations = citationBundleForRecords(records);
   const selectedTop = topRecords(records, request.x, request.y, Number(request.top ?? 0), (request.top_by ?? "auto") as FigureTopAxis);
-  const rendered = renderFigureSvg(records, request, selected?.record_id ?? null);
+  const rendered = renderFigureSvg(records, request, selected?.record_id ?? null, comparability, release);
   const images = await renderBinaryImages(rendered.exportSvg, request.formats ?? ["svg"]);
   const xMeta = PROPERTY_BY_KEY.get(request.x);
   const yMeta = PROPERTY_BY_KEY.get(request.y);
@@ -388,10 +439,11 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
     record_ids: records.map((record) => record.record_id),
     display_svg: rendered.display,
     images,
-    top_points: selectedTop.map((record, index) => topPoint(record, index + 1, request.x, request.y, citations)),
+    top_points: selectedTop.map((record, index) => topPoint(record, index + 1, request.x, request.y, citations, comparability)),
     citations,
     temporary_point: temporaryRank(records, request.temporary, request.x, request.y),
     selected_record: selected,
-    counts: figureCounts(records)
+    counts: figureCounts(records),
+    comparability
   };
 }

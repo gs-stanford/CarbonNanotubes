@@ -1514,7 +1514,7 @@ textarea {
 }
 
 .submit-card {
-  width: min(880px, 100%);
+  width: min(1180px, 100%);
 }
 
 .export-card {
@@ -1667,6 +1667,66 @@ textarea {
 
 .form-field-wide {
   grid-column: span 2;
+}
+
+.quality-key {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.quality-a { color: #176b5d; }
+.quality-b { color: #2b6f91; }
+.quality-c { color: #a36317; }
+.quality-d { color: #777b75; }
+
+.quality-badge {
+  background: transparent;
+}
+
+.submission-measurements {
+  display: block !important;
+  overflow-x: auto;
+}
+
+.submission-measurement-row {
+  display: grid;
+  grid-template-columns: minmax(145px, 1.4fr) repeat(7, minmax(100px, 1fr));
+  gap: 10px;
+  align-items: end;
+  min-width: 1060px;
+  padding: 11px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.submission-measurement-row:first-of-type {
+  margin-top: 12px;
+}
+
+.submission-measurement-row label,
+.submission-measurement-name {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.submission-measurement-name strong {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.submission-measurement-name span {
+  font-variant-numeric: tabular-nums;
 }
 
 .submit-actions {

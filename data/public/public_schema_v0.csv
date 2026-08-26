@@ -19,7 +19,7 @@ missing_conditions,"True when method, atmosphere, gauge length, strain rate, or 
 unit_inference_review_needed,True when a raw unit/scale was inferred and should be visibly reviewed before final official release.
 cross_form_comparison,True when form factor is not fiber_yarn; cross-form plots must be visually flagged.
 strict_comparison_candidate,True when the row could become strict-comparison eligible after condition metadata are curated.
-strict_comparison_ready,True only when strict-comparison requirements are currently met.
+strict_comparison_ready,"Deprecated compatibility flag. True only for explicitly same-specimen, condition-complete legacy strict candidates; figure comparability is computed per active property pair."
 normalized_comparison_eligible,True when normalized/Ashby-style comparison is defensible with visible source flags.
 exploratory_comparison_eligible,True for all records included in public v0 exploratory plots.
 normalized_metric,Measurement-level flag for density/specific-property metrics used in normalized comparisons.
@@ -27,6 +27,19 @@ strict_plot_eligible,Measurement-level flag mirroring strict_comparison_ready.
 normalized_plot_eligible,Measurement-level flag for normalized metrics on normalized-eligible records.
 exploratory_plot_eligible,Measurement-level flag for v0 exploratory plotting.
 measurement_warning,Measurement-level warning text for inferred units or non-primary benchmark provenance.
+comparability_model_version,Version of the property-pair comparability rules used by the API and figures.
+specimen_id/sample_batch_id,Identifiers required to prove same-specimen or same-batch pairing across properties.
+specimen_linkage,"Evidence-backed linkage among measurements in a record. Legacy multi-property rows are single_source_row_unverified, not assumed same specimen."
+reported_value/reported_unit,Source-scale value and unit preserved before deterministic canonical conversion.
+statistic_type/sample_size_n,"Best specimen, individual, mean, median, range endpoint, or unspecified, plus reported n."
+uncertainty_*,Reported uncertainty retained without assigning SD/SE/CI unless explicitly identified.
+test_standard/measurement_direction,Test standard and material direction when reported.
+normalization_basis,"Direct mass-specific measurement, density-derived value, linear-density-derived value, not applicable, or unknown."
+density_basis/density_value_kg_m3,Density convention and value used for density-derived metrics; unknown is never treated as a verified convention.
+cross_section_method,"Reported method used to determine cross-sectional area, when relevant."
+value_bound_type,"Point estimate, upper/lower bound, range-derived value, or unspecified."
+derivation_formula/derivation_inputs_json,Deterministic formula and canonical source inputs needed to recompute a derived value.
+reported_or_derived,"Reported, reported with unit inference, or deterministically derived."
 exclusion_reasons,Semicolon-delimited reason a source record was excluded from public v0.
 compilation_source_*,"Citation metadata for an author-curated published compilation such as the Bulmer, Kaniyoor and Elliott workbook."
 duplicate_of_record_id,Higher-priority public/internal record that appears to duplicate this secondary row.

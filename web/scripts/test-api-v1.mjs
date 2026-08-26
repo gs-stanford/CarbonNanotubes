@@ -111,6 +111,7 @@ assert.equal(tensileStrength.canonical_unit, "Pa");
 
 const figureRequest = {
   kind: "scatter",
+  release: release.release.release_id,
   x: "specific_strength",
   y: "specific_electrical_conductivity",
   x_scale: "log",
@@ -119,6 +120,7 @@ const figureRequest = {
   top_by: "y",
   temporary: { x: 1.8, y: 12.0, label: "Candidate" },
   formats: ["svg", "png", "pdf"],
+  comparison_grades: ["A", "B", "C", "D"],
   filters: {
     material_family: ["CNT_or_CNT_hybrid", "CNT_metal_composite"],
     peer_reviewed: true
@@ -131,6 +133,9 @@ assert.equal(figure.kind, "scatter");
 assert.ok(figure.point_count > 0);
 assert.ok(figure.top_points.length > 0 && figure.top_points.length <= 3);
 assert.ok(figure.top_points.every((row, index) => row.rank === index + 1 && row.citation));
+assert.ok(figure.top_points.every((row) => ["A", "B", "C", "D"].includes(row.comparability_grade)));
+assert.equal(figure.comparability.model_version, "cpt-property-pair-v1");
+assert.equal(figure.comparability.inter_record_method_compatibility, "not_assessed");
 assert.ok(figure.citations.entries.some((entry) => entry.roles.includes("atlas")));
 assert.equal(new Set(figure.citations.entries.map((entry) => entry.citation_id)).size, figure.citations.entries.length);
 assert.equal(figure.temporary_point.label, "Candidate");
@@ -141,7 +146,7 @@ assert.ok(!figure.images.svg.includes("data-record-id="));
 assert.ok(!figure.images.svg.includes("plot-watermark"));
 assert.ok(figure.images.svg.includes('baseline-shift="super"'));
 assert.ok(
-  figure.images.svg.includes('class="plot-point point-material-cnt point-shape-circle"'),
+  figure.images.svg.includes('class="plot-point point-material-cnt point-shape-circle quality-'),
   "CNT markers must retain their material color class in exported SVGs."
 );
 const png = Buffer.from(figure.images.png_base64, "base64");
@@ -169,6 +174,34 @@ for (const path of [
 
 const invalidTop = await postJson("/api/v1/figures", { ...figureRequest, formats: ["svg"], top: 11 }, 400);
 assert.equal(invalidTop.error.code, "invalid_request");
+
+const unavailableRelease = await postJson(
+  "/api/v1/figures",
+  { ...figureRequest, formats: ["svg"], release: "public-v0-unavailable" },
+  400
+);
+assert.equal(unavailableRelease.error.code, "invalid_request");
+
+const invalidComparisonGrade = await postJson(
+  "/api/v1/figures",
+  { ...figureRequest, formats: ["svg"], comparison_grades: ["Z"] },
+  400
+);
+assert.equal(invalidComparisonGrade.error.code, "invalid_request");
+
+const emptyComparisonGrades = await postJson(
+  "/api/v1/figures",
+  { ...figureRequest, formats: ["svg"], comparison_grades: [] },
+  400
+);
+assert.equal(emptyComparisonGrades.error.code, "invalid_request");
+
+const contextOnlyFigure = await postJson(
+  "/api/v1/figures",
+  { ...figureRequest, formats: ["svg"], top: 0, comparison_grades: ["D"], filters: {} }
+);
+assert.ok(contextOnlyFigure.point_count > 0);
+assert.deepEqual(contextOnlyFigure.comparability.grade_counts, { A: 0, B: 0, C: 0, D: contextOnlyFigure.point_count });
 
 const invalidFilter = await postJson(
   "/api/v1/figures",

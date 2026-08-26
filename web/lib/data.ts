@@ -79,8 +79,20 @@ export type PublicRecord = {
   condition_temperature_C: number | null;
   condition_atmosphere: string | null;
   measurement_method: string | null;
+  test_standard: string | null;
   gauge_length_mm: number | null;
   strain_rate_s_inv: number | null;
+  specimen_id: string | null;
+  sample_batch_id: string | null;
+  specimen_linkage: string;
+  measurement_direction: string | null;
+  density_basis: string;
+  cross_section_method: string | null;
+  normalization_basis: string;
+  value_bound_type: string;
+  statistic_type: string;
+  sample_size_n: number | null;
+  comparability_model_version: string;
   provenance_table_figure_page: string | null;
   compilation_source_doi_raw: string | null;
   compilation_source_title: string | null;
@@ -113,6 +125,30 @@ export type Measurement = {
   unit_canonical: string;
   value_display: number;
   unit_display: string;
+  reported_value: number | null;
+  reported_unit: string | null;
+  statistic_type: string;
+  uncertainty_type: string;
+  uncertainty_value_reported: number | null;
+  uncertainty_value_canonical: number | null;
+  sample_size_n: number | null;
+  test_standard: string | null;
+  specimen_id: string | null;
+  sample_batch_id: string | null;
+  specimen_linkage: string;
+  measurement_set_id: string | null;
+  measurement_direction: string | null;
+  density_basis: string;
+  density_value_kg_m3: number | null;
+  density_source_locator: string | null;
+  cross_section_method: string | null;
+  normalization_basis: string;
+  value_bound_type: string;
+  derivation_formula: string | null;
+  derivation_inputs_json: string | null;
+  reported_or_derived: string;
+  source_locator: string | null;
+  extraction_method: string | null;
   public_release_tier: string;
   public_plot_badge: string;
   measurement_warning: string;
@@ -125,6 +161,7 @@ export type PlotRecord = PublicRecord & {
   values: Partial<Record<PropertyKey, number>>;
   canonicalValues: Partial<Record<PropertyKey, number>>;
   measurementWarnings: Partial<Record<PropertyKey, string>>;
+  measurementMetadata: Partial<Record<PropertyKey, Measurement>>;
 };
 
 export type Publication = {
@@ -165,7 +202,7 @@ export type ExplorerPayload = {
 };
 
 export type CommunityAcceptedSubmission = {
-  schema_version: "cnt-property-atlas-community-v0.1";
+  schema_version: "carbon-property-tables-community-v0.2" | "cnt-property-atlas-community-v0.1";
   submission_id?: string;
   accepted_at: string;
   duplicate_check: {
@@ -506,8 +543,20 @@ export function recordFromRow(row: Record<string, string>): PublicRecord {
     condition_temperature_C: num(row.condition_temperature_C),
     condition_atmosphere: nullable(row.condition_atmosphere),
     measurement_method: nullable(row.measurement_method),
+    test_standard: nullable(row.test_standard),
     gauge_length_mm: num(row.gauge_length_mm),
     strain_rate_s_inv: num(row.strain_rate_s_inv),
+    specimen_id: nullable(row.specimen_id),
+    sample_batch_id: nullable(row.sample_batch_id),
+    specimen_linkage: nullable(row.specimen_linkage) ?? "unknown",
+    measurement_direction: nullable(row.measurement_direction),
+    density_basis: nullable(row.density_basis) ?? "unknown",
+    cross_section_method: nullable(row.cross_section_method),
+    normalization_basis: nullable(row.normalization_basis) ?? "unknown",
+    value_bound_type: nullable(row.value_bound_type) ?? "unspecified",
+    statistic_type: nullable(row.statistic_type) ?? "unspecified",
+    sample_size_n: num(row.sample_size_n),
+    comparability_model_version: nullable(row.comparability_model_version) ?? "cpt-property-pair-v1",
     provenance_table_figure_page: nullable(row.provenance_table_figure_page),
     compilation_source_doi_raw: nullable(row.compilation_source_doi_raw) ?? nullable(row.secondary_source_doi_raw),
     compilation_source_title: nullable(row.compilation_source_title) ?? nullable(row.secondary_source_title),
@@ -546,6 +595,30 @@ export function measurementFromRow(row: Record<string, string>): Measurement | n
     unit_canonical: row.unit_canonical,
     value_display: value * meta.displayFactor,
     unit_display: meta.displayUnit,
+    reported_value: num(row.reported_value),
+    reported_unit: nullable(row.reported_unit),
+    statistic_type: nullable(row.statistic_type) ?? "unspecified",
+    uncertainty_type: nullable(row.uncertainty_type) ?? "not_reported",
+    uncertainty_value_reported: num(row.uncertainty_value_reported),
+    uncertainty_value_canonical: num(row.uncertainty_value_canonical),
+    sample_size_n: num(row.sample_size_n),
+    test_standard: nullable(row.test_standard),
+    specimen_id: nullable(row.specimen_id),
+    sample_batch_id: nullable(row.sample_batch_id),
+    specimen_linkage: nullable(row.specimen_linkage) ?? "unknown",
+    measurement_set_id: nullable(row.measurement_set_id),
+    measurement_direction: nullable(row.measurement_direction),
+    density_basis: nullable(row.density_basis) ?? "unknown",
+    density_value_kg_m3: num(row.density_value_kg_m3),
+    density_source_locator: nullable(row.density_source_locator),
+    cross_section_method: nullable(row.cross_section_method),
+    normalization_basis: nullable(row.normalization_basis) ?? "unknown",
+    value_bound_type: nullable(row.value_bound_type) ?? "unspecified",
+    derivation_formula: nullable(row.derivation_formula),
+    derivation_inputs_json: nullable(row.derivation_inputs_json),
+    reported_or_derived: nullable(row.reported_or_derived) ?? "reported",
+    source_locator: nullable(row.source_locator),
+    extraction_method: nullable(row.extraction_method),
     public_release_tier: nullable(row.public_release_tier) ?? "",
     public_plot_badge: nullable(row.public_plot_badge) ?? "",
     measurement_warning: nullable(row.measurement_warning) ?? "none",
@@ -697,7 +770,8 @@ function buildExplorerPayload(
       ...record,
       values: {},
       canonicalValues: {},
-      measurementWarnings: {}
+      measurementWarnings: {},
+      measurementMetadata: {}
     });
   });
 
@@ -707,6 +781,7 @@ function buildExplorerPayload(
     record.values[measurement.property] = measurement.value_display;
     record.canonicalValues[measurement.property] = measurement.value_canonical;
     record.measurementWarnings[measurement.property] = measurement.measurement_warning;
+    record.measurementMetadata[measurement.property] = measurement;
   });
 
   const plotRecords = Array.from(byRecord.values());

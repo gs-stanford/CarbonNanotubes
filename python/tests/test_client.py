@@ -53,6 +53,7 @@ TOP_POINTS = [
         "publication_title": "Example high-performance publication",
         "publication_year": 2024,
         "citation": "Author, A. Example high-performance publication. Journal 1, 1-5 (2024).",
+        "comparability_grade": "A",
     },
     {
         "rank": 2,
@@ -67,6 +68,7 @@ TOP_POINTS = [
         "publication_title": "Second publication",
         "publication_year": 2023,
         "citation": "Author, B. Second publication. Journal 2, 5-8 (2023).",
+        "comparability_grade": "C",
     },
 ]
 
@@ -155,6 +157,11 @@ class FakeClient(CPTClient):
             "top_points": TOP_POINTS[: body["top"]],
             "citations": citation_payload(),
             "temporary_point": temporary,
+            "comparability": {
+                "model_version": "cpt-property-pair-v1",
+                "grade_counts": {"A": 1, "B": 0, "C": 2, "D": 0},
+                "inter_record_method_compatibility": "not_assessed",
+            },
         }
 
 
@@ -215,6 +222,7 @@ class CPTClientTests(unittest.TestCase):
             "specific_electrical_conductivity",
             top=2,
             top_by="y",
+            release="r1",
             temporary=TemporaryPoint(1.5, 1.5, "Candidate"),
             peer_reviewed=True,
         )
@@ -230,6 +238,7 @@ class CPTClientTests(unittest.TestCase):
         self.assertEqual((path, params, method), ("figures", None, "POST"))
         self.assertEqual(body["filters"], {"peer_reviewed": True})
         self.assertEqual(body["top"], 2)
+        self.assertEqual(body["release"], "r1")
         self.assertNotIn("limit", body)
 
     def test_exports_are_requested_explicitly_and_carry_citations(self):
@@ -262,7 +271,8 @@ class CPTClientTests(unittest.TestCase):
             saved = figure.save_bundle(root / "comparison")
             self.assertEqual(set(saved), {"svg", "png", "citations", "bibtex", "manifest"})
             manifest = saved["manifest"].read_text(encoding="utf-8")
-            self.assertIn('"schema": "cpt-figure-manifest-v1"', manifest)
+            self.assertIn('"schema": "cpt-figure-manifest-v2"', manifest)
+            self.assertIn('"model_version": "cpt-property-pair-v1"', manifest)
             self.assertIn('"figure_fingerprint"', manifest)
             self.assertIn('"specific_strength"', manifest)
             self.assertNotIn('"measurements"', manifest)
@@ -298,6 +308,12 @@ class CPTClientTests(unittest.TestCase):
             client.scatter("density", "tensile_strength", limit=5)
         with self.assertRaises(CPTValidationError):
             client.scatter("density", "tensile_strength", formats=("csv",))
+        with self.assertRaises(CPTValidationError):
+            client.scatter("density", "tensile_strength", comparison_grades=("A", "Z"))
+        with self.assertRaises(CPTValidationError):
+            client.scatter("density", "tensile_strength", release="")
+        with self.assertRaises(CPTValidationError):
+            client.scatter("density", "tensile_strength", release=3)
 
     def test_feature_tour_exercises_every_public_artifact_path(self):
         client = FakeClient()

@@ -18,7 +18,7 @@ specific_strength_N_m_kg,Canonical specific strength; 1 N/tex = 1e6 N m/kg.,N m/
 tensile_strength_GPa,Canonical tensile strength in GPa after scale inference.,GPa
 tensile_strength_Pa,Canonical tensile strength.,Pa
 electrical_conductivity_S_m,Canonical electrical conductivity; S/cm multiplied by 100 or MS/m by 1e6.,S/m
-specific_electrical_conductivity_S_m2_kg,Electrical conductivity divided by density.,S m^2/kg
+specific_electrical_conductivity_S_m2_kg,"Canonical mass-specific electrical conductivity, either directly reported or deterministically derived as identified by normalization_basis.",S m^2/kg
 thermal_conductivity_W_mK,Thermal conductivity.,W/m/K
 specific_thermal_conductivity_W_m2_K_kg,Thermal conductivity divided by density.,W m^2/K/kg
 ampacity_A_m2,Maximum current density before open circuit/failure.,A/m^2
@@ -29,6 +29,18 @@ comparison_note,Human-readable disclosure text for website tooltips and figure l
 public_status,Public exposure state. Seed rows are not marked public-official until curation/validation is complete.,
 internal_status,"Internal curation state for reference, unit, condition, and value review.",
 condition_*,Nullable measurement-condition metadata. Missing values block strict scientific comparison.,
+specimen_id/sample_batch_id,Identifiers used to establish whether plotted properties refer to the same physical specimen or batch.,
+specimen_linkage,Evidence-backed relationship among measurements in one record; legacy multi-property rows default to single_source_row_unverified.,
+normalization_basis,"Whether a specific property was directly mass-normalized, density-derived, linear-density-derived, not applicable, or unknown.",
+density_basis/density_value_kg_m3,Density convention and numerical density used when a specific property was derived by density normalization.,
+cross_section_method,"Reported method used to determine fiber cross-sectional area, when relevant.",
+value_bound_type,"Point estimate, upper/lower bound, range-derived value, or unspecified.",
+derivation_formula/derivation_inputs_json,Recomputable deterministic transformation and its canonical inputs; null for directly reported values.,
+reported_value/reported_unit,Value and unit exactly represented by the source before canonical conversion; null for derived properties.,source unit
+statistic_type/sample_size_n,Reported statistic basis and sample count; unspecified when the source workbook did not preserve them.,
+uncertainty_*,"Reported uncertainty retained without assuming SD, SE, or confidence interval when the source does not say.",source and canonical units
+test_standard/measurement_direction,Property-specific test standard and material direction when reported.,
+reported_or_derived,"Whether the canonical value was directly reported, inferred from a source scale, or calculated from other fields.",
 publication_year,Formal citation year when known.,year
 publication_published_date,Online/version-of-record publication date when known.,date
 annual_progression,Separate derived plot-series table from RadarFigureSource/FibersStrengthYr.,

@@ -1,6 +1,7 @@
 import type { CitationBundle } from "@/lib/citations";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 import type { ReleaseDescriptor } from "@/lib/query-store";
+import type { ComparabilityGrade, FigureComparability } from "@/lib/comparability";
 
 export type FigureKind = "scatter" | "ranked" | "trend" | "ashby";
 export type FigureTopAxis = "auto" | "x" | "y";
@@ -16,6 +17,7 @@ export type FigureRequest = {
   kind: FigureKind;
   x: PropertyKey;
   y: PropertyKey;
+  release?: string;
   x_scale?: ScaleMode;
   y_scale?: ScaleMode;
   top?: number;
@@ -25,6 +27,7 @@ export type FigureRequest = {
   highlight_record_ids?: string[];
   formats?: FigureFormat[];
   filters?: Record<string, unknown>;
+  comparison_grades?: ComparabilityGrade[];
 };
 
 export type FigureTopPoint = {
@@ -40,6 +43,7 @@ export type FigureTopPoint = {
   publication_title: string | null;
   publication_year: number | null;
   citation: string;
+  comparability_grade: ComparabilityGrade;
 };
 
 export type FigureTemporaryRank = {
@@ -84,6 +88,7 @@ export type FigureResponse = {
   temporary_point: FigureTemporaryRank | null;
   selected_record: PlotRecord | null;
   counts: FigureCounts;
+  comparability: FigureComparability;
 };
 
 export type ExplorerBootstrap = {

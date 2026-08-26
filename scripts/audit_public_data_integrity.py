@@ -34,8 +34,73 @@ PUBLIC_SYNC_FILES = [
     "public_publications_v0.csv",
     "public_exclusions_v0.csv",
     "public_duplicate_audit_v0.csv",
+    "public_provenance_census_v0.csv",
     "public_release_summary.json",
 ]
+
+COMPARABILITY_MODEL_VERSION = "cpt-property-pair-v1"
+
+REQUIRED_RECORD_METADATA_COLUMNS = {
+    "comparability_model_version",
+    "specimen_id",
+    "sample_batch_id",
+    "specimen_linkage",
+    "test_standard",
+    "measurement_direction",
+    "statistic_type",
+    "sample_size_n",
+    "density_basis",
+    "cross_section_method",
+    "normalization_basis",
+    "value_bound_type",
+}
+
+REQUIRED_MEASUREMENT_METADATA_COLUMNS = {
+    "comparability_model_version",
+    "reported_value",
+    "reported_unit",
+    "reported_or_derived",
+    "uncertainty_value_reported",
+    "uncertainty_value_canonical",
+    "uncertainty_type",
+    "specimen_id",
+    "sample_batch_id",
+    "specimen_linkage",
+    "test_standard",
+    "measurement_direction",
+    "statistic_type",
+    "sample_size_n",
+    "density_basis",
+    "density_value_kg_m3",
+    "density_source_locator",
+    "cross_section_method",
+    "normalization_basis",
+    "value_bound_type",
+    "derivation_formula",
+    "derivation_inputs_json",
+}
+
+ALLOWED_STATISTIC_TYPES = {
+    "individual", "mean", "median", "best_specimen", "maximum", "minimum",
+    "range_endpoint", "unspecified",
+}
+ALLOWED_UNCERTAINTY_TYPES = {
+    "standard_deviation", "standard_error", "confidence_interval", "range",
+    "reported_unspecified", "not_reported",
+}
+ALLOWED_VALUE_BOUND_TYPES = {
+    "point_estimate", "upper_bound", "lower_bound", "range_midpoint",
+    "range_endpoint", "unspecified",
+}
+ALLOWED_NORMALIZATION_BASES = {
+    "direct_mass_specific_linear_density", "directly_reported_mass_specific",
+    "derived_from_density", "derived_from_linear_density", "not_applicable", "unknown",
+}
+ALLOWED_SPECIMEN_LINKAGES = {
+    "same_specimen_verified", "same_sample_batch", "mixed_specimens",
+    "aggregated_across_specimens", "incompatible", "single_source_row_unverified",
+    "not_applicable_single_property", "unknown",
+}
 
 PROPERTY_FIELDS = {
     "density": ("density_kg_m3", "kg/m3"),
@@ -459,6 +524,218 @@ def audit_public_measurement_consistency(findings: list[Finding], public_records
             )
 
 
+def audit_scientific_metadata(findings: list[Finding], public_records: pd.DataFrame, public_measurements: pd.DataFrame) -> None:
+    missing_record_columns = sorted(REQUIRED_RECORD_METADATA_COLUMNS - set(public_records.columns))
+    missing_measurement_columns = sorted(REQUIRED_MEASUREMENT_METADATA_COLUMNS - set(public_measurements.columns))
+    if missing_record_columns:
+        add(
+            findings,
+            "error",
+            "scientific_schema_columns",
+            "Public records are missing required comparability metadata columns.",
+            columns=missing_record_columns,
+        )
+    if missing_measurement_columns:
+        add(
+            findings,
+            "error",
+            "scientific_schema_columns",
+            "Public measurements are missing required comparability metadata columns.",
+            columns=missing_measurement_columns,
+        )
+    if missing_record_columns or missing_measurement_columns:
+        return
+
+    def invalid_values(frame: pd.DataFrame, column: str, allowed: set[str]) -> list[str]:
+        return sorted({clean(value) or "<blank>" for value in frame[column] if (clean(value) or "") not in allowed})
+
+    for column, allowed in [
+        ("statistic_type", ALLOWED_STATISTIC_TYPES),
+        ("uncertainty_type", ALLOWED_UNCERTAINTY_TYPES),
+        ("value_bound_type", ALLOWED_VALUE_BOUND_TYPES),
+        ("normalization_basis", ALLOWED_NORMALIZATION_BASES),
+        ("specimen_linkage", ALLOWED_SPECIMEN_LINKAGES),
+    ]:
+        invalid = invalid_values(public_measurements, column, allowed)
+        if invalid:
+            add(
+                findings,
+                "error",
+                "scientific_schema_vocabulary",
+                f"Public measurements contain unsupported {column} values.",
+                column=column,
+                values=invalid,
+            )
+
+    invalid_models = sorted(
+        {
+            clean(value) or "<blank>"
+            for value in public_measurements["comparability_model_version"]
+            if clean(value) != COMPARABILITY_MODEL_VERSION
+        }
+    )
+    if invalid_models:
+        add(
+            findings,
+            "error",
+            "comparability_model_version",
+            "Measurements do not all identify the active comparability model.",
+            values=invalid_models,
+        )
+
+    canonical = pd.to_numeric(public_measurements["value_canonical"], errors="coerce")
+    invalid_canonical = public_measurements[canonical.isna() | ~canonical.map(math.isfinite) | canonical.le(0)]
+    if not invalid_canonical.empty:
+        add(
+            findings,
+            "error",
+            "canonical_measurement_domain",
+            "Canonical public measurements must be finite and positive.",
+            count=int(len(invalid_canonical)),
+            measurement_ids=invalid_canonical["measurement_id"].astype(str).head(10).tolist(),
+        )
+
+    uncertainty = pd.to_numeric(public_measurements["uncertainty_value_canonical"], errors="coerce")
+    negative_uncertainty = public_measurements[uncertainty.notna() & uncertainty.lt(0)]
+    if not negative_uncertainty.empty:
+        add(
+            findings,
+            "error",
+            "uncertainty_domain",
+            "Canonical uncertainty cannot be negative.",
+            count=int(len(negative_uncertainty)),
+            measurement_ids=negative_uncertainty["measurement_id"].astype(str).head(10).tolist(),
+        )
+    typed_uncertainty = ~public_measurements["uncertainty_type"].eq("not_reported")
+    missing_uncertainty = public_measurements[typed_uncertainty & uncertainty.isna()]
+    if not missing_uncertainty.empty:
+        add(
+            findings,
+            "error",
+            "uncertainty_type_value_pair",
+            "A reported uncertainty type requires a canonical uncertainty value.",
+            count=int(len(missing_uncertainty)),
+            measurement_ids=missing_uncertainty["measurement_id"].astype(str).head(10).tolist(),
+        )
+
+    sample_size = pd.to_numeric(public_measurements["sample_size_n"], errors="coerce")
+    invalid_n = public_measurements[
+        sample_size.notna() & (sample_size.le(0) | (sample_size - sample_size.round()).abs().gt(1e-9))
+    ]
+    if not invalid_n.empty:
+        add(
+            findings,
+            "error",
+            "sample_size_domain",
+            "Reported sample size must be a positive integer.",
+            count=int(len(invalid_n)),
+            measurement_ids=invalid_n["measurement_id"].astype(str).head(10).tolist(),
+        )
+
+    measurement_counts = public_measurements.groupby("record_id")["measurement_id"].nunique()
+    for _, record in public_records.iterrows():
+        record_id = clean(record.get("record_id"))
+        if not record_id:
+            continue
+        linkage = clean(record.get("specimen_linkage")) or "unknown"
+        count = int(measurement_counts.get(record_id, 0))
+        if count > 1 and linkage == "not_applicable_single_property":
+            add(
+                findings,
+                "error",
+                "specimen_linkage_cardinality",
+                "A multi-property record cannot use the single-property linkage state.",
+                record_id=record_id,
+                measurement_count=count,
+            )
+        if linkage == "same_specimen_verified" and not clean(record.get("specimen_id")):
+            add(
+                findings,
+                "error",
+                "same_specimen_evidence",
+                "Verified same-specimen linkage requires a specimen identifier.",
+                record_id=record_id,
+            )
+        if truthy(record.get("strict_comparison_ready")) and (
+            linkage != "same_specimen_verified"
+            or truthy(record.get("missing_conditions"))
+            or truthy(record.get("unit_inference_review_needed"))
+        ):
+            add(
+                findings,
+                "error",
+                "legacy_strict_flag",
+                "Deprecated strict-ready status may only survive for same-specimen, condition-complete records without unit inference.",
+                record_id=record_id,
+                specimen_linkage=linkage,
+            )
+
+    derived_density = public_measurements[public_measurements["normalization_basis"].eq("derived_from_density")]
+    missing_density_basis_ids: list[str] = []
+    for _, measurement in derived_density.iterrows():
+        measurement_id = clean(measurement.get("measurement_id"))
+        density = to_number(measurement.get("density_value_kg_m3"))
+        density_basis = clean(measurement.get("density_basis")) or "unknown"
+        formula = clean(measurement.get("derivation_formula"))
+        inputs_raw = clean(measurement.get("derivation_inputs_json"))
+        if density is None or density <= 0 or not formula or not inputs_raw:
+            add(
+                findings,
+                "error",
+                "density_derivation_provenance",
+                "A density-derived value must retain its density, formula, and canonical inputs.",
+                record_id=clean(measurement.get("record_id")),
+                measurement_id=measurement_id,
+            )
+            continue
+        if density_basis in {"unknown", "not_applicable"}:
+            missing_density_basis_ids.append(measurement_id or "<unknown>")
+        try:
+            inputs = json.loads(inputs_raw)
+        except json.JSONDecodeError:
+            add(
+                findings,
+                "error",
+                "derivation_inputs_json",
+                "Derivation inputs must be valid JSON.",
+                record_id=clean(measurement.get("record_id")),
+                measurement_id=measurement_id,
+            )
+            continue
+        prop = clean(measurement.get("property"))
+        numerator_key = {
+            "specific_electrical_conductivity": "electrical_conductivity_S_m",
+            "specific_thermal_conductivity": "thermal_conductivity_W_mK",
+        }.get(prop)
+        if prop == "specific_volume":
+            expected = 1 / density
+        elif numerator_key:
+            numerator = to_number(inputs.get(numerator_key))
+            expected = numerator / density if numerator is not None else None
+        else:
+            expected = None
+        if expected is not None and not close_enough(expected, measurement.get("value_canonical"), rel_tol=1e-8):
+            add(
+                findings,
+                "error",
+                "derived_value_recomputation",
+                "A density-derived canonical value cannot be reproduced from its retained inputs.",
+                record_id=clean(measurement.get("record_id")),
+                measurement_id=measurement_id,
+                expected=expected,
+                actual=measurement.get("value_canonical"),
+            )
+    if missing_density_basis_ids:
+        add(
+            findings,
+            "warning",
+            "density_basis_unreported",
+            "Density-derived values remain exploratory because the source density convention is unreported.",
+            count=len(missing_density_basis_ids),
+            measurement_ids=missing_density_basis_ids[:10],
+        )
+
+
 def truthy(value: Any) -> bool:
     return str(value).strip().lower() in {"1", "true", "yes", "y"}
 
@@ -690,6 +967,7 @@ def main() -> int:
     audit_semantic_publications(findings, public_records)
     audit_top_source_survival(findings, processed_records, public_records, duplicate_audit)
     audit_public_measurement_consistency(findings, public_records, public_measurements)
+    audit_scientific_metadata(findings, public_records, public_measurements)
     audit_frontend_representative_extremes(findings, public_records)
     audit_known_cross_source_duplicate_collapse(findings, public_records)
     write_reports(findings)

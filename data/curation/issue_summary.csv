@@ -2,4 +2,5 @@ issue_type,records,issue_rows,by_material_family
 missing_conditions,596,596,CNT_or_CNT_hybrid:596
 unit_inference,66,66,carbon_fiber_comparator:38; polymer_fiber_comparator:20; ceramic_or_glass_comparator:5; metal_comparator:3
 missing_reference,23,23,CNT_or_CNT_hybrid:14; graphene_or_GO_fiber:9
+nonpositive_measurement_placeholder_excluded,7,13,CNT_or_CNT_hybrid:6; ceramic_or_glass_comparator:4; graphene_or_GO_fiber:2; carbon_fiber_comparator:1
 duplicate_candidate,5,5,CNT_metal_composite:2; CNT_or_CNT_hybrid:2; polymer_fiber_comparator:1

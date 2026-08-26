@@ -128,12 +128,14 @@ function canonicalRecordFromPayloads(row: QueryRow): CanonicalRecord {
     ...recordBase,
     values: {},
     canonicalValues: {},
-    measurementWarnings: {}
+    measurementWarnings: {},
+    measurementMetadata: {}
   };
   measurements.forEach((measurement) => {
     record.values[measurement.property] = measurement.value_display;
     record.canonicalValues[measurement.property] = measurement.value_canonical;
     record.measurementWarnings[measurement.property] = measurement.measurement_warning;
+    record.measurementMetadata[measurement.property] = measurement;
   });
   const publication = row.publication_payload
     ? publicationFromRow(payloadToStringRecord(row.publication_payload, "Publication payload"))
@@ -157,12 +159,14 @@ function canonicalRecordFromSubmission(submission: CommunityAcceptedSubmission):
     ...submission.record,
     values: {},
     canonicalValues: {},
-    measurementWarnings: {}
+    measurementWarnings: {},
+    measurementMetadata: {}
   };
   for (const measurement of measurements) {
     record.values[measurement.property] = measurement.value_display;
     record.canonicalValues[measurement.property] = measurement.value_canonical;
     record.measurementWarnings[measurement.property] = measurement.measurement_warning;
+    record.measurementMetadata[measurement.property] = measurement;
   }
   return { record, measurements, publication: submission.publication };
 }
@@ -473,7 +477,7 @@ export async function getReleaseDescriptor(): Promise<ReleaseDescriptor> {
   const summary = getBundledReleaseSummary();
   return {
     release_id: "bundled-public-v0",
-    schema_version: "cnt-property-atlas-public-v0.3",
+    schema_version: "carbon-property-tables-public-v0.4",
     source_hash: null,
     record_count: summary.recordCount,
     measurement_count: summary.measurementCount,

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 
 const { Pool } = pg;
-const SCHEMA_VERSION = "cnt-property-atlas-public-v0.3";
+const SCHEMA_VERSION = "carbon-property-tables-public-v0.4";
 const FILES = {
   records: "public_records_v0.csv",
   measurements: "public_measurements_v0.csv",
@@ -105,6 +105,16 @@ function numberOrNull(value) {
   if (clean === null) return null;
   const parsed = Number(clean);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function jsonOrNull(value, label) {
+  const clean = nullable(value);
+  if (clean === null) return null;
+  try {
+    return JSON.parse(clean);
+  } catch {
+    throw new Error(`${label} must contain valid JSON.`);
+  }
 }
 
 function requiredNumber(value, label) {
@@ -239,6 +249,14 @@ export function loadPublicRelease(dataDir = resolveDataDir()) {
     commercial_specsheet_benchmark: bool(row.commercial_specsheet_benchmark),
     author_curated_compilation_record: bool(row.author_curated_compilation_record),
     strict_comparison_ready: bool(row.strict_comparison_ready),
+    specimen_id: nullable(row.specimen_id),
+    sample_batch_id: nullable(row.sample_batch_id),
+    specimen_linkage: nullable(row.specimen_linkage) ?? "unknown",
+    density_basis: nullable(row.density_basis) ?? "unknown",
+    cross_section_method: nullable(row.cross_section_method),
+    normalization_basis: nullable(row.normalization_basis) ?? "unknown",
+    value_bound_type: nullable(row.value_bound_type) ?? "unspecified",
+    comparability_model_version: nullable(row.comparability_model_version) ?? "cpt-property-pair-v1",
     row_hash: rowHash(row),
     payload_json: row
   }));
@@ -250,6 +268,30 @@ export function loadPublicRelease(dataDir = resolveDataDir()) {
     property: row.property,
     value_canonical: requiredNumber(row.value_canonical, `Measurement ${row.measurement_id} value_canonical`),
     unit_canonical: row.unit_canonical,
+    reported_value: numberOrNull(row.reported_value),
+    reported_unit: nullable(row.reported_unit),
+    statistic_type: nullable(row.statistic_type) ?? "unspecified",
+    uncertainty_type: nullable(row.uncertainty_type) ?? "not_reported",
+    uncertainty_value_reported: numberOrNull(row.uncertainty_value_reported),
+    uncertainty_value_canonical: numberOrNull(row.uncertainty_value_canonical),
+    sample_size_n: numberOrNull(row.sample_size_n),
+    test_standard: nullable(row.test_standard),
+    specimen_id: nullable(row.specimen_id),
+    sample_batch_id: nullable(row.sample_batch_id),
+    specimen_linkage: nullable(row.specimen_linkage) ?? "unknown",
+    measurement_set_id: nullable(row.measurement_set_id),
+    measurement_direction: nullable(row.measurement_direction),
+    density_basis: nullable(row.density_basis) ?? "unknown",
+    density_value_kg_m3: numberOrNull(row.density_value_kg_m3),
+    density_source_locator: nullable(row.density_source_locator),
+    cross_section_method: nullable(row.cross_section_method),
+    normalization_basis: nullable(row.normalization_basis) ?? "unknown",
+    value_bound_type: nullable(row.value_bound_type) ?? "unspecified",
+    derivation_formula: nullable(row.derivation_formula),
+    derivation_inputs_json: jsonOrNull(row.derivation_inputs_json, `Measurement ${row.measurement_id} derivation_inputs_json`),
+    reported_or_derived: nullable(row.reported_or_derived) ?? "reported",
+    source_locator: nullable(row.source_locator),
+    extraction_method: nullable(row.extraction_method),
     measurement_warning: nullable(row.measurement_warning) ?? "none",
     strict_plot_eligible: bool(row.strict_plot_eligible),
     normalized_plot_eligible: bool(row.normalized_plot_eligible),
@@ -307,14 +349,18 @@ const INSERT_RECORDS = `
     material_family, form_factor, cnt_type, public_release_tier, source_citation_class,
     dataset_provenance, primary_source_verification_status, publication_year,
     peer_reviewed_measurement, contextual_benchmark, commercial_specsheet_benchmark,
-    author_curated_compilation_record, strict_comparison_ready, row_hash, payload_json
+    author_curated_compilation_record, strict_comparison_ready, specimen_id,
+    sample_batch_id, specimen_linkage, density_basis, cross_section_method,
+    normalization_basis, value_bound_type, comparability_model_version, row_hash, payload_json
   )
   SELECT
     x.record_id, x.release_id, x.publication_id, x.doi_verified, x.record_label, x.sample_name,
     x.material_family, x.form_factor, x.cnt_type, x.public_release_tier, x.source_citation_class,
     x.dataset_provenance, x.primary_source_verification_status, x.publication_year,
     x.peer_reviewed_measurement, x.contextual_benchmark, x.commercial_specsheet_benchmark,
-    x.author_curated_compilation_record, x.strict_comparison_ready, x.row_hash, x.payload_json
+    x.author_curated_compilation_record, x.strict_comparison_ready, x.specimen_id,
+    x.sample_batch_id, x.specimen_linkage, x.density_basis, x.cross_section_method,
+    x.normalization_basis, x.value_bound_type, x.comparability_model_version, x.row_hash, x.payload_json
   FROM jsonb_to_recordset($1::jsonb) AS x(
     record_id text, release_id text, publication_id text, doi_verified text,
     record_label text, sample_name text, material_family text, form_factor text,
@@ -322,23 +368,48 @@ const INSERT_RECORDS = `
     dataset_provenance text, primary_source_verification_status text, publication_year integer,
     peer_reviewed_measurement boolean, contextual_benchmark boolean,
     commercial_specsheet_benchmark boolean, author_curated_compilation_record boolean,
-    strict_comparison_ready boolean, row_hash text, payload_json jsonb
+    strict_comparison_ready boolean, specimen_id text, sample_batch_id text,
+    specimen_linkage text, density_basis text, cross_section_method text,
+    normalization_basis text, value_bound_type text, comparability_model_version text,
+    row_hash text, payload_json jsonb
   )
 `;
 
 const INSERT_MEASUREMENTS = `
   INSERT INTO atlas_canonical_measurements (
     measurement_id, release_id, record_id, property, value_canonical, unit_canonical,
+    reported_value, reported_unit, statistic_type, uncertainty_type,
+    uncertainty_value_reported, uncertainty_value_canonical, sample_size_n,
+    test_standard, specimen_id, sample_batch_id, specimen_linkage, measurement_set_id,
+    measurement_direction, density_basis, density_value_kg_m3, density_source_locator,
+    cross_section_method, normalization_basis, value_bound_type, derivation_formula,
+    derivation_inputs_json, reported_or_derived, source_locator, extraction_method,
     measurement_warning, strict_plot_eligible, normalized_plot_eligible,
     exploratory_plot_eligible, row_hash, payload_json
   )
   SELECT
     x.measurement_id, x.release_id, x.record_id, x.property, x.value_canonical,
-    x.unit_canonical, x.measurement_warning, x.strict_plot_eligible,
+    x.unit_canonical, x.reported_value, x.reported_unit, x.statistic_type,
+    x.uncertainty_type, x.uncertainty_value_reported, x.uncertainty_value_canonical,
+    x.sample_size_n, x.test_standard, x.specimen_id, x.sample_batch_id,
+    x.specimen_linkage, x.measurement_set_id, x.measurement_direction,
+    x.density_basis, x.density_value_kg_m3, x.density_source_locator,
+    x.cross_section_method, x.normalization_basis, x.value_bound_type,
+    x.derivation_formula, x.derivation_inputs_json, x.reported_or_derived,
+    x.source_locator, x.extraction_method,
+    x.measurement_warning, x.strict_plot_eligible,
     x.normalized_plot_eligible, x.exploratory_plot_eligible, x.row_hash, x.payload_json
   FROM jsonb_to_recordset($1::jsonb) AS x(
     measurement_id text, release_id text, record_id text, property text,
-    value_canonical double precision, unit_canonical text, measurement_warning text,
+    value_canonical double precision, unit_canonical text, reported_value double precision,
+    reported_unit text, statistic_type text, uncertainty_type text,
+    uncertainty_value_reported double precision, uncertainty_value_canonical double precision,
+    sample_size_n integer, test_standard text, specimen_id text, sample_batch_id text,
+    specimen_linkage text, measurement_set_id text, measurement_direction text,
+    density_basis text, density_value_kg_m3 double precision, density_source_locator text,
+    cross_section_method text, normalization_basis text, value_bound_type text,
+    derivation_formula text, derivation_inputs_json jsonb, reported_or_derived text,
+    source_locator text, extraction_method text, measurement_warning text,
     strict_plot_eligible boolean, normalized_plot_eligible boolean,
     exploratory_plot_eligible boolean, row_hash text, payload_json jsonb
   )

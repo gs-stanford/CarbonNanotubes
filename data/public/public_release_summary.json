@@ -1,16 +1,16 @@
 {
   "records_assessed": 1556,
-  "public_records": 1366,
-  "public_measurements": 5344,
+  "public_records": 1363,
+  "public_measurements": 5337,
   "public_publications": 271,
-  "excluded_records": 190,
+  "excluded_records": 193,
   "public_records_by_tier": {
-    "peer_reviewed_research": 1022,
+    "peer_reviewed_research": 1019,
     "peer_reviewed_contextual_comparator": 281,
     "commercial_contextual_comparator": 63
   },
   "public_records_by_material_family": {
-    "CNT_or_CNT_hybrid": 990,
+    "CNT_or_CNT_hybrid": 987,
     "other_carbon_comparator": 102,
     "carbon_fiber_comparator": 100,
     "polymer_fiber_comparator": 94,
@@ -20,19 +20,19 @@
     "ceramic_or_glass_comparator": 4
   },
   "public_records_by_form_factor": {
-    "fiber_yarn": 841,
+    "fiber_yarn": 838,
     "sheet_mat_film": 298,
     "individual_nanotube_or_bundle": 96,
     "forest_array": 66,
     "buckypaper": 65
   },
   "public_measurements_by_property": {
-    "electrical_conductivity": 986,
-    "tensile_strength": 579,
+    "electrical_conductivity": 984,
+    "tensile_strength": 576,
     "density": 536,
     "specific_volume": 536,
     "diameter": 438,
-    "specific_electrical_conductivity": 408,
+    "specific_electrical_conductivity": 406,
     "initial_modulus": 398,
     "specific_strength": 391,
     "g_d_ratio": 371,
@@ -44,18 +44,37 @@
     "linear_density": 55,
     "work_of_rupture": 47
   },
+  "public_records_by_source_file": {
+    "20210409_Metaanalysis_database.xlsx": 1238,
+    "New G fibre table Juan.xlsx": 3,
+    "RadarFigureSource.xlsx": 24,
+    "XiaO_DATA.xlsx": 90,
+    "literature_addendum_records.tsv": 8
+  },
+  "public_records_by_dataset_provenance": {
+    "author_curated_published_compilation": 1238,
+    "source_table_or_direct_extraction": 125
+  },
+  "public_records_by_value_extraction_type": {
+    "author_curated_compilation": 1238,
+    "direct_or_source_table": 125
+  },
+  "public_records_by_primary_source_verification_status": {
+    "not_assessed": 117,
+    "verified_against_primary_source": 1246
+  },
   "excluded_records_by_reason": {
     "duplicate_collapsed_into_canonical_public_record": 100,
-    "internal_seed_or_unresolved_source": 79,
+    "internal_seed_or_unresolved_source": 78,
+    "no_canonical_measurements": 8,
     "duplicate_of_higher_priority_record": 5,
-    "no_canonical_measurements": 5,
-    "no_canonical_measurements;internal_seed_or_unresolved_source": 1
+    "no_canonical_measurements;internal_seed_or_unresolved_source": 2
   },
-  "strict_comparison_ready_records": 3,
-  "records_requiring_missing_condition_warning": 513,
+  "strict_comparison_ready_records": 0,
+  "records_requiring_missing_condition_warning": 510,
   "records_requiring_unit_inference_warning": 65,
   "commercial_or_specsheet_benchmark_records": 73,
-  "peer_reviewed_measurement_records": 55,
+  "peer_reviewed_measurement_records": 52,
   "contextual_benchmark_records": 344,
   "author_curated_compilation_records": 1238,
   "primary_source_verified_compilation_records": 1238,
@@ -68,6 +87,7 @@
     "public_duplicate_audit_v0.csv",
     "public_exclusions_v0.csv",
     "public_measurements_v0.csv",
+    "public_provenance_census_v0.csv",
     "public_publications_v0.csv",
     "public_records_v0.csv",
     "public_release_summary.json",

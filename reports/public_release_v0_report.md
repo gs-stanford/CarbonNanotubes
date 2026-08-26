@@ -11,6 +11,7 @@ Generated from the internal processed and curation tables.
 | `data/public/public_publications_v0.csv` | Source/publication rows referenced by public candidate records. |
 | `data/public/public_exclusions_v0.csv` | Internal records excluded from public v0 with explicit reasons. |
 | `data/public/public_schema_v0.csv` | Field descriptions for public release flags. |
+| `data/public/public_provenance_census_v0.csv` | Record, publication, and measurement counts by source and verification path. |
 | `data/public/public_release_summary.json` | Machine-readable counts and release-rule summary. |
 
 ## Release Rules
@@ -25,18 +26,18 @@ Generated from the internal processed and curation tables.
 ## Counts
 
 - Internal records assessed: 1556
-- Public candidate records: 1366
-- Public candidate measurements: 5344
+- Public candidate records: 1363
+- Public candidate measurements: 5337
 - Public source/publication rows: 271
-- Excluded internal records: 190
-- Strict-comparison-ready records: 3
-- Normalized/exploratory candidate records: 1366/1366
+- Excluded internal records: 193
+- Strict-comparison-ready records: 0
+- Normalized/exploratory candidate records: 1363/1363
 
 ## Public Records By Tier
 
 | Tier | Records |
 | --- | ---: |
-| `peer_reviewed_research` | 1022 |
+| `peer_reviewed_research` | 1019 |
 | `peer_reviewed_contextual_comparator` | 281 |
 | `commercial_contextual_comparator` | 63 |
 
@@ -44,7 +45,7 @@ Generated from the internal processed and curation tables.
 
 | Material family | Records |
 | --- | ---: |
-| `CNT_or_CNT_hybrid` | 990 |
+| `CNT_or_CNT_hybrid` | 987 |
 | `other_carbon_comparator` | 102 |
 | `carbon_fiber_comparator` | 100 |
 | `polymer_fiber_comparator` | 94 |
@@ -58,10 +59,10 @@ Generated from the internal processed and curation tables.
 | Reason | Records |
 | --- | ---: |
 | `duplicate_collapsed_into_canonical_public_record` | 100 |
-| `internal_seed_or_unresolved_source` | 79 |
+| `internal_seed_or_unresolved_source` | 78 |
+| `no_canonical_measurements` | 8 |
 | `duplicate_of_higher_priority_record` | 5 |
-| `no_canonical_measurements` | 5 |
-| `no_canonical_measurements;internal_seed_or_unresolved_source` | 1 |
+| `no_canonical_measurements;internal_seed_or_unresolved_source` | 2 |
 
 ## Interpretation
 

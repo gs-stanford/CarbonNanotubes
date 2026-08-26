@@ -48,6 +48,17 @@ export type AdminSubmissionPatch = {
     | "cnt_type"
     | "synthesis_method"
     | "postprocessing"
+    | "test_standard"
+    | "specimen_id"
+    | "sample_batch_id"
+    | "specimen_linkage"
+    | "measurement_direction"
+    | "density_basis"
+    | "cross_section_method"
+    | "normalization_basis"
+    | "value_bound_type"
+    | "statistic_type"
+    | "sample_size_n"
     | "public_release_tier"
     | "default_plot_visibility"
     | "public_plot_badge"
@@ -132,7 +143,7 @@ function assertAcceptedSubmission(value: unknown): CommunityAcceptedSubmission |
 
 function normalizeAcceptedSubmission(row: StoredSubmissionRow, measurements: unknown[]): CommunityAcceptedSubmission | null {
   const candidate = assertAcceptedSubmission({
-    schema_version: "cnt-property-atlas-community-v0.1",
+    schema_version: "carbon-property-tables-community-v0.2",
     submission_id: row.submission_id,
     accepted_at: typeof row.accepted_at === "string" ? row.accepted_at : row.accepted_at.toISOString(),
     duplicate_check: row.duplicate_check,
@@ -164,12 +175,51 @@ function normalizeAcceptedSubmission(row: StoredSubmissionRow, measurements: unk
       primary_source_verification_status: legacyRecord.primary_source_verification_status
         ?? (authorCurated ? "verified_against_primary_source" : "submitter_claimed_pending_curator_check"),
       author_curated_compilation_record: authorCurated,
+      test_standard: legacyRecord.test_standard ?? null,
+      specimen_id: legacyRecord.specimen_id ?? null,
+      sample_batch_id: legacyRecord.sample_batch_id ?? null,
+      specimen_linkage: legacyRecord.specimen_linkage ?? "unknown",
+      measurement_direction: legacyRecord.measurement_direction ?? null,
+      density_basis: legacyRecord.density_basis ?? "unknown",
+      cross_section_method: legacyRecord.cross_section_method ?? null,
+      normalization_basis: legacyRecord.normalization_basis ?? "unknown",
+      value_bound_type: legacyRecord.value_bound_type ?? "unspecified",
+      statistic_type: legacyRecord.statistic_type ?? "unspecified",
+      sample_size_n: legacyRecord.sample_size_n ?? null,
+      comparability_model_version: legacyRecord.comparability_model_version ?? "cpt-property-pair-v1",
       compilation_source_doi_raw: legacyRecord.compilation_source_doi_raw ?? legacyRecord.secondary_source_doi_raw ?? null,
       compilation_source_title: legacyRecord.compilation_source_title ?? legacyRecord.secondary_source_title ?? null,
       compilation_source_authors_short: legacyRecord.compilation_source_authors_short ?? legacyRecord.secondary_source_authors_short ?? null,
       compilation_source_journal: legacyRecord.compilation_source_journal ?? legacyRecord.secondary_source_journal ?? null,
       compilation_source_year: legacyRecord.compilation_source_year ?? legacyRecord.secondary_source_year ?? null
-    }
+    },
+    measurements: candidate.measurements.map((measurement) => ({
+      ...measurement,
+      reported_value: measurement.reported_value ?? null,
+      reported_unit: measurement.reported_unit ?? null,
+      statistic_type: measurement.statistic_type ?? "unspecified",
+      uncertainty_type: measurement.uncertainty_type ?? "not_reported",
+      uncertainty_value_reported: measurement.uncertainty_value_reported ?? null,
+      uncertainty_value_canonical: measurement.uncertainty_value_canonical ?? null,
+      sample_size_n: measurement.sample_size_n ?? null,
+      test_standard: measurement.test_standard ?? null,
+      specimen_id: measurement.specimen_id ?? null,
+      sample_batch_id: measurement.sample_batch_id ?? null,
+      specimen_linkage: measurement.specimen_linkage ?? "unknown",
+      measurement_set_id: measurement.measurement_set_id ?? null,
+      measurement_direction: measurement.measurement_direction ?? null,
+      density_basis: measurement.density_basis ?? "unknown",
+      density_value_kg_m3: measurement.density_value_kg_m3 ?? null,
+      density_source_locator: measurement.density_source_locator ?? null,
+      cross_section_method: measurement.cross_section_method ?? null,
+      normalization_basis: measurement.normalization_basis ?? "unknown",
+      value_bound_type: measurement.value_bound_type ?? "unspecified",
+      derivation_formula: measurement.derivation_formula ?? null,
+      derivation_inputs_json: measurement.derivation_inputs_json ?? null,
+      reported_or_derived: measurement.reported_or_derived ?? "reported",
+      source_locator: measurement.source_locator ?? null,
+      extraction_method: measurement.extraction_method ?? null
+    }))
   };
 }
 
@@ -239,6 +289,16 @@ const RECORD_STRING_PATCH_FIELDS = [
   "cnt_type",
   "synthesis_method",
   "postprocessing",
+  "test_standard",
+  "specimen_id",
+  "sample_batch_id",
+  "specimen_linkage",
+  "measurement_direction",
+  "density_basis",
+  "cross_section_method",
+  "normalization_basis",
+  "value_bound_type",
+  "statistic_type",
   "public_release_tier",
   "default_plot_visibility",
   "public_plot_badge",
@@ -278,6 +338,10 @@ function sanitizeRecordPatch(record: PublicRecord, patch: AdminSubmissionPatch["
     if (typeof value === "boolean") {
       writableNext[key] = value;
     }
+  }
+
+  if (typeof patch.sample_size_n === "number" && Number.isInteger(patch.sample_size_n) && patch.sample_size_n > 0) {
+    next.sample_size_n = patch.sample_size_n;
   }
 
   if (typeof patch.public_sample_label === "string") {
@@ -686,9 +750,36 @@ export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmis
               property,
               value_canonical,
               unit_canonical,
+              reported_value,
+              reported_unit,
+              statistic_type,
+              uncertainty_type,
+              uncertainty_value_reported,
+              uncertainty_value_canonical,
+              sample_size_n,
+              test_standard,
+              specimen_id,
+              sample_batch_id,
+              specimen_linkage,
+              measurement_direction,
+              density_basis,
+              density_value_kg_m3,
+              density_source_locator,
+              cross_section_method,
+              normalization_basis,
+              value_bound_type,
+              derivation_formula,
+              derivation_inputs_json,
+              reported_or_derived,
+              source_locator,
+              extraction_method,
               measurement_json
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)
+            VALUES (
+              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+              $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
+              $25, $26::jsonb, $27, $28, $29, $30::jsonb
+            )
             ON CONFLICT (measurement_id) DO NOTHING
           `,
           [
@@ -698,6 +789,29 @@ export async function saveAcceptedSubmission(submission: CommunityAcceptedSubmis
             measurement.property,
             measurement.value_canonical,
             measurement.unit_canonical,
+            measurement.reported_value,
+            measurement.reported_unit,
+            measurement.statistic_type,
+            measurement.uncertainty_type,
+            measurement.uncertainty_value_reported,
+            measurement.uncertainty_value_canonical,
+            measurement.sample_size_n,
+            measurement.test_standard,
+            measurement.specimen_id,
+            measurement.sample_batch_id,
+            measurement.specimen_linkage,
+            measurement.measurement_direction,
+            measurement.density_basis,
+            measurement.density_value_kg_m3,
+            measurement.density_source_locator,
+            measurement.cross_section_method,
+            measurement.normalization_basis,
+            measurement.value_bound_type,
+            measurement.derivation_formula,
+            measurement.derivation_inputs_json,
+            measurement.reported_or_derived,
+            measurement.source_locator,
+            measurement.extraction_method,
             JSON.stringify(measurement)
           ]
         );

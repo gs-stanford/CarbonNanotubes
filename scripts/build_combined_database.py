@@ -157,6 +157,28 @@ RAW_MEASUREMENT_FIELDS = {
     "ampacity_A_m2_raw",
 }
 
+STRICTLY_POSITIVE_CANONICAL_FIELDS = {
+    "density_kg_m3",
+    "specific_volume_cm3_g",
+    "specific_volume_m3_kg",
+    "diameter_m",
+    "linear_density_kg_m",
+    "specific_strength_N_m_kg",
+    "tensile_strength_GPa",
+    "tensile_strength_Pa",
+    "specific_modulus_N_m_kg",
+    "initial_modulus_GPa",
+    "initial_modulus_Pa",
+    "breaking_strain_fraction",
+    "rupture_work_J_kg",
+    "electrical_conductivity_S_m",
+    "specific_electrical_conductivity_S_m2_kg",
+    "thermal_conductivity_W_mK",
+    "specific_thermal_conductivity_W_m2_K_kg",
+    "g_d_ratio",
+    "ampacity_A_m2",
+}
+
 
 XIAO_COLUMNS = [
     "record_label",
@@ -655,8 +677,19 @@ def base_record(source_file: str, source_sheet: str, source_row: int, label: Any
         "condition_temperature_C": None,
         "condition_atmosphere": None,
         "measurement_method": None,
+        "test_standard": None,
         "gauge_length_mm": None,
         "strain_rate_s_inv": None,
+        "specimen_id": None,
+        "sample_batch_id": None,
+        "specimen_linkage": None,
+        "measurement_direction": None,
+        "density_basis": "unknown",
+        "cross_section_method": None,
+        "normalization_basis": "unknown",
+        "value_bound_type": "unspecified",
+        "statistic_type": "unspecified",
+        "sample_size_n": None,
         "provenance_table_figure_page": None,
         "source_export": {
             "literature_addendum_records.tsv": "manual literature addendum from local PDFs",
@@ -809,6 +842,24 @@ def has_reported_value(value: Any) -> bool:
     if text is None:
         return False
     return str(text).strip().lower() not in {"not specified", "not reported", "unknown", "na", "n/a"}
+
+
+def remove_nonpositive_placeholders(record: dict[str, Any]) -> list[dict[str, Any]]:
+    findings: list[dict[str, Any]] = []
+    for field in STRICTLY_POSITIVE_CANONICAL_FIELDS:
+        value = to_float(record.get(field))
+        if value is None or value > 0:
+            continue
+        record[field] = None
+        findings.append(
+            issue(
+                record,
+                "nonpositive_measurement_placeholder_excluded",
+                field,
+                f"Nonpositive value {value:g} cannot represent this material property and was treated as missing.",
+            )
+        )
+    return findings
 
 
 def issue(record: dict[str, Any], issue_type: str, field: str, message: str) -> dict[str, Any]:
@@ -1035,8 +1086,19 @@ def read_literature_addendum() -> list[dict[str, Any]]:
                 "condition_temperature_C": to_float(raw.get("condition_temperature_C")),
                 "condition_atmosphere": clean(raw.get("condition_atmosphere")),
                 "measurement_method": clean(raw.get("measurement_method")),
+                "test_standard": clean(raw.get("test_standard")),
                 "gauge_length_mm": to_float(raw.get("gauge_length_mm")),
                 "strain_rate_s_inv": to_float(raw.get("strain_rate_s_inv")),
+                "specimen_id": clean(raw.get("specimen_id")),
+                "sample_batch_id": clean(raw.get("sample_batch_id")),
+                "specimen_linkage": clean(raw.get("specimen_linkage")),
+                "measurement_direction": clean(raw.get("measurement_direction")),
+                "density_basis": clean(raw.get("density_basis")) or "unknown",
+                "cross_section_method": clean(raw.get("cross_section_method")),
+                "normalization_basis": clean(raw.get("normalization_basis")) or "unknown",
+                "value_bound_type": clean(raw.get("value_bound_type")) or "unspecified",
+                "statistic_type": clean(raw.get("statistic_type")) or "unspecified",
+                "sample_size_n": to_float(raw.get("sample_size_n")),
                 "provenance_table_figure_page": clean(raw.get("provenance_table_figure_page")),
                 "source_export": clean(raw.get("source_export")) or "manual literature addendum from local PDFs",
                 "extraction_method": clean(raw.get("extraction_method")) or "manual_literature_extract",
@@ -1068,7 +1130,20 @@ def read_literature_addendum() -> list[dict[str, Any]]:
             "thermal_conductivity_W_mK_raw",
             "g_d_ratio_raw",
             "ampacity_A_cm2_raw",
+            "ampacity_A_m2_raw",
             "ampacity_gauge_length_mm",
+            "density_g_cm3_error_raw",
+            "diameter_um_error_raw",
+            "linear_density_tex_error_raw",
+            "tenacity_N_tex_error_raw",
+            "tensile_strength_GPa_error_raw",
+            "initial_modulus_N_tex_error_raw",
+            "initial_modulus_GPa_error_raw",
+            "breaking_strain_pct_error_raw",
+            "rupture_work_J_g_error_raw",
+            "electrical_conductivity_S_cm_error_raw",
+            "electrical_conductivity_MS_m_error_raw",
+            "thermal_conductivity_W_mK_error_raw",
         ]:
             record[field] = to_float(raw.get(field))
         records.append(record)
@@ -1296,6 +1371,135 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
     return issues
 
 
+def measurement_source_metadata(record: dict[str, Any], prop: str) -> dict[str, Any]:
+    """Preserve source-scale values without claiming unreported precision."""
+    candidates: dict[str, list[tuple[str, str, float, str | None]]] = {
+        "density": [("density_g_cm3_raw", "g/cm^3", 1e3, "density_g_cm3_error_raw")],
+        "specific_volume": [("specific_volume_cm3_g_raw", "cm^3/g", 1e-3, None)],
+        "diameter": [("diameter_um_raw", "um", 1e-6, "diameter_um_error_raw")],
+        "linear_density": [("linear_density_tex_raw", "tex", 1e-6, "linear_density_tex_error_raw")],
+        "specific_strength": [("tenacity_N_tex_raw", "N/tex", 1e6, "tenacity_N_tex_error_raw")],
+        "specific_modulus": [("initial_modulus_N_tex_raw", "N/tex", 1e6, "initial_modulus_N_tex_error_raw")],
+        "initial_modulus": [("initial_modulus_GPa_raw", "GPa", 1e9, "initial_modulus_GPa_error_raw")],
+        "breaking_strain": [("breaking_strain_pct_raw", "%", 1e-2, "breaking_strain_pct_error_raw")],
+        "work_of_rupture": [("rupture_work_J_g_raw", "J/g", 1e3, "rupture_work_J_g_error_raw")],
+        "electrical_conductivity": [
+            ("electrical_conductivity_MS_m_raw", "MS/m", 1e6, "electrical_conductivity_MS_m_error_raw"),
+            ("electrical_conductivity_S_cm_raw", "S/cm", 1e2, "electrical_conductivity_S_cm_error_raw"),
+        ],
+        "specific_electrical_conductivity": [
+            ("specific_electrical_conductivity_MS_m2_g_raw", "kS m^2/kg", 1e3, None)
+        ],
+        "thermal_conductivity": [
+            ("thermal_conductivity_W_mK_raw", "W/(m K)", 1.0, "thermal_conductivity_W_mK_error_raw")
+        ],
+        "g_d_ratio": [("g_d_ratio_raw", "ratio", 1.0, None)],
+        "ampacity": [
+            ("ampacity_A_m2_raw", "A/m^2", 1.0, None),
+            ("ampacity_A_cm2_raw", "A/cm^2", 1e4, None),
+        ],
+    }
+    density = to_float(record.get("density_kg_m3"))
+    source_locator = clean(record.get("provenance_table_figure_page"))
+    explicit_normalization = clean(record.get("normalization_basis"))
+    explicit_density_basis = clean(record.get("density_basis")) or "unknown"
+    cross_section_method = clean(record.get("cross_section_method"))
+    value_bound_type = clean(record.get("value_bound_type")) or "unspecified"
+
+    if prop == "tensile_strength":
+        raw_value = to_float(record.get("tensile_strength_GPa_raw"))
+        if raw_value is not None:
+            inferred_mpa = clean(record.get("tensile_strength_unit_inference")) == "raw_value_assumed_MPa_due_to_scale"
+            factor = 1e6 if inferred_mpa else 1e9
+            raw_error = to_float(record.get("tensile_strength_GPa_error_raw"))
+            return {
+                "reported_value": raw_value,
+                "reported_unit": "MPa (source scale inferred)" if inferred_mpa else "GPa",
+                "reported_or_derived": "reported_with_unit_inference" if inferred_mpa else "reported",
+                "uncertainty_value_reported": raw_error,
+                "uncertainty_value_canonical": raw_error * factor if raw_error is not None else None,
+                "uncertainty_type": "reported_unspecified" if raw_error is not None else "not_reported",
+                "normalization_basis": "not_applicable",
+                "density_basis": "not_applicable",
+                "density_value_kg_m3": None,
+                "density_source_locator": None,
+                "cross_section_method": cross_section_method,
+                "value_bound_type": value_bound_type,
+                "derivation_formula": None,
+                "derivation_inputs_json": None,
+            }
+    for raw_field, raw_unit, factor, error_field in candidates.get(prop, []):
+        raw_value = to_float(record.get(raw_field))
+        if raw_value is None:
+            continue
+        raw_error = to_float(record.get(error_field)) if error_field else None
+        normalization_basis = explicit_normalization or "not_applicable"
+        if prop in {"specific_strength", "specific_modulus"}:
+            normalization_basis = explicit_normalization or "direct_mass_specific_linear_density"
+        elif prop == "specific_electrical_conductivity":
+            normalization_basis = explicit_normalization or "directly_reported_mass_specific"
+        return {
+            "reported_value": raw_value,
+            "reported_unit": raw_unit,
+            "reported_or_derived": "reported",
+            "uncertainty_value_reported": raw_error,
+            "uncertainty_value_canonical": raw_error * factor if raw_error is not None else None,
+            "uncertainty_type": "reported_unspecified" if raw_error is not None else "not_reported",
+            "normalization_basis": normalization_basis,
+            "density_basis": explicit_density_basis if normalization_basis == "derived_from_density" else "not_applicable",
+            "density_value_kg_m3": density if normalization_basis == "derived_from_density" else None,
+            "density_source_locator": source_locator if normalization_basis == "derived_from_density" else None,
+            "cross_section_method": cross_section_method,
+            "value_bound_type": value_bound_type,
+            "derivation_formula": None,
+            "derivation_inputs_json": None,
+        }
+    derivation_formula = None
+    derivation_inputs = None
+    normalization_basis = explicit_normalization or "not_applicable"
+    density_basis = "not_applicable"
+    density_value = None
+    density_locator = None
+    if prop == "specific_volume" and density is not None:
+        derivation_formula = "specific_volume_m3_kg = 1 / density_kg_m3"
+        derivation_inputs = {"density_kg_m3": density}
+        normalization_basis = "derived_from_density"
+    elif prop == "specific_electrical_conductivity" and density is not None:
+        derivation_formula = "specific_electrical_conductivity_S_m2_kg = electrical_conductivity_S_m / density_kg_m3"
+        derivation_inputs = {
+            "electrical_conductivity_S_m": to_float(record.get("electrical_conductivity_S_m")),
+            "density_kg_m3": density,
+        }
+        normalization_basis = "derived_from_density"
+    elif prop == "specific_thermal_conductivity" and density is not None:
+        derivation_formula = "specific_thermal_conductivity_W_m2_K_kg = thermal_conductivity_W_mK / density_kg_m3"
+        derivation_inputs = {
+            "thermal_conductivity_W_mK": to_float(record.get("thermal_conductivity_W_mK")),
+            "density_kg_m3": density,
+        }
+        normalization_basis = "derived_from_density"
+    if normalization_basis == "derived_from_density":
+        density_basis = explicit_density_basis
+        density_value = density
+        density_locator = source_locator
+    return {
+        "reported_value": None,
+        "reported_unit": None,
+        "reported_or_derived": "derived",
+        "uncertainty_value_reported": None,
+        "uncertainty_value_canonical": None,
+        "uncertainty_type": "not_reported",
+        "normalization_basis": normalization_basis,
+        "density_basis": density_basis,
+        "density_value_kg_m3": density_value,
+        "density_source_locator": density_locator,
+        "cross_section_method": cross_section_method,
+        "value_bound_type": value_bound_type,
+        "derivation_formula": derivation_formula,
+        "derivation_inputs_json": json.dumps(derivation_inputs, sort_keys=True) if derivation_inputs else None,
+    }
+
+
 def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
     definitions = [
         ("density", "density_kg_m3", "kg/m^3"),
@@ -1317,10 +1521,21 @@ def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
     ]
     rows = []
     for record in records:
+        available = [
+            prop
+            for prop, field, _ in definitions
+            if (to_float(record.get(field)) is not None and to_float(record.get(field)) > 0)
+        ]
+        if not clean(record.get("specimen_linkage")):
+            record["specimen_linkage"] = (
+                "single_source_row_unverified" if len(available) > 1 else "not_applicable_single_property"
+            )
+        measurement_set_id = stable_id("mset", record["record_id"])
         for prop, field, unit in definitions:
-            value = record.get(field)
-            if value is None or pd.isna(value):
+            value = to_float(record.get(field))
+            if value is None or value <= 0:
                 continue
+            source_meta = measurement_source_metadata(record, prop)
             rows.append(
                 {
                     "measurement_id": stable_id("meas", record["record_id"], prop, field),
@@ -1328,6 +1543,17 @@ def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
                     "property": prop,
                     "value_canonical": value,
                     "unit_canonical": unit,
+                    **source_meta,
+                    "statistic_type": clean(record.get("statistic_type")) or "unspecified",
+                    "sample_size_n": to_float(record.get("sample_size_n")),
+                    "test_standard": clean(record.get("test_standard")),
+                    "specimen_id": clean(record.get("specimen_id")),
+                    "sample_batch_id": clean(record.get("sample_batch_id")),
+                    "specimen_linkage": clean(record.get("specimen_linkage")) or "unknown",
+                    "measurement_set_id": measurement_set_id,
+                    "measurement_direction": clean(record.get("measurement_direction")),
+                    "source_locator": clean(record.get("provenance_table_figure_page")),
+                    "extraction_method": clean(record.get("extraction_method")) or "unknown",
                     "source_file": record["source_file"],
                     "source_sheet": record["source_sheet"],
                     "source_row": record["source_row"],
@@ -1424,7 +1650,7 @@ def data_dictionary() -> pd.DataFrame:
         ("tensile_strength_GPa", "Canonical tensile strength in GPa after scale inference.", "GPa"),
         ("tensile_strength_Pa", "Canonical tensile strength.", "Pa"),
         ("electrical_conductivity_S_m", "Canonical electrical conductivity; S/cm multiplied by 100 or MS/m by 1e6.", "S/m"),
-        ("specific_electrical_conductivity_S_m2_kg", "Electrical conductivity divided by density.", "S m^2/kg"),
+        ("specific_electrical_conductivity_S_m2_kg", "Canonical mass-specific electrical conductivity, either directly reported or deterministically derived as identified by normalization_basis.", "S m^2/kg"),
         ("thermal_conductivity_W_mK", "Thermal conductivity.", "W/m/K"),
         ("specific_thermal_conductivity_W_m2_K_kg", "Thermal conductivity divided by density.", "W m^2/K/kg"),
         ("ampacity_A_m2", "Maximum current density before open circuit/failure.", "A/m^2"),
@@ -1435,6 +1661,18 @@ def data_dictionary() -> pd.DataFrame:
         ("public_status", "Public exposure state. Seed rows are not marked public-official until curation/validation is complete.", ""),
         ("internal_status", "Internal curation state for reference, unit, condition, and value review.", ""),
         ("condition_*", "Nullable measurement-condition metadata. Missing values block strict scientific comparison.", ""),
+        ("specimen_id/sample_batch_id", "Identifiers used to establish whether plotted properties refer to the same physical specimen or batch.", ""),
+        ("specimen_linkage", "Evidence-backed relationship among measurements in one record; legacy multi-property rows default to single_source_row_unverified.", ""),
+        ("normalization_basis", "Whether a specific property was directly mass-normalized, density-derived, linear-density-derived, not applicable, or unknown.", ""),
+        ("density_basis/density_value_kg_m3", "Density convention and numerical density used when a specific property was derived by density normalization.", ""),
+        ("cross_section_method", "Reported method used to determine fiber cross-sectional area, when relevant.", ""),
+        ("value_bound_type", "Point estimate, upper/lower bound, range-derived value, or unspecified.", ""),
+        ("derivation_formula/derivation_inputs_json", "Recomputable deterministic transformation and its canonical inputs; null for directly reported values.", ""),
+        ("reported_value/reported_unit", "Value and unit exactly represented by the source before canonical conversion; null for derived properties.", "source unit"),
+        ("statistic_type/sample_size_n", "Reported statistic basis and sample count; unspecified when the source workbook did not preserve them.", ""),
+        ("uncertainty_*", "Reported uncertainty retained without assuming SD, SE, or confidence interval when the source does not say.", "source and canonical units"),
+        ("test_standard/measurement_direction", "Property-specific test standard and material direction when reported.", ""),
+        ("reported_or_derived", "Whether the canonical value was directly reported, inferred from a source scale, or calculated from other fields.", ""),
         ("publication_year", "Formal citation year when known.", "year"),
         ("publication_published_date", "Online/version-of-record publication date when known.", "date"),
         ("annual_progression", "Separate derived plot-series table from RadarFigureSource/FibersStrengthYr.", ""),
@@ -1458,11 +1696,13 @@ def main() -> None:
     all_issues: list[dict[str, Any]] = []
     for record in records:
         all_issues.extend(finalize_units(record))
+        all_issues.extend(remove_nonpositive_placeholders(record))
     all_issues.extend(detect_secondary_duplicates(records))
 
+    # build_measurements also assigns conservative linkage defaults to legacy rows.
+    measurements_df = build_measurements(records)
     records_df = pd.DataFrame(records)
     issues_df = pd.DataFrame(all_issues)
-    measurements_df = build_measurements(records)
     publications_df = build_publications(records)
     dictionary_df = data_dictionary()
     excluded_df = pd.DataFrame(EXCLUDED_ROWS)

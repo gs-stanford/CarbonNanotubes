@@ -19,8 +19,8 @@ try {
   const firstImport = await importPublicRelease(database, release, { acquireLock: false });
   assert.equal(firstImport.parity, "exact");
   assert.deepEqual(firstImport.counts, {
-    records: 1366,
-    measurements: 5344,
+    records: 1363,
+    measurements: 5337,
     publications: 271
   });
 
@@ -34,8 +34,8 @@ try {
       (SELECT count(*)::integer FROM atlas_canonical_publications) AS publications
   `);
   assert.deepEqual(countResult.rows[0], {
-    records: 1366,
-    measurements: 5344,
+    records: 1363,
+    measurements: 5337,
     publications: 271
   });
 
