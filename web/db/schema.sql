@@ -171,7 +171,7 @@ BEGIN
           normalization_basis <> 'derived_from_density'
           OR (density_value_kg_m3 > 0 AND derivation_formula IS NOT NULL AND derivation_inputs_json IS NOT NULL)
         )
-      );
+      ) NOT VALID;
   END IF;
 END
 $$;
@@ -312,7 +312,7 @@ BEGIN
           normalization_basis <> 'derived_from_density'
           OR (density_value_kg_m3 > 0 AND derivation_formula IS NOT NULL AND derivation_inputs_json IS NOT NULL)
         )
-      );
+      ) NOT VALID;
   END IF;
 END
 $$;

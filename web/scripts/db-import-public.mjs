@@ -587,6 +587,9 @@ export async function importPublicRelease(client, release, options = {}) {
     await client.query("UPDATE atlas_dataset_releases SET active = true WHERE release_id = $1", [manifest.releaseId]);
 
     const verification = await verifyPublicRelease(client, manifest);
+    await client.query(
+      "ALTER TABLE atlas_canonical_measurements VALIDATE CONSTRAINT atlas_canonical_measurements_scientific_domain_check"
+    );
     await client.query("COMMIT");
     return verification;
   } catch (error) {
