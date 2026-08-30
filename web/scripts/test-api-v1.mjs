@@ -146,9 +146,11 @@ assert.ok(!figure.images.svg.includes("data-record-id="));
 assert.ok(!figure.images.svg.includes("plot-watermark"));
 assert.ok(figure.images.svg.includes('baseline-shift="super"'));
 assert.ok(
-  figure.images.svg.includes('class="plot-point point-material-cnt point-shape-circle quality-'),
+  figure.images.svg.includes('class="plot-point point-material-cnt point-shape-circle"'),
   "CNT markers must retain their material color class in exported SVGs."
 );
+assert.ok(!figure.images.svg.includes("quality-"), "Exported SVGs must not expose internal comparison grades.");
+assert.ok(!figure.images.svg.includes("data-comparability-grade"), "Exported SVGs must not expose internal grade metadata.");
 const png = Buffer.from(figure.images.png_base64, "base64");
 assert.ok(png.subarray(0, 8).equals(Buffer.from("89504e470d0a1a0a", "hex")));
 assert.equal(png.readUInt32BE(16), 920);

@@ -1,7 +1,6 @@
 import { stripMarkup } from "@/lib/citations";
 import { PROPERTY_BY_KEY, type PlotRecord, type PropertyKey, type ScaleMode } from "@/lib/data";
 import type { FigureKind, FigureTemporaryPoint } from "@/lib/figure-api";
-import type { ComparabilityGrade } from "@/lib/comparability";
 import { FIGURE_SVG_CSS } from "@/lib/figure-style";
 
 export type FigureReferenceLine = {
@@ -22,12 +21,9 @@ export type SvgFigureOptions = {
   temporary: FigureTemporaryPoint | null;
   referenceLines: FigureReferenceLine[];
   interactive: boolean;
-  comparabilityGrades: Map<string, ComparabilityGrade>;
   documentMetadata: {
     releaseId: string;
     sourceHash: string | null;
-    comparabilityModel: string;
-    comparabilityDisclosure: string;
   };
 };
 
@@ -291,21 +287,19 @@ function pointMarkup(record: PlotRecord, x: number, y: number, options: SvgFigur
   const fill = shape === "open-circle" ? "#ffffff" : color.fill;
   const selected = options.interactive && record.record_id === options.selectedId;
   const highlighted = options.interactive && options.highlightedIds.has(record.record_id);
-  const grade = options.comparabilityGrades.get(record.record_id) ?? "D";
   const radius = record.public_release_tier === "peer_reviewed_research" ? 4.4 : 4;
   const pointClasses = [
     "plot-point",
     FAMILY_POINT_CLASSES[record.material_family] ?? "point-material-unknown",
     `point-shape-${shape}`,
-    `quality-${grade.toLowerCase()}`,
     selected ? "is-selected" : "",
     highlighted ? "is-search-match" : ""
   ]
     .filter(Boolean)
     .join(" ");
   const attributes = options.interactive
-    ? `class="${pointClasses}" data-record-id="${xml(record.record_id)}" data-comparability-grade="${grade}" role="button" tabindex="0" aria-label="${xml(record.public_sample_label || record.record_label)}; comparison grade ${grade}"`
-    : `class="${pointClasses}" data-comparability-grade="${grade}"`;
+    ? `class="${pointClasses}" data-record-id="${xml(record.record_id)}" role="button" tabindex="0" aria-label="${xml(record.public_sample_label || record.record_label)}"`
+    : `class="${pointClasses}"`;
   const layers = [
     highlighted ? `<circle class="search-highlight-halo" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="12" fill="none" stroke="#00a6a6" stroke-width="3.4" opacity="0.88"/>` : "",
     selected ? `<circle class="selected-halo" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="9.5" fill="none" stroke="#126f6d" stroke-width="1.8"/>` : "",
@@ -323,7 +317,7 @@ function activeKeys(records: PlotRecord[], getter: (record: PlotRecord) => strin
   return [...order.filter((key) => active.has(key)), ...[...active].filter((key) => !order.includes(key)).sort()];
 }
 
-function renderLegend(records: PlotRecord[], comparabilityGrades: Map<string, ComparabilityGrade>): { markup: string; bottom: number } {
+function renderLegend(records: PlotRecord[]): { markup: string; bottom: number } {
   const familyKeys = activeKeys(records, (record) => record.material_family, FAMILY_ORDER);
   const formKeys = activeKeys(records, (record) => record.form_factor, FORM_ORDER);
   let y = 28;
@@ -355,13 +349,6 @@ function renderLegend(records: PlotRecord[], comparabilityGrades: Map<string, Co
     key,
     label: FORM_LABELS[key] ?? key,
     symbol: (x, itemY) => legendSymbol(markerShape({ form_factor: key } as PlotRecord), x, itemY)
-  })));
-  const activeGrades = (["A", "B", "C", "D"] as ComparabilityGrade[])
-    .filter((grade) => records.some((record) => comparabilityGrades.get(record.record_id) === grade));
-  renderRow("EVIDENCE", activeGrades.map((grade) => ({
-    key: grade,
-    label: ({ A: "A paired + complete", B: "B qualified", C: "C exploratory", D: "D context-only" } as const)[grade],
-    symbol: (x, itemY) => `<circle class="plot-point quality-${grade.toLowerCase()}" cx="${x}" cy="${itemY}" r="3.7" fill="#646c64" stroke="#303530"/>`
   })));
   return { markup: `<g class="export-legend">${rows.join("")}</g>`, bottom: y };
 }
@@ -721,18 +708,16 @@ function documentShell(
     producer: "Carbon Property Tables",
     release_id: metadata.releaseId,
     source_hash: metadata.sourceHash,
-    comparability_model: metadata.comparabilityModel,
-    comparability_disclosure: metadata.comparabilityDisclosure,
     citation_policy: "Cite original sources and Carbon Property Tables"
   });
-  return `${interactive ? "" : '<?xml version="1.0" encoding="UTF-8"?>\n'}<svg class="plot-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}"><title>${xml(title)}</title><desc>${xml(metadata.comparabilityDisclosure)} Release ${xml(metadata.releaseId)}. Cite the supplied original sources and Carbon Property Tables.</desc><metadata>${xml(metadataPayload)}</metadata><defs><style>${FIGURE_SVG_CSS}</style><clipPath id="plot-clip"><rect x="${margin.left}" y="${margin.top}" width="${WIDTH - margin.right - margin.left}" height="${HEIGHT - margin.bottom - margin.top}"/></clipPath></defs><rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>${body}${watermark}</svg>`;
+  return `${interactive ? "" : '<?xml version="1.0" encoding="UTF-8"?>\n'}<svg class="plot-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}"><title>${xml(title)}</title><desc>Release ${xml(metadata.releaseId)}. Cite the supplied original sources and Carbon Property Tables.</desc><metadata>${xml(metadataPayload)}</metadata><defs><style>${FIGURE_SVG_CSS}</style><clipPath id="plot-clip"><rect x="${margin.left}" y="${margin.top}" width="${WIDTH - margin.right - margin.left}" height="${HEIGHT - margin.bottom - margin.top}"/></clipPath></defs><rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>${body}${watermark}</svg>`;
 }
 
 function renderScatter(options: SvgFigureOptions): string {
   const xMeta = PROPERTY_BY_KEY.get(options.x);
   const yMeta = PROPERTY_BY_KEY.get(options.y);
   if (!xMeta || !yMeta) throw new Error("Unknown property metadata.");
-  const legend = renderLegend(options.records, options.comparabilityGrades);
+  const legend = renderLegend(options.records);
   const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 14) };
   const xValues = options.records.map((record) => finite(record, options.x)).filter((value): value is number => value !== null);
   const yValues = options.records.map((record) => finite(record, options.y)).filter((value): value is number => value !== null);
@@ -787,7 +772,7 @@ function renderRanked(options: SvgFigureOptions): string {
     })
     .sort((a, b) => (finite(b, options.y) ?? -Infinity) - (finite(a, options.y) ?? -Infinity))
     .slice(0, 18);
-  const legend = renderLegend(plotRecords, options.comparabilityGrades);
+  const legend = renderLegend(plotRecords);
   const margin = { ...BASE_MARGIN, top: Math.max(128, legend.bottom + 36), left: 214, right: 68 };
   const values = [
     ...plotRecords.map((record) => finite(record, options.y) as number),
@@ -840,7 +825,7 @@ function renderTrend(options: SvgFigureOptions): string {
   const yMeta = PROPERTY_BY_KEY.get(options.y);
   if (!yMeta) throw new Error("Unknown property metadata.");
   const records = options.records.filter((record) => record.publication_year_verified !== null && finite(record, options.y) !== null);
-  const legend = renderLegend(records, options.comparabilityGrades);
+  const legend = renderLegend(records);
   const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 14) };
   const years = records.map((record) => record.publication_year_verified as number);
   const yearMinimum = years.length ? Math.max(1991, Math.floor(Math.min(...years) / 5) * 5) : 1991;
