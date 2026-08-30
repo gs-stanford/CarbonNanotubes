@@ -47,7 +47,9 @@ if (
   !exportedSvg.includes("export-legend") ||
   !exportedSvg.includes("COLOR") ||
   !exportedSvg.includes("SHAPE") ||
-  !exportedSvg.includes("EVIDENCE") ||
+  exportedSvg.includes("EVIDENCE") ||
+  exportedSvg.includes("quality-") ||
+  exportedSvg.includes("data-comparability-grade") ||
   !metalCalloutPattern.test(exportedSvg) ||
   unanchoredPointLabelPattern.test(exportedSvg) ||
   exportedSvg.includes("plot-watermark") ||

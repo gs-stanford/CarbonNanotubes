@@ -292,7 +292,6 @@ function renderFigureSvg(
   records: PlotRecord[],
   request: ReturnType<typeof parseRequest>,
   selectedId: string | null,
-  comparability: FigureComparability,
   release: Awaited<ReturnType<typeof getReleaseDescriptor>>
 ): { display: string; exportSvg: string } {
   const common = {
@@ -305,14 +304,9 @@ function renderFigureSvg(
     selectedId,
     highlightedIds: new Set(request.highlight_record_ids),
     temporary: request.temporary ?? null,
-    comparabilityGrades: new Map(
-      Object.values(comparability.points).map((assessment) => [assessment.record_id, assessment.grade])
-    ),
     documentMetadata: {
       releaseId: release.release_id,
-      sourceHash: release.source_hash,
-      comparabilityModel: comparability.model_version,
-      comparabilityDisclosure: comparability.disclosure
+      sourceHash: release.source_hash
     }
   };
   return {
@@ -422,7 +416,7 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
   const selected = requestedSelection ?? defaultSelectedRecord(records, request.x, request.y);
   const citations = citationBundleForRecords(records);
   const selectedTop = topRecords(records, request.x, request.y, Number(request.top ?? 0), (request.top_by ?? "auto") as FigureTopAxis);
-  const rendered = renderFigureSvg(records, request, selected?.record_id ?? null, comparability, release);
+  const rendered = renderFigureSvg(records, request, selected?.record_id ?? null, release);
   const images = await renderBinaryImages(rendered.exportSvg, request.formats ?? ["svg"]);
   const xMeta = PROPERTY_BY_KEY.get(request.x);
   const yMeta = PROPERTY_BY_KEY.get(request.y);

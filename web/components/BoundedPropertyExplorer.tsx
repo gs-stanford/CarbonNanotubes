@@ -5,7 +5,6 @@ import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo
 import { formatAtlasBibtex, formatAtlasCitation, stripMarkup } from "@/lib/citations";
 import type { ExplorerBootstrap, FigureRequest, FigureResponse, FigureTopPoint } from "@/lib/figure-api";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
-import type { ComparabilityGrade } from "@/lib/comparability";
 
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
 type NumericFilterKey = "density" | "diameter" | "gauge_length_mm" | "temperature_C";
@@ -34,23 +33,10 @@ const PLOT_TYPES: Array<{ key: PlotType; label: string }> = [
   { key: "ashby", label: "Ashby" }
 ];
 
-const COMPARABILITY_OPTIONS: Array<{ key: ComparabilityGrade; label: string }> = [
-  { key: "A", label: "A · paired + complete" },
-  { key: "B", label: "B · qualified" },
-  { key: "C", label: "C · exploratory" },
-  { key: "D", label: "D · context-only" }
-];
-
 const TIER_OPTIONS = [
   { key: "peer_reviewed_research", label: "Peer-reviewed research", defaultOn: true },
   { key: "peer_reviewed_contextual_comparator", label: "Peer-reviewed comparators", defaultOn: true },
   { key: "commercial_contextual_comparator", label: "Commercial/spec-sheet", defaultOn: false }
-];
-
-const PROVENANCE_OPTIONS = [
-  { key: "source_table_or_direct_extraction", label: "Direct / source-table records", defaultOn: true },
-  { key: "author_curated_published_compilation", label: "Author-curated compilation", defaultOn: true },
-  { key: "community_submission", label: "Community submissions", defaultOn: true }
 ];
 
 const FAMILY_LABELS: Record<string, string> = {
@@ -178,7 +164,7 @@ function csvCell(value: unknown): string {
 }
 
 function topCsv(rows: FigureTopPoint[]): string {
-  const keys: Array<keyof FigureTopPoint> = ["rank", "label", "material_family", "form_factor", "x_value", "x_unit", "y_value", "y_unit", "comparability_grade", "doi", "publication_title", "publication_year", "citation"];
+  const keys: Array<keyof FigureTopPoint> = ["rank", "label", "material_family", "form_factor", "x_value", "x_unit", "y_value", "y_unit", "doi", "publication_title", "publication_year", "citation"];
   return [keys.join(","), ...rows.map((row) => keys.map((key) => csvCell(row[key])).join(","))].join("\n");
 }
 
@@ -198,10 +184,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const [yScale, setYScale] = useState<ScaleMode>("linear");
   const [plotType, setPlotType] = useState<PlotType>("scatter");
   const [selectedTiers, setSelectedTiers] = useState(() => new Set(TIER_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
-  const [selectedProvenance, setSelectedProvenance] = useState(() => new Set(PROVENANCE_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
   const [selectedFamilies, setSelectedFamilies] = useState(() => new Set(families));
   const [selectedForms, setSelectedForms] = useState(() => new Set(forms));
-  const [selectedGrades, setSelectedGrades] = useState<Set<ComparabilityGrade>>(() => new Set(["A", "B", "C", "D"]));
   const [yearMin, setYearMin] = useState(initialYearMin);
   const [yearMax, setYearMax] = useState(initialYearMax);
   const [numericFilters, setNumericFilters] = useState<NumericFilterState>(() => emptyNumericFilters());
@@ -236,7 +220,6 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const filters = useMemo<Record<string, unknown>>(() => {
     const output: Record<string, unknown> = {
       release_tier: [...selectedTiers],
-      provenance: [...selectedProvenance],
       material_family: [...selectedFamilies],
       form_factor: [...selectedForms],
       year_min: yearMin,
@@ -261,7 +244,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     if (temperatureMin !== null) output.temperature_min_c = temperatureMin;
     if (temperatureMax !== null) output.temperature_max_c = temperatureMax;
     return output;
-  }, [normalized, numericFilters, selectedFamilies, selectedForms, selectedProvenance, selectedTiers, yearMax, yearMin]);
+  }, [normalized, numericFilters, selectedFamilies, selectedForms, selectedTiers, yearMax, yearMin]);
 
   const requestBody = useMemo<FigureRequest>(() => ({
     kind: plotType,
@@ -273,9 +256,9 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     highlight_record_ids: highlightedIds,
     formats: ["svg"],
     top: 0,
-    comparison_grades: [...selectedGrades],
+    comparison_grades: ["A", "B", "C", "D"],
     filters
-  }), [filters, highlightedIds, plotType, selectedGrades, selectedId, xEffective, xKey, yEffective, yKey]);
+  }), [filters, highlightedIds, plotType, selectedId, xEffective, xKey, yEffective, yKey]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -330,7 +313,6 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
 
   const selectedRecord = figure?.selected_record ?? null;
   const counts = figure?.counts;
-  const selectedAssessment = selectedRecord ? figure?.comparability.points[selectedRecord.record_id] ?? null : null;
   const figureTitle = plotType === "trend"
     ? `${yMeta.label} by publication year`
     : plotType === "ranked"
@@ -355,10 +337,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     setYScale("linear");
     setPlotType("scatter");
     setSelectedTiers(new Set(TIER_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
-    setSelectedProvenance(new Set(PROVENANCE_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
     setSelectedFamilies(new Set(families));
     setSelectedForms(new Set(forms));
-    setSelectedGrades(new Set(["A", "B", "C", "D"]));
     setYearMin(initialYearMin);
     setYearMax(initialYearMax);
     setNumericFilters(emptyNumericFilters());
@@ -509,15 +489,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
             </div>
           </section>
 
-          <section className="rail-section"><div className="rail-heading">Point evidence</div>
-            {COMPARABILITY_OPTIONS.map((item) => <label className="check-row compact" key={item.key}><input type="checkbox" checked={selectedGrades.has(item.key)} onChange={() => toggle(item.key, selectedGrades, setSelectedGrades)}/><span className={`quality-key quality-${item.key.toLowerCase()}`}>{item.key}</span><span>{item.label.slice(4)}</span><span className="count">{figure?.comparability.grade_counts[item.key] ?? 0}</span></label>)}
-            <p className="filter-note">Computed for the active properties. Grades do not assert that methods are equivalent across papers.</p>
-          </section>
           <section className="rail-section"><div className="rail-heading">Source class</div>
             {TIER_OPTIONS.map((item) => <label className="check-row" key={item.key}><input type="checkbox" checked={selectedTiers.has(item.key)} onChange={() => toggle(item.key, selectedTiers, setSelectedTiers)}/><span>{item.label}</span><span className="count">{counts?.release_tiers[item.key] ?? 0}</span></label>)}
-          </section>
-          <section className="rail-section"><div className="rail-heading">Data provenance</div>
-            {PROVENANCE_OPTIONS.map((item) => <label className="check-row" key={item.key}><input type="checkbox" checked={selectedProvenance.has(item.key)} onChange={() => toggle(item.key, selectedProvenance, setSelectedProvenance)}/><span>{item.label}</span><span className="count">{counts?.provenance[item.key] ?? 0}</span></label>)}
           </section>
           <section className="rail-section"><div className="rail-heading">Material family</div>
             {familyOptions.map((family) => <label className="check-row compact family-check-row" key={family}><input type="checkbox" checked={selectedFamilies.has(family)} onChange={() => toggle(family, selectedFamilies, setSelectedFamilies)}/><i className={`material-swatch ${MATERIAL_CLASS[family] ?? "material-unknown"}`}/><span>{FAMILY_LABELS[family] ?? family}</span><span className="count">{counts?.material_families[family] ?? 0}</span></label>)}
@@ -533,7 +506,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
 
         <section className="plot-panel" aria-label="Property plot">
           <div className="plot-title-row">
-            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={15}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search DOI, authors, title, keyword" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={13}/></button> : null}</div><p className="plot-search-status">{searching ? "Searching…" : searchQuery.trim() ? `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.` : "Search publication metadata without changing the active figure filters."}</p></div>
+            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={15}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search DOI, authors, title, keyword" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={13}/></button> : null}</div>{searching || searchQuery.trim() ? <p className="plot-search-status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
             <div className="plot-heading"><h2>{figureTitle}</h2><p>Watermark is removed from exported files. Every download includes the active citation set.</p></div>
             <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist">{PLOT_TYPES.map((item) => <button key={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-selected={plotType === item.key} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}>{item.label}</button>)}</div></div>
           </div>
@@ -551,16 +524,15 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
         </section>
 
         <aside className="detail-rail" aria-label="Focused record">
-          <section className="detail-section"><div className="rail-heading">Selected point</div>{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line">{selectedAssessment ? <span className={`tier-badge quality-badge quality-${selectedAssessment.grade.toLowerCase()}`}>evidence grade {selectedAssessment.grade}</span> : null}<span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{selectedRecord.author_curated_compilation_record ? <span className="tier-badge secondary">author-curated compilation</span> : null}{selectedRecord.duplicate_group_id ? <span className="tier-badge primary">canonicalized</span> : null}{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta">Select a plotted marker to inspect its source and reported conditions.</p>}</section>
+          <section className="detail-section"><div className="rail-heading">Selected point</div>{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta">Select a plotted marker to inspect its source and reported conditions.</p>}</section>
           {selectedRecord ? <><section className="detail-section"><div className="rail-heading">Source</div><p className="source-title">{titleFor(selectedRecord)}</p><p className="detail-meta">{selectedRecord.publication_authors_short_verified || "Authors unavailable"}</p><p className="detail-meta">{[selectedRecord.publication_journal_verified, selectedRecord.publication_year_verified].filter(Boolean).join(" / ")}</p>{doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ? <a className="doi-link" href={doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ?? undefined} target="_blank" rel="noreferrer">{selectedRecord.doi_verified || selectedRecord.doi_raw}<ExternalLink size={11}/></a> : <p className="doi-line">Source identifier pending</p>}</section>
           <section className="detail-section"><div className="rail-heading">Measurement conditions</div><dl className="detail-table"><div><dt>Temperature</dt><dd>{selectedRecord.condition_temperature_C !== null ? `${selectedRecord.condition_temperature_C} °C` : "-"}</dd></div><div><dt>Atmosphere</dt><dd>{selectedRecord.condition_atmosphere || "-"}</dd></div><div><dt>Method</dt><dd>{selectedRecord.measurement_method || "-"}</dd></div><div><dt>Gauge length</dt><dd>{selectedRecord.gauge_length_mm !== null ? `${selectedRecord.gauge_length_mm} mm` : "-"}</dd></div><div><dt>Strain rate</dt><dd>{selectedRecord.strain_rate_s_inv !== null ? `${selectedRecord.strain_rate_s_inv} s⁻¹` : "-"}</dd></div></dl></section>
-          {selectedAssessment ? <section className="detail-section"><div className="rail-heading">Active evidence assessment</div><dl className="detail-table"><div><dt>Specimen linkage</dt><dd>{selectedAssessment.specimen_linkage.replaceAll("_", " ")}</dd></div><div><dt>Conditions</dt><dd>{selectedAssessment.condition_status}</dd></div><div><dt>Method metadata</dt><dd>{selectedAssessment.method_status}</dd></div><div><dt>Statistic</dt><dd>{selectedAssessment.statistic_status}</dd></div><div><dt>Value type</dt><dd>{selectedAssessment.bound_status}</dd></div><div><dt>Normalization</dt><dd>{selectedAssessment.normalization_status}</dd></div><div><dt>Density basis</dt><dd>{selectedAssessment.density_basis_status}</dd></div><div><dt>Uncertainty</dt><dd>{selectedAssessment.uncertainty_status}</dd></div></dl>{selectedAssessment.issues.length ? <p className="caveat-text">{selectedAssessment.issues.join("; ")}.</p> : null}</section> : null}
           {lowDensityBasis ? <section className="detail-section"><div className="rail-heading">Comparison note</div><p className="caveat-text">Specific properties are mass-normalized. This low-density porous fiber may rank highly while retaining a substantial volumetric-performance penalty.</p></section> : null}
           <section className="detail-section"><div className="rail-heading">Citation</div><p className="citation-preview">{selectedCitation}</p><button className="citation-button" onClick={() => setCitationOpen(true)}><Quote size={14}/>Open citation tool</button></section></> : null}
         </aside>
       </div>
 
-      <footer className="atlas-footer"><div><strong>Carbon Property Tables</strong><span>Boies Group, Stanford University v0.1</span><span>Please cite Sharma, G. &amp; Boies, A. M. Carbon Property Tables, version 0.1 (2026) when using information from this tool.</span></div><div className="footer-right"><strong>Database contains {initialData.summary.recordCount} public records</strong><span>Research: {initialData.summary.peerReviewedResearchRecords} / DOI comparators: {initialData.summary.peerReviewedComparatorRecords} / commercial: {initialData.summary.commercialComparatorRecords}</span><span>Author-curated compilation records: {initialData.summary.authorCuratedCompilationRecords}</span></div></footer>
+      <footer className="atlas-footer">Designed by Boies Group, Stanford University</footer>
 
       {citationOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="citation-dialog-title"><div className="citation-card citation-card-wide"><div className="citation-card-header"><div><p className="plot-kicker">Citation tool</p><h2 id="citation-dialog-title">Citations for the current figure</h2></div><button className="icon-button" aria-label="Close citation tool" onClick={() => setCitationOpen(false)}><X/></button></div><div className="citation-list"><section><div className="rail-heading">Active citation set</div><p>{figure?.point_count ?? 0} plotted representative records. Copying returns one unified citation list.</p><button className="copy-button" onClick={copyCitations}>{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? "Copied" : "Copy all citations"}</button></section><section><div className="rail-heading">Publications</div><ol className="citation-source-list">{figure?.citations.entries.filter((entry) => !entry.roles.includes("atlas")).map((entry) => <li key={entry.citation_id}>{entry.text}</li>)}</ol></section><section><div className="rail-heading">Carbon Property Tables</div><p>{formatAtlasCitation()}</p></section><section className="bibtex-section"><div className="rail-heading">BibTeX</div><pre>{figure?.citations.bibtex || formatAtlasBibtex()}</pre></section></div></div></div> : null}
 
