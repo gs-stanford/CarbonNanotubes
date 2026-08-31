@@ -174,6 +174,21 @@ assert.equal((rankedFigure.images.svg.match(/class="axis-title"/g) ?? []).length
 assert.ok(rankedFigure.images.svg.includes("Specific electrical conductivity"));
 assert.ok(rankedFigure.images.svg.includes("baseline-shift=\"super\""));
 
+const ashbyFigure = await postJson("/api/v1/figures", {
+  ...figureRequest,
+  kind: "ashby",
+  x_scale: "linear",
+  y_scale: "linear",
+  formats: ["svg"],
+  top: 0,
+  temporary: null
+});
+assert.ok(ashbyFigure.images.svg.includes('class="plot-svg plot-ashby is-export"'));
+assert.ok(ashbyFigure.images.svg.includes('class="ashby-region ashby-region-cnt"'));
+assert.ok(ashbyFigure.images.svg.includes('class="ashby-region-label ashby-region-cnt"'));
+assert.ok(ashbyFigure.images.svg.includes('>10<tspan baseline-shift="super"'));
+assert.ok(ashbyFigure.images.svg.includes(".plot-ashby .minor-grid-line { display: none; }"));
+
 for (const path of [
   "/api/v1/records?limit=1",
   "/api/v1/records/rec_f8e2b6a26ecb",
@@ -245,14 +260,14 @@ assert.equal(openapi.paths["/api/v1/records"], undefined);
 assert.equal(openapi.paths["/api/v1/plot"], undefined);
 
 if (release.release.backend === "bundled_csv") {
-  const unavailableSubmissionResponse = await fetch(`${baseUrl}/api/submissions`, {
+  const incompleteSubmissionResponse = await fetch(`${baseUrl}/api/submissions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ publication: { doi: "10.1038/srep00083" } })
   });
-  assert.equal(unavailableSubmissionResponse.status, 503);
-  const unavailableSubmission = await unavailableSubmissionResponse.json();
-  assert.equal(unavailableSubmission.error.code, "submission_storage_unavailable");
+  assert.equal(incompleteSubmissionResponse.status, 422);
+  const incompleteSubmission = await incompleteSubmissionResponse.json();
+  assert.equal(incompleteSubmission.error.code, "missing_measurements");
 }
 
 console.log(
