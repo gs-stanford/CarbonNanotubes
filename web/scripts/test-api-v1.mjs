@@ -142,6 +142,7 @@ assert.equal(figure.temporary_point.label, "Candidate");
 assert.ok(Number.isInteger(figure.temporary_point.y_rank));
 assert.ok(figure.display_svg.includes("data-record-id="));
 assert.ok(figure.images.svg.includes("<svg"));
+assert.ok(figure.images.svg.includes('viewBox="0 0 920 576"'));
 assert.ok(!figure.images.svg.includes("data-record-id="));
 assert.ok(!figure.images.svg.includes("plot-watermark"));
 assert.ok(figure.images.svg.includes('baseline-shift="super"'));
@@ -154,13 +155,24 @@ assert.ok(!figure.images.svg.includes("data-comparability-grade"), "Exported SVG
 const png = Buffer.from(figure.images.png_base64, "base64");
 assert.ok(png.subarray(0, 8).equals(Buffer.from("89504e470d0a1a0a", "hex")));
 assert.equal(png.readUInt32BE(16), 920);
-assert.equal(png.readUInt32BE(20), 632);
+assert.equal(png.readUInt32BE(20), 576);
 assert.ok(png.length > 65_000, "PNG export is unexpectedly sparse; publication text glyphs may be missing.");
 const pdf = Buffer.from(figure.images.pdf_base64, "base64");
 assert.equal(pdf.subarray(0, 4).toString("ascii"), "%PDF");
 assert.ok(!pdf.toString("latin1").includes("/Subtype /Image"), "PDF export must remain vector, not a full-page raster image");
 assert.equal(figure.points, undefined);
 assert.equal(figure.records, undefined);
+
+const rankedFigure = await postJson("/api/v1/figures", {
+  ...figureRequest,
+  kind: "ranked",
+  formats: ["svg"],
+  top: 0,
+  temporary: null
+});
+assert.equal((rankedFigure.images.svg.match(/class="axis-title"/g) ?? []).length, 1);
+assert.ok(rankedFigure.images.svg.includes("Specific electrical conductivity"));
+assert.ok(rankedFigure.images.svg.includes("baseline-shift=\"super\""));
 
 for (const path of [
   "/api/v1/records?limit=1",

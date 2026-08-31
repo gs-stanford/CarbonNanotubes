@@ -33,8 +33,8 @@ type Tick = { value: number; position: number; label: string };
 type MarkerShape = "circle" | "open-circle" | "square" | "diamond" | "triangle" | "down-triangle" | "hexagon";
 
 const WIDTH = 920;
-const HEIGHT = 632;
-const BASE_MARGIN = { top: 112, right: 36, bottom: 72, left: 92 };
+const HEIGHT = 576;
+const BASE_MARGIN = { top: 78, right: 32, bottom: 60, left: 84 };
 const LINEAR_TICK_TARGET = 6;
 const AUTHOR_PARTICLES = new Set(["da", "de", "del", "della", "der", "di", "dos", "du", "la", "le", "van", "von", "y"]);
 
@@ -320,7 +320,7 @@ function activeKeys(records: PlotRecord[], getter: (record: PlotRecord) => strin
 function renderLegend(records: PlotRecord[]): { markup: string; bottom: number } {
   const familyKeys = activeKeys(records, (record) => record.material_family, FAMILY_ORDER);
   const formKeys = activeKeys(records, (record) => record.form_factor, FORM_ORDER);
-  let y = 28;
+  let y = 22;
   const rows: string[] = [];
   const renderRow = (heading: string, items: Array<{ key: string; label: string; symbol: (x: number, y: number) => string }>) => {
     let x = 92;
@@ -328,14 +328,14 @@ function renderLegend(records: PlotRecord[]): { markup: string; bottom: number }
     for (const item of items) {
       const width = 28 + item.label.length * 5.15;
       if (x + width > WIDTH - 28) {
-        y += 24;
+        y += 22;
         x = 92;
       }
       rows.push(item.symbol(x, y));
       rows.push(`<text class="export-legend-text" x="${x + 10}" y="${y + 3}">${xml(item.label)}</text>`);
       x += width;
     }
-    y += 25;
+    y += 22;
   };
   renderRow("COLOR", familyKeys.map((key) => ({
     key,
@@ -361,7 +361,8 @@ function axisMarkup({
   xLabel,
   yLabel,
   margin,
-  xTickFormatter
+  xTickFormatter,
+  showYAxis = true
 }: {
   xDomain: [number, number];
   yDomain: [number, number];
@@ -371,6 +372,7 @@ function axisMarkup({
   yLabel: string;
   margin: typeof BASE_MARGIN;
   xTickFormatter?: (value: number) => string;
+  showYAxis?: boolean;
 }): string {
   const xRange: [number, number] = [margin.left, WIDTH - margin.right];
   const yRange: [number, number] = [HEIGHT - margin.bottom, margin.top];
@@ -386,21 +388,21 @@ function axisMarkup({
   return [
     `<rect class="plot-area" x="${margin.left}" y="${margin.top}" width="${right - margin.left}" height="${bottom - margin.top}"/>`,
     ...minorX.map((tick) => `<line class="minor-grid-line" x1="${tick.position}" x2="${tick.position}" y1="${margin.top}" y2="${bottom}"/>`),
-    ...minorY.map((tick) => `<line class="minor-grid-line" x1="${margin.left}" x2="${right}" y1="${tick.position}" y2="${tick.position}"/>`),
+    ...(showYAxis ? minorY.map((tick) => `<line class="minor-grid-line" x1="${margin.left}" x2="${right}" y1="${tick.position}" y2="${tick.position}"/>`) : []),
     ...majorX.map((tick) => `<line class="grid-line" x1="${tick.position}" x2="${tick.position}" y1="${margin.top}" y2="${bottom}"/>`),
-    ...majorY.map((tick) => `<line class="grid-line" x1="${margin.left}" x2="${right}" y1="${tick.position}" y2="${tick.position}"/>`),
+    ...(showYAxis ? majorY.map((tick) => `<line class="grid-line" x1="${margin.left}" x2="${right}" y1="${tick.position}" y2="${tick.position}"/>`) : []),
     `<line class="axis-line" x1="${margin.left}" x2="${right}" y1="${bottom}" y2="${bottom}"/>`,
-    `<line class="axis-line" x1="${margin.left}" x2="${margin.left}" y1="${margin.top}" y2="${bottom}"/>`,
+    ...(showYAxis ? [`<line class="axis-line" x1="${margin.left}" x2="${margin.left}" y1="${margin.top}" y2="${bottom}"/>`] : []),
     ...majorX.flatMap((tick) => [
       `<line class="axis-tick" x1="${tick.position}" x2="${tick.position}" y1="${bottom}" y2="${bottom + 5}"/>`,
       `<text class="axis-text" x="${tick.position}" y="${bottom + 21}" text-anchor="middle">${xml(tick.label)}</text>`
     ]),
-    ...majorY.flatMap((tick) => [
+    ...(showYAxis ? majorY.flatMap((tick) => [
       `<line class="axis-tick" x1="${margin.left - 5}" x2="${margin.left}" y1="${tick.position}" y2="${tick.position}"/>`,
       `<text class="axis-text" x="${margin.left - 10}" y="${tick.position + 3.5}" text-anchor="end">${xml(tick.label)}</text>`
-    ]),
+    ]) : []),
     `<text class="axis-title" x="${(margin.left + right) / 2}" y="${HEIGHT - 22}" text-anchor="middle">${scientificTextMarkup(xLabel)}</text>`,
-    `<text class="axis-title" x="23" y="${(margin.top + bottom) / 2}" text-anchor="middle" transform="rotate(-90 23 ${(margin.top + bottom) / 2})">${scientificTextMarkup(yLabel)}</text>`
+    ...(showYAxis && yLabel ? [`<text class="axis-title" x="23" y="${(margin.top + bottom) / 2}" text-anchor="middle" transform="rotate(-90 23 ${(margin.top + bottom) / 2})">${scientificTextMarkup(yLabel)}</text>`] : [])
   ].join("");
 }
 
@@ -718,7 +720,7 @@ function renderScatter(options: SvgFigureOptions): string {
   const yMeta = PROPERTY_BY_KEY.get(options.y);
   if (!xMeta || !yMeta) throw new Error("Unknown property metadata.");
   const legend = renderLegend(options.records);
-  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 14) };
+  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 8) };
   const xValues = options.records.map((record) => finite(record, options.x)).filter((value): value is number => value !== null);
   const yValues = options.records.map((record) => finite(record, options.y)).filter((value): value is number => value !== null);
   if (options.temporary) {
@@ -773,7 +775,7 @@ function renderRanked(options: SvgFigureOptions): string {
     .sort((a, b) => (finite(b, options.y) ?? -Infinity) - (finite(a, options.y) ?? -Infinity))
     .slice(0, 18);
   const legend = renderLegend(plotRecords);
-  const margin = { ...BASE_MARGIN, top: Math.max(128, legend.bottom + 36), left: 214, right: 68 };
+  const margin = { ...BASE_MARGIN, top: Math.max(116, legend.bottom + 50), left: 204, right: 54 };
   const values = [
     ...plotRecords.map((record) => finite(record, options.y) as number),
     ...options.referenceLines.map((line) => line.value),
@@ -790,8 +792,9 @@ function renderRanked(options: SvgFigureOptions): string {
     yScale: "linear",
     xLabel: `${yMeta.label} (${yMeta.displayUnit})`,
     yLabel: "",
-    margin
-  }).replace(/<text class="axis-text" x="204"[\s\S]*?<text class="axis-title" x="23"[\s\S]*?<\/text>/g, "");
+    margin,
+    showYAxis: false
+  });
   const rows = plotRecords.map((record, index) => {
     const value = finite(record, options.y) as number;
     const y = margin.top + rowStep * (index + 0.5);
@@ -826,7 +829,7 @@ function renderTrend(options: SvgFigureOptions): string {
   if (!yMeta) throw new Error("Unknown property metadata.");
   const records = options.records.filter((record) => record.publication_year_verified !== null && finite(record, options.y) !== null);
   const legend = renderLegend(records);
-  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 14) };
+  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 8) };
   const years = records.map((record) => record.publication_year_verified as number);
   const yearMinimum = years.length ? Math.max(1991, Math.floor(Math.min(...years) / 5) * 5) : 1991;
   const yearMaximumRaw = years.length ? Math.ceil(Math.max(...years) / 5) * 5 : new Date().getFullYear();
