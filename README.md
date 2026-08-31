@@ -11,6 +11,7 @@ The project is functional and deployed, but the current data release is still a 
 - Website: <https://carbonnanotubes.onrender.com>
 - API discovery: <https://carbonnanotubes.onrender.com/api/v1>
 - OpenAPI document: <https://carbonnanotubes.onrender.com/api/v1/openapi.json>
+- API and Python tutorial: [docs/API_TUTORIAL.md](docs/API_TUTORIAL.md)
 - GitHub: <https://github.com/gs-stanford/CarbonNanotubes>
 - Python package: <https://pypi.org/project/carbon-property-tables/>
 - Python SDK version for this release: `0.4.0`
@@ -183,6 +184,10 @@ print(figure.top_table())
 ```
 
 The SDK also exposes `ranked`, `trend`, `ashby`, `search`, `has_doi`, `doi_status`, `release`, and `properties`.
+
+The complete executable walkthrough, including REST syntax, filters, units,
+temporary samples, exports, citations, release pinning, and failure handling,
+is available in [docs/API_TUTORIAL.md](docs/API_TUTORIAL.md).
 
 A temporary unpublished result can be benchmarked without storing it:
 
