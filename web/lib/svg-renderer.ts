@@ -34,7 +34,7 @@ type MarkerShape = "circle" | "open-circle" | "square" | "diamond" | "triangle" 
 
 const WIDTH = 920;
 const HEIGHT = 576;
-const BASE_MARGIN = { top: 78, right: 32, bottom: 60, left: 84 };
+const BASE_MARGIN = { top: 64, right: 32, bottom: 60, left: 84 };
 const LINEAR_TICK_TARGET = 6;
 const AUTHOR_PARTICLES = new Set(["da", "de", "del", "della", "der", "di", "dos", "du", "la", "le", "van", "von", "y"]);
 
@@ -247,6 +247,15 @@ function minorTicks(domain: [number, number], range: [number, number], mode: Sca
   return values;
 }
 
+function logarithmicTickMarkup(value: number): string {
+  const exponent = Math.round(Math.log10(value));
+  if (!Number.isFinite(exponent) || Math.abs(value - 10 ** exponent) > Math.abs(value) * 1e-9) {
+    return xml(formatNumber(value));
+  }
+  const formattedExponent = String(exponent).replace("-", "−");
+  return `10<tspan baseline-shift="super" font-size="9.2">${formattedExponent}</tspan>`;
+}
+
 function markerShape(record: PlotRecord): MarkerShape {
   if (record.form_factor === "fiber_yarn") return "circle";
   if (record.form_factor === "sheet_mat_film") return "down-triangle";
@@ -362,7 +371,8 @@ function axisMarkup({
   yLabel,
   margin,
   xTickFormatter,
-  showYAxis = true
+  showYAxis = true,
+  powerLogTicks = false
 }: {
   xDomain: [number, number];
   yDomain: [number, number];
@@ -373,6 +383,7 @@ function axisMarkup({
   margin: typeof BASE_MARGIN;
   xTickFormatter?: (value: number) => string;
   showYAxis?: boolean;
+  powerLogTicks?: boolean;
 }): string {
   const xRange: [number, number] = [margin.left, WIDTH - margin.right];
   const yRange: [number, number] = [HEIGHT - margin.bottom, margin.top];
@@ -395,11 +406,11 @@ function axisMarkup({
     ...(showYAxis ? [`<line class="axis-line" x1="${margin.left}" x2="${margin.left}" y1="${margin.top}" y2="${bottom}"/>`] : []),
     ...majorX.flatMap((tick) => [
       `<line class="axis-tick" x1="${tick.position}" x2="${tick.position}" y1="${bottom}" y2="${bottom + 5}"/>`,
-      `<text class="axis-text" x="${tick.position}" y="${bottom + 21}" text-anchor="middle">${xml(tick.label)}</text>`
+      `<text class="axis-text" x="${tick.position}" y="${bottom + 21}" text-anchor="middle">${powerLogTicks && xScale === "log" ? logarithmicTickMarkup(tick.value) : xml(tick.label)}</text>`
     ]),
     ...(showYAxis ? majorY.flatMap((tick) => [
       `<line class="axis-tick" x1="${margin.left - 5}" x2="${margin.left}" y1="${tick.position}" y2="${tick.position}"/>`,
-      `<text class="axis-text" x="${margin.left - 10}" y="${tick.position + 3.5}" text-anchor="end">${xml(tick.label)}</text>`
+      `<text class="axis-text" x="${margin.left - 10}" y="${tick.position + 3.5}" text-anchor="end">${powerLogTicks && yScale === "log" ? logarithmicTickMarkup(tick.value) : xml(tick.label)}</text>`
     ]) : []),
     `<text class="axis-title" x="${(margin.left + right) / 2}" y="${HEIGHT - 22}" text-anchor="middle">${scientificTextMarkup(xLabel)}</text>`,
     ...(showYAxis && yLabel ? [`<text class="axis-title" x="23" y="${(margin.top + bottom) / 2}" text-anchor="middle" transform="rotate(-90 23 ${(margin.top + bottom) / 2})">${scientificTextMarkup(yLabel)}</text>`] : [])
@@ -545,8 +556,9 @@ function renderAshbyRegions(records: PlotRecord[], x: PropertyKey, y: PropertyKe
     const envelope = ashbyEnvelope(points, limits);
     if (!envelope) continue;
     const color = FAMILY_COLORS[family] ?? { fill: "#979d95", stroke: "#60665f" };
-    regions.push(`<path class="ashby-region" data-total-count="${points.length}" d="${envelope.path}" fill="${color.fill}" stroke="${color.stroke}"/>`);
-    regions.push(`<text class="ashby-region-label" x="${envelope.label.x}" y="${envelope.label.y}" text-anchor="middle">${xml(FAMILY_LABELS[family] ?? family)}</text>`);
+    const familyClass = (FAMILY_POINT_CLASSES[family] ?? "point-material-unknown").replace("point-material-", "ashby-region-");
+    regions.push(`<path class="ashby-region ${familyClass}" data-total-count="${points.length}" d="${envelope.path}" fill="${color.fill}" stroke="${color.stroke}"/>`);
+    regions.push(`<text class="ashby-region-label ${familyClass}" x="${envelope.label.x}" y="${envelope.label.y}" text-anchor="middle">${xml(FAMILY_LABELS[family] ?? family)}</text>`);
   }
   return `<g clip-path="url(#plot-clip)">${regions.join("")}</g>`;
 }
@@ -701,7 +713,8 @@ function documentShell(
   title: string,
   margin: typeof BASE_MARGIN,
   interactive: boolean,
-  metadata: SvgFigureOptions["documentMetadata"]
+  metadata: SvgFigureOptions["documentMetadata"],
+  kind: FigureKind
 ): string {
   const watermark = interactive
     ? `<text class="plot-watermark" x="${WIDTH - margin.right - 4}" y="${HEIGHT - margin.bottom - 12}" text-anchor="end" fill="#69706a" opacity="0.22" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="700">Carbon Property Tables · cite original sources</text>`
@@ -712,7 +725,8 @@ function documentShell(
     source_hash: metadata.sourceHash,
     citation_policy: "Cite original sources and Carbon Property Tables"
   });
-  return `${interactive ? "" : '<?xml version="1.0" encoding="UTF-8"?>\n'}<svg class="plot-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}"><title>${xml(title)}</title><desc>Release ${xml(metadata.releaseId)}. Cite the supplied original sources and Carbon Property Tables.</desc><metadata>${xml(metadataPayload)}</metadata><defs><style>${FIGURE_SVG_CSS}</style><clipPath id="plot-clip"><rect x="${margin.left}" y="${margin.top}" width="${WIDTH - margin.right - margin.left}" height="${HEIGHT - margin.bottom - margin.top}"/></clipPath></defs><rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>${body}${watermark}</svg>`;
+  const modeClass = interactive ? "is-interactive" : "is-export";
+  return `${interactive ? "" : '<?xml version="1.0" encoding="UTF-8"?>\n'}<svg class="plot-svg plot-${kind} ${modeClass}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}"><title>${xml(title)}</title><desc>Release ${xml(metadata.releaseId)}. Cite the supplied original sources and Carbon Property Tables.</desc><metadata>${xml(metadataPayload)}</metadata><defs><style>${FIGURE_SVG_CSS}</style><clipPath id="plot-clip"><rect x="${margin.left}" y="${margin.top}" width="${WIDTH - margin.right - margin.left}" height="${HEIGHT - margin.bottom - margin.top}"/></clipPath></defs><rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>${body}${watermark}</svg>`;
 }
 
 function renderScatter(options: SvgFigureOptions): string {
@@ -720,7 +734,7 @@ function renderScatter(options: SvgFigureOptions): string {
   const yMeta = PROPERTY_BY_KEY.get(options.y);
   if (!xMeta || !yMeta) throw new Error("Unknown property metadata.");
   const legend = renderLegend(options.records);
-  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 8) };
+  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom - 2) };
   const xValues = options.records.map((record) => finite(record, options.x)).filter((value): value is number => value !== null);
   const yValues = options.records.map((record) => finite(record, options.y)).filter((value): value is number => value !== null);
   if (options.temporary) {
@@ -756,12 +770,12 @@ function renderScatter(options: SvgFigureOptions): string {
     : "";
   const body = [
     legend.markup,
-    axisMarkup({ xDomain, yDomain, xScale: options.xScale, yScale: options.yScale, xLabel: `${xMeta.label} (${xMeta.displayUnit})`, yLabel: `${yMeta.label} (${yMeta.displayUnit})`, margin }),
+    axisMarkup({ xDomain, yDomain, xScale: options.xScale, yScale: options.yScale, xLabel: `${xMeta.label} (${xMeta.displayUnit})`, yLabel: `${yMeta.label} (${yMeta.displayUnit})`, margin, powerLogTicks: options.kind === "ashby" }),
     regions,
     `<g clip-path="url(#plot-clip)">${markers}${temporary}</g>`,
     renderCallouts(options.records, points, options.y, margin)
   ].join("");
-  return documentShell(body, title, margin, options.interactive, options.documentMetadata);
+  return documentShell(body, title, margin, options.interactive, options.documentMetadata, options.kind);
 }
 
 function renderRanked(options: SvgFigureOptions): string {
@@ -821,7 +835,7 @@ function renderRanked(options: SvgFigureOptions): string {
         return `<line class="temporary-rank-line" x1="${x}" x2="${x}" y1="${margin.top}" y2="${bottom}"/><text class="temporary-point-label" x="${clamp(x + 5, margin.left + 4, WIDTH - margin.right - 82)}" y="${margin.top + 13}">${xml(options.temporary?.label || "User input")}</text>`;
       })()
     : "";
-  return documentShell(`${legend.markup}${axis}${references}${rows}${temporary}`, `Highest reported values: ${yMeta.label}`, margin, options.interactive, options.documentMetadata);
+  return documentShell(`${legend.markup}${axis}${references}${rows}${temporary}`, `Highest reported values: ${yMeta.label}`, margin, options.interactive, options.documentMetadata, options.kind);
 }
 
 function renderTrend(options: SvgFigureOptions): string {
@@ -829,7 +843,7 @@ function renderTrend(options: SvgFigureOptions): string {
   if (!yMeta) throw new Error("Unknown property metadata.");
   const records = options.records.filter((record) => record.publication_year_verified !== null && finite(record, options.y) !== null);
   const legend = renderLegend(records);
-  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom + 8) };
+  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom - 2) };
   const years = records.map((record) => record.publication_year_verified as number);
   const yearMinimum = years.length ? Math.max(1991, Math.floor(Math.min(...years) / 5) * 5) : 1991;
   const yearMaximumRaw = years.length ? Math.ceil(Math.max(...years) / 5) * 5 : new Date().getFullYear();
@@ -860,7 +874,7 @@ function renderTrend(options: SvgFigureOptions): string {
     }).join("")}</g>`,
     renderCallouts(records, points, options.y, margin)
   ].join("");
-  return documentShell(body, `${yMeta.label} by publication year`, margin, options.interactive, options.documentMetadata);
+  return documentShell(body, `${yMeta.label} by publication year`, margin, options.interactive, options.documentMetadata, options.kind);
 }
 
 export function renderSvgFigure(options: SvgFigureOptions): string {

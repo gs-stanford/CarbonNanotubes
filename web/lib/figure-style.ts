@@ -1,22 +1,34 @@
 export const FIGURE_SVG_CSS = `
 svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .plot-area { fill: #fcfdfc; }
-.grid-line { stroke: #e4e8e2; stroke-width: 0.65; }
+.grid-line { stroke: #e4e8e2; stroke-width: 0.6; }
 .minor-grid-line { stroke: rgba(216, 222, 214, 0.58); stroke-width: 0.42; stroke-dasharray: 1.6 3.2; vector-effect: non-scaling-stroke; }
 .axis-line, .axis-tick { stroke: #171a16; stroke-width: 0.9; vector-effect: non-scaling-stroke; }
-.axis-text { fill: #5e645c; font-family: Arial, Helvetica, sans-serif; font-size: 10.5px; font-style: normal; font-variant-numeric: tabular-nums; }
-.axis-title { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 11.5px; font-style: normal; font-weight: 700; }
-.ashby-region { opacity: 0.13; stroke-width: 1.1; stroke-dasharray: 5 3.5; vector-effect: non-scaling-stroke; pointer-events: none; }
-.ashby-region-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.92); stroke-width: 2.8px; pointer-events: none; }
-.ashby-region-cnt { fill: #0072b2; stroke: #004f7a; }
-.ashby-region-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
-.ashby-region-graphene { fill: #009e73; stroke: #006b4f; }
-.ashby-region-carbon-fiber { fill: #4a4a4a; stroke: #202020; }
-.ashby-region-other-carbon { fill: #8a8a8a; stroke: #5c5c5c; }
-.ashby-region-polymer { fill: #e69f00; stroke: #9a6a00; }
-.ashby-region-metal { fill: #cc79a7; stroke: #8c4d73; }
-.ashby-region-ceramic { fill: #6a3d9a; stroke: #432667; }
-.ashby-region-unknown { fill: #979d95; stroke: #60665f; }
+.axis-text { fill: #4f564f; font-family: Arial, Helvetica, sans-serif; font-size: 10.8px; font-style: normal; font-variant-numeric: tabular-nums; }
+.axis-title { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 12.2px; font-style: normal; font-weight: 700; }
+.plot-ashby .plot-area { fill: #ffffff; }
+.plot-ashby .minor-grid-line { display: none; }
+.plot-ashby .grid-line { stroke: #dce1dc; stroke-width: 0.55; }
+.ashby-region { fill-opacity: 0.28; stroke-opacity: 0.94; stroke-width: 1.8; stroke-linejoin: round; stroke-dasharray: none; vector-effect: non-scaling-stroke; pointer-events: none; }
+.ashby-region-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 10.2px; font-weight: 700; paint-order: stroke; stroke: rgba(255, 255, 255, 0.94); stroke-width: 3px; pointer-events: none; }
+path.ashby-region-cnt { fill: #0072b2; stroke: #004f7a; }
+path.ashby-region-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
+path.ashby-region-graphene { fill: #009e73; stroke: #006b4f; }
+path.ashby-region-carbon-fiber { fill: #4a4a4a; stroke: #202020; }
+path.ashby-region-other-carbon { fill: #8a8a8a; stroke: #5c5c5c; }
+path.ashby-region-polymer { fill: #e69f00; stroke: #9a6a00; }
+path.ashby-region-metal { fill: #cc79a7; stroke: #8c4d73; }
+path.ashby-region-ceramic { fill: #6a3d9a; stroke: #432667; }
+path.ashby-region-unknown { fill: #979d95; stroke: #60665f; }
+.ashby-region-label.ashby-region-cnt { fill: #004f7a; }
+.ashby-region-label.ashby-region-cnt-metal { fill: #8c3e00; }
+.ashby-region-label.ashby-region-graphene { fill: #006b4f; }
+.ashby-region-label.ashby-region-carbon-fiber { fill: #202020; }
+.ashby-region-label.ashby-region-other-carbon { fill: #5c5c5c; }
+.ashby-region-label.ashby-region-polymer { fill: #9a6a00; }
+.ashby-region-label.ashby-region-metal { fill: #8c4d73; }
+.ashby-region-label.ashby-region-ceramic { fill: #432667; }
+.ashby-region-label.ashby-region-unknown { fill: #60665f; }
 .plot-point { cursor: pointer; stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: 0.95; }
 .plot-point.is-selected { stroke-width: 1.8; opacity: 1; stroke-dasharray: none; }
 .plot-point.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
