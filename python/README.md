@@ -2,6 +2,9 @@
 
 The SDK requests citation-backed comparison figures rendered by the Carbon Property Tables service. It is a figure and benchmarking interface, not a bulk database-download client or a local copy of the canonical dataset.
 
+For a complete Python and REST walkthrough, see the
+[API tutorial](../docs/API_TUTORIAL.md).
+
 ## Install
 
 ```bash
