@@ -29,7 +29,7 @@ import {
 } from "@/lib/comparability";
 
 const FIGURE_WIDTH = 920;
-const FIGURE_HEIGHT = 632;
+const FIGURE_HEIGHT = 576;
 const MAX_HIGHLIGHTS = 50;
 const RASTER_FONT_FILES = [
   join(process.cwd(), "assets/fonts/Arimo-Regular.ttf"),

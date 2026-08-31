@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowLeftRight, Check, Clipboard, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, X } from "lucide-react";
+import { Archive, ArrowLeftRight, Check, Clipboard, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, X } from "lucide-react";
+import { strToU8, zipSync } from "fflate";
 import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo, useState } from "react";
 import { formatAtlasBibtex, formatAtlasCitation, stripMarkup } from "@/lib/citations";
 import type { ExplorerBootstrap, FigureRequest, FigureResponse, FigureTopPoint } from "@/lib/figure-api";
@@ -151,11 +152,21 @@ function downloadBlob(filename: string, blob: Blob) {
   URL.revokeObjectURL(url);
 }
 
-function decodeBase64(value: string, type: string): Blob {
+function decodeBase64Bytes(value: string): Uint8Array {
   const binary = window.atob(value);
   const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-  return new Blob([bytes], { type });
+  return bytes;
+}
+
+function blobFromBytes(bytes: Uint8Array, type: string): Blob {
+  const buffer = new ArrayBuffer(bytes.byteLength);
+  new Uint8Array(buffer).set(bytes);
+  return new Blob([buffer], { type });
+}
+
+function decodeBase64(value: string, type: string): Blob {
+  return blobFromBytes(decodeBase64Bytes(value), type);
 }
 
 function csvCell(value: unknown): string {
@@ -375,6 +386,48 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     }
   }
 
+  async function requestFigureSet() {
+    setExporting("bundle");
+    try {
+      const results = await Promise.all(PLOT_TYPES.map(async ({ key }) => {
+        const response = await fetch("/api/v1/figures", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...requestBody,
+            kind: key,
+            x_scale: key === "ashby" ? "log" : xScale,
+            y_scale: key === "ashby" ? "log" : yScale,
+            highlight_record_ids: [],
+            selected_record_id: null,
+            formats: ["svg", "pdf"],
+            top: 0
+          })
+        });
+        const payload = await response.json() as FigureResponse & { error?: { message?: string } };
+        if (!response.ok) throw new Error(payload.error?.message || `${key} export failed.`);
+        return { key, payload };
+      }));
+
+      const files: Record<string, Uint8Array> = {
+        "README.txt": strToU8("Carbon Property Tables figure set\n\nEach figure is supplied as editable SVG and vector PDF with its own citation sidecar.\n")
+      };
+      for (const { key, payload } of results) {
+        const base = figureFilename(key, xKey, yKey, "").replace(/\.$/, "");
+        if (!payload.images.svg || !payload.images.pdf_base64) throw new Error(`${key} export was incomplete.`);
+        files[`${base}.svg`] = strToU8(payload.images.svg);
+        files[`${base}.pdf`] = decodeBase64Bytes(payload.images.pdf_base64);
+        files[`${base}-citations.txt`] = strToU8(`${payload.citations.copy_all}\n\nBibTeX:\n${payload.citations.bibtex}\n`);
+      }
+      const archive = zipSync(files, { level: 6 });
+      downloadBlob(`carbon-property-tables-all-figures-${xKey}-vs-${yKey}.zip`, blobFromBytes(archive, "application/zip"));
+    } catch (error) {
+      setFigureError(error instanceof Error ? error.message : "Figure-set export failed.");
+    } finally {
+      setExporting(null);
+    }
+  }
+
   async function copyCitations() {
     await navigator.clipboard.writeText(figure?.citations.copy_all ?? "");
     setCopied(true);
@@ -536,7 +589,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
 
       {citationOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="citation-dialog-title"><div className="citation-card citation-card-wide"><div className="citation-card-header"><div><p className="plot-kicker">Citation tool</p><h2 id="citation-dialog-title">Citations for the current figure</h2></div><button className="icon-button" aria-label="Close citation tool" onClick={() => setCitationOpen(false)}><X/></button></div><div className="citation-list"><section><div className="rail-heading">Active citation set</div><p>{figure?.point_count ?? 0} plotted representative records. Copying returns one unified citation list.</p><button className="copy-button" onClick={copyCitations}>{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? "Copied" : "Copy all citations"}</button></section><section><div className="rail-heading">Publications</div><ol className="citation-source-list">{figure?.citations.entries.filter((entry) => !entry.roles.includes("atlas")).map((entry) => <li key={entry.citation_id}>{entry.text}</li>)}</ol></section><section><div className="rail-heading">Carbon Property Tables</div><p>{formatAtlasCitation()}</p></section><section className="bibtex-section"><div className="rail-heading">BibTeX</div><pre>{figure?.citations.bibtex || formatAtlasBibtex()}</pre></section></div></div></div> : null}
 
-      {exportOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="export-dialog-title"><div className="citation-card export-card"><div className="citation-card-header"><div><p className="plot-kicker">Figure export</p><h2 id="export-dialog-title">Download figure and citations</h2></div><button className="icon-button" aria-label="Close export" onClick={() => setExportOpen(false)}><X/></button></div><div className="export-list"><button className="export-option" aria-label="Download SVG" disabled={Boolean(exporting)} onClick={() => requestExport("svg")}><FileText/><span><strong>SVG</strong><small>Editable vector artwork with publication legend; no selection halo or watermark.</small></span></button><button className="export-option" aria-label="Download PDF" disabled={Boolean(exporting)} onClick={() => requestExport("pdf")}><FileText/><span><strong>PDF</strong><small>Publication-ready page with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download PNG" disabled={Boolean(exporting)} onClick={() => requestExport("png")}><ImageIcon/><span><strong>PNG</strong><small>High-resolution raster output with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download top 10 table" disabled={Boolean(exporting)} onClick={() => requestExport("csv")}><Download/><span><strong>Top 10 table</strong><small>Capped high-performance rows only; the full canonical table is not exported.</small></span></button></div></div></div> : null}
+      {exportOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="export-dialog-title"><div className="citation-card export-card"><div className="citation-card-header"><div><p className="plot-kicker">Figure export</p><h2 id="export-dialog-title">Download figure and citations</h2></div><button className="icon-button" aria-label="Close export" onClick={() => setExportOpen(false)}><X/></button></div><div className="export-list"><button className="export-option export-option-bundle" aria-label="Download all four figures" disabled={Boolean(exporting)} onClick={requestFigureSet}><Archive/><span><strong>All four plot types</strong><small>ZIP with Scatter, Highest reported, Trend, and Ashby as SVG and PDF files, plus citations.</small></span></button><button className="export-option" aria-label="Download SVG" disabled={Boolean(exporting)} onClick={() => requestExport("svg")}><FileText/><span><strong>SVG</strong><small>Editable vector artwork with publication legend; no selection halo or watermark.</small></span></button><button className="export-option" aria-label="Download PDF" disabled={Boolean(exporting)} onClick={() => requestExport("pdf")}><FileText/><span><strong>PDF</strong><small>Publication-ready page with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download PNG" disabled={Boolean(exporting)} onClick={() => requestExport("png")}><ImageIcon/><span><strong>PNG</strong><small>High-resolution raster output with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download top 10 table" disabled={Boolean(exporting)} onClick={() => requestExport("csv")}><Download/><span><strong>Top 10 table</strong><small>Capped high-performance rows only; the full canonical table is not exported.</small></span></button></div></div></div> : null}
 
       {submitOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="submit-dialog-title"><div className="citation-card submit-card">
         <div className="citation-card-header"><div><p className="plot-kicker">Community contribution</p><h2 id="submit-dialog-title">Submit data for curator review</h2></div><button className="icon-button" aria-label="Close submit data" onClick={() => setSubmitOpen(false)}><X/></button></div>

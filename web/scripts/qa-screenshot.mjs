@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { unzipSync } from "fflate";
 import { chromium } from "playwright-core";
 
 const outDir = path.resolve("qa");
@@ -60,8 +61,14 @@ if (
 }
 const viewBoxMatch = exportedSvg.match(/viewBox="([^"]+)"/);
 const viewBoxHeight = viewBoxMatch ? Number(viewBoxMatch[1].trim().split(/\s+/)[3]) : 0;
-if (!Number.isFinite(viewBoxHeight) || viewBoxHeight <= 560) {
-  throw new Error(`Exported SVG viewBox was not expanded for the legend: ${viewBoxMatch?.[1] ?? "missing"}.`);
+if (viewBoxHeight !== 576) {
+  throw new Error(`Exported SVG did not use the compact publication canvas: ${viewBoxMatch?.[1] ?? "missing"}.`);
+}
+const plotAreaY = Number(exportedSvg.match(/<rect class="plot-area"[^>]* y="([^"]+)"/)?.[1]);
+const legendTextYs = [...exportedSvg.matchAll(/<text class="export-legend-text"[^>]* y="([^"]+)"/g)].map((match) => Number(match[1]));
+const legendGap = plotAreaY - Math.max(...legendTextYs);
+if (!Number.isFinite(legendGap) || legendGap < 8 || legendGap > 36) {
+  throw new Error(`Export legend gap is outside the compact layout target: ${legendGap}.`);
 }
 const pdfDownload = await Promise.all([
   page.waitForEvent("download", { timeout: 10000 }),
@@ -72,6 +79,30 @@ await pdfDownload.saveAs(exportedPdfPath);
 const exportedPdf = await fs.readFile(exportedPdfPath);
 if (exportedPdf.subarray(0, 4).toString("ascii") !== "%PDF") {
   throw new Error("Exported PDF does not contain a valid PDF header.");
+}
+const bundleDownload = await Promise.all([
+  page.waitForEvent("download", { timeout: 60000 }),
+  page.getByRole("button", { name: "Download all four figures" }).click()
+]).then(([download]) => download);
+const exportedBundlePath = path.join(outDir, "all-figures.zip");
+await bundleDownload.saveAs(exportedBundlePath);
+const bundleBytes = await fs.readFile(exportedBundlePath);
+if (bundleBytes.subarray(0, 2).toString("ascii") !== "PK") {
+  throw new Error("All-figure export is not a valid ZIP archive.");
+}
+const bundleFiles = unzipSync(new Uint8Array(bundleBytes));
+const bundleNames = Object.keys(bundleFiles);
+for (const kind of ["scatter", "ranked", "trend", "ashby"]) {
+  for (const suffix of [".svg", ".pdf", "-citations.txt"]) {
+    if (!bundleNames.some((name) => name.includes(`-${kind}-`) && name.endsWith(suffix))) {
+      throw new Error(`All-figure export is missing ${kind}${suffix}.`);
+    }
+  }
+}
+const rankedSvgName = bundleNames.find((name) => name.includes("-ranked-") && name.endsWith(".svg"));
+const rankedExportSvg = rankedSvgName ? new TextDecoder().decode(bundleFiles[rankedSvgName]) : "";
+if ((rankedExportSvg.match(/class="axis-title"/g) ?? []).length !== 1 || !rankedExportSvg.includes("Specific electrical conductivity")) {
+  throw new Error("Highest-reported bundle export is missing its property axis title.");
 }
 await page.screenshot({ path: path.join(outDir, "export-modal.png"), fullPage: true });
 await page.getByRole("button", { name: "Close export" }).click();
@@ -94,8 +125,12 @@ const rankedInfo = await page.evaluate(() => ({
   plotPoints: document.querySelectorAll(".plot-point").length,
   rankRows: document.querySelectorAll(".rank-row-line").length,
   referenceLines: document.querySelectorAll(".rank-reference-line").length,
-  legendText: document.querySelector(".encoding-legend")?.textContent?.replace(/\s+/g, " ").trim() ?? ""
+  axisTitles: [...document.querySelectorAll(".axis-title")].map((label) => label.textContent?.trim()).filter(Boolean),
+  legendText: document.querySelector(".export-legend")?.textContent?.replace(/\s+/g, " ").trim() ?? ""
 }));
+if (rankedInfo.axisTitles.length !== 1 || !rankedInfo.axisTitles[0].includes("Specific electrical conductivity")) {
+  throw new Error(`Highest-reported axis QA failed: ${JSON.stringify(rankedInfo)}`);
+}
 await page.getByRole("tab", { name: "Trend" }).click();
 await page.waitForFunction(() => [...document.querySelectorAll(".axis-title")].some((label) => label.textContent?.trim() === "Publication year"), null, { timeout: 10000 });
 await page.screenshot({ path: path.join(outDir, "trend.png"), fullPage: true });
@@ -272,6 +307,7 @@ console.log(
     path.join(outDir, "export-modal.png"),
     path.join(outDir, "exported-figure.svg"),
     path.join(outDir, "exported-figure.pdf"),
+    path.join(outDir, "all-figures.zip"),
     path.join(outDir, "submission-invalid-doi.png"),
     path.join(outDir, "ashby.png"),
     path.join(outDir, "ranked.png"),

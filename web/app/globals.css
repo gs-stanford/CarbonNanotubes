@@ -1622,6 +1622,15 @@ textarea {
   outline: none;
 }
 
+.export-option-bundle {
+  background: rgba(39, 111, 103, 0.055);
+}
+
+.export-option-bundle svg,
+.export-option-bundle strong {
+  color: var(--accent);
+}
+
 .export-option strong {
   display: block;
   font-size: 13px;
