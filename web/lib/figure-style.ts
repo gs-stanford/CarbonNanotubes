@@ -10,7 +10,6 @@ svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .plot-ashby .minor-grid-line { display: none; }
 .plot-ashby .grid-line { stroke: #dce1dc; stroke-width: 0.55; }
 .ashby-region { fill-opacity: 0.28; stroke-opacity: 0.94; stroke-width: 1.8; stroke-linejoin: round; stroke-dasharray: none; vector-effect: non-scaling-stroke; pointer-events: none; }
-.ashby-region-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 10.2px; font-weight: 700; paint-order: stroke; stroke: rgba(255, 255, 255, 0.94); stroke-width: 3px; pointer-events: none; }
 path.ashby-region-cnt { fill: #0072b2; stroke: #004f7a; }
 path.ashby-region-cnt-metal { fill: #d55e00; stroke: #8c3e00; }
 path.ashby-region-graphene { fill: #009e73; stroke: #006b4f; }
@@ -20,15 +19,10 @@ path.ashby-region-polymer { fill: #e69f00; stroke: #9a6a00; }
 path.ashby-region-metal { fill: #cc79a7; stroke: #8c4d73; }
 path.ashby-region-ceramic { fill: #6a3d9a; stroke: #432667; }
 path.ashby-region-unknown { fill: #979d95; stroke: #60665f; }
-.ashby-region-label.ashby-region-cnt { fill: #004f7a; }
-.ashby-region-label.ashby-region-cnt-metal { fill: #8c3e00; }
-.ashby-region-label.ashby-region-graphene { fill: #006b4f; }
-.ashby-region-label.ashby-region-carbon-fiber { fill: #202020; }
-.ashby-region-label.ashby-region-other-carbon { fill: #5c5c5c; }
-.ashby-region-label.ashby-region-polymer { fill: #9a6a00; }
-.ashby-region-label.ashby-region-metal { fill: #8c4d73; }
-.ashby-region-label.ashby-region-ceramic { fill: #432667; }
-.ashby-region-label.ashby-region-unknown { fill: #60665f; }
+.ashby-region-legend-box { fill: #ffffff; fill-opacity: 0.97; stroke: #b8c0b8; stroke-width: 0.8; vector-effect: non-scaling-stroke; }
+.ashby-region-legend-title { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; font-weight: 700; letter-spacing: 0; }
+.ashby-region-legend-text { fill: #333a34; font-family: Arial, Helvetica, sans-serif; font-size: 10.2px; font-weight: 600; }
+.ashby-region-legend-swatch { fill-opacity: 0.28; stroke-opacity: 0.94; stroke-width: 1.25; vector-effect: non-scaling-stroke; }
 .plot-point { cursor: pointer; stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: 0.95; }
 .plot-point.is-selected { stroke-width: 1.8; opacity: 1; stroke-dasharray: none; }
 .plot-point.point-material-cnt { fill: #0072b2; stroke: #004f7a; }
