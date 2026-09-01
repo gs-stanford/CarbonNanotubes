@@ -185,7 +185,9 @@ const ashbyFigure = await postJson("/api/v1/figures", {
 });
 assert.ok(ashbyFigure.images.svg.includes('class="plot-svg plot-ashby is-export"'));
 assert.ok(ashbyFigure.images.svg.includes('class="ashby-region ashby-region-cnt"'));
-assert.ok(ashbyFigure.images.svg.includes('class="ashby-region-label ashby-region-cnt"'));
+assert.ok(ashbyFigure.images.svg.includes('class="ashby-region-legend"'));
+assert.ok(ashbyFigure.images.svg.includes(">MATERIAL REGIONS</text>"));
+assert.ok(!ashbyFigure.images.svg.includes("ashby-region-label"));
 assert.ok(ashbyFigure.images.svg.includes('>10<tspan baseline-shift="super"'));
 assert.ok(ashbyFigure.images.svg.includes(".plot-ashby .minor-grid-line { display: none; }"));
 

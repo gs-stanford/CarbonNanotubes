@@ -492,7 +492,7 @@ function smoothClosedPath(points: Point[]): string {
   ].join(" ");
 }
 
-function ashbyEnvelope(points: Point[], limits: Box): { path: string; label: Point } | null {
+function ashbyEnvelope(points: Point[], limits: Box): { path: string } | null {
   if (points.length < 2) return null;
   const core = robustCore(points);
   const axis = principalAxis(core);
@@ -529,12 +529,7 @@ function ashbyEnvelope(points: Point[], limits: Box): { path: string; label: Poi
     lower.push(pointAt(normalCenter - localWidth));
   }
   const envelope = [...upper, ...lower.reverse()];
-  const xs = envelope.map((point) => point.x);
-  const ys = envelope.map((point) => point.y);
-  return {
-    path: smoothClosedPath(envelope),
-    label: { x: clamp((Math.min(...xs) + Math.max(...xs)) / 2, limits.x0 + 30, limits.x1 - 30), y: clamp(Math.min(...ys) + 16, limits.y0 + 15, limits.y1 - 8) }
-  };
+  return { path: smoothClosedPath(envelope) };
 }
 
 function renderAshbyRegions(records: PlotRecord[], x: PropertyKey, y: PropertyKey, xDomain: [number, number], yDomain: [number, number], margin: typeof BASE_MARGIN): string {
@@ -551,6 +546,7 @@ function renderAshbyRegions(records: PlotRecord[], x: PropertyKey, y: PropertyKe
   }
   const limits = { x0: margin.left + 4, y0: margin.top + 4, x1: WIDTH - margin.right - 4, y1: HEIGHT - margin.bottom - 4 };
   const regions: string[] = [];
+  const legendEntries: Array<{ label: string; fill: string; stroke: string }> = [];
   for (const family of FAMILY_ORDER) {
     const points = groups.get(family) ?? [];
     const envelope = ashbyEnvelope(points, limits);
@@ -558,9 +554,28 @@ function renderAshbyRegions(records: PlotRecord[], x: PropertyKey, y: PropertyKe
     const color = FAMILY_COLORS[family] ?? { fill: "#979d95", stroke: "#60665f" };
     const familyClass = (FAMILY_POINT_CLASSES[family] ?? "point-material-unknown").replace("point-material-", "ashby-region-");
     regions.push(`<path class="ashby-region ${familyClass}" data-total-count="${points.length}" d="${envelope.path}" fill="${color.fill}" stroke="${color.stroke}"/>`);
-    regions.push(`<text class="ashby-region-label ${familyClass}" x="${envelope.label.x}" y="${envelope.label.y}" text-anchor="middle">${xml(FAMILY_LABELS[family] ?? family)}</text>`);
+    legendEntries.push({ label: FAMILY_LABELS[family] ?? family, fill: color.fill, stroke: color.stroke });
   }
-  return `<g clip-path="url(#plot-clip)">${regions.join("")}</g>`;
+  if (!legendEntries.length) return "";
+  const legendX = WIDTH - margin.right + 12;
+  const legendY = margin.top + 8;
+  const legendWidth = margin.right - 24;
+  const rowHeight = 24;
+  const legendHeight = 38 + legendEntries.length * rowHeight;
+  const legend = [
+    `<g class="ashby-region-legend" transform="translate(${legendX} ${legendY})">`,
+    `<rect class="ashby-region-legend-box" x="0" y="0" width="${legendWidth}" height="${legendHeight}" rx="3"/>`,
+    '<text class="ashby-region-legend-title" x="12" y="19">MATERIAL REGIONS</text>',
+    ...legendEntries.flatMap((entry, index) => {
+      const baseline = 45 + index * rowHeight;
+      return [
+        `<rect class="ashby-region-legend-swatch" x="12" y="${baseline - 11}" width="20" height="12" rx="2" fill="${entry.fill}" stroke="${entry.stroke}"/>`,
+        `<text class="ashby-region-legend-text" x="42" y="${baseline}">${xml(entry.label)}</text>`
+      ];
+    }),
+    "</g>"
+  ].join("");
+  return `<g clip-path="url(#plot-clip)">${regions.join("")}</g>${legend}`;
 }
 
 function firstAuthor(authors: string): string {
@@ -734,7 +749,11 @@ function renderScatter(options: SvgFigureOptions): string {
   const yMeta = PROPERTY_BY_KEY.get(options.y);
   if (!xMeta || !yMeta) throw new Error("Unknown property metadata.");
   const legend = renderLegend(options.records);
-  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom - 2) };
+  const margin = {
+    ...BASE_MARGIN,
+    right: options.kind === "ashby" ? 260 : BASE_MARGIN.right,
+    top: Math.max(BASE_MARGIN.top, legend.bottom - 2)
+  };
   const xValues = options.records.map((record) => finite(record, options.x)).filter((value): value is number => value !== null);
   const yValues = options.records.map((record) => finite(record, options.y)).filter((value): value is number => value !== null);
   if (options.temporary) {
