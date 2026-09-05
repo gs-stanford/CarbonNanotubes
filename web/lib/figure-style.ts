@@ -1,3 +1,5 @@
+export const POINT_LABEL_FONT_SIZE = 9.4;
+
 export const FIGURE_SVG_CSS = `
 svg.plot-svg { background: #ffffff; font-family: Arial, Helvetica, sans-serif; }
 .plot-area { fill: #fcfdfc; }
@@ -43,7 +45,7 @@ path.ashby-region-unknown { fill: #979d95; stroke: #60665f; }
 .plot-point.point-shape-open-circle.point-material-metal { fill: #ffffff; stroke: #cc79a7; }
 .plot-point.point-shape-open-circle.point-material-ceramic { fill: #ffffff; stroke: #6a3d9a; }
 .plot-point.point-shape-open-circle.point-material-unknown { fill: #ffffff; stroke: #979d95; }
-.point-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.95); stroke-width: 2.8px; }
+.point-label { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: ${POINT_LABEL_FONT_SIZE}px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.95); stroke-width: 2.8px; }
 .label-leader { stroke: rgba(23, 26, 22, 0.38); stroke-width: 0.75; vector-effect: non-scaling-stroke; pointer-events: none; }
 .rank-row-line { stroke: rgba(216, 222, 214, 0.58); stroke-width: 0.65; vector-effect: non-scaling-stroke; }
 .rank-value-line { stroke: rgba(23, 26, 22, 0.22); stroke-width: 1; vector-effect: non-scaling-stroke; }

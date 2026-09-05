@@ -243,6 +243,7 @@ class RenderedFigure:
     generated_at: str
     request: Mapping[str, Any] = field(repr=False)
     _images: Mapping[str, bytes] = field(repr=False)
+    requirement: Mapping[str, Any] | None = None
 
     @classmethod
     def from_dict(
@@ -268,6 +269,7 @@ class RenderedFigure:
             generated_at=str(value.get("generated_at", "")),
             request=dict(request or {}),
             _images=dict(images),
+            requirement=dict(value["requirement"]) if isinstance(value.get("requirement"), Mapping) else None,
         )
 
     def _repr_svg_(self) -> str:

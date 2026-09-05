@@ -72,6 +72,14 @@ export function GET(request: NextRequest) {
                     y: { type: "string" },
                     x_scale: { type: "string", enum: ["linear", "log"] },
                     y_scale: { type: "string", enum: ["linear", "log"] },
+                    minimum_x: {
+                      type: "number", minimum: 0,
+                      description: "Inclusive minimum in displayed x-axis units. Scatter/Ashby only, with a higher-is-better y property."
+                    },
+                    show_callouts: {
+                      type: "boolean", default: true,
+                      description: "Show automatic source and metal callouts in Scatter, Trend, and Ashby. Applies to viewing and all exports; citations are retained."
+                    },
                     top: { type: "integer", minimum: 0, maximum: 10 },
                     top_by: { type: "string", enum: ["auto", "x", "y"] },
                     comparison_grades: {

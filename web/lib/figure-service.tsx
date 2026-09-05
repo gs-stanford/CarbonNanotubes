@@ -20,6 +20,7 @@ import {
   temporaryRank,
   topRecords
 } from "@/lib/representative";
+import { pairedRequirementRecords, PERFORMANCE_PROPERTIES } from "@/lib/representative";
 import { getReleaseDescriptor, queryCanonicalRecords } from "@/lib/query-store";
 import { renderSvgFigure, type FigureReferenceLine } from "@/lib/svg-renderer";
 import {
@@ -166,6 +167,19 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
   const kind = stringChoice(body.kind, ["scatter", "ranked", "trend", "ashby"] as const, "kind");
   const x = propertyValue(body.x, "x");
   const y = propertyValue(body.y, "y");
+  if (body.show_callouts !== undefined && typeof body.show_callouts !== "boolean") {
+    throw new ApiInputError("show_callouts must be a boolean.");
+  }
+  const minimumX = body.minimum_x;
+  if (minimumX !== undefined && (typeof minimumX !== "number" || !Number.isFinite(minimumX) || minimumX < 0)) {
+    throw new ApiInputError("minimum_x must be a finite nonnegative number in displayed x-axis units.");
+  }
+  if (minimumX !== undefined && (kind !== "scatter" && kind !== "ashby")) {
+    throw new ApiInputError("minimum_x is supported only for scatter and ashby figures.");
+  }
+  if (minimumX !== undefined && !PERFORMANCE_PROPERTIES.has(y)) {
+    throw new ApiInputError("A requirement comparison needs a higher-is-better performance property on the y-axis.");
+  }
   if (x === y && (kind === "scatter" || kind === "ashby")) throw new ApiInputError("x and y must be different properties.");
   const xScale = kind === "ashby"
     ? "log"
@@ -228,7 +242,9 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
     highlight_record_ids: highlights,
     comparison_grades: comparisonGrades,
     formats,
-    filters: body.filters ? objectValue(body.filters, "filters") : {}
+    filters: body.filters ? objectValue(body.filters, "filters") : {},
+    minimum_x: minimumX as number | undefined,
+    show_callouts: body.show_callouts !== false
   };
 }
 
@@ -304,6 +320,8 @@ function renderFigureSvg(
     selectedId,
     highlightedIds: new Set(request.highlight_record_ids),
     temporary: request.temporary ?? null,
+    minimumX: request.minimum_x,
+    showCallouts: request.show_callouts,
     documentMetadata: {
       releaseId: release.release_id,
       sourceHash: release.source_hash
@@ -393,7 +411,9 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
   if (page.hasMore) {
     throw new ApiInputError("The requested figure exceeds 2,000 eligible records. Apply material, form-factor, year, or measurement filters.");
   }
-  let records = representativeRecords(page.records.map((item) => item.record), request.x, request.y, request.kind);
+  let records = request.minimum_x === undefined
+    ? representativeRecords(page.records.map((item) => item.record), request.x, request.y, request.kind)
+    : page.records.map((item) => item.record);
   if (request.kind === "trend") {
     records = records.filter((record) => typeof record.publication_year_verified === "number" && Number.isFinite(record.publication_year_verified));
   }
@@ -409,13 +429,16 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
   let comparability = figureComparability(records, request.x, request.y, request.kind);
   records = records.filter((record) => requestedGrades.has(comparability.points[record.record_id]?.grade ?? "D"));
   if (!records.length) throw new ApiInputError("No records remain after applying the comparison-grade filter.");
+  if (request.minimum_x !== undefined) records = pairedRequirementRecords(records, request.x, request.y);
   comparability = figureComparability(records, request.x, request.y, request.kind);
+  const qualifying = request.minimum_x === undefined ? records : records.filter((record) => (record.values[request.x] ?? -Infinity) >= request.minimum_x!);
+  const leader = request.minimum_x === undefined ? null : topRecords(qualifying, request.x, request.y, 1, "y")[0] ?? null;
   const requestedSelection = request.selected_record_id
     ? records.find((record) => record.record_id === request.selected_record_id) ?? null
     : null;
-  const selected = requestedSelection ?? defaultSelectedRecord(records, request.x, request.y);
+  const selected = requestedSelection ?? leader ?? defaultSelectedRecord(records, request.x, request.y);
   const citations = citationBundleForRecords(records);
-  const selectedTop = topRecords(records, request.x, request.y, Number(request.top ?? 0), (request.top_by ?? "auto") as FigureTopAxis);
+  const selectedTop = topRecords(qualifying, request.x, request.y, Number(request.top ?? 0), (request.top_by ?? "auto") as FigureTopAxis);
   const rendered = renderFigureSvg(records, request, selected?.record_id ?? null, release);
   const images = await renderBinaryImages(rendered.exportSvg, request.formats ?? ["svg"]);
   const xMeta = PROPERTY_BY_KEY.get(request.x);
@@ -438,6 +461,15 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
     temporary_point: temporaryRank(records, request.temporary, request.x, request.y),
     selected_record: selected,
     counts: figureCounts(records),
-    comparability
+    comparability,
+    requirement: request.minimum_x === undefined ? null : {
+      minimum_x: request.minimum_x,
+      x_unit: xMeta.displayUnit,
+      qualifying_count: qualifying.length,
+      cohort_count: records.length,
+      best: leader ? topPoint(leader, 1, request.x, request.y, citations, comparability) : null,
+      best_tie_count: leader ? qualifying.filter((record) => record.values[request.y] === leader.values[request.y]).length : 0,
+      temporary_meets_requirement: request.temporary ? request.temporary.x >= request.minimum_x : null
+    }
   };
 }

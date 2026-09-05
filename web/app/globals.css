@@ -2345,3 +2345,17 @@ textarea {
     grid-column: span 1;
   }
 }
+
+.requirement-input {
+  display: grid;
+  grid-template-columns: minmax(50px, 1fr) minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 6px;
+}
+.requirement-input input { min-width: 0; width: 100%; }
+.requirement-input span { font-size: 12px; overflow-wrap: anywhere; }
+.requirement-result { display: grid; gap: 5px; margin-top: 10px; font-size: 12px; }
+.requirement-result span { overflow-wrap: anywhere; }
+.figure-option-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; font-size: 13px; cursor: pointer; }
+.figure-option-row input { flex: 0 0 16px; width: 16px; height: 16px; margin: 2px 0 0; }
+.figure-option-row span { min-width: 0; overflow-wrap: anywhere; }
