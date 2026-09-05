@@ -1,7 +1,9 @@
+import PDFDocument from "pdfkit";
+import { join } from "node:path";
 import { stripMarkup } from "@/lib/citations";
 import { PROPERTY_BY_KEY, type PlotRecord, type PropertyKey, type ScaleMode } from "@/lib/data";
 import type { FigureKind, FigureTemporaryPoint } from "@/lib/figure-api";
-import { FIGURE_SVG_CSS } from "@/lib/figure-style";
+import { FIGURE_SVG_CSS, POINT_LABEL_FONT_SIZE } from "@/lib/figure-style";
 
 export type FigureReferenceLine = {
   label: string;
@@ -20,6 +22,8 @@ export type SvgFigureOptions = {
   highlightedIds: Set<string>;
   temporary: FigureTemporaryPoint | null;
   referenceLines: FigureReferenceLine[];
+  minimumX?: number;
+  showCallouts?: boolean;
   interactive: boolean;
   documentMetadata: {
     releaseId: string;
@@ -36,6 +40,10 @@ const WIDTH = 920;
 const HEIGHT = 576;
 const BASE_MARGIN = { top: 64, right: 32, bottom: 60, left: 84 };
 const LINEAR_TICK_TARGET = 6;
+// Arimo has Arial-compatible metrics and is also bundled for PNG rendering.
+const labelMetrics = new PDFDocument({ autoFirstPage: false })
+  .font(join(process.cwd(), "assets/fonts/Arimo-Bold.ttf"))
+  .fontSize(POINT_LABEL_FONT_SIZE);
 const AUTHOR_PARTICLES = new Set(["da", "de", "del", "della", "der", "di", "dos", "du", "la", "le", "van", "von", "y"]);
 
 const FAMILY_LABELS: Record<string, string> = {
@@ -658,7 +666,7 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
     const point = points.get(record.record_id);
     if (!point) continue;
     const text = metalLabel(record) ?? sourceLabel(record);
-    const width = clamp(text.length * 5.7 + 4, 32, 210);
+    const width = labelMetrics.widthOfString(text) + 4;
     const height = 16;
     const rawCandidates: Array<{ x0: number; y0: number }> = [];
     for (let lane = 0; lane < 12; lane += 1) {
@@ -718,7 +726,9 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
     const leaderX = clamp(point.x, box.x0, box.x1);
     const leaderY = clamp(point.y, box.y0, box.y1);
     output.push(`<line class="label-leader" x1="${point.x}" y1="${point.y}" x2="${leaderX}" y2="${leaderY}"/>`);
-    output.push(`<text class="point-label" x="${box.x0}" y="${box.y0 + 11}" text-anchor="start">${xml(text)}</text>`);
+    const anchor = point.x >= box.x1 ? "end" : point.x <= box.x0 ? "start" : "middle";
+    const textX = anchor === "end" ? box.x1 - 2 : anchor === "start" ? box.x0 + 2 : (box.x0 + box.x1) / 2;
+    output.push(`<text class="point-label" x="${textX}" y="${box.y0 + 11}" text-anchor="${anchor}">${xml(text)}</text>`);
   }
   return `<g>${output.join("")}</g>`;
 }
@@ -752,7 +762,7 @@ function renderScatter(options: SvgFigureOptions): string {
   const margin = {
     ...BASE_MARGIN,
     right: options.kind === "ashby" ? 260 : BASE_MARGIN.right,
-    top: Math.max(BASE_MARGIN.top, legend.bottom - 2)
+    top: Math.max(BASE_MARGIN.top, legend.bottom - 2) + (options.minimumX === undefined ? 0 : 36)
   };
   const xValues = options.records.map((record) => finite(record, options.x)).filter((value): value is number => value !== null);
   const yValues = options.records.map((record) => finite(record, options.y)).filter((value): value is number => value !== null);
@@ -778,8 +788,26 @@ function renderScatter(options: SvgFigureOptions): string {
   const regions = options.kind === "ashby" ? renderAshbyRegions(options.records, options.x, options.y, xDomain, yDomain, margin) : "";
   const markers = options.records.map((record) => {
     const point = points.get(record.record_id);
-    return point ? pointMarkup(record, point.x, point.y, options) : "";
+    if (!point) return "";
+    const below = options.minimumX !== undefined && (finite(record, options.x) ?? -Infinity) < options.minimumX;
+    return `<g${below ? ' class="below-requirement" opacity="0.22"' : ""}>${pointMarkup(record, point.x, point.y, options)}</g>`;
   }).join("");
+  let requirement = "";
+  let requirementSummary = "";
+  if (options.minimumX !== undefined) {
+    const cutoffVisible = options.minimumX >= xDomain[0] && options.minimumX <= xDomain[1];
+    const cutoff = options.minimumX <= xDomain[0] ? xRange[0]
+      : options.minimumX >= xDomain[1] ? xRange[1] : scaleNumber(options.minimumX, xDomain, xRange, options.xScale);
+    const qualifying = options.records.filter((record) => (finite(record, options.x) ?? -Infinity) >= options.minimumX!);
+    const best = qualifying.slice().sort((a, b) => (finite(b, options.y) ?? 0) - (finite(a, options.y) ?? 0) || a.record_id.localeCompare(b.record_id))[0];
+    const winners = best ? qualifying.filter((record) => record.values[options.y] === best.values[options.y]) : [];
+    requirement = `<rect class="requirement-exclusion" x="${margin.left}" y="${margin.top}" width="${Math.max(0, cutoff - margin.left)}" height="${yRange[0] - margin.top}" fill="#eeeeee" opacity="0.65"/>`
+      + (cutoffVisible ? `<line class="requirement-cutoff" x1="${cutoff}" x2="${cutoff}" y1="${margin.top}" y2="${yRange[0]}" stroke="#a43b31" stroke-width="1.5" stroke-dasharray="5 4"/>` : "")
+      + winners.map((record) => { const p = points.get(record.record_id)!; return `<circle class="requirement-winner" cx="${p.x}" cy="${p.y}" r="8" fill="none" stroke="#222222" stroke-width="1.5"/>`; }).join("");
+    const bestText = best ? `Best reported ${formatNumber(finite(best, options.y)!)} ${yMeta.displayUnit}: ${sourceLabel(best)}` : "No reported pair meets this requirement";
+    requirementSummary = `<text class="axis-text" x="${margin.left}" y="${margin.top - 22}">Minimum ${xml(xMeta.label)}: ${xml(formatNumber(options.minimumX))} ${xml(xMeta.displayUnit)}; ${qualifying.length} / ${options.records.length} pairs qualify</text>`
+      + `<text class="axis-text" x="${margin.left}" y="${margin.top - 7}">${xml(bestText)}${winners.length > 1 ? ` (${winners.length} tied)` : ""}</text>`;
+  }
   const temporary = options.temporary && (options.xScale === "linear" || options.temporary.x > 0) && (options.yScale === "linear" || options.temporary.y > 0)
     ? (() => {
         const x = scaleNumber(options.temporary?.x ?? 0, xDomain, xRange, options.xScale);
@@ -791,8 +819,9 @@ function renderScatter(options: SvgFigureOptions): string {
     legend.markup,
     axisMarkup({ xDomain, yDomain, xScale: options.xScale, yScale: options.yScale, xLabel: `${xMeta.label} (${xMeta.displayUnit})`, yLabel: `${yMeta.label} (${yMeta.displayUnit})`, margin, powerLogTicks: options.kind === "ashby" }),
     regions,
-    `<g clip-path="url(#plot-clip)">${markers}${temporary}</g>`,
-    renderCallouts(options.records, points, options.y, margin)
+    requirementSummary,
+    `<g clip-path="url(#plot-clip)">${requirement}${markers}${temporary}</g>`,
+    options.showCallouts !== false ? renderCallouts(options.records, points, options.y, margin) : ""
   ].join("");
   return documentShell(body, title, margin, options.interactive, options.documentMetadata, options.kind);
 }
@@ -891,7 +920,7 @@ function renderTrend(options: SvgFigureOptions): string {
       const point = points.get(record.record_id) as Point;
       return pointMarkup(record, point.x, point.y, options);
     }).join("")}</g>`,
-    renderCallouts(records, points, options.y, margin)
+    options.showCallouts !== false ? renderCallouts(records, points, options.y, margin) : ""
   ].join("");
   return documentShell(body, `${yMeta.label} by publication year`, margin, options.interactive, options.documentMetadata, options.kind);
 }

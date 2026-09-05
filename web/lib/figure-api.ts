@@ -28,6 +28,8 @@ export type FigureRequest = {
   formats?: FigureFormat[];
   filters?: Record<string, unknown>;
   comparison_grades?: ComparabilityGrade[];
+  minimum_x?: number;
+  show_callouts?: boolean;
 };
 
 export type FigureTopPoint = {
@@ -89,6 +91,15 @@ export type FigureResponse = {
   selected_record: PlotRecord | null;
   counts: FigureCounts;
   comparability: FigureComparability;
+  requirement: {
+    minimum_x: number;
+    x_unit: string;
+    qualifying_count: number;
+    cohort_count: number;
+    best: FigureTopPoint | null;
+    best_tie_count: number;
+    temporary_meets_requirement: boolean | null;
+  } | null;
 };
 
 export type ExplorerBootstrap = {

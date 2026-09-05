@@ -166,6 +166,18 @@ class FakeClient(CPTClient):
 
 
 class CPTClientTests(unittest.TestCase):
+    def test_minimum_requirement_uses_display_units_and_manifest(self):
+        client = FakeClient()
+        figure = client.scatter("specific_strength", "specific_electrical_conductivity", minimum_x=2)
+        self.assertEqual(client.calls[-1][3]["minimum_x"], 2)
+        self.assertNotIn("minimum_x", client.calls[-1][3]["filters"])
+        self.assertEqual(figure.reproducibility_manifest()["request"]["minimum_x"], 2)
+        for invalid in (-1, True, "2", float("nan"), float("inf")):
+            with self.assertRaises(CPTValidationError):
+                client.scatter("specific_strength", "specific_electrical_conductivity", minimum_x=invalid)
+        with self.assertRaises(CPTValidationError):
+            client.trend("specific_strength", "specific_electrical_conductivity", minimum_x=2)
+
     def test_live_service_is_the_default_endpoint(self):
         with patch.dict(os.environ, {"CPT_API_URL": ""}):
             self.assertEqual(CPTClient().base_url, "https://carbonnanotubes.onrender.com/api/v1")
@@ -214,6 +226,21 @@ class CPTClientTests(unittest.TestCase):
         for query, limit in (("", 10), ("x", 10), ("CNT", 0), ("CNT", 26), ("CNT", True)):
             with self.assertRaises(CPTValidationError):
                 client.search(query, limit=limit)
+
+    def test_figure_visibility_options_are_not_data_filters(self):
+        client = FakeClient()
+        default = client.scatter("specific_strength", "specific_electrical_conductivity")
+        self.assertTrue(client.calls[-1][3]["show_callouts"])
+        figure = client.scatter("specific_strength", "specific_electrical_conductivity",
+                                minimum_x=2, show_callouts=False)
+        body = client.calls[-1][3]
+        self.assertFalse(body["show_callouts"])
+        self.assertNotIn("show_callouts", body["filters"])
+        self.assertEqual(figure.point_count, default.point_count)
+        self.assertFalse(figure.reproducibility_manifest()["request"]["show_callouts"])
+        for invalid in (None, 0, "false"):
+            with self.subTest(value=invalid), self.assertRaises(CPTValidationError):
+                client.scatter("specific_strength", "specific_electrical_conductivity", show_callouts=invalid)
 
     def test_scatter_uses_one_server_side_artifact_request(self):
         client = FakeClient()

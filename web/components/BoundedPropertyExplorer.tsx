@@ -10,6 +10,7 @@ import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/dat
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
 type NumericFilterKey = "density" | "diameter" | "gauge_length_mm" | "temperature_C";
 type NumericFilterState = Record<NumericFilterKey, { min: string; max: string }>;
+const REQUIREMENT_Y_PROPERTIES = new Set<PropertyKey>(["ampacity", "breaking_strain", "electrical_conductivity", "initial_modulus", "specific_electrical_conductivity", "specific_modulus", "specific_strength", "specific_thermal_conductivity", "tensile_strength", "thermal_conductivity", "work_of_rupture"]);
 
 type SearchResult = {
   key: string;
@@ -200,6 +201,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const [yearMin, setYearMin] = useState(initialYearMin);
   const [yearMax, setYearMax] = useState(initialYearMax);
   const [numericFilters, setNumericFilters] = useState<NumericFilterState>(() => emptyNumericFilters());
+  const [minimumX, setMinimumX] = useState("");
+  const [showCallouts, setShowCallouts] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [figure, setFigure] = useState<FigureResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -268,8 +271,10 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     formats: ["svg"],
     top: 0,
     comparison_grades: ["A", "B", "C", "D"],
-    filters
-  }), [filters, highlightedIds, plotType, selectedId, xEffective, xKey, yEffective, yKey]);
+    filters,
+    minimum_x: isXy && REQUIREMENT_Y_PROPERTIES.has(yKey) ? numeric(minimumX) ?? undefined : undefined,
+    show_callouts: showCallouts
+  }), [filters, highlightedIds, isXy, minimumX, plotType, selectedId, showCallouts, xEffective, xKey, yEffective, yKey]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -353,6 +358,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     setYearMin(initialYearMin);
     setYearMax(initialYearMax);
     setNumericFilters(emptyNumericFilters());
+    setMinimumX("");
+    setShowCallouts(true);
     setSelectedId(null);
     setSearchQuery("");
   }
@@ -396,6 +403,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
           body: JSON.stringify({
             ...requestBody,
             kind: key,
+            minimum_x: key === "scatter" || key === "ashby" ? requestBody.minimum_x : undefined,
             x_scale: key === "ashby" ? "log" : xScale,
             y_scale: key === "ashby" ? "log" : yScale,
             highlight_record_ids: [],
@@ -521,7 +529,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
             <div className="rail-heading">Plot setup</div>
             {isXy ? <>
               <label className="field-label" htmlFor="x-property">X property</label>
-              <select id="x-property" value={xKey} onChange={(event) => { setXKey(event.target.value as PropertyKey); setSelectedId(null); }}>
+              <select id="x-property" value={xKey} onChange={(event) => { setXKey(event.target.value as PropertyKey); setMinimumX(""); setSelectedId(null); }}>
                 {properties.map((property) => <option key={property.key} value={property.key}>{property.label}</option>)}
               </select>
               <p className="unit-hint">({xMeta.displayUnit})</p>
@@ -529,7 +537,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
                 <button className={xEffective === "linear" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setXScale("linear")}>Linear</button>
                 <button className={xEffective === "log" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setXScale("log")}>Log</button>
               </div>
-              <button className="swap-button" type="button" title="Swap axes" onClick={() => { const oldX = xKey; setXKey(yKey); setYKey(oldX); setXScale(yScale); setYScale(xScale); setSelectedId(null); }}><ArrowLeftRight size={15}/></button>
+              <button className="swap-button" type="button" title="Swap axes" onClick={() => { const oldX = xKey; setXKey(yKey); setYKey(oldX); setXScale(yScale); setYScale(xScale); setMinimumX(""); setSelectedId(null); }}><ArrowLeftRight size={15}/></button>
             </> : null}
             <label className="field-label" htmlFor="y-property">{isXy ? "Y property" : "Property"}</label>
             <select id="y-property" value={yKey} onChange={(event) => { setYKey(event.target.value as PropertyKey); setSelectedId(null); }}>
@@ -540,6 +548,17 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
               <button className={yEffective === "linear" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setYScale("linear")}>Linear</button>
               <button className={yEffective === "log" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setYScale("log")}>Log</button>
             </div>
+          </section>
+
+          {isXy && REQUIREMENT_Y_PROPERTIES.has(yKey) ? <section className="rail-section requirement-controls">
+            <div className="rail-heading">Performance requirement</div>
+            <label className="field-label" htmlFor="minimum-x">Minimum {xMeta.label}</label>
+            <div className="requirement-input"><input id="minimum-x" type="number" min="0" step="any" placeholder="None" value={minimumX} onChange={(event) => { setMinimumX(event.target.value); setSelectedId(null); }}/><span>{xMeta.displayUnit}</span><button type="button" className="icon-button" aria-label="Clear performance requirement" onClick={() => setMinimumX("")} disabled={!minimumX}><X size={14}/></button></div>
+            {figure?.requirement ? <div className="requirement-result" aria-live="polite"><strong>{figure.requirement.qualifying_count} qualifying pairs</strong><span>{figure.requirement.best ? `Best reported: ${figure.requirement.best.y_value.toLocaleString(undefined, { maximumSignificantDigits: 4 })} ${figure.requirement.best.y_unit}` : "No qualifying record"}</span></div> : null}
+          </section> : null}
+
+          <section className="rail-section"><div className="rail-heading">Figure labels</div>
+            <label className="figure-option-row" title="Source and metal labels on Scatter, Trend, and Ashby; also applies to downloads"><input type="checkbox" checked={showCallouts} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
           </section>
 
           <section className="rail-section"><div className="rail-heading">Source class</div>

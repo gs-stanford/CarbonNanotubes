@@ -227,6 +227,64 @@ An empty bound means unbounded. A property may occur only once in
 assessment. These grades describe the support for the active property pair;
 they do not establish that test methods are equivalent across papers.
 
+### Apply a minimum performance requirement
+
+In Scatter or Ashby, `minimum_x` sets an inclusive minimum on the x property in
+**displayed axis units**. This is different from canonical-SI `measurement_filter`.
+The comparison retains every eligible paired coordinate after exact
+within-publication deduplication, rather than selecting one representative per paper.
+
+```python
+figure = cpt.scatter(
+    "specific strength", "specific conductivity",
+    minimum_x=2.0,                 # N/tex, not N m/kg
+    form_factor="fiber_yarn",
+    peer_reviewed=True,
+    top=3, top_by="y",
+    formats=("svg", "png", "pdf"),
+)
+figure.save_bundle("strength-requirement")
+print(figure.requirement)          # Counts and one citation-linked qualifying leader
+print(figure.top_table())          # Requested top rows from qualifying pairs only
+```
+
+The dashed red line marks the minimum requirement; the gray region and muted
+points fall below it. A black ring marks the current qualifying leader(s).
+No connecting curve is drawn between records. The requirement remains visible in SVG,
+PNG and PDF, and is stored in the bundle manifest. The summary includes
+`best_tie_count`; one tied record is returned as `best`. If none qualify, `best`
+is `None` and the top table is empty, while the context figure remains available.
+
+The y property must be a supported higher-is-better performance metric.
+The result describes reported record-level pairs, not validated engineering
+allowables. Temporary-point ranks retain their full plotted-cohort meaning;
+`figure.requirement["temporary_meets_requirement"]` reports cutoff eligibility
+separately. Density, source, family and other filters still define the cohort.
+
+### Control figure annotations
+
+`show_callouts` defaults to `True` and applies to the interactive view and every
+requested SVG, PNG, and PDF. The website has a matching Point callouts checkbox.
+
+```python
+figure = cpt.scatter(
+    "specific strength", "specific conductivity",
+    minimum_x=2.0,
+    show_callouts=False,           # Hide automatic source and metal callouts
+    formats=("svg", "png", "pdf"),
+)
+figure.save_bundle("clean-comparison")
+```
+
+The red cutoff, qualifying count, best-record selection, and citation files are
+unchanged. Ranked row labels, axis labels, legends, and user-supplied temporary
+sample labels remain visible. `show_callouts` applies to Scatter, Trend, and
+Ashby. This setting is saved in the reproducibility manifest and is a JSON
+boolean in REST requests.
+
+These options require the updated server and the Python client from this checkout
+until the next packaged SDK release.
+
 ## 7. Benchmark a temporary sample
 
 A temporary point is rendered and ranked but is never stored in CPT and is not

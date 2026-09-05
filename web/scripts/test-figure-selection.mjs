@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { chromium } from "playwright-core";
 
 const baseUrl = (process.env.CPT_TEST_URL ?? "http://localhost:3001").replace(/\/$/, "");
 
@@ -12,35 +13,33 @@ async function requestFigure(body) {
   return response.json();
 }
 
-function calloutsFrom(svg) {
-  return Array.from(
-    svg.matchAll(/<line class="label-leader" x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"\/><text class="point-label" x="([^"]+)" y="([^"]+)"(?: text-anchor="[^"]+")?>([^<]+)<\/text>/g),
-    (match) => {
-      const text = match[7];
-      const pointX = Number(match[1]);
-      const pointY = Number(match[2]);
-      const leaderX = Number(match[3]);
-      const leaderY = Number(match[4]);
-      const x0 = Number(match[5]);
-      const y0 = Number(match[6]) - 11;
-      const width = Math.min(Math.max(text.length * 5.7 + 4, 32), 210);
-      return {
-        text,
-        leaderLength: Math.hypot(leaderX - pointX, leaderY - pointY),
-        x0,
-        y0,
-        x1: x0 + width,
-        y1: y0 + 16
-      };
-    }
-  );
+async function calloutsFrom(svg) {
+  const browser = await chromium.launch({headless: true, executablePath: process.env.CPT_CHROME_PATH
+    ?? (process.platform === "darwin" ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : undefined)});
+  try {
+    const page = await browser.newPage();
+    await page.setContent(svg.replace(/<\?xml[^>]*>/, ""));
+    await page.evaluate(() => document.fonts.ready);
+    return await page.locator(".point-label").evaluateAll(labels => labels.map(label => {
+      const box = label.getBBox();
+      const line = label.previousElementSibling;
+      const pointX = Number(line.getAttribute("x1"));
+      const pointY = Number(line.getAttribute("y1"));
+      const leaderX = Number(line.getAttribute("x2"));
+      const leaderY = Number(line.getAttribute("y2"));
+      return {text:label.textContent, x0:box.x, y0:box.y, x1:box.x+box.width, y1:box.y+box.height,
+        leaderLength:Math.hypot(leaderX-pointX, leaderY-pointY),
+        gap:Math.hypot(Math.max(box.x-leaderX, 0, leaderX-box.x-box.width), Math.max(box.y-leaderY, 0, leaderY-box.y-box.height))};
+    }));
+  } finally { await browser.close(); }
 }
 
-function validateCallouts(figure, label, requiredMetals = []) {
+async function validateCallouts(figure, label, requiredMetals = []) {
   const svg = figure.images.svg;
   assert.ok(svg.includes("<svg"));
   assert.ok(figure.point_count > 0);
-  const callouts = calloutsFrom(svg);
+  const callouts = await calloutsFrom(svg);
+  assert.ok(callouts.length, `${label}: callout checks must not silently skip missing annotations`);
 
   for (const metal of requiredMetals) {
     assert.equal(
@@ -51,6 +50,7 @@ function validateCallouts(figure, label, requiredMetals = []) {
   }
   for (const callout of callouts) {
     assert.ok(callout.leaderLength >= 5, `${label}: '${callout.text}' label covers its own marker.`);
+    assert.ok(callout.gap <= 5, `${label}: '${callout.text}' has a ${callout.gap.toFixed(1)} px gap from its leader.`);
   }
   for (let index = 0; index < callouts.length; index += 1) {
     for (let other = index + 1; other < callouts.length; other += 1) {
@@ -70,7 +70,7 @@ const specificFigure = await requestFigure({
   y_scale: "log",
   filters: {}
 });
-const specificCallouts = validateCallouts(
+const specificCallouts = await validateCallouts(
   specificFigure,
   "specific conductivity vs specific strength",
   ["Al", "Cu", "Ag", "Au", "Ni", "Steel"]
@@ -91,7 +91,7 @@ const tensileFigure = await requestFigure({
     ]
   }
 });
-const tensileCallouts = validateCallouts(
+const tensileCallouts = await validateCallouts(
   tensileFigure,
   "specific conductivity vs tensile strength",
   ["Al", "Cu"]

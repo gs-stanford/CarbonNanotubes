@@ -137,6 +137,8 @@ class CPTClient:
         formats: Sequence[str] = ("svg", "png"),
         comparison_grades: Sequence[str] = ("A", "B", "C", "D"),
         release: str | None = None,
+        minimum_x: float | None = None,
+        show_callouts: bool = True,
         **filters: Any,
     ) -> RenderedFigure:
         """Request a rendered figure and, optionally, at most ten exact top rows."""
@@ -166,6 +168,8 @@ class CPTClient:
         if normalized_kind == "ashby":
             log_x = True
             log_y = True
+        if not isinstance(show_callouts, bool):
+            raise CPTValidationError("show_callouts must be a boolean.")
         body: dict[str, Any] = {
             "kind": normalized_kind,
             "x": x_key,
@@ -176,12 +180,20 @@ class CPTClient:
             "top_by": top_by,
             "formats": list(normalized_formats),
             "comparison_grades": list(normalized_grades),
+            "show_callouts": show_callouts,
             "filters": dict(filters),
         }
         if release is not None:
             if not isinstance(release, str) or not release.strip() or len(release.strip()) > 160:
                 raise CPTValidationError("release must be a non-empty string of at most 160 characters.")
             body["release"] = release.strip()
+        if minimum_x is not None:
+            import math
+            if isinstance(minimum_x, bool) or not isinstance(minimum_x, (int, float)) or not math.isfinite(minimum_x) or minimum_x < 0:
+                raise CPTValidationError("minimum_x must be a finite nonnegative number in displayed x-axis units.")
+            if normalized_kind not in {"scatter", "ashby"}:
+                raise CPTValidationError("minimum_x is supported only for scatter and ashby figures.")
+            body["minimum_x"] = minimum_x
         if temporary is not None:
             body["temporary"] = {"x": temporary.x, "y": temporary.y, "label": temporary.label}
         payload = self._request("figures", method="POST", body=body)

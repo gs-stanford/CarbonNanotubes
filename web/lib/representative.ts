@@ -132,6 +132,19 @@ export function representativeRecords(
     : deduplicated;
 }
 
+export function pairedRequirementRecords(records: PlotRecord[], x: PropertyKey, y: PropertyKey): PlotRecord[] {
+  const seen = new Set<string>();
+  return records.slice().sort((a, b) => sourceRank(a) - sourceRank(b) || a.record_id.localeCompare(b.record_id))
+    .filter((record) => {
+      if (!Number.isFinite(record.values[x]) || !Number.isFinite(record.values[y])) return false;
+      // Exact within-publication coordinate repeats only; preserve trade-offs within a paper.
+      const key = JSON.stringify([publicationKey(record), record.material_family, record.form_factor, record.values[x], record.values[y]]);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
 function rankingAxis(topBy: FigureTopAxis, x: PropertyKey, y: PropertyKey): "x" | "y" {
   if (topBy === "auto") {
     if (PERFORMANCE_PROPERTIES.has(y)) return "y";
