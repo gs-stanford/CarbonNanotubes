@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 const baseUrl = (process.env.CPT_TEST_URL ?? "http://localhost:3001").replace(/\/$/, "");
 
@@ -51,6 +52,18 @@ assert.equal(index.endpoints.plot, undefined);
 const release = await getJson("/api/v1/release");
 assert.equal(release.release.record_count, index.release.record_count);
 assert.ok(["bundled_csv", "postgresql"].includes(release.release.backend));
+
+const healthResponse = await fetch(`${baseUrl}/api/health/data`);
+assert.equal(healthResponse.status, 200);
+const health = await healthResponse.json();
+const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+assert.equal(health.status, "ok");
+assert.equal(health.backend, release.release.backend);
+assert.equal(health.build.next_version, packageJson.dependencies.next);
+assert.ok(health.build.commit === null || /^[0-9a-f]{40}$/i.test(health.build.commit));
+if (process.env.CPT_EXPECTED_COMMIT) {
+  assert.equal(health.build.commit, process.env.CPT_EXPECTED_COMMIT);
+}
 
 const knownDoi = await getJson(`/api/v1/doi-status?doi=${encodeURIComponent("https://doi.org/10.1126/science.adj1082")}`);
 assert.equal(knownDoi.in_database, true);
@@ -260,6 +273,40 @@ assert.ok(openapi.paths["/api/v1/doi-status"]);
 assert.ok(openapi.paths["/api/v1/search"]);
 assert.equal(openapi.paths["/api/v1/records"], undefined);
 assert.equal(openapi.paths["/api/v1/plot"], undefined);
+
+for (const [path, method] of [
+  ["/api/admin/submissions", "GET"],
+  ["/api/admin/submissions/cpt-auth-test", "PATCH"],
+  ["/api/admin/submissions/cpt-auth-test/cleanup", "POST"],
+  ["/api/submissions/cpt-auth-test/cleanup", "POST"]
+]) {
+  for (const headers of [{}, { authorization: "Bearer invalid-cpt-regression-token" }]) {
+    const response = await fetch(`${baseUrl}${path}`, { method, headers });
+    const body = await response.json();
+    assert.ok([401, 503].includes(response.status), `${path} did not reject unauthorized access`);
+    assert.equal(body.error.code, response.status === 401 ? "admin_unauthorized" : "admin_token_not_configured");
+    assert.equal(body.submissions, undefined);
+    assert.equal(body.submission, undefined);
+  }
+}
+
+const malformedSubmission = await fetch(`${baseUrl}/api/submissions`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: "{"
+});
+assert.equal(malformedSubmission.status, 400);
+assert.equal((await malformedSubmission.json()).error.code, "invalid_json");
+
+const invalidDoiSubmission = await fetch(`${baseUrl}/api/submissions`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ publication: { doi: "not-a-doi" } })
+});
+const invalidDoiSubmissionBody = await invalidDoiSubmission.json();
+assert.equal(invalidDoiSubmission.status, release.release.backend === "postgresql" ? 422 : 503);
+assert.equal(invalidDoiSubmissionBody.error.code,
+  release.release.backend === "postgresql" ? "invalid_doi_format" : "submission_storage_unavailable");
 
 if (release.release.backend === "bundled_csv") {
   const incompleteSubmissionResponse = await fetch(`${baseUrl}/api/submissions`, {
