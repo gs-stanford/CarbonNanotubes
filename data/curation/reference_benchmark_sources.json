@@ -1,0 +1,558 @@
+{
+  "retrieved_date": "2026-10-01",
+  "benchmarks": [
+    {
+      "id": "pure-sodium-293K-chi1979",
+      "label": "Na",
+      "sample_name": "Sodium, solid BCC, evaluated reference at 293 K",
+      "material_family": "metal_comparator",
+      "form_factor": "bulk",
+      "material_subclass": "pure-metal reference",
+      "source_label": "Chi (1979), Electrical resistivity of alkali elements, Tables 1 and 10",
+      "dois": [
+        "10.1063/1.555598"
+      ],
+      "source_citation_class": "peer_reviewed_comparator",
+      "condition_temperature_C": 19.85,
+      "density_basis": "separate_reference_density_293K",
+      "conditions_notes": "Solid BCC sodium at 293 K. Electrical table specifies 99.99+% purity; density is a separate physical constant whose purity is not specified. Table 1 constants were not critically evaluated. Total resistivity, not intrinsic resistivity. Not a same-specimen pair; no tensile-strength or thermal-conductivity claim.",
+      "facts": {
+        "density": {
+          "value": 0.9712,
+          "unit": "10^3 kg/m^3",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555598.pdf",
+          "source_locator": "Table 1, printed p.342, sodium row; footnote c: 293 K",
+          "condition": "293 K; physical constant not critically evaluated"
+        },
+        "electrical_resistivity": {
+          "value": 4.77,
+          "unit": "10^-8 Ohm m",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555598.pdf",
+          "source_locator": "Table 10, printed p.363, 293 K row, total resistivity column",
+          "condition": "293 K; sodium 99.99+%; evaluated reference"
+        }
+      }
+    },
+    {
+      "id": "pure-calcium-293K-chi1979",
+      "label": "Ca",
+      "sample_name": "Calcium, solid alpha FCC, evaluated reference at 293 K",
+      "material_family": "metal_comparator",
+      "form_factor": "bulk",
+      "material_subclass": "pure-metal reference",
+      "source_label": "Chi (1979), Electrical resistivity of alkaline earth elements, Tables 1 and 9",
+      "dois": [
+        "10.1063/1.555599"
+      ],
+      "source_citation_class": "peer_reviewed_comparator",
+      "condition_temperature_C": 19.85,
+      "density_basis": "separate_reference_density_293K",
+      "conditions_notes": "Solid alpha FCC calcium at 293 K. Electrical table specifies 99.96+% purity; density is a separate physical constant whose purity is not specified. Table 1 constants were not critically evaluated. Total resistivity, not intrinsic resistivity. Not a same-specimen pair; no tensile-strength claim. Estimated calcium thermal conductivity is intentionally not included as a measured value.",
+      "facts": {
+        "density": {
+          "value": 1.55,
+          "unit": "10^3 kg/m^3",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555599.pdf",
+          "source_locator": "Table 1, printed p.441, calcium row; footnote c: 293 K",
+          "condition": "293 K; physical constant not critically evaluated"
+        },
+        "electrical_resistivity": {
+          "value": 3.36,
+          "unit": "10^-8 Ohm m",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555599.pdf",
+          "source_locator": "Table 9, printed p.470, 293 K row, total resistivity column",
+          "condition": "293 K; calcium 99.96+%; evaluated reference"
+        }
+      }
+    },
+    {
+      "id": "pure-lithium-293K-chi1979",
+      "label": "Li",
+      "sample_name": "Lithium, solid BCC, evaluated reference at 293 K",
+      "material_family": "metal_comparator",
+      "form_factor": "bulk",
+      "material_subclass": "pure-metal reference",
+      "source_label": "Chi (1979), Electrical resistivity of alkali elements, Tables 1 and 3",
+      "dois": [
+        "10.1063/1.555598"
+      ],
+      "source_citation_class": "peer_reviewed_comparator",
+      "condition_temperature_C": 19.85,
+      "density_basis": "separate_reference_density_293K",
+      "conditions_notes": "Solid lithium at 293 K; electrical purity 99.98+%. Separate reference density is not a co-measured specimen property or a critically evaluated recommended density. No inferred mechanical properties.",
+      "facts": {
+        "density": {
+          "value": 0.534,
+          "unit": "10^3 kg/m^3",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555598.pdf",
+          "source_locator": "Table 1, printed p.342, lithium row; footnote c: 293 K",
+          "condition": "293 K"
+        },
+        "electrical_resistivity": {
+          "value": 9.28,
+          "unit": "10^-8 Ohm m",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555598.pdf",
+          "source_locator": "Table 3, printed p.347, 293 K row, total resistivity",
+          "condition": "293 K; lithium 99.98+%"
+        }
+      }
+    },
+    {
+      "id": "pure-potassium-293K-chi1979",
+      "label": "K",
+      "sample_name": "Potassium, solid BCC, evaluated reference at 293 K",
+      "material_family": "metal_comparator",
+      "form_factor": "bulk",
+      "material_subclass": "pure-metal reference",
+      "source_label": "Chi (1979), Electrical resistivity of alkali elements, Tables 1 and 17",
+      "dois": [
+        "10.1063/1.555598"
+      ],
+      "source_citation_class": "peer_reviewed_comparator",
+      "condition_temperature_C": 19.85,
+      "density_basis": "separate_reference_density_293K",
+      "conditions_notes": "Solid potassium at 293 K; electrical purity 99.99+%. Separate reference density is not a co-measured specimen property or a critically evaluated recommended density. No inferred mechanical properties.",
+      "facts": {
+        "density": {
+          "value": 0.871,
+          "unit": "10^3 kg/m^3",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555598.pdf",
+          "source_locator": "Table 1, printed p.342, potassium row; footnote c: 293 K",
+          "condition": "293 K"
+        },
+        "electrical_resistivity": {
+          "value": 7.2,
+          "unit": "10^-8 Ohm m",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555598.pdf",
+          "source_locator": "Table 17, printed p.383, 293 K row, total resistivity",
+          "condition": "293 K; potassium 99.99+%"
+        }
+      }
+    },
+    {
+      "id": "pure-magnesium-293K-chi1979",
+      "label": "Mg",
+      "sample_name": "Magnesium, solid polycrystalline HCP, evaluated reference at 293 K",
+      "material_family": "metal_comparator",
+      "form_factor": "bulk",
+      "material_subclass": "pure-metal reference",
+      "source_label": "Chi (1979), Electrical resistivity of alkaline earth elements, Tables 1 and 6",
+      "dois": [
+        "10.1063/1.555599"
+      ],
+      "source_citation_class": "peer_reviewed_comparator",
+      "condition_temperature_C": 19.85,
+      "density_basis": "separate_reference_density_293K",
+      "conditions_notes": "Polycrystalline solid magnesium at 293 K; electrical purity 99.9+%. Separate reference density is not a co-measured specimen property or a critically evaluated recommended density. No inferred mechanical properties.",
+      "facts": {
+        "density": {
+          "value": 1.74,
+          "unit": "10^3 kg/m^3",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555599.pdf",
+          "source_locator": "Table 1, printed p.441, magnesium row; footnote c: 293 K",
+          "condition": "293 K"
+        },
+        "electrical_resistivity": {
+          "value": 4.39,
+          "unit": "10^-8 Ohm m",
+          "source_url": "https://srd.nist.gov/jpcrdreprint/1.555599.pdf",
+          "source_locator": "Table 6, printed p.459, 293 K row, total resistivity",
+          "condition": "293 K; polycrystalline magnesium 99.9+%"
+        }
+      }
+    },
+    {
+      "id": "toray-t1200",
+      "label": "T1200",
+      "sample_name": "T1200",
+      "material_family": "carbon_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PAN carbon fiber",
+      "source_label": "Toray | T1200 grade table under Intermediate Modulus",
+      "source_revision": null,
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: manufacturer tensile modulus; interval unspecified",
+      "conditions_notes": "Use direct SI selector values. Do not convert rounded 46 Msi from the 2023 announcement and replace 315 GPa. Tow and sizing left unspecified for this source. Modulus is manufacturer tensile modulus; interval unspecified; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 1.82,
+          "unit": "g/cm^3",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "T1200 grade table under Intermediate Modulus",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 8000,
+          "unit": "MPa",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "T1200 grade table under Intermediate Modulus",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 315,
+          "unit": "GPa",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "T1200 grade table under Intermediate Modulus",
+          "test_standard": null,
+          "measurement_definition": "manufacturer tensile modulus; interval unspecified",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 2.5,
+          "unit": "%",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "T1200 grade table under Intermediate Modulus",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    },
+    {
+      "id": "toray-m40x",
+      "label": "M40X",
+      "sample_name": "M40X",
+      "material_family": "carbon_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PAN carbon fiber",
+      "source_label": "Toray | High Modulus, M40X grade table",
+      "source_revision": null,
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: manufacturer tensile modulus; interval unspecified",
+      "conditions_notes": "Distinct from existing M40J/M40JB; do not borrow their density or conductivity. Modulus is manufacturer tensile modulus; interval unspecified; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 1.79,
+          "unit": "g/cm^3",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "High Modulus, M40X grade table",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 5500,
+          "unit": "MPa",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "High Modulus, M40X grade table",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 377,
+          "unit": "GPa",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "High Modulus, M40X grade table",
+          "test_standard": null,
+          "measurement_definition": "manufacturer tensile modulus; interval unspecified",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 1.5,
+          "unit": "%",
+          "source_url": "https://toray-cfe.com/en/products/torayca-carbon-fibers/product-selector/",
+          "source_locator": "High Modulus, M40X grade table",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    },
+    {
+      "id": "hexcel-im11-12k",
+      "label": "HexTow IM11",
+      "sample_name": "HexTow IM11",
+      "material_family": "carbon_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PAN carbon fiber",
+      "source_label": "Hexcel | PDF p.1 Typical Fiber Properties; packaging table",
+      "source_revision": null,
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: chord 1000-6000 microstrain",
+      "conditions_notes": "Never twisted. Same mechanical values cover 6K and 12K; propose only one record. Modulus is chord 1000-6000 microstrain; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 1.79,
+          "unit": "g/cm^3",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2026/02/IM11_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; packaging table",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 6600,
+          "unit": "MPa",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2026/02/IM11_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; packaging table",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 324,
+          "unit": "GPa",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2026/02/IM11_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; packaging table",
+          "test_standard": null,
+          "measurement_definition": "chord 1000-6000 microstrain",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 2.0,
+          "unit": "%",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2026/02/IM11_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; packaging table",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    },
+    {
+      "id": "hexcel-im9-24k",
+      "label": "HexTow IM9",
+      "sample_name": "HexTow IM9",
+      "material_family": "carbon_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PAN carbon fiber",
+      "source_label": "Hexcel | PDF p.1 Typical Fiber Properties; p.2 CTA 535 NV25",
+      "source_revision": null,
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: chord 1000-6000 microstrain",
+      "conditions_notes": "Never twisted; manufacturer typical fiber values, not laminate values. Modulus is chord 1000-6000 microstrain; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 1.79,
+          "unit": "g/cm^3",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2025/12/IM9_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; p.2 CTA 535 NV25",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 6300,
+          "unit": "MPa",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2025/12/IM9_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; p.2 CTA 535 NV25",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 294,
+          "unit": "GPa",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2025/12/IM9_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; p.2 CTA 535 NV25",
+          "test_standard": null,
+          "measurement_definition": "chord 1000-6000 microstrain",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 1.9,
+          "unit": "%",
+          "source_url": "https://www.hexcel.com/wp-content/uploads/2025/12/IM9_HexTow_DataSheet.pdf",
+          "source_locator": "PDF p.1 Typical Fiber Properties; p.2 CTA 535 NV25",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    },
+    {
+      "id": "toray-m55jb-6k",
+      "label": "M55J 6K / M55JB 6K 50B",
+      "sample_name": "M55J 6K / M55JB 6K 50B",
+      "material_family": "carbon_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PAN carbon fiber",
+      "source_label": "Toray | PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+      "source_revision": "2025-04-22",
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: manufacturer tensile modulus TY-030B-01",
+      "conditions_notes": "Lot-average reference values. Adjacent 60% fiber-volume composite values excluded. Conductivity direction and temperature unspecified. Modulus is manufacturer tensile modulus TY-030B-01; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 1.91,
+          "unit": "g/cm^3",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M55J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-02",
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 4020,
+          "unit": "MPa",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M55J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-01",
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 540,
+          "unit": "GPa",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M55J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-01",
+          "measurement_definition": "manufacturer tensile modulus TY-030B-01",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 0.8,
+          "unit": "%",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M55J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-01",
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "electrical_resistivity": {
+          "value": 0.0008,
+          "unit": "Ohm cm",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M55J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+          "test_standard": null,
+          "measurement_definition": "M55J grade functional-property table; no separate tow-specific measurement stated",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "thermal_conductivity": {
+          "value": 1.556,
+          "unit": "J/(cm s degC)",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M55J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties and Functional Properties; revision p.2",
+          "test_standard": null,
+          "measurement_definition": "M55J grade functional-property table; no separate tow-specific measurement stated",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    },
+    {
+      "id": "toray-m46jb-6k",
+      "label": "M46J 6K / M46JB 6K 50B",
+      "sample_name": "M46J 6K / M46JB 6K 50B",
+      "material_family": "carbon_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PAN carbon fiber",
+      "source_label": "Toray | PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+      "source_revision": "2025-04-22",
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: manufacturer tensile modulus TY-030B-01",
+      "conditions_notes": "Lot-average reference values. Do not mix 6K strength/strain with 12K 4020 MPa/0.9%. Conductivity precision is arithmetic, not experimental precision. Modulus is manufacturer tensile modulus TY-030B-01; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 1.84,
+          "unit": "g/cm^3",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M46J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-02",
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 4200,
+          "unit": "MPa",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M46J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-01",
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 436,
+          "unit": "GPa",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M46J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-01",
+          "measurement_definition": "manufacturer tensile modulus TY-030B-01",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 1.0,
+          "unit": "%",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M46J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+          "test_standard": "TY-030B-01",
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "electrical_resistivity": {
+          "value": 0.0009,
+          "unit": "Ohm cm",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M46J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+          "test_standard": null,
+          "measurement_definition": "M46J grade functional-property table; not separately resolved between 6K and 12K",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "thermal_conductivity": {
+          "value": 0.836,
+          "unit": "J/(cm s degC)",
+          "source_url": "https://www.toraycma.com/wp-content/uploads/M46J-Data-Sheet.pdf",
+          "source_locator": "PDF p.1 Fiber Properties explicit 6K rows and Functional Properties; revision p.2",
+          "test_standard": null,
+          "measurement_definition": "M46J grade functional-property table; not separately resolved between 6K and 12K",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    },
+    {
+      "id": "honeywell-spectra-s1000-75den",
+      "label": "Spectra S-1000 75 (75 denier)",
+      "sample_name": "Spectra S-1000 75 (75 denier)",
+      "material_family": "polymer_fiber_comparator",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "UHMWPE fiber",
+      "source_label": "Honeywell | PDF p.1 Physical Properties (nominal), S-1000 row 75; copyright p.2",
+      "source_revision": null,
+      "density_basis": "manufacturer_nominal_grade_density",
+      "measurement_method": "Manufacturer reference fiber properties; modulus definition: manufacturer modulus; interval unspecified",
+      "conditions_notes": "Distinct exact-denier row; existing generic Spectra 1000 has 3.25 GPa/113 GPa/2.8%. Archival benchmark, current availability not confirmed. Modulus is manufacturer modulus; interval unspecified; not established as an initial tangent modulus. Strength, density, strain and functional properties are not a same-specimen pairing; no missing temperature, direction, gauge length or uncertainty is inferred.",
+      "facts": {
+        "density": {
+          "value": 0.97,
+          "unit": "g/cm^3",
+          "source_url": "https://prod-edam.honeywell.com/content/dam/honeywell-edam/pmt/oneam/en-us/high-performance-fibers/documents/honeywell-SpectraFiber-PhysicalProperties-chart.pdf",
+          "source_locator": "PDF p.1 Physical Properties (nominal), S-1000 row 75; copyright p.2",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "tensile_strength": {
+          "value": 3.68,
+          "unit": "GPa",
+          "source_url": "https://prod-edam.honeywell.com/content/dam/honeywell-edam/pmt/oneam/en-us/high-performance-fibers/documents/honeywell-SpectraFiber-PhysicalProperties-chart.pdf",
+          "source_locator": "PDF p.1 Physical Properties (nominal), S-1000 row 75; copyright p.2",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "initial_modulus": {
+          "value": 133,
+          "unit": "GPa",
+          "source_url": "https://prod-edam.honeywell.com/content/dam/honeywell-edam/pmt/oneam/en-us/high-performance-fibers/documents/honeywell-SpectraFiber-PhysicalProperties-chart.pdf",
+          "source_locator": "PDF p.1 Physical Properties (nominal), S-1000 row 75; copyright p.2",
+          "test_standard": null,
+          "measurement_definition": "manufacturer modulus; interval unspecified",
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        },
+        "breaking_strain": {
+          "value": 2.9,
+          "unit": "%",
+          "source_url": "https://prod-edam.honeywell.com/content/dam/honeywell-edam/pmt/oneam/en-us/high-performance-fibers/documents/honeywell-SpectraFiber-PhysicalProperties-chart.pdf",
+          "source_locator": "PDF p.1 Physical Properties (nominal), S-1000 row 75; copyright p.2",
+          "test_standard": null,
+          "measurement_definition": null,
+          "condition": "Manufacturer typical/nominal fiber value; conditions not specified"
+        }
+      }
+    }
+  ]
+}

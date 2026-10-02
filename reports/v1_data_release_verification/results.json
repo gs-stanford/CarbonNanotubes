@@ -1,0 +1,64 @@
+{
+  "status": "pass",
+  "tested_at": "2026-10-02T05:35:52.579Z",
+  "base_url": "http://localhost:3012",
+  "release": {
+    "release_id": "bundled-public-v0",
+    "schema_version": "carbon-property-tables-public-v0.4",
+    "source_hash": null,
+    "record_count": 1447,
+    "measurement_count": 5569,
+    "publication_count": 320,
+    "imported_at": null,
+    "backend": "bundled_csv"
+  },
+  "checks": [
+    {
+      "label": "Na",
+      "density_kg_m3": 971.2,
+      "specific_conductivity_kS_m2_kg": 21.586038495677613,
+      "doi": "10.1063/1.555598"
+    },
+    {
+      "label": "Ca",
+      "density_kg_m3": 1550,
+      "specific_conductivity_kS_m2_kg": 19.201228878648234,
+      "doi": "10.1063/1.555599"
+    },
+    {
+      "label": "Li",
+      "density_kg_m3": 534,
+      "specific_conductivity_kS_m2_kg": 20.17951698308149,
+      "doi": "10.1063/1.555598"
+    },
+    {
+      "label": "K",
+      "density_kg_m3": 871,
+      "specific_conductivity_kS_m2_kg": 15.945911468299524,
+      "doi": "10.1063/1.555598"
+    },
+    {
+      "label": "Mg",
+      "density_kg_m3": 1740,
+      "specific_conductivity_kS_m2_kg": 13.091404184012779,
+      "doi": "10.1063/1.555599"
+    },
+    {
+      "label": "T1200",
+      "modulus_GPa": 315,
+      "strength_GPa": 8
+    },
+    {
+      "label": "HexTow IM11",
+      "modulus_GPa": 324,
+      "strength_GPa": 6.6000000000000005
+    }
+  ],
+  "exports": [
+    "svg",
+    "png",
+    "pdf"
+  ],
+  "no_fabricated_tensile_strength": true,
+  "doi_lookup_preserves_disclosure_limits": true
+}

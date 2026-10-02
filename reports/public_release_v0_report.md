@@ -25,33 +25,33 @@ Generated from the internal processed and curation tables.
 
 ## Counts
 
-- Internal records assessed: 1556
-- Public candidate records: 1363
-- Public candidate measurements: 5337
-- Public source/publication rows: 271
-- Excluded internal records: 193
+- Internal records assessed: 1638
+- Public candidate records: 1447
+- Public candidate measurements: 5569
+- Public source/publication rows: 320
+- Excluded internal records: 191
 - Strict-comparison-ready records: 0
-- Normalized/exploratory candidate records: 1363/1363
+- Normalized/exploratory candidate records: 1447/1447
 
 ## Public Records By Tier
 
 | Tier | Records |
 | --- | ---: |
-| `peer_reviewed_research` | 1019 |
-| `peer_reviewed_contextual_comparator` | 281 |
-| `commercial_contextual_comparator` | 63 |
+| `peer_reviewed_research` | 1104 |
+| `peer_reviewed_contextual_comparator` | 273 |
+| `commercial_contextual_comparator` | 70 |
 
 ## Public Records By Material Family
 
 | Material family | Records |
 | --- | ---: |
-| `CNT_or_CNT_hybrid` | 987 |
-| `other_carbon_comparator` | 102 |
-| `carbon_fiber_comparator` | 100 |
-| `polymer_fiber_comparator` | 94 |
-| `metal_comparator` | 44 |
-| `CNT_metal_composite` | 22 |
-| `graphene_or_GO_fiber` | 10 |
+| `CNT_or_CNT_hybrid` | 1036 |
+| `other_carbon_comparator` | 121 |
+| `carbon_fiber_comparator` | 104 |
+| `polymer_fiber_comparator` | 73 |
+| `graphene_or_GO_fiber` | 48 |
+| `metal_comparator` | 41 |
+| `CNT_metal_composite` | 20 |
 | `ceramic_or_glass_comparator` | 4 |
 
 ## Exclusion Reasons
@@ -61,7 +61,7 @@ Generated from the internal processed and curation tables.
 | `duplicate_collapsed_into_canonical_public_record` | 100 |
 | `internal_seed_or_unresolved_source` | 78 |
 | `no_canonical_measurements` | 8 |
-| `duplicate_of_higher_priority_record` | 5 |
+| `duplicate_of_higher_priority_record` | 3 |
 | `no_canonical_measurements;internal_seed_or_unresolved_source` | 2 |
 
 ## Interpretation

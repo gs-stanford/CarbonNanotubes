@@ -1,25 +1,27 @@
 {
-  "records": 1556,
-  "measurements": 6462,
-  "publications": 274,
-  "issues": 703,
+  "records": 1638,
+  "measurements": 6679,
+  "publications": 323,
+  "issues": 764,
   "annual_progression_points": 67,
   "excluded_source_rows": 79,
   "by_source": {
     "20210409_Metaanalysis_database.xlsx": 1300,
     "RadarFigureSource.xlsx": 136,
     "XiaO_DATA.xlsx": 109,
+    "cnt_atlas_human_validation.xlsx": 70,
+    "reference_benchmarks.json": 12,
     "literature_addendum_records.tsv": 8,
     "New G fibre table Juan.xlsx": 3
   },
   "by_material_family": {
-    "CNT_or_CNT_hybrid": 1101,
-    "carbon_fiber_comparator": 155,
-    "other_carbon_comparator": 105,
-    "polymer_fiber_comparator": 98,
-    "metal_comparator": 47,
-    "CNT_metal_composite": 25,
-    "graphene_or_GO_fiber": 20,
+    "CNT_or_CNT_hybrid": 1152,
+    "carbon_fiber_comparator": 159,
+    "other_carbon_comparator": 124,
+    "polymer_fiber_comparator": 73,
+    "graphene_or_GO_fiber": 58,
+    "metal_comparator": 44,
+    "CNT_metal_composite": 23,
     "ceramic_or_glass_comparator": 5
   },
   "outputs": [

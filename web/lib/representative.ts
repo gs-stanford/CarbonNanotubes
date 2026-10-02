@@ -50,6 +50,11 @@ function metalIdentity(record: PlotRecord): string | null {
   if (/\b(silver|ag)\b/i.test(label)) return "silver";
   if (/\b(gold|au)\b/i.test(label)) return "gold";
   if (/\b(nickel|ni)\b/i.test(label)) return "nickel";
+  if (/\b(sodium|na)\b/i.test(label)) return "sodium";
+  if (/\b(calcium|ca)\b/i.test(label)) return "calcium";
+  if (/\b(lithium|li)\b/i.test(label)) return "lithium";
+  if (/(?:\bpotassium\b|^k\b)/i.test(label)) return "potassium";
+  if (/\b(magnesium|mg)\b/i.test(label)) return "magnesium";
   if (/\bsteel\b/i.test(label)) return "steel";
   return null;
 }
