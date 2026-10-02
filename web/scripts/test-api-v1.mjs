@@ -267,9 +267,13 @@ if (release.release.backend === "bundled_csv") {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ publication: { doi: "10.1038/srep00083" } })
   });
-  assert.equal(incompleteSubmissionResponse.status, 422);
   const incompleteSubmission = await incompleteSubmissionResponse.json();
-  assert.equal(incompleteSubmission.error.code, "missing_measurements");
+  if (incompleteSubmissionResponse.status === 503) {
+    assert.equal(incompleteSubmission.error.code, "submission_storage_unavailable");
+  } else {
+    assert.equal(incompleteSubmissionResponse.status, 422);
+    assert.equal(incompleteSubmission.error.code, "missing_measurements");
+  }
 }
 
 console.log(

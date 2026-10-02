@@ -267,7 +267,9 @@ def lower_text(*values: Any) -> str:
 
 
 def extract_dois(text: str | None) -> list[str]:
-    return sorted({m.group(0).rstrip(" .,)") for m in DOI_RE.finditer(text or "")})
+    return sorted({m.group(0).rstrip(" .,)];")
+                   for part in re.split(r";(?=\s*(?:https?://(?:dx\.)?doi\.org/)?10\.)", text or "")
+                   for m in DOI_RE.finditer(part)})
 
 
 def extract_urls(text: str | None) -> list[str]:
@@ -457,12 +459,15 @@ def comparison_scope(material_family: str, form_factor: str) -> str:
 
 
 def james_material_family(category: Any, category2: Any, reference: Any, notes: Any) -> str:
-    category_text = lower_text(category, category2, notes)
+    # The authors' explicit category is authoritative. Notes describe electrodes,
+    # comparison materials and processing as well as the sample itself.
+    category_text = lower_text(category)
     reference_text = lower_text(reference)
-    text = lower_text(category, category2, reference, notes)
     category2_text = lower_text(category2)
-    if "metal cnt composite" in category_text or "cnt/cu" in text or "nanotube/copper" in text:
+    if "metal cnt composite" in category_text or "cnt/cu" in category_text or "nanotube/copper" in category_text:
         return "CNT_metal_composite"
+    if category2_text == "cnt":
+        return "CNT_or_CNT_hybrid"
     if category2_text == "metal" or re.search(r"\bmetal\b", category_text) or any(token in category_text for token in ["aluminum", "aluminium", "copper", "steel", "silver", "gold", "nickel"]):
         return "metal_comparator"
     if "graphene" in category_text:
@@ -1344,6 +1349,10 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
         record_dois = set(extract_dois(record.get("doi_raw")))
         best_match: tuple[dict[str, Any], int, int] | None = None
         for other in primary_records:
+            if other.get("human_duplicate_decision") == "Different specimen":
+                continue
+            if record.get("material_family") != other.get("material_family") or record.get("form_factor") != other.get("form_factor"):
+                continue
             other_dois = set(extract_dois(other.get("doi_raw")))
             if not record_dois.intersection(other_dois):
                 continue
@@ -1371,8 +1380,44 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
     return issues
 
 
+def read_curated_records() -> list[dict[str, Any]]:
+    """Read reviewed, SI-normalized inputs with measurement-level provenance."""
+    records = []
+    for filename in ["human_validated_records.json", "reference_benchmarks.json"]:
+        path = ROOT / "data" / "curation" / filename
+        if not path.exists():
+            continue
+        payload = json.loads(path.read_text())
+        if payload.get("schema_version") != "cpt-curated-records-v1":
+            raise ValueError(f"Unsupported curated schema in {filename}")
+        for item in payload["records"]:
+            record = base_record(item["source_file"], item["source_sheet"], item["source_row"],
+                                 item["record_label"], item["sample_name"], item["citation_raw"])
+            record.update({k: v for k, v in item.items()
+                           if k not in {"values", "measurement_metadata", "validation_rows", "context_measurements", "source_facts"}})
+            record.update(item["values"])
+            if record.get("tensile_strength_Pa") is not None:
+                record["tensile_strength_GPa"] = record["tensile_strength_Pa"] / 1e9
+            if record.get("initial_modulus_Pa") is not None:
+                record["initial_modulus_GPa"] = record["initial_modulus_Pa"] / 1e9
+            record["measurement_metadata_json"] = json.dumps(item["measurement_metadata"], sort_keys=True)
+            record["raw_payload_json"] = json.dumps(item, sort_keys=True)
+            # A shared table row is not proof of a paired specimen. Only derive
+            # specimen-sensitive metrics if the curated input explicitly does so.
+            if record.get("density_kg_m3"):
+                record["specific_volume_m3_kg"] = 1 / record["density_kg_m3"]
+            records.append(record)
+    ids = [r["record_id"] for r in records]
+    if len(ids) != len(set(ids)):
+        raise ValueError("Duplicate curated record identities")
+    return records
+
+
 def measurement_source_metadata(record: dict[str, Any], prop: str) -> dict[str, Any]:
     """Preserve source-scale values without claiming unreported precision."""
+    curated = json.loads(record.get("measurement_metadata_json") or "{}")
+    if prop in curated:
+        return curated[prop]
     candidates: dict[str, list[tuple[str, str, float, str | None]]] = {
         "density": [("density_g_cm3_raw", "g/cm^3", 1e3, "density_g_cm3_error_raw")],
         "specific_volume": [("specific_volume_cm3_g_raw", "cm^3/g", 1e-3, None)],
@@ -1544,15 +1589,15 @@ def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
                     "value_canonical": value,
                     "unit_canonical": unit,
                     **source_meta,
-                    "statistic_type": clean(record.get("statistic_type")) or "unspecified",
+                    "statistic_type": clean(source_meta.get("statistic_type")) or clean(record.get("statistic_type")) or "unspecified",
                     "sample_size_n": to_float(record.get("sample_size_n")),
-                    "test_standard": clean(record.get("test_standard")),
+                    "test_standard": clean(source_meta.get("test_standard")) or clean(record.get("test_standard")),
                     "specimen_id": clean(record.get("specimen_id")),
                     "sample_batch_id": clean(record.get("sample_batch_id")),
                     "specimen_linkage": clean(record.get("specimen_linkage")) or "unknown",
                     "measurement_set_id": measurement_set_id,
                     "measurement_direction": clean(record.get("measurement_direction")),
-                    "source_locator": clean(record.get("provenance_table_figure_page")),
+                    "source_locator": clean(source_meta.get("source_locator")) or clean(record.get("provenance_table_figure_page")),
                     "extraction_method": clean(record.get("extraction_method")) or "unknown",
                     "source_file": record["source_file"],
                     "source_sheet": record["source_sheet"],
@@ -1685,6 +1730,7 @@ def main() -> None:
     EXCLUDED_ROWS.clear()
     OUT.mkdir(parents=True, exist_ok=True)
     records = []
+    records.extend(read_curated_records())
     records.extend(read_literature_addendum())
     records.extend(read_xiao())
     records.extend(read_radar_sheet("Radar"))

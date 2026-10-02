@@ -216,7 +216,7 @@ function scaleNumber(value: number, domain: [number, number], range: [number, nu
 function formatNumber(value: number): string {
   if (!Number.isFinite(value)) return "";
   if (Math.abs(value) >= 10000 || (Math.abs(value) > 0 && Math.abs(value) < 0.001)) {
-    return value.toExponential(0).replace("e+", "e");
+    return value.toExponential(2).replace(/\.?0+(?=e)/, "").replace("e+", "e");
   }
   const rounded = Math.round(value);
   if (Math.abs(value - rounded) < 1e-9) return rounded.toLocaleString("en-US");
@@ -604,6 +604,11 @@ function metalLabel(record: PlotRecord): string | null {
   if (/\b(silver|ag)\b/i.test(label)) return "Ag";
   if (/\b(gold|au)\b/i.test(label)) return "Au";
   if (/\b(nickel|ni)\b/i.test(label)) return "Ni";
+  if (/\b(sodium|na)\b/i.test(label)) return "Na";
+  if (/\b(calcium|ca)\b/i.test(label)) return "Ca";
+  if (/\b(lithium|li)\b/i.test(label)) return "Li";
+  if (/(?:\bpotassium\b|^k\b)/i.test(label)) return "K";
+  if (/\b(magnesium|mg)\b/i.test(label)) return "Mg";
   if (/\bsteel\b/i.test(label)) return "Steel";
   return label.length <= 18 ? label : "Metal";
 }
@@ -893,7 +898,7 @@ function renderTrend(options: SvgFigureOptions): string {
   const legend = renderLegend(records);
   const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom - 2) };
   const years = records.map((record) => record.publication_year_verified as number);
-  const yearMinimum = years.length ? Math.max(1991, Math.floor(Math.min(...years) / 5) * 5) : 1991;
+  const yearMinimum = years.length ? Math.floor(Math.min(...years) / 5) * 5 : 1991;
   const yearMaximumRaw = years.length ? Math.ceil(Math.max(...years) / 5) * 5 : new Date().getFullYear();
   const xDomain: [number, number] = [yearMinimum, Math.max(yearMinimum + 5, yearMaximumRaw)];
   const yDomain = extent(records.map((record) => finite(record, options.y) as number), options.yScale);

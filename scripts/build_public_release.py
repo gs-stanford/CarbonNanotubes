@@ -170,6 +170,9 @@ PUBLIC_RECORD_COLUMNS = [
     "source_file",
     "source_sheet",
     "source_row",
+    "human_duplicate_decision",
+    "material_subclass",
+    "conditions_notes",
 ]
 
 NORMALIZED_PROPERTIES = {
@@ -351,6 +354,17 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
         badge = "Internal only"
         disclosure = "Excluded from public v0: " + "; ".join(exclusion_reasons)
 
+    if include and dataset_provenance_detail == "human_validated_review_table_extraction":
+        disclosure += (
+            " Human-reviewed review-table extraction; original reported values, corrections, and review-source provenance are retained."
+            " A shared table row alone does not establish measurements on the same specimen."
+        )
+    if include and dataset_provenance_detail == "official_manufacturer_or_reference_property_table":
+        disclosure = (
+            "Source-checked manufacturer or physical-reference values. Nominal/typical properties and density normalization"
+            " are contextual engineering benchmarks, not a paired experimental specimen or a guaranteed product specification."
+        )
+
     if commercial_benchmark:
         source_publication_type = "commercial_or_specsheet"
     elif peer_reviewed_publication:
@@ -458,6 +472,8 @@ def row_label_aliases(row: pd.Series) -> set[str]:
 
 
 def duplicate_pair(row_a: pd.Series, row_b: pd.Series) -> tuple[bool, float, str]:
+    if any(clean(row.get("human_duplicate_decision")) == "Different specimen" for row in [row_a, row_b]):
+        return False, 0.0, "human_reviewed_different_specimen"
     if clean(row_a.get("material_family")) != clean(row_b.get("material_family")):
         return False, 0.0, "different_material_family"
     if clean(row_a.get("form_factor")) != clean(row_b.get("form_factor")):
@@ -491,7 +507,9 @@ def duplicate_priority(row: pd.Series) -> tuple[int, int, int, int, int]:
     source_file = clean(row.get("source_file")) or ""
     source_class = clean(row.get("source_citation_class")) or ""
     extraction_type = clean(row.get("value_extraction_type")) or ""
-    if source_class == "peer_reviewed_research_record" and source_file in {"literature_addendum_records.tsv", "New G fibre table Juan.xlsx"}:
+    if clean(row.get("dataset_provenance_detail")) == "human_validated_review_table_extraction":
+        source_rank = -1
+    elif source_class == "peer_reviewed_research_record" and source_file in {"literature_addendum_records.tsv", "New G fibre table Juan.xlsx"}:
         source_rank = 0
     elif source_class == "peer_reviewed_research_record":
         source_rank = 1

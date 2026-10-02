@@ -188,7 +188,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const properties = initialData.properties;
   const families = initialData.families;
   const forms = initialData.forms;
-  const initialYearMin = Math.max(1991, initialData.summary.minYear ?? 1991);
+  const initialYearMin = initialData.summary.minYear ?? 1991;
   const initialYearMax = initialData.summary.maxYear ?? new Date().getFullYear();
   const [xKey, setXKey] = useState<PropertyKey>("specific_strength");
   const [yKey, setYKey] = useState<PropertyKey>("specific_electrical_conductivity");
@@ -235,10 +235,11 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     const output: Record<string, unknown> = {
       release_tier: [...selectedTiers],
       material_family: [...selectedFamilies],
-      form_factor: [...selectedForms],
-      year_min: yearMin,
-      year_max: yearMax
+      form_factor: [...selectedForms]
     };
+    // The untouched full range also includes undated reference sheets.
+    if (yearMin !== initialYearMin) output.year_min = yearMin;
+    if (yearMax !== initialYearMax) output.year_max = yearMax;
     if (normalized) output.normalized_eligible = true;
     const measurementFilters: string[] = [];
     for (const key of ["density", "diameter"] as const) {
@@ -258,7 +259,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     if (temperatureMin !== null) output.temperature_min_c = temperatureMin;
     if (temperatureMax !== null) output.temperature_max_c = temperatureMax;
     return output;
-  }, [normalized, numericFilters, selectedFamilies, selectedForms, selectedTiers, yearMax, yearMin]);
+  }, [initialYearMax, initialYearMin, normalized, numericFilters, selectedFamilies, selectedForms, selectedTiers, yearMax, yearMin]);
 
   const requestBody = useMemo<FigureRequest>(() => ({
     kind: plotType,

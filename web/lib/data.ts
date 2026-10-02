@@ -299,7 +299,7 @@ export const PROPERTY_META_BASE: Omit<PropertyMeta, "recordsWithValue">[] = [
   },
   {
     key: "initial_modulus",
-    label: "Initial modulus",
+    label: "Modulus",
     canonicalUnit: "Pa",
     displayUnit: "GPa",
     displayFactor: 1e-9,

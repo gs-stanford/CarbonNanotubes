@@ -403,6 +403,11 @@ def audit_semantic_publications(findings: list[Finding], public_records: pd.Data
         if not title:
             add(findings, "error", "semantic_publication_title", "Verified DOI lacks a title for a primary material row.", record_id=clean(row.get("record_id")))
             continue
+        # The title omits the material; the article abstract identifies the
+        # polyelectrolyte-wrapped graphene/CNT core-sheath fibers explicitly.
+        # Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC4024741/ (abstract).
+        if same_doi(row, "10.1038/ncomms4754") and family in {"graphene_or_GO_fiber", "CNT_or_CNT_hybrid"}:
+            continue
         if not any(keyword in title for keyword in keywords):
             add(
                 findings,
@@ -706,6 +711,8 @@ def audit_scientific_metadata(findings: list[Finding], public_records: pd.DataFr
         numerator_key = {
             "specific_electrical_conductivity": "electrical_conductivity_S_m",
             "specific_thermal_conductivity": "thermal_conductivity_W_mK",
+            "specific_strength": "tensile_strength_Pa",
+            "specific_modulus": "initial_modulus_Pa",
         }.get(prop)
         if prop == "specific_volume":
             expected = 1 / density

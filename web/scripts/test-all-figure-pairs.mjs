@@ -1,4 +1,9 @@
 import assert from "node:assert/strict";
+import PDFDocument from "pdfkit";
+import path from "node:path";
+
+const labelMetrics = new PDFDocument({ autoFirstPage: false })
+  .font(path.join(process.cwd(), "assets/fonts/Arimo-Bold.ttf"));
 
 const baseUrl = (process.env.CPT_TEST_URL ?? "http://localhost:3001").replace(/\/$/, "");
 const concurrency = Math.max(1, Math.min(Number(process.env.CPT_AUDIT_CONCURRENCY ?? 4), 8));
@@ -18,17 +23,21 @@ async function figure(body) {
 }
 
 function calloutBoxes(svg) {
+  const fontSize = svg.match(/\.point-label\s*\{[^}]*font-size:\s*([\d.]+)px/);
+  assert.ok(fontSize, "Point-label CSS must declare its font size.");
+  labelMetrics.fontSize(Number(fontSize[1]));
   return Array.from(
-    svg.matchAll(/<line class="label-leader" x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"\/><text class="point-label" x="([^"]+)" y="([^"]+)"(?: text-anchor="[^"]+")?>([^<]+)<\/text>/g),
+    svg.matchAll(/<line class="label-leader" x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"\/><text class="point-label" x="([^"]+)" y="([^"]+)"(?: text-anchor="([^"]+)")?>([^<]+)<\/text>/g),
     (match) => {
-      const text = match[7];
+      const text = match[8].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
       const pointX = Number(match[1]);
       const pointY = Number(match[2]);
       const leaderX = Number(match[3]);
       const leaderY = Number(match[4]);
-      const x0 = Number(match[5]);
+      const width = labelMetrics.widthOfString(text);
+      const anchor = match[7] ?? "start";
+      const x0 = Number(match[5]) - (anchor === "end" ? width : anchor === "middle" ? width / 2 : 0);
       const y0 = Number(match[6]) - 11;
-      const width = Math.min(Math.max(text.length * 5.7 + 4, 32), 210);
       return {
         text,
         pointX,
