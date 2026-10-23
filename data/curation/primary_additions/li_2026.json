@@ -1,11 +1,11 @@
 {
   "schema_version": "cpt-curated-records-v1",
-  "record_count": 5,
-  "measurement_count": 15,
+  "record_count": 7,
+  "measurement_count": 19,
   "review_date": "2026-10-22",
   "review_status": "ai_source_checked_not_human_adjudicated",
   "curator": "CPT AI-assisted source audit",
-  "admission_scope": "Five named Table S5 cohorts; three compatible CPT metrics per cohort. AI source-checked, not independently human-adjudicated. Public release integration remains subject to the shared DOI and admission pipeline.",
+  "admission_scope": "Five Table S5 trajectory cohorts plus two distinct Table S2 concentration controls; 19 compatible canonical measurements. Supported volumetric toughness and structural measurements retained as source-qualified context, not dimensionally misassigned. AI source-checked, not human adjudicated.",
   "record_id_scheme": "rec_ + first 12 hex characters of SHA1(primary-source-v1|DOI|stable_cohort); UTF-8; exact lowercase DOI and cohort tokens stored per record.",
   "paper": {
     "doi": "10.1021/acsnano.5c14235",
@@ -270,8 +270,44 @@
         "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
         "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
         "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
-        "source_table_data_row": 1
-      }
+        "source_table_data_row": 1,
+        "herman_orientation_factor": {
+          "reported_value": 0.65,
+          "unit": "dimensionless",
+          "measurement_method": "WAXS; SI pp.2,19 Fig.S15",
+          "source_locator": "Main PDF p.5 / journal p.597, text; Fig.2k PDF p.3 / journal p.595",
+          "source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+          "uncertainty_type": "not_reported"
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 40.32,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 40320000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 3.6,
+          "uncertainty_value_canonical": 3600000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            34.6,
+            46.04
+          ],
+          "confidence_interval_95_canonical": [
+            34600000,
+            46040000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S5 p.29; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        }
+      ]
     },
     {
       "record_id": "rec_29fb8baa25b3",
@@ -496,8 +532,44 @@
         "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
         "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
         "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
-        "source_table_data_row": 2
-      }
+        "source_table_data_row": 2,
+        "herman_orientation_factor": {
+          "reported_value": 0.9,
+          "unit": "dimensionless",
+          "measurement_method": "WAXS; SI pp.2,19 Fig.S15",
+          "source_locator": "Main PDF p.5 / journal p.597, text; Fig.2k PDF p.3 / journal p.595",
+          "source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+          "uncertainty_type": "not_reported"
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 143.06,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 143060000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 6.36,
+          "uncertainty_value_canonical": 6360000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            134.72,
+            149.63
+          ],
+          "confidence_interval_95_canonical": [
+            134720000,
+            149630000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S5 p.29; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        }
+      ]
     },
     {
       "record_id": "rec_addc8d442866",
@@ -722,8 +794,52 @@
         "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
         "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
         "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
-        "source_table_data_row": 3
-      }
+        "source_table_data_row": 3,
+        "herman_orientation_factor": {
+          "reported_value": 0.918,
+          "unit": "dimensionless",
+          "measurement_method": "WAXS; SI pp.2,19 Fig.S15",
+          "source_locator": "Main PDF p.5 / journal p.597, text; Fig.2k PDF p.3 / journal p.595",
+          "source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+          "uncertainty_type": "not_reported"
+        },
+        "elemental_analysis_reported_wt_percent": {
+          "N": 3.38,
+          "C": 23.96,
+          "H": 4.03,
+          "source_locator": "SI Table S1 p.25; elemental analysis method p.4",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "note": "Literal source elemental percentages; not a resolved retained PIPD fraction, fiber density or transport normalizer."
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 165.93,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 165930000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 11.32,
+          "uncertainty_value_canonical": 11320000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            148.02,
+            183.84
+          ],
+          "confidence_interval_95_canonical": [
+            148020000,
+            183840000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S5 p.29; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        }
+      ]
     },
     {
       "record_id": "rec_9cb8c35e2a86",
@@ -948,8 +1064,63 @@
         "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
         "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
         "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
-        "source_table_data_row": 4
-      }
+        "source_table_data_row": 4,
+        "herman_orientation_factor": {
+          "reported_value": 0.927,
+          "unit": "dimensionless",
+          "measurement_method": "WAXS; SI pp.2,19 Fig.S15",
+          "source_locator": "Main PDF p.5 / journal p.597, text; Fig.2k PDF p.3 / journal p.595",
+          "source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+          "uncertainty_type": "not_reported"
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 149.47,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 149470000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 10.36,
+          "uncertainty_value_canonical": 10360000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            132.98,
+            165.96
+          ],
+          "confidence_interval_95_canonical": [
+            132979999.99999999,
+            165960000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S5 p.29; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        },
+        {
+          "property": "specific_penetration_energy",
+          "reported_value": 1.26,
+          "reported_unit": "MJ/kg",
+          "reported_expression": "1.26 +/- 0.04",
+          "value_canonical": 1260000,
+          "unit_canonical": "J/kg",
+          "uncertainty_value_reported": 0.04,
+          "uncertainty_value_canonical": 40000,
+          "uncertainty_type": "unspecified",
+          "statistic_type": "unspecified",
+          "sample_size_n": null,
+          "impact_velocity_m_s": 497.37,
+          "impact_velocity_uncertainty_m_s": 25.34,
+          "measurement_method": "Laser-induced microbullet impact; not quasi-static tensile work",
+          "source_locator": "SI Table S7 p.31; main PDF p.6 / journal p.598 Fig.4",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_distinct_dynamic_metric; not work_of_rupture"
+        }
+      ]
     },
     {
       "record_id": "rec_bf885a6edcac",
@@ -1174,19 +1345,483 @@
         "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
         "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
         "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
-        "source_table_data_row": 5
-      }
+        "source_table_data_row": 5,
+        "herman_orientation_factor": {
+          "reported_value": 0.922,
+          "unit": "dimensionless",
+          "measurement_method": "WAXS; SI pp.2,19 Fig.S15",
+          "source_locator": "Main PDF p.5 / journal p.597, text; Fig.2k PDF p.3 / journal p.595",
+          "source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+          "uncertainty_type": "not_reported"
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 238.42,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 238420000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 14.78,
+          "uncertainty_value_canonical": 14780000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            220.18,
+            252.73
+          ],
+          "confidence_interval_95_canonical": [
+            220180000,
+            252730000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S5 p.29; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        }
+      ]
+    },
+    {
+      "record_id": "rec_30f67a0fa750",
+      "stable_cohort": "pipd_0p05wt_csa_cntfs",
+      "curated_state_id": "10.1021/acsnano.5c14235|pipd_0p05wt_csa_cntfs",
+      "source_file": "li_2026.json",
+      "source_sheet": "Table S2",
+      "source_row": 2,
+      "source_priority": 0,
+      "record_label": "0.05 wt%-PIPD/CSA-CNTFs",
+      "sample_name": "0.05 wt%-PIPD/CSA-CNTFs",
+      "citation_raw": "Xiangyang Li et al. Plant Cell Wall-Inspired Interfacial Bridging Enables Ultrastrong and Tough Carbon Nanotube Fibers. ACS Nano 2026, 20, 593-602. https://doi.org/10.1021/acsnano.5c14235",
+      "doi_raw": "10.1021/acsnano.5c14235",
+      "url_raw": "https://doi.org/10.1021/acsnano.5c14235;https://ndownloader.figshare.com/files/60576748",
+      "publication_title": "Plant Cell Wall-Inspired Interfacial Bridging Enables Ultrastrong and Tough Carbon Nanotube Fibers",
+      "publication_authors_short": "Li et al.",
+      "publication_journal": "ACS Nano",
+      "publication_year": 2026,
+      "publication_published_date": "2025-12-23",
+      "publication_issue_pages": "20, 593-602",
+      "material_family": "CNT_or_CNT_hybrid",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PIPD-infused CNT fiber; concentration control without borate cross-linking or rolling",
+      "synthesis_method": "floating catalyst chemical vapor deposition",
+      "postprocessing": "PIPDs/CSA dispersion at 0.05 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction.",
+      "dataset_provenance": "ai_source_audited_primary_extraction",
+      "primary_source_verification_status": "ai_source_checked_not_human_adjudicated",
+      "review_status": "ai_source_checked_not_human_adjudicated",
+      "source_citation_class": "peer_reviewed_research_record",
+      "comparison_scope": "strict_candidate_missing_conditions",
+      "specimen_linkage": "single_source_row_unverified",
+      "specimen_linkage_notes": "Same named cohort in Table S2; not confirmed to be identical filaments across measurements. No electrical conductivity is assigned from the optimized PIPD cohort.",
+      "specimen_id": null,
+      "sample_batch_id": null,
+      "statistic_type": "unspecified",
+      "sample_size_n": null,
+      "measurement_method": null,
+      "test_standard": null,
+      "gauge_length_mm": null,
+      "strain_rate_s_inv": null,
+      "condition_temperature_C": null,
+      "condition_atmosphere": null,
+      "heat_treatment_C": null,
+      "normalization_basis": "not_applicable",
+      "density_basis": "unknown",
+      "cross_section_method": null,
+      "provenance_table_figure_page": "SI Table S2 p.26, row 2; Fig.S8 p.12; Methods p.2; main PDF pp.4,7 / journal pp.596,599.",
+      "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+      "source_export": "AI source-audited primary SI concentration-control table with main-text recipe.",
+      "extraction_method": "ai_source_audited_primary_table",
+      "curator": "CPT AI-assisted source audit",
+      "review_date": "2026-10-22",
+      "internal_status": "ai_source_checked_not_human_adjudicated",
+      "comparison_note": "Directly reported SEM-area-normalized mechanical concentration control, usable with method qualifications. No electrical value, density, or specific-property conversion is inferred. Same named cohort does not verify identical tested specimens.",
+      "conditions_notes": "PIPDs/CSA dispersion at 0.05 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction. Mechanical method: SI p.2, 5 N load-cell capacity, at least four valid tests, 10-mm-long fibers, 1 mm/min, per-fiber SEM/ImageJ area; exact n, gauge and testing environment not supplied. No transport measurement is reported for this concentration control.",
+      "values": {
+        "tensile_strength_Pa": 5540000000,
+        "initial_modulus_Pa": 129360000000
+      },
+      "measurement_metadata": {
+        "tensile_strength": {
+          "reported_value": 5.54,
+          "reported_unit": "GPa",
+          "reported_expression": "5.54 +/- 0.22",
+          "reported_or_derived": "reported",
+          "conversion_factor_to_canonical": 1000000000,
+          "conversion_formula": "GPa * 1000000000 = Pa",
+          "uncertainty_value_reported": 0.22,
+          "uncertainty_value_canonical": 220000000,
+          "uncertainty_type": "standard_deviation",
+          "confidence_interval_95_reported": [
+            5.2,
+            5.88
+          ],
+          "confidence_interval_95_canonical": [
+            5200000000,
+            5880000000
+          ],
+          "confidence_interval_reported_expression": "5.20 ~ 5.88",
+          "confidence_interval_note": "Printed 95% CI retained literally, including asymmetry; not recalculated and not used to infer exact n.",
+          "statistic_type": "mean",
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "sample_size_n_basis": "SI Methods p.2: at least four valid mechanical measurements; exact state/property n not supplied.",
+          "normalization_basis": "not_applicable",
+          "density_basis": "not_applicable",
+          "density_value_kg_m3": null,
+          "density_source_locator": null,
+          "cross_section_method": "Per-fiber cross-sectional SEM/ImageJ before testing (SI p.2); numerical areas not supplied.",
+          "value_bound_type": "point_estimate",
+          "derivation_formula": null,
+          "derivation_inputs_json": null,
+          "measurement_definition": "Quasi-static axial tensile strength, area-normalized; mean, not a best-specimen maximum.",
+          "measurement_method": "Quasi-static uniaxial tensile testing; Shimadzu EZ-LX",
+          "test_standard": null,
+          "measurement_direction": "axial",
+          "gauge_length_mm": null,
+          "strain_rate_s_inv": null,
+          "specimen_length_mm_reported": 10,
+          "crosshead_speed_mm_min": 1,
+          "condition_temperature_C": null,
+          "condition_atmosphere": null,
+          "conditions_notes": "PIPDs/CSA dispersion at 0.05 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction. Mechanical method: SI p.2, 5 N load-cell capacity, at least four valid tests, 10-mm-long fibers, 1 mm/min, per-fiber SEM/ImageJ area; exact n, gauge and testing environment not supplied. No transport measurement is reported for this concentration control.",
+          "source_locator": "https://ndownloader.figshare.com/files/60576748 | SI Table S2, PDF/printed p.26, 0.05 wt%-PIPD/CSA-CNTFs row, Tensile strength column and its 95% CI column; SI Methods p.2",
+          "source_url": "https://ndownloader.figshare.com/files/60576748",
+          "source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/nn5c14235_si_001.pdf",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "source_pdf_page": 26,
+          "source_printed_page": 26,
+          "methods_pdf_page": 2,
+          "extraction_method": "ai_source_audited_primary_table",
+          "review_status": "ai_source_checked_not_human_adjudicated",
+          "source_audited_date": "2026-10-22"
+        },
+        "initial_modulus": {
+          "reported_value": 129.36,
+          "reported_unit": "GPa",
+          "reported_expression": "129.36 +/- 10.58",
+          "reported_or_derived": "reported",
+          "conversion_factor_to_canonical": 1000000000,
+          "conversion_formula": "GPa * 1000000000 = Pa",
+          "uncertainty_value_reported": 10.58,
+          "uncertainty_value_canonical": 10580000000,
+          "uncertainty_type": "standard_deviation",
+          "confidence_interval_95_reported": [
+            112.53,
+            146.19
+          ],
+          "confidence_interval_95_canonical": [
+            112530000000,
+            146190000000
+          ],
+          "confidence_interval_reported_expression": "112.53 ~ 146.19",
+          "confidence_interval_note": "Printed 95% CI retained literally, including asymmetry; not recalculated and not used to infer exact n.",
+          "statistic_type": "mean",
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "sample_size_n_basis": "SI Methods p.2: at least four valid mechanical measurements; exact state/property n not supplied.",
+          "normalization_basis": "not_applicable",
+          "density_basis": "not_applicable",
+          "density_value_kg_m3": null,
+          "density_source_locator": null,
+          "cross_section_method": "Per-fiber cross-sectional SEM/ImageJ before testing (SI p.2); numerical areas not supplied.",
+          "value_bound_type": "point_estimate",
+          "derivation_formula": null,
+          "derivation_inputs_json": null,
+          "measurement_definition": "Young's modulus from initial stress-strain slope over 0.1-0.5% strain (SI p.2); mapped to CPT initial_modulus.",
+          "measurement_method": "Quasi-static uniaxial tensile testing; Shimadzu EZ-LX",
+          "test_standard": null,
+          "measurement_direction": "axial",
+          "gauge_length_mm": null,
+          "strain_rate_s_inv": null,
+          "specimen_length_mm_reported": 10,
+          "crosshead_speed_mm_min": 1,
+          "condition_temperature_C": null,
+          "condition_atmosphere": null,
+          "conditions_notes": "PIPDs/CSA dispersion at 0.05 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction. Mechanical method: SI p.2, 5 N load-cell capacity, at least four valid tests, 10-mm-long fibers, 1 mm/min, per-fiber SEM/ImageJ area; exact n, gauge and testing environment not supplied. No transport measurement is reported for this concentration control.",
+          "source_locator": "https://ndownloader.figshare.com/files/60576748 | SI Table S2, PDF/printed p.26, 0.05 wt%-PIPD/CSA-CNTFs row, Young's modulus column and its 95% CI column; SI Methods p.2",
+          "source_url": "https://ndownloader.figshare.com/files/60576748",
+          "source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/nn5c14235_si_001.pdf",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "source_pdf_page": 26,
+          "source_printed_page": 26,
+          "methods_pdf_page": 2,
+          "extraction_method": "ai_source_audited_primary_table",
+          "review_status": "ai_source_checked_not_human_adjudicated",
+          "source_audited_date": "2026-10-22"
+        }
+      },
+      "source_facts": {
+        "recipe": "PIPDs/CSA dispersion at 0.05 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction.",
+        "recipe_source_locator": "Main PDF p.7 / journal p.599, Experimental Section; selected concentrations/time main PDF p.4 / journal p.596.",
+        "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+        "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
+        "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
+        "source_table_data_row": 2,
+        "bath_PIPD_concentration_wt_percent": 0.05,
+        "elemental_analysis_reported_wt_percent": {
+          "N": 2.32,
+          "C": 32.43,
+          "H": 3.61,
+          "source_locator": "SI Table S1 p.25; elemental analysis method p.4",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "note": "Literal source elemental percentages; not a resolved retained PIPD fraction, fiber density or transport normalizer."
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 160.12,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 160120000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 14.42,
+          "uncertainty_value_canonical": 14420000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            137.18,
+            183.06
+          ],
+          "confidence_interval_95_canonical": [
+            137180000,
+            183060000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S2 p.26; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        }
+      ]
+    },
+    {
+      "record_id": "rec_534d0cc1e324",
+      "stable_cohort": "pipd_0p2wt_csa_cntfs",
+      "curated_state_id": "10.1021/acsnano.5c14235|pipd_0p2wt_csa_cntfs",
+      "source_file": "li_2026.json",
+      "source_sheet": "Table S2",
+      "source_row": 4,
+      "source_priority": 0,
+      "record_label": "0.2 wt%-PIPD/CSA-CNTFs",
+      "sample_name": "0.2 wt%-PIPD/CSA-CNTFs",
+      "citation_raw": "Xiangyang Li et al. Plant Cell Wall-Inspired Interfacial Bridging Enables Ultrastrong and Tough Carbon Nanotube Fibers. ACS Nano 2026, 20, 593-602. https://doi.org/10.1021/acsnano.5c14235",
+      "doi_raw": "10.1021/acsnano.5c14235",
+      "url_raw": "https://doi.org/10.1021/acsnano.5c14235;https://ndownloader.figshare.com/files/60576748",
+      "publication_title": "Plant Cell Wall-Inspired Interfacial Bridging Enables Ultrastrong and Tough Carbon Nanotube Fibers",
+      "publication_authors_short": "Li et al.",
+      "publication_journal": "ACS Nano",
+      "publication_year": 2026,
+      "publication_published_date": "2025-12-23",
+      "publication_issue_pages": "20, 593-602",
+      "material_family": "CNT_or_CNT_hybrid",
+      "form_factor": "fiber_yarn",
+      "material_subclass": "PIPD-infused CNT fiber; concentration control without borate cross-linking or rolling",
+      "synthesis_method": "floating catalyst chemical vapor deposition",
+      "postprocessing": "PIPDs/CSA dispersion at 0.2 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction.",
+      "dataset_provenance": "ai_source_audited_primary_extraction",
+      "primary_source_verification_status": "ai_source_checked_not_human_adjudicated",
+      "review_status": "ai_source_checked_not_human_adjudicated",
+      "source_citation_class": "peer_reviewed_research_record",
+      "comparison_scope": "strict_candidate_missing_conditions",
+      "specimen_linkage": "single_source_row_unverified",
+      "specimen_linkage_notes": "Same named cohort in Table S2; not confirmed to be identical filaments across measurements. No electrical conductivity is assigned from the optimized PIPD cohort.",
+      "specimen_id": null,
+      "sample_batch_id": null,
+      "statistic_type": "unspecified",
+      "sample_size_n": null,
+      "measurement_method": null,
+      "test_standard": null,
+      "gauge_length_mm": null,
+      "strain_rate_s_inv": null,
+      "condition_temperature_C": null,
+      "condition_atmosphere": null,
+      "heat_treatment_C": null,
+      "normalization_basis": "not_applicable",
+      "density_basis": "unknown",
+      "cross_section_method": null,
+      "provenance_table_figure_page": "SI Table S2 p.26, row 4; Fig.S8 p.12; Methods p.2; main PDF pp.4,7 / journal pp.596,599.",
+      "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+      "source_export": "AI source-audited primary SI concentration-control table with main-text recipe.",
+      "extraction_method": "ai_source_audited_primary_table",
+      "curator": "CPT AI-assisted source audit",
+      "review_date": "2026-10-22",
+      "internal_status": "ai_source_checked_not_human_adjudicated",
+      "comparison_note": "Directly reported SEM-area-normalized mechanical concentration control, usable with method qualifications. No electrical value, density, or specific-property conversion is inferred. Same named cohort does not verify identical tested specimens.",
+      "conditions_notes": "PIPDs/CSA dispersion at 0.2 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction. Mechanical method: SI p.2, 5 N load-cell capacity, at least four valid tests, 10-mm-long fibers, 1 mm/min, per-fiber SEM/ImageJ area; exact n, gauge and testing environment not supplied. No transport measurement is reported for this concentration control.",
+      "values": {
+        "tensile_strength_Pa": 5660000000,
+        "initial_modulus_Pa": 130900000000
+      },
+      "measurement_metadata": {
+        "tensile_strength": {
+          "reported_value": 5.66,
+          "reported_unit": "GPa",
+          "reported_expression": "5.66 +/- 0.12",
+          "reported_or_derived": "reported",
+          "conversion_factor_to_canonical": 1000000000,
+          "conversion_formula": "GPa * 1000000000 = Pa",
+          "uncertainty_value_reported": 0.12,
+          "uncertainty_value_canonical": 120000000,
+          "uncertainty_type": "standard_deviation",
+          "confidence_interval_95_reported": [
+            5.49,
+            5.84
+          ],
+          "confidence_interval_95_canonical": [
+            5490000000,
+            5840000000
+          ],
+          "confidence_interval_reported_expression": "5.49 ~ 5.84",
+          "confidence_interval_note": "Printed 95% CI retained literally, including asymmetry; not recalculated and not used to infer exact n.",
+          "statistic_type": "mean",
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "sample_size_n_basis": "SI Methods p.2: at least four valid mechanical measurements; exact state/property n not supplied.",
+          "normalization_basis": "not_applicable",
+          "density_basis": "not_applicable",
+          "density_value_kg_m3": null,
+          "density_source_locator": null,
+          "cross_section_method": "Per-fiber cross-sectional SEM/ImageJ before testing (SI p.2); numerical areas not supplied.",
+          "value_bound_type": "point_estimate",
+          "derivation_formula": null,
+          "derivation_inputs_json": null,
+          "measurement_definition": "Quasi-static axial tensile strength, area-normalized; mean, not a best-specimen maximum.",
+          "measurement_method": "Quasi-static uniaxial tensile testing; Shimadzu EZ-LX",
+          "test_standard": null,
+          "measurement_direction": "axial",
+          "gauge_length_mm": null,
+          "strain_rate_s_inv": null,
+          "specimen_length_mm_reported": 10,
+          "crosshead_speed_mm_min": 1,
+          "condition_temperature_C": null,
+          "condition_atmosphere": null,
+          "conditions_notes": "PIPDs/CSA dispersion at 0.2 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction. Mechanical method: SI p.2, 5 N load-cell capacity, at least four valid tests, 10-mm-long fibers, 1 mm/min, per-fiber SEM/ImageJ area; exact n, gauge and testing environment not supplied. No transport measurement is reported for this concentration control.",
+          "source_locator": "https://ndownloader.figshare.com/files/60576748 | SI Table S2, PDF/printed p.26, 0.2 wt%-PIPD/CSA-CNTFs row, Tensile strength column and its 95% CI column; SI Methods p.2",
+          "source_url": "https://ndownloader.figshare.com/files/60576748",
+          "source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/nn5c14235_si_001.pdf",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "source_pdf_page": 26,
+          "source_printed_page": 26,
+          "methods_pdf_page": 2,
+          "extraction_method": "ai_source_audited_primary_table",
+          "review_status": "ai_source_checked_not_human_adjudicated",
+          "source_audited_date": "2026-10-22"
+        },
+        "initial_modulus": {
+          "reported_value": 130.9,
+          "reported_unit": "GPa",
+          "reported_expression": "130.90 +/- 8.06",
+          "reported_or_derived": "reported",
+          "conversion_factor_to_canonical": 1000000000,
+          "conversion_formula": "GPa * 1000000000 = Pa",
+          "uncertainty_value_reported": 8.06,
+          "uncertainty_value_canonical": 8060000000,
+          "uncertainty_type": "standard_deviation",
+          "confidence_interval_95_reported": [
+            118.08,
+            143.72
+          ],
+          "confidence_interval_95_canonical": [
+            118080000000,
+            143720000000
+          ],
+          "confidence_interval_reported_expression": "118.08 ~ 143.72",
+          "confidence_interval_note": "Printed 95% CI retained literally, including asymmetry; not recalculated and not used to infer exact n.",
+          "statistic_type": "mean",
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "sample_size_n_basis": "SI Methods p.2: at least four valid mechanical measurements; exact state/property n not supplied.",
+          "normalization_basis": "not_applicable",
+          "density_basis": "not_applicable",
+          "density_value_kg_m3": null,
+          "density_source_locator": null,
+          "cross_section_method": "Per-fiber cross-sectional SEM/ImageJ before testing (SI p.2); numerical areas not supplied.",
+          "value_bound_type": "point_estimate",
+          "derivation_formula": null,
+          "derivation_inputs_json": null,
+          "measurement_definition": "Young's modulus from initial stress-strain slope over 0.1-0.5% strain (SI p.2); mapped to CPT initial_modulus.",
+          "measurement_method": "Quasi-static uniaxial tensile testing; Shimadzu EZ-LX",
+          "test_standard": null,
+          "measurement_direction": "axial",
+          "gauge_length_mm": null,
+          "strain_rate_s_inv": null,
+          "specimen_length_mm_reported": 10,
+          "crosshead_speed_mm_min": 1,
+          "condition_temperature_C": null,
+          "condition_atmosphere": null,
+          "conditions_notes": "PIPDs/CSA dispersion at 0.2 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction. Mechanical method: SI p.2, 5 N load-cell capacity, at least four valid tests, 10-mm-long fibers, 1 mm/min, per-fiber SEM/ImageJ area; exact n, gauge and testing environment not supplied. No transport measurement is reported for this concentration control.",
+          "source_locator": "https://ndownloader.figshare.com/files/60576748 | SI Table S2, PDF/printed p.26, 0.2 wt%-PIPD/CSA-CNTFs row, Young's modulus column and its 95% CI column; SI Methods p.2",
+          "source_url": "https://ndownloader.figshare.com/files/60576748",
+          "source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/nn5c14235_si_001.pdf",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "source_pdf_page": 26,
+          "source_printed_page": 26,
+          "methods_pdf_page": 2,
+          "extraction_method": "ai_source_audited_primary_table",
+          "review_status": "ai_source_checked_not_human_adjudicated",
+          "source_audited_date": "2026-10-22"
+        }
+      },
+      "source_facts": {
+        "recipe": "PIPDs/CSA dispersion at 0.2 wt% prepared by stirring 6 h at room temperature; FCNTFs then immersed and axially stretched (about 20% reported draw ratio) at room temperature for 10 min, followed by an acetone bath and overnight room-temperature drying. Bath concentration is not retained PIPD mass fraction.",
+        "recipe_source_locator": "Main PDF p.7 / journal p.599, Experimental Section; selected concentrations/time main PDF p.4 / journal p.596.",
+        "recipe_source_document_sha256": "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb",
+        "recipe_source_document_path": "outputs/fiber_discovery_20261022/li_trajectory/article.pdf",
+        "recipe_evidence_status": "Source-reported recipe; not a measured final composition or geometry.",
+        "source_table_data_row": 4,
+        "bath_PIPD_concentration_wt_percent": 0.2,
+        "elemental_analysis_reported_wt_percent": {
+          "N": 2.69,
+          "C": 41.28,
+          "H": 3.44,
+          "source_locator": "SI Table S1 p.25; elemental analysis method p.4",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "note": "Literal source elemental percentages; not a resolved retained PIPD fraction, fiber density or transport normalizer."
+        }
+      },
+      "context_measurements": [
+        {
+          "property": "volumetric_tensile_toughness",
+          "reported_value": 151.13,
+          "reported_unit": "MJ/m^3",
+          "value_canonical": 151130000,
+          "unit_canonical": "J/m^3",
+          "conversion_factor_to_canonical": 1000000,
+          "uncertainty_value_reported": 11.63,
+          "uncertainty_value_canonical": 11630000,
+          "uncertainty_type": "standard_deviation",
+          "statistic_type": "mean",
+          "confidence_interval_95_reported": [
+            132.63,
+            169.63
+          ],
+          "confidence_interval_95_canonical": [
+            132630000,
+            169630000
+          ],
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "measurement_method": "Area under the quasi-static tensile stress-strain curve; SEM/ImageJ cross-section",
+          "source_locator": "SI Table S2 p.26; Methods p.2",
+          "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+          "admission_disposition": "supported_context_only_no_CPT_volumetric_field; not mass-specific work_of_rupture"
+        }
+      ]
     }
   ],
   "held_list": [
     {
       "id": "volumetric_toughness",
-      "status": "excluded_metric_dimension_mismatch",
+      "status": "supported_context_noncanonical_dimension",
       "metric": "toughness",
       "reported_unit": "MJ/m^3",
-      "source_locator": "SI Table S5, PDF/printed p.29; integration definition SI p.2",
+      "source_locator": "SI Table S5 p.29 (five trajectory states); Table S2 p.26 (two additional concentration controls); Methods p.2",
       "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
-      "reason": "CPT work_of_rupture is J/kg. MJ/m^3 cannot be converted to J/g or J/kg without measured density, which is unavailable. No density or mass-specific values are inferred.",
+      "reason": "Directly reported volumetric tensile toughness is supported and retained per cohort in context_measurements, but CPT work_of_rupture is J/kg. Without cohort density, no J/kg conversion is justified. This is a schema dimension limit, not rejection of the reported measurement.",
       "rows": [
         {
           "cohort": "FCNTFs",
@@ -1252,6 +1887,34 @@
           "uncertainty_type": "standard_deviation",
           "sample_size_n": null,
           "sample_size_n_minimum": 4
+        },
+        {
+          "cohort": "0.05 wt%-PIPD/CSA-CNTFs",
+          "mean": 160.12,
+          "sd": 14.42,
+          "ci95": [
+            137.18,
+            183.06
+          ],
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "source_locator": "SI Table S2 p.26"
+        },
+        {
+          "cohort": "0.2 wt%-PIPD/CSA-CNTFs",
+          "mean": 151.13,
+          "sd": 11.63,
+          "ci95": [
+            132.63,
+            169.63
+          ],
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "sample_size_n": null,
+          "sample_size_n_minimum": 4,
+          "source_locator": "SI Table S2 p.26"
         }
       ]
     },
@@ -1279,7 +1942,169 @@
       "id": "optimization_controls_S3_S4",
       "status": "excluded_conflicting_cohort_labels",
       "reason": "Main p.4 cites SI S3/S4 as CL-PIPD optimization. Printed tables label CSA/H3BO3-CNTFs and peak at 5.56 GPa, unlike CL-PIPD Table S5 6.36 GPa. No control is relabeled or admitted as one of these five states.",
-      "source_locator": "Main PDF p.4/journal p.596; SI Tables S3/S4 pp.27-28; S5 p.29."
+      "source_locator": "Main PDF p.4/journal p.596; SI Tables S3/S4 pp.27-28; S5 p.29.",
+      "reported_alternatives": [
+        {
+          "source_locator": "SI Table S3 p.27",
+          "columns": [
+            "cohort",
+            "strength_GPa",
+            "strength_SD_GPa",
+            "strength_CI95_GPa",
+            "modulus_GPa",
+            "modulus_SD_GPa",
+            "modulus_CI95_GPa",
+            "toughness_MJ_m3",
+            "toughness_SD_MJ_m3",
+            "toughness_CI95_MJ_m3"
+          ],
+          "rows": [
+            [
+              "H3BO3-CNTFs-1",
+              5.17,
+              0.12,
+              [
+                4.98,
+                5.36
+              ],
+              141.82,
+              15.2,
+              [
+                117.62,
+                166.02
+              ],
+              122.11,
+              16.24,
+              [
+                96.27,
+                147.95
+              ]
+            ],
+            [
+              "H3BO3-CNTFs-2",
+              5.56,
+              0.05,
+              [
+                5.48,
+                5.64
+              ],
+              160.75,
+              13.13,
+              [
+                139.85,
+                181.65
+              ],
+              133,
+              10.59,
+              [
+                116.15,
+                149.85
+              ]
+            ],
+            [
+              "H3BO3-CNTFs-3",
+              5.17,
+              0.19,
+              [
+                4.87,
+                5.47
+              ],
+              160,
+              15.14,
+              [
+                135.91,
+                184.07
+              ],
+              101.14,
+              10.5,
+              [
+                84.4,
+                117.85
+              ]
+            ]
+          ]
+        },
+        {
+          "source_locator": "SI Table S4 p.28",
+          "columns": [
+            "cohort",
+            "strength_GPa",
+            "strength_SD_GPa",
+            "strength_CI95_GPa",
+            "modulus_GPa",
+            "modulus_SD_GPa",
+            "modulus_CI95_GPa",
+            "toughness_MJ_m3",
+            "toughness_SD_MJ_m3",
+            "toughness_CI95_MJ_m3"
+          ],
+          "rows": [
+            [
+              "H3BO3-CNTFs-6 h",
+              5.37,
+              0.16,
+              [
+                5.12,
+                5.56
+              ],
+              133.75,
+              15.67,
+              [
+                108.82,
+                158.68
+              ],
+              131.47,
+              3.22,
+              [
+                126.35,
+                136.59
+              ]
+            ],
+            [
+              "H3BO3-CNTFs-12 h",
+              5.56,
+              0.05,
+              [
+                5.48,
+                5.64
+              ],
+              160.75,
+              13.13,
+              [
+                139.85,
+                181.65
+              ],
+              133,
+              10.59,
+              [
+                116.15,
+                149.85
+              ]
+            ],
+            [
+              "H3BO3-CNTFs-24 h",
+              5.1,
+              0.09,
+              [
+                4.96,
+                5.24
+              ],
+              133.9,
+              15.54,
+              [
+                112.36,
+                155.44
+              ],
+              122.09,
+              12.86,
+              [
+                101.63,
+                142.55
+              ]
+            ]
+          ]
+        }
+      ]
     },
     {
       "id": "conductivity_fold_claim",
@@ -1297,7 +2122,43 @@
       "id": "impact_specific_energy",
       "status": "excluded_distinct_metric_and_test_state",
       "reason": "The reported 1.26 MJ/kg penetration energy is a dynamic CL-PIPD impact result, not D-CL quasi-static tensile work of rupture. It is not admitted into the J/kg rupture-work field.",
-      "source_locator": "Main PDF p.6/journal p.598; SI Table S7 p.31."
+      "source_locator": "Main PDF p.6/journal p.598; SI Table S7 p.31.",
+      "reported_value": 1.26,
+      "reported_unit": "MJ/kg",
+      "uncertainty_value_reported": 0.04,
+      "uncertainty_type": "unspecified",
+      "reported_expression": "1.26 +/- 0.04",
+      "retained_context_record_id": "rec_9cb8c35e2a86"
     }
-  ]
+  ],
+  "omission_audit": {
+    "date": "2026-10-22",
+    "report_path": "outputs/primary_release_20261022/omission_audit_li_jin.md",
+    "new_canonical_measurements": 4,
+    "added_cohorts": [
+      "pipd_0p05wt_csa_cntfs",
+      "pipd_0p2wt_csa_cntfs"
+    ],
+    "original_record_ids_preserved": true,
+    "alternative_normalization_policy": "No duplicate points or density-based conversions; directly reported area-normalized mechanics retained despite incomplete geometry.",
+    "source_gaps": "No state-resolved density, linear density, numerical intact fiber area or diameter; exact breaking-strain table values absent; borate optimization tables have unresolved cohort/value conflict.",
+    "constituent_geometry_context": {
+      "source_locator": "SI Fig.S1(c,d) p.5",
+      "source_document_sha256": "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f",
+      "CNT_wall_number": {
+        "reported_expression": "5.5 +/- 2.5",
+        "reported_value": 5.5,
+        "uncertainty_value_reported": 2.5,
+        "uncertainty_type": "unspecified"
+      },
+      "CNT_diameter": {
+        "reported_expression": "9.9 +/- 4.1 nm",
+        "reported_value": 9.9,
+        "reported_unit": "nm",
+        "uncertainty_value_reported": 4.1,
+        "uncertainty_type": "unspecified"
+      },
+      "note": "Constituent CNT distributions, not intact fiber diameter or density; no assignment to the canonical fiber diameter field."
+    }
+  }
 }

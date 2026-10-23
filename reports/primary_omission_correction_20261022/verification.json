@@ -1,0 +1,96 @@
+{
+  "status": "pass",
+  "errors": [],
+  "before": {
+    "records": 1495,
+    "measurements": 5711,
+    "publications": 325
+  },
+  "after": {
+    "records": 1519,
+    "measurements": 5817,
+    "publications": 325
+  },
+  "papers": [
+    {
+      "packet": "jin_2026.json",
+      "records": 8,
+      "measurements": 48,
+      "added_measurements": 0,
+      "properties": {
+        "breaking_strain": 8,
+        "linear_density": 8,
+        "specific_electrical_conductivity": 8,
+        "specific_modulus": 8,
+        "specific_strength": 8,
+        "thermal_conductivity": 8
+      }
+    },
+    {
+      "packet": "li_2026.json",
+      "records": 7,
+      "measurements": 19,
+      "added_measurements": 4,
+      "properties": {
+        "initial_modulus": 7,
+        "tensile_strength": 7,
+        "electrical_conductivity": 5
+      }
+    },
+    {
+      "packet": "liu_2026.json",
+      "records": 20,
+      "measurements": 88,
+      "added_measurements": 48,
+      "properties": {
+        "density": 14,
+        "specific_volume": 14,
+        "initial_modulus": 10,
+        "tensile_strength": 10,
+        "g_d_ratio": 6,
+        "electrical_conductivity": 5,
+        "specific_electrical_conductivity": 5,
+        "specific_modulus": 5,
+        "specific_strength": 5,
+        "specific_thermal_conductivity": 5,
+        "thermal_conductivity": 5,
+        "diameter": 4
+      }
+    },
+    {
+      "packet": "sun_2026.json",
+      "records": 19,
+      "measurements": 60,
+      "added_measurements": 30,
+      "properties": {
+        "electrical_conductivity": 19,
+        "tensile_strength": 11,
+        "ampacity": 3,
+        "density": 3,
+        "diameter": 3,
+        "g_d_ratio": 3,
+        "initial_modulus": 3,
+        "linear_density": 3,
+        "specific_electrical_conductivity": 3,
+        "specific_modulus": 3,
+        "specific_strength": 3,
+        "specific_volume": 3
+      }
+    },
+    {
+      "packet": "wang_2026.json",
+      "records": 18,
+      "measurements": 33,
+      "added_measurements": 24,
+      "properties": {
+        "linear_density": 10,
+        "specific_strength": 10,
+        "tensile_strength": 8,
+        "breaking_strain": 2,
+        "initial_modulus": 2,
+        "g_d_ratio": 1
+      }
+    }
+  ],
+  "deployment_verified": false
+}

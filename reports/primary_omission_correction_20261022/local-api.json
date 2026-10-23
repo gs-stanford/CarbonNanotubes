@@ -1,0 +1,148 @@
+{
+  "status": "pass",
+  "tested_at": "2026-10-23T02:00:39.519Z",
+  "base_url": "http://127.0.0.1:3001",
+  "health": {
+    "status": "ok",
+    "build": {
+      "commit": null,
+      "next_version": "16.4.2"
+    },
+    "backend": "bundled_csv",
+    "counts": {
+      "records": 1519,
+      "measurements": 5817,
+      "publications": 325
+    }
+  },
+  "release": {
+    "release_id": "bundled-public-v0",
+    "schema_version": "carbon-property-tables-public-v0.4",
+    "source_hash": null,
+    "record_count": 1519,
+    "measurement_count": 5817,
+    "publication_count": 325,
+    "imported_at": null,
+    "backend": "bundled_csv"
+  },
+  "checks": [
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "tensile_strength",
+      "y": "electrical_conductivity",
+      "x_value": 2.49,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "density",
+      "y": "electrical_conductivity",
+      "x_value": 1930,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "specific_strength",
+      "y": "electrical_conductivity",
+      "x_value": 1.29,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "specific_strength",
+      "y": "specific_electrical_conductivity",
+      "x_value": 1.29,
+      "y_value": 14.166
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "diameter",
+      "y": "electrical_conductivity",
+      "x_value": 11.3,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "linear_density",
+      "y": "electrical_conductivity",
+      "x_value": 0.19999999999999998,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "g_d_ratio",
+      "y": "electrical_conductivity",
+      "x_value": 45.25,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "electrical_conductivity",
+      "y": "ampacity",
+      "x_value": 27.34,
+      "y_value": 0.124138
+    },
+    {
+      "doi": "10.1021/acsnano.5c14235",
+      "x": "electrical_conductivity",
+      "y": "tensile_strength",
+      "x_value": 2.6,
+      "y_value": 8.450000000000001
+    },
+    {
+      "doi": "10.1038/s41563-026-02733-0",
+      "x": "tensile_strength",
+      "y": "thermal_conductivity",
+      "x_value": 5.890000000000001,
+      "y_value": 1720
+    },
+    {
+      "doi": "10.1038/s41563-026-02733-0",
+      "x": "specific_strength",
+      "y": "specific_thermal_conductivity",
+      "x_value": 2.872834726335311,
+      "y_value": 0.8389262698296664
+    },
+    {
+      "doi": "10.1021/acsanm.6c00845",
+      "x": "specific_electrical_conductivity",
+      "y": "thermal_conductivity",
+      "x_value": 1.302,
+      "y_value": 199.7
+    },
+    {
+      "doi": "10.1038/s41467-026-75150-1",
+      "x": "initial_modulus",
+      "y": "tensile_strength",
+      "x_value": 260,
+      "y_value": 12.430000000000001
+    },
+    {
+      "minimum_strength_GPa": 2,
+      "best_conductivity_MSm": 27.34,
+      "doi": "10.1038/s41467-026-69498-7"
+    },
+    {
+      "minimum_strength_GPa": 2.5,
+      "best_conductivity_MSm": 11.2,
+      "doi": "10.1016/j.carbon.2022.04.040"
+    },
+    {
+      "minimum_strength_GPa": 8.3,
+      "best_conductivity_MSm": 2.6,
+      "doi": "10.1021/acsnano.5c14235"
+    }
+  ],
+  "figure_types": [
+    "scatter",
+    "ranked",
+    "trend",
+    "ashby"
+  ],
+  "formats": [
+    "svg",
+    "png",
+    "pdf"
+  ],
+  "temporary_sample": true
+}

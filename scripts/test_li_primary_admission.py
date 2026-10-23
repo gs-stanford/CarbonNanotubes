@@ -6,6 +6,7 @@ import copy
 import hashlib
 import itertools
 import json
+import subprocess
 import tempfile
 import unittest
 from decimal import Decimal
@@ -25,7 +26,7 @@ STATUS = "ai_source_checked_not_human_adjudicated"
 SI_SHA256 = "de115d028147a135a7b9d54a04c9def2f85892a6dfaaf61835d9ee8435d85c9f"
 MAIN_SHA256 = "5a13f637332e1ddd0b0a23f8d45a93f3dab984bd79128ea570f210bbc30514fb"
 
-# Transcribed directly from the audited primary Table S5, p.29. These expectations
+# Transcribed directly from primary Table S5 p.29 and Table S2 p.26. Expectations
 # do not import the extraction audit or derive expected data from the admission.
 # Each mechanical tuple is (mean, SD, printed 95% CI lower, printed 95% CI upper).
 AUDITED = (
@@ -44,6 +45,12 @@ AUDITED = (
     ("d_cl_pipd_cntfs", "D-CL-PIPD-CNTFs", ("8.45", "0.28", "8.12", "8.78"),
      ("203.99", "8.66", "193.24", "214.74"), "2.60",
      ("238.42", "14.78", "220.18", "252.73")),
+    ("pipd_0p05wt_csa_cntfs", "0.05 wt%-PIPD/CSA-CNTFs", ("5.54", "0.22", "5.20", "5.88"),
+     ("129.36", "10.58", "112.53", "146.19"), None,
+     ("160.12", "14.42", "137.18", "183.06")),
+    ("pipd_0p2wt_csa_cntfs", "0.2 wt%-PIPD/CSA-CNTFs", ("5.66", "0.12", "5.49", "5.84"),
+     ("130.90", "8.06", "118.08", "143.72"), None,
+     ("151.13", "11.63", "132.63", "169.63")),
 )
 FIELDS = {
     "tensile_strength": ("tensile_strength_Pa", "GPa", "Pa", Decimal("1e9")),
@@ -79,10 +86,10 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
 
     def test_schema_identity_and_state_uniqueness(self):
         self.assertEqual(self.payload["schema_version"], "cpt-curated-records-v1")
-        self.assertEqual(self.payload["record_count"], 5)
-        self.assertEqual(self.payload["measurement_count"], 15)
-        self.assertEqual(len(self.records), 5)
-        self.assertEqual(len(self.by_cohort), 5)
+        self.assertEqual(self.payload["record_count"], 7)
+        self.assertEqual(self.payload["measurement_count"], 19)
+        self.assertEqual(len(self.records), 7)
+        self.assertEqual(len(self.by_cohort), 7)
         self.assertEqual(set(self.by_cohort), {row[0] for row in AUDITED})
         for index, (cohort, name, *_rest) in enumerate(AUDITED, 1):
             r = self.by_cohort[cohort]
@@ -92,18 +99,22 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
             self.assertEqual(r["record_id"], expected_id)
             self.assertEqual(r["curated_state_id"], f"{DOI}|{cohort}")
             self.assertEqual(r["record_label"], name)
-            self.assertEqual(r["source_row"], index)
-            self.assertEqual(r["source_sheet"], "Table S5")
+            self.assertEqual(r["source_row"], index if index <= 5 else {6: 2, 7: 4}[index])
+            self.assertEqual(r["source_sheet"], "Table S5" if index <= 5 else "Table S2")
             self.assertEqual(r["source_file"], "li_2026.json")
             self.assertEqual(r["source_priority"], 0)
             self.assertEqual(r["doi_raw"], DOI)
-        self.assertEqual(len({r["record_id"] for r in self.records}), 5)
-        self.assertEqual(len({r["curated_state_id"] for r in self.loaded}), 5)
+        self.assertEqual(len({r["record_id"] for r in self.records}), 7)
+        self.assertEqual(len({r["curated_state_id"] for r in self.loaded}), 7)
 
     def test_original_audited_arrays_and_si_conversions(self):
         for cohort, _name, strength, modulus, conductivity, _toughness in AUDITED:
             r = self.by_cohort[cohort]
             for prop, cell in zip(FIELDS, (strength, modulus, (conductivity,))):
+                if prop == "electrical_conductivity" and conductivity is None:
+                    self.assertNotIn(prop, r["measurement_metadata"])
+                    self.assertNotIn(FIELDS[prop][0], r["values"])
+                    continue
                 with self.subTest(cohort=cohort, property=prop):
                     field, unit, _canonical_unit, factor = FIELDS[prop]
                     meta = r["measurement_metadata"][prop]
@@ -158,10 +169,11 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
             for prop, meta in r["measurement_metadata"].items():
                 self.assertEqual(meta["source_document_sha256"], SI_SHA256)
                 self.assertEqual(meta["source_document_path"], self.payload["documents"]["si"]["path"])
-                self.assertEqual(meta["source_pdf_page"], 29)
-                self.assertEqual(meta["source_printed_page"], 29)
+                page = 29 if r["source_sheet"] == "Table S5" else 26
+                self.assertEqual(meta["source_pdf_page"], page)
+                self.assertEqual(meta["source_printed_page"], page)
                 self.assertIn(r["record_label"] + " row", meta["source_locator"])
-                self.assertIn("Table S5", meta["source_locator"])
+                self.assertIn(r["source_sheet"], meta["source_locator"])
                 self.assertEqual(meta["methods_pdf_page"], 4 if prop == "electrical_conductivity" else 2)
             self.assertEqual(r["source_facts"]["recipe_source_document_sha256"], MAIN_SHA256)
 
@@ -181,11 +193,11 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
             for meta in r["measurement_metadata"].values():
                 self.assertEqual(meta["review_status"], STATUS)
 
-    def test_import_retains_only_fifteen_supported_measurements(self):
-        self.assertEqual(len(self.loaded), 5)
-        self.assertEqual(len(self.measurements), 15)
+    def test_import_retains_nineteen_supported_measurements(self):
+        self.assertEqual(len(self.loaded), 7)
+        self.assertEqual(len(self.measurements), 19)
         self.assertEqual(set(self.measurements.property), set(FIELDS))
-        self.assertEqual(self.measurements.measurement_id.nunique(), 15)
+        self.assertEqual(self.measurements.measurement_id.nunique(), 19)
         for row in self.loaded:
             self.assertEqual(row["material_family"], "CNT_or_CNT_hybrid")
             self.assertEqual(row["form_factor"], "fiber_yarn")
@@ -193,10 +205,14 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
             self.assertEqual(row["source_citation_class"], "peer_reviewed_research_record")
             original = self.by_cohort[row["stable_cohort"]]
             self.assertEqual(json.loads(row["raw_payload_json"]), original)
-            self.assertEqual(set(original["values"]), {definition[0] for definition in FIELDS.values()})
+            expected_properties = set(original["measurement_metadata"])
+            self.assertEqual(set(original["values"]), {FIELDS[prop][0] for prop in expected_properties})
             for prop, (field, _unit, canonical_unit, _factor) in FIELDS.items():
                 match = self.measurements[(self.measurements.record_id == row["record_id"])
                                           & (self.measurements.property == prop)]
+                if prop not in expected_properties:
+                    self.assertEqual(len(match), 0)
+                    continue
                 self.assertEqual(len(match), 1)
                 self.assertEqual(match.iloc[0].value_canonical, original["values"][field])
                 self.assertEqual(match.iloc[0].unit_canonical, canonical_unit)
@@ -220,6 +236,8 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
                 self.assertIsNone(meta["condition_temperature_C"])
                 self.assertIsNone(meta["condition_atmosphere"])
             self.assertIn("0.1-0.5%", r["measurement_metadata"]["initial_modulus"]["measurement_definition"])
+            if "electrical_conductivity" not in r["measurement_metadata"]:
+                continue
             electrical = r["measurement_metadata"]["electrical_conductivity"]
             self.assertIsNone(electrical["cross_section_method"])
             self.assertIn("Voltage-tap separation", electrical["conditions_notes"])
@@ -249,8 +267,8 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
         held = {item["id"]: item for item in self.payload["held_list"]}
         toughness = held["volumetric_toughness"]
         self.assertEqual(toughness["reported_unit"], "MJ/m^3")
-        self.assertEqual(toughness["status"], "excluded_metric_dimension_mismatch")
-        self.assertEqual(len(toughness["rows"]), 5)
+        self.assertEqual(toughness["status"], "supported_context_noncanonical_dimension")
+        self.assertEqual(len(toughness["rows"]), 7)
         by_name = {r["cohort"]: r for r in toughness["rows"]}
         for _cohort, name, _strength, _modulus, _conductivity, expected in AUDITED:
             actual = by_name[name]
@@ -261,6 +279,35 @@ class LiPrimaryAdmissionTests(unittest.TestCase):
         self.assertEqual(held["conductivity_fold_claim"]["status"], "excluded_conflicting_narrative_multiplier")
         self.assertIn("impact_specific_energy", held)
         self.assertIn("failure_load_conductance_and_area_free_ratio", held)
+        impact = self.by_cohort["cl_pipd_cntfs"]["context_measurements"][1]
+        self.assertEqual(impact["property"], "specific_penetration_energy")
+        self.assertEqual(impact["reported_value"], 1.26)
+        self.assertEqual(impact["uncertainty_value_reported"], 0.04)
+        self.assertEqual(impact["uncertainty_type"], "unspecified")
+        self.assertNotIn("rupture_work_J_kg", self.by_cohort["cl_pipd_cntfs"]["values"])
+
+    def test_omission_recovery_matches_actual_pdf_and_does_not_copy_transport(self):
+        text = subprocess.check_output([
+            "pdftotext", "-f", "26", "-l", "26", "-layout",
+            str(ROOT / self.payload["documents"]["si"]["path"]), "-",
+        ], text=True)
+        lines = {line.split()[0]: line for line in text.splitlines()
+                 if line.strip().startswith(("0.05 wt%", "0.2 wt%"))}
+        for row in AUDITED[-2:]:
+            cohort, name, strength, modulus, _sigma, toughness = row
+            source_line = lines[name.split()[0]]
+            for value in strength + modulus + toughness:
+                self.assertIn(value, source_line)
+            r = self.by_cohort[cohort]
+            self.assertEqual(set(r["values"]), {"tensile_strength_Pa", "initial_modulus_Pa"})
+            self.assertNotIn("herman_orientation_factor", r["source_facts"])
+        for row in AUDITED:
+            r = self.by_cohort[row[0]]
+            context = r["context_measurements"][0]
+            self.assertEqual(context["unit_canonical"], "J/m^3")
+            self.assertEqual(Decimal(str(context["reported_value"])), Decimal(row[-1][0]))
+            self.assertEqual(Decimal(str(context["value_canonical"])), Decimal(row[-1][0]) * Decimal("1e6"))
+            self.assertNotIn("rupture_work_J_kg", r["values"])
 
 
 if __name__ == "__main__":

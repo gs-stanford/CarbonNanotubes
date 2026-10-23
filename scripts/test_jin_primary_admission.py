@@ -144,6 +144,11 @@ class JinPrimaryAdmissionTests(unittest.TestCase):
             self.assertIn("abstract", specific["reported_unit_source"])
 
     def test_held_metrics_are_not_silently_added(self):
+        audit = self.payload["omission_audit"]
+        self.assertEqual(audit["measurement_count"], 48)
+        self.assertEqual(audit["new_canonical_measurements"], 0)
+        self.assertIn("No local main text", audit["main_source_gap"])
+        self.assertIn("not transferable", audit["other_specimens"])
         for r in self.records:
             held = {h["property"]: h for h in r["held_metrics"]}
             for prop in ["density", "electrical_conductivity", "tensile_strength", "initial_modulus", "specific_thermal_conductivity", "diameter", "ampacity"]:

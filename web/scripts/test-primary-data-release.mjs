@@ -29,10 +29,18 @@ assert.equal(release.publication_count, summary.public_publications);
 // Constants are source-audited reference values, not calculated from the served CSV.
 for (const [doi,x,y,expectedX,expectedY] of [
   ["10.1038/s41467-026-69498-7","tensile_strength","electrical_conductivity",2.49,27.34],
+  ["10.1038/s41467-026-69498-7","density","electrical_conductivity",1930,27.34],
+  ["10.1038/s41467-026-69498-7","specific_strength","electrical_conductivity",1.29,27.34],
+  ["10.1038/s41467-026-69498-7","specific_strength","specific_electrical_conductivity",1.29,14.166],
+  ["10.1038/s41467-026-69498-7","diameter","electrical_conductivity",11.30,27.34],
+  ["10.1038/s41467-026-69498-7","linear_density","electrical_conductivity",0.20,27.34],
+  ["10.1038/s41467-026-69498-7","g_d_ratio","electrical_conductivity",45.25,27.34],
+  ["10.1038/s41467-026-69498-7","electrical_conductivity","ampacity",27.34,0.124138],
   ["10.1021/acsnano.5c14235","electrical_conductivity","tensile_strength",2.60,8.45],
   ["10.1038/s41563-026-02733-0","tensile_strength","thermal_conductivity",5.89,1720],
+  ["10.1038/s41563-026-02733-0","specific_strength","specific_thermal_conductivity",2.872834726676,0.83892626942],
   ["10.1021/acsanm.6c00845","specific_electrical_conductivity","thermal_conductivity",1.302,199.7],
-  ["10.1038/s41467-026-75150-1","initial_modulus","tensile_strength",370,11.63],
+  ["10.1038/s41467-026-75150-1","initial_modulus","tensile_strength",260,12.43],
 ]) {
   const statusResponse = await fetch(`${base}/api/v1/doi-status?doi=${encodeURIComponent(doi)}`);
   assert.equal(statusResponse.status,200);
@@ -50,6 +58,14 @@ for (const [doi,x,y,expectedX,expectedY] of [
   assert.ok(result.citations.entries.some(c=>c.doi===doi));
   checks.push({doi,x,y,x_value:point.x_value,y_value:point.y_value});
 }
+
+const sunQualified = await figure({x:"specific_strength",y:"specific_electrical_conductivity",
+  filters:{doi:"10.1038/s41467-026-69498-7"},selected_record_id:"rec_37a852332ebc"});
+assert.equal(sunQualified.selected_record?.record_id,"rec_37a852332ebc");
+assert.match(sunQualified.selected_record.measurementMetadata.density.source_qualification,/density-gradient column/);
+assert.match(sunQualified.selected_record.measurementMetadata.specific_strength.source_qualification,/1\.26.*1\.29/);
+assert.equal(sunQualified.selected_record.measurementMetadata.density.density_value_kg_m3,null);
+assert.equal(sunQualified.selected_record.measurementMetadata.specific_strength.density_value_kg_m3,1930);
 
 const axes = {x:"tensile_strength",y:"electrical_conductivity",
   filters:{form_factor:"fiber_yarn",material_family:"CNT_or_CNT_hybrid",peer_reviewed:true}};

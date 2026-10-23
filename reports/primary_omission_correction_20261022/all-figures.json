@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "property_count": 16,
+  "requests_checked": 272,
+  "supported_figures": 268,
+  "unsupported_combinations": 4,
+  "largest_figure": {
+    "label": "trend:density:electrical_conductivity",
+    "points": 324
+  },
+  "temporary_point": {
+    "label": "Audit candidate",
+    "x": 1.8,
+    "y": 12,
+    "total_with_temporary": 50,
+    "x_rank": 14,
+    "y_rank": 4,
+    "x_percentile": 73.46938775510205,
+    "y_percentile": 93.87755102040816,
+    "dominated_by": 1,
+    "on_pareto_frontier": false
+  },
+  "export_formats": [
+    "svg",
+    "png_base64",
+    "pdf_base64"
+  ]
+}

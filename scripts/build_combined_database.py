@@ -127,6 +127,25 @@ CANONICAL_DUPLICATE_FIELDS = [
     "ampacity_A_m2",
 ]
 
+MEASUREMENT_DEFINITIONS = [
+    ("density", "density_kg_m3", "kg/m^3"),
+    ("specific_volume", "specific_volume_m3_kg", "m^3/kg"),
+    ("diameter", "diameter_m", "m"),
+    ("linear_density", "linear_density_kg_m", "kg/m"),
+    ("specific_strength", "specific_strength_N_m_kg", "N m/kg"),
+    ("tensile_strength", "tensile_strength_Pa", "Pa"),
+    ("specific_modulus", "specific_modulus_N_m_kg", "N m/kg"),
+    ("initial_modulus", "initial_modulus_Pa", "Pa"),
+    ("breaking_strain", "breaking_strain_fraction", "1"),
+    ("work_of_rupture", "rupture_work_J_kg", "J/kg"),
+    ("electrical_conductivity", "electrical_conductivity_S_m", "S/m"),
+    ("specific_electrical_conductivity", "specific_electrical_conductivity_S_m2_kg", "S m^2/kg"),
+    ("thermal_conductivity", "thermal_conductivity_W_mK", "W/m/K"),
+    ("specific_thermal_conductivity", "specific_thermal_conductivity_W_m2_K_kg", "W m^2/K/kg"),
+    ("g_d_ratio", "g_d_ratio", "ratio"),
+    ("ampacity", "ampacity_A_m2", "A/m^2"),
+]
+
 RAW_MEASUREMENT_FIELDS = {
     "density_g_cm3_raw",
     "density_g_cm3_error_raw",
@@ -1396,6 +1415,13 @@ def validate_primary_addition(item: dict[str, Any]) -> None:
     if any(not isinstance(value, (float, int)) or not math.isfinite(value) or value <= 0
            for value in item["values"].values()):
         raise ValueError("Primary values must be positive finite quantities")
+    properties = {field: prop for prop, field, _ in MEASUREMENT_DEFINITIONS}
+    unknown = set(item["values"]) - properties.keys()
+    if unknown:
+        raise ValueError(f"Unknown primary fields would be silently dropped: {sorted(unknown)}")
+    expected = {properties[field] for field in item["values"]}
+    if expected != set(item["measurement_metadata"]):
+        raise ValueError("Every primary value must have matching property-level metadata and vice versa")
     for meta in item["measurement_metadata"].values():
         if not meta.get("source_locator") or not (meta.get("source_sha256") or meta.get("source_document_sha256")):
             raise ValueError("Primary measurement lacks a source locator or document hash")
@@ -1576,24 +1602,7 @@ def measurement_source_metadata(record: dict[str, Any], prop: str) -> dict[str, 
 
 
 def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
-    definitions = [
-        ("density", "density_kg_m3", "kg/m^3"),
-        ("specific_volume", "specific_volume_m3_kg", "m^3/kg"),
-        ("diameter", "diameter_m", "m"),
-        ("linear_density", "linear_density_kg_m", "kg/m"),
-        ("specific_strength", "specific_strength_N_m_kg", "N m/kg"),
-        ("tensile_strength", "tensile_strength_Pa", "Pa"),
-        ("specific_modulus", "specific_modulus_N_m_kg", "N m/kg"),
-        ("initial_modulus", "initial_modulus_Pa", "Pa"),
-        ("breaking_strain", "breaking_strain_fraction", "1"),
-        ("work_of_rupture", "rupture_work_J_kg", "J/kg"),
-        ("electrical_conductivity", "electrical_conductivity_S_m", "S/m"),
-        ("specific_electrical_conductivity", "specific_electrical_conductivity_S_m2_kg", "S m^2/kg"),
-        ("thermal_conductivity", "thermal_conductivity_W_mK", "W/m/K"),
-        ("specific_thermal_conductivity", "specific_thermal_conductivity_W_m2_K_kg", "W m^2/K/kg"),
-        ("g_d_ratio", "g_d_ratio", "ratio"),
-        ("ampacity", "ampacity_A_m2", "A/m^2"),
-    ]
+    definitions = MEASUREMENT_DEFINITIONS
     rows = []
     for record in records:
         available = [

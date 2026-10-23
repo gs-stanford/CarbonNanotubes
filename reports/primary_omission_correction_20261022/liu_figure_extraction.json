@@ -1,0 +1,2538 @@
+{
+  "schema_version": "cpt-source-figure-extraction-v1",
+  "doi": "10.1038/s41563-026-02733-0",
+  "audit_date": "2026-10-22",
+  "status": "source_extracted_crops_reviewed_pending_parent_admission",
+  "review_status": "ai_source_checked_not_human_adjudicated",
+  "curator": "CPT AI-assisted source audit",
+  "production_database_modified": false,
+  "script": "/Users/gsharma/Documents/Review Paper Database/scripts/extract_liu_omitted_figures.py",
+  "script_sha256": "2f61adf680808fb4df75443cccc5a0bd19e975bfe43909aa1b47841716bb16b4",
+  "sources": {
+    "si": {
+      "path": "/Users/gsharma/Documents/Review Paper Database/outputs/fiber_discovery_20261022/graphene_draw_audit/41563_2026_2733_MOESM1_ESM.pdf",
+      "sha256": "f91f3a0d70eb05fa05962fc7fe94ccc20ec5edde7e98337e1e6f6784539020aa",
+      "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41563-026-02733-0/MediaObjects/41563_2026_2733_MOESM1_ESM.pdf"
+    },
+    "main": {
+      "path": "/Users/gsharma/Documents/Review Paper Database/outputs/fiber_discovery_20261022/graphene_draw_audit/article.pdf",
+      "sha256": "a93ebf63420fc13a50e087afad5861d25e880b20d45e02f44d2c1d7a816c7ba9",
+      "url": "https://www.nature.com/articles/s41563-026-02733-0"
+    }
+  },
+  "state_id_lookup_packet": {
+    "path": "/Users/gsharma/Documents/Review Paper Database/data/curation/primary_additions/liu_2026.json",
+    "sha256": "633bb8581e2fa7a838a9c6b4240d8e557181515d15db50a1360cdfb946308a04",
+    "read_only": true
+  },
+  "conventions": {
+    "specimen_linkage": "single_source_row_unverified",
+    "review": "AI source check only; no human approval claimed",
+    "raster": "Native embedded RGB strips concatenated without resampling. Native pixels are the quantitative coordinate system; per-strip maps locate points on the PDF.",
+    "sensitivity": "Coordinate envelopes and reciprocal sensitivity are not SD, SE, confidence intervals or measured variability.",
+    "uncertainty": "Only Figs.38/36 have source-reported SD and n=3; no SD or n assigned to Raman."
+  },
+  "admission_decision_history": [
+    {
+      "stage": "provisional",
+      "decision": "Thermal endpoint densities considered for source-alternative-only retention to avoid potential duplicate populations."
+    },
+    {
+      "stage": "final",
+      "decision": "Retain all four Fig.38e diameter-density measurement sets; withholding endpoints creates artificial missingness. Record possible overlap without declaring reused or independent specimens."
+    }
+  ],
+  "raman_drawing": {
+    "pdf_page": 54,
+    "printed_page": 53,
+    "figure": "47b",
+    "native_strip_maps": [
+      {
+        "xref": 298,
+        "width_px": 2570,
+        "height_px": 951,
+        "native_y_start": 0,
+        "native_y_stop": 951,
+        "pdf_rect_pt": [
+          70.19999694824219,
+          105.96002197265625,
+          525.6000366210938,
+          274.08001708984375
+        ],
+        "pixel_sha256": "a7bfabbed0573559a97a247a1aeac651b8b6b6f0958818181a884a156572a542"
+      },
+      {
+        "xref": 299,
+        "width_px": 2570,
+        "height_px": 314,
+        "native_y_start": 951,
+        "native_y_stop": 1265,
+        "pdf_rect_pt": [
+          70.19999694824219,
+          274.0799865722656,
+          525.6000366210938,
+          330.1199951171875
+        ],
+        "pixel_sha256": "d67d3d87504fbd1d6cf0726ebf107ce3f20149a5d30bbf4923660e637239024c"
+      }
+    ],
+    "native_canvas_size_px": [
+      2570,
+      1265
+    ],
+    "calibration": {
+      "x": {
+        "coordinate_to_value": [
+          0.011695906432748546,
+          -16.77777777777779
+        ],
+        "tick_coordinates": [
+          1434.5,
+          1605.5,
+          1776.5,
+          1947.5,
+          2118.5,
+          2289.5
+        ],
+        "tick_values": [
+          0,
+          2,
+          4,
+          6,
+          8,
+          10
+        ],
+        "tick_roi_native_px": [
+          [
+            1430,
+            1037,
+            1439,
+            1049
+          ],
+          [
+            1602,
+            1037,
+            1611,
+            1049
+          ],
+          [
+            1773,
+            1037,
+            1782,
+            1049
+          ],
+          [
+            1944,
+            1037,
+            1953,
+            1049
+          ],
+          [
+            2115,
+            1037,
+            2124,
+            1049
+          ],
+          [
+            2285,
+            1037,
+            2294,
+            1049
+          ]
+        ],
+        "unit": "draw_ratio",
+        "maximum_tick_residual": 7.105427357601002e-15,
+        "maximum_tick_residual_coordinate": 6.075140390748853e-13,
+        "coordinate_convention": "zero-based native pixel centers, or PDF points for vectors"
+      },
+      "d_g": {
+        "coordinate_to_value": [
+          -4.5454432757604724e-05,
+          0.04694993318198383
+        ],
+        "tick_coordinates": [
+          152.5,
+          373.5,
+          592.5,
+          813.5,
+          1032.5
+        ],
+        "tick_values": [
+          0.04,
+          0.03,
+          0.02,
+          0.01,
+          0.0
+        ],
+        "tick_roi_native_px": [
+          [
+            1400,
+            150,
+            1434,
+            159
+          ],
+          [
+            1400,
+            370,
+            1434,
+            379
+          ],
+          [
+            1400,
+            589,
+            1434,
+            598
+          ],
+          [
+            1400,
+            810,
+            1434,
+            819
+          ],
+          [
+            1438,
+            1029,
+            1460,
+            1038
+          ]
+        ],
+        "unit": "I_D/I_G",
+        "maximum_tick_residual": 2.729745298153327e-05,
+        "maximum_tick_residual_coordinate": 0.600545454545713,
+        "coordinate_convention": "zero-based native pixel centers, or PDF points for vectors"
+      }
+    },
+    "records": [
+      {
+        "draw_ratio": 1,
+        "curated_state_id": "10.1038/s41563-026-02733-0|draw-1",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig47b",
+        "existing_record_id": "rec_d92f734b65da",
+        "state_mapping_status": "same_explicit_draw_label_in_final_GF_series",
+        "admission_action": "append_Raman_only_to_existing_draw_state",
+        "allowed_additional_properties": [
+          "g_d_ratio"
+        ],
+        "prohibited_borrowing": "No T, E, density, electrical or thermal values copied to draw 2 or gauge records.",
+        "raw_d_g": {
+          "value_reported_unit": 0.041051474495314114,
+          "reported_unit": "I_D/I_G",
+          "value_canonical": 0.041051474495314114,
+          "conversion_factor_to_canonical": 1,
+          "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+          "reported_or_derived": "reported",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_reported": null,
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "marker": {
+            "center_native_px": [
+              1520.017565458151,
+              129.76641284084388
+            ],
+            "radius_px": 22.007974305116942,
+            "color": "blue",
+            "seed_native_px": [
+              1520,
+              130
+            ],
+            "seed_window_halfwidth_px": 28,
+            "threshold_fits": [
+              {
+                "chromatic_threshold": 40,
+                "center_native_px": [
+                  1519.994898506952,
+                  129.78055159057388
+                ],
+                "fitted_radius_px": 22.01061928038685,
+                "selected_pixels": 966
+              },
+              {
+                "chromatic_threshold": 60,
+                "center_native_px": [
+                  1520.017565458151,
+                  129.76641284084388
+                ],
+                "fitted_radius_px": 22.007974305116942,
+                "selected_pixels": 947
+              },
+              {
+                "chromatic_threshold": 80,
+                "center_native_px": [
+                  1520.012265164145,
+                  129.7531621111376
+                ],
+                "fitted_radius_px": 22.001273405387472,
+                "selected_pixels": 941
+              }
+            ],
+            "center_threshold_sensitivity_y_px": 0.014138749729994515
+          },
+          "center_pdf_pt": [
+            339.63336645521093,
+            128.98882185776267
+          ],
+          "digitization_sensitivity_reported_unit": 7.339455458801663e-05,
+          "digitization_interval_reported_unit": [
+            0.040978079940726095,
+            0.04112486904990213
+          ],
+          "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+          "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+          "status": "admission_ready_figure_digitized",
+          "independent_two_tick_check_value": 0.041033344870870736
+        },
+        "g_d": {
+          "property": "g_d_ratio",
+          "value_canonical": 24.359660945044656,
+          "unit_canonical": "dimensionless",
+          "reported_or_derived": "derived",
+          "derivation_formula": "G:D = 1 / digitized (I_D/I_G)",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "digitization_sensitivity_interval": [
+            24.3161868500194,
+            24.403290770247857
+          ],
+          "digitization_sensitivity_lower": 0.04347409502525679,
+          "digitization_sensitivity_upper": 0.04362982520320102,
+          "resolution_limited": false,
+          "status": "admission_ready_derived_reciprocal_of_digitized_ratio"
+        },
+        "source_locator": "SI PDF p.54 / printed p.53, Fig.47b, blue I_D/I_G circle, draw 1",
+        "conditions_notes": "Final graphene-fibre drawing series. Integrated-band ratio convention from main PDF p.11; SI caption uses peak-intensity wording. Excitation wavelength, n and experimental uncertainty not recovered. G/D is a reciprocal of a digitized D/G point, not a directly reported G/D mean."
+      },
+      {
+        "draw_ratio": 2,
+        "curated_state_id": "10.1038/s41563-026-02733-0|draw-2",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig47b",
+        "existing_record_id": null,
+        "state_mapping_status": "same_explicit_draw_label_in_final_GF_series",
+        "admission_action": "new_draw_2_Raman_only_state",
+        "allowed_additional_properties": [
+          "g_d_ratio"
+        ],
+        "prohibited_borrowing": "No T, E, density, electrical or thermal values copied to draw 2 or gauge records.",
+        "raw_d_g": {
+          "value_reported_unit": 0.03916345939636939,
+          "reported_unit": "I_D/I_G",
+          "value_canonical": 0.03916345939636939,
+          "conversion_factor_to_canonical": 1,
+          "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+          "reported_or_derived": "reported",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_reported": null,
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "marker": {
+            "center_native_px": [
+              1605.6080756197448,
+              171.30284800026965
+            ],
+            "radius_px": 22.036171289167427,
+            "color": "blue",
+            "seed_native_px": [
+              1606,
+              171
+            ],
+            "seed_window_halfwidth_px": 28,
+            "threshold_fits": [
+              {
+                "chromatic_threshold": 40,
+                "center_native_px": [
+                  1605.5845316704917,
+                  171.29390392414732
+                ],
+                "fitted_radius_px": 22.070442306963024,
+                "selected_pixels": 967
+              },
+              {
+                "chromatic_threshold": 60,
+                "center_native_px": [
+                  1605.6080756197448,
+                  171.30284800026965
+                ],
+                "fitted_radius_px": 22.036171289167427,
+                "selected_pixels": 952
+              },
+              {
+                "chromatic_threshold": 80,
+                "center_native_px": [
+                  1605.605220163814,
+                  171.30141625498172
+                ],
+                "fitted_radius_px": 22.027841334970585,
+                "selected_pixels": 948
+              }
+            ],
+            "center_threshold_sensitivity_y_px": 0.008944076122332945
+          },
+          "center_pdf_pt": [
+            354.7998729622963,
+            136.33172961400666
+          ],
+          "digitization_sensitivity_reported_unit": 7.315843364581948e-05,
+          "digitization_interval_reported_unit": [
+            0.039090300962723576,
+            0.03923661783001521
+          ],
+          "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+          "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+          "status": "admission_ready_figure_digitized",
+          "independent_two_tick_check_value": 0.03914532509089683
+        },
+        "g_d": {
+          "property": "g_d_ratio",
+          "value_canonical": 25.53400581595976,
+          "unit_canonical": "dimensionless",
+          "reported_or_derived": "derived",
+          "derivation_formula": "G:D = 1 / digitized (I_D/I_G)",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "digitization_sensitivity_interval": [
+            25.48639651695515,
+            25.581793318849037
+          ],
+          "digitization_sensitivity_lower": 0.047609299004609085,
+          "digitization_sensitivity_upper": 0.047787502889278244,
+          "resolution_limited": false,
+          "status": "admission_ready_derived_reciprocal_of_digitized_ratio"
+        },
+        "source_locator": "SI PDF p.54 / printed p.53, Fig.47b, blue I_D/I_G circle, draw 2",
+        "conditions_notes": "Final graphene-fibre drawing series. Integrated-band ratio convention from main PDF p.11; SI caption uses peak-intensity wording. Excitation wavelength, n and experimental uncertainty not recovered. G/D is a reciprocal of a digitized D/G point, not a directly reported G/D mean."
+      },
+      {
+        "draw_ratio": 4,
+        "curated_state_id": "10.1038/s41563-026-02733-0|draw-4",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig47b",
+        "existing_record_id": "rec_5bc8b2164afc",
+        "state_mapping_status": "same_explicit_draw_label_in_final_GF_series",
+        "admission_action": "append_Raman_only_to_existing_draw_state",
+        "allowed_additional_properties": [
+          "g_d_ratio"
+        ],
+        "prohibited_borrowing": "No T, E, density, electrical or thermal values copied to draw 2 or gauge records.",
+        "raw_d_g": {
+          "value_reported_unit": 0.03734467732274294,
+          "reported_unit": "I_D/I_G",
+          "value_canonical": 0.03734467732274294,
+          "conversion_factor_to_canonical": 1,
+          "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+          "reported_or_derived": "reported",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_reported": null,
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "marker": {
+            "center_native_px": [
+              1776.4081410589818,
+              211.31615282634644
+            ],
+            "radius_px": 22.012636548593925,
+            "color": "blue",
+            "seed_native_px": [
+              1776,
+              211
+            ],
+            "seed_window_halfwidth_px": 28,
+            "threshold_fits": [
+              {
+                "chromatic_threshold": 40,
+                "center_native_px": [
+                  1776.3729571384051,
+                  211.29375072108667
+                ],
+                "fitted_radius_px": 22.0118604098621,
+                "selected_pixels": 979
+              },
+              {
+                "chromatic_threshold": 60,
+                "center_native_px": [
+                  1776.4081410589818,
+                  211.31615282634644
+                ],
+                "fitted_radius_px": 22.012636548593925,
+                "selected_pixels": 958
+              },
+              {
+                "chromatic_threshold": 80,
+                "center_native_px": [
+                  1776.410483923906,
+                  211.33606694190547
+                ],
+                "fitted_radius_px": 21.999754830049277,
+                "selected_pixels": 949
+              }
+            ],
+            "center_threshold_sensitivity_y_px": 0.022402105259772043
+          },
+          "center_pdf_pt": [
+            385.06538135807614,
+            143.40537484216918
+          ],
+          "digitization_sensitivity_reported_unit": 7.377016072629709e-05,
+          "digitization_interval_reported_unit": [
+            0.03727090716201665,
+            0.03741844748346924
+          ],
+          "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+          "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+          "status": "admission_ready_figure_digitized",
+          "independent_two_tick_check_value": 0.037326538507893345
+        },
+        "g_d": {
+          "property": "g_d_ratio",
+          "value_canonical": 26.777577735047107,
+          "unit_canonical": "dimensionless",
+          "reported_or_derived": "derived",
+          "derivation_formula": "G:D = 1 / digitized (I_D/I_G)",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "digitization_sensitivity_interval": [
+            26.72478596130374,
+            26.830578489892922
+          ],
+          "digitization_sensitivity_lower": 0.05279177374336541,
+          "digitization_sensitivity_upper": 0.05300075484581512,
+          "resolution_limited": false,
+          "status": "admission_ready_derived_reciprocal_of_digitized_ratio"
+        },
+        "source_locator": "SI PDF p.54 / printed p.53, Fig.47b, blue I_D/I_G circle, draw 4",
+        "conditions_notes": "Final graphene-fibre drawing series. Integrated-band ratio convention from main PDF p.11; SI caption uses peak-intensity wording. Excitation wavelength, n and experimental uncertainty not recovered. G/D is a reciprocal of a digitized D/G point, not a directly reported G/D mean."
+      },
+      {
+        "draw_ratio": 6,
+        "curated_state_id": "10.1038/s41563-026-02733-0|draw-6",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig47b",
+        "existing_record_id": "rec_fbd87b0544d2",
+        "state_mapping_status": "same_explicit_draw_label_in_final_GF_series",
+        "admission_action": "append_Raman_only_to_existing_draw_state",
+        "allowed_additional_properties": [
+          "g_d_ratio"
+        ],
+        "prohibited_borrowing": "No T, E, density, electrical or thermal values copied to draw 2 or gauge records.",
+        "raw_d_g": {
+          "value_reported_unit": 0.02614525338847443,
+          "reported_unit": "I_D/I_G",
+          "value_canonical": 0.02614525338847443,
+          "conversion_factor_to_canonical": 1,
+          "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+          "reported_or_derived": "reported",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_reported": null,
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "marker": {
+            "center_native_px": [
+              1947.4526950744598,
+              457.70409025792287
+            ],
+            "radius_px": 22.008655626200316,
+            "color": "blue",
+            "seed_native_px": [
+              1948,
+              458
+            ],
+            "seed_window_halfwidth_px": 28,
+            "threshold_fits": [
+              {
+                "chromatic_threshold": 40,
+                "center_native_px": [
+                  1947.4425792647373,
+                  457.70939064846874
+                ],
+                "fitted_radius_px": 22.038351658918195,
+                "selected_pixels": 967
+              },
+              {
+                "chromatic_threshold": 60,
+                "center_native_px": [
+                  1947.4526950744598,
+                  457.70409025792287
+                ],
+                "fitted_radius_px": 22.008655626200316,
+                "selected_pixels": 947
+              },
+              {
+                "chromatic_threshold": 80,
+                "center_native_px": [
+                  1947.459333516092,
+                  457.70729997545527
+                ],
+                "fitted_radius_px": 22.004027405174487,
+                "selected_pixels": 944
+              }
+            ],
+            "center_threshold_sensitivity_y_px": 0.005300390545869504
+          },
+          "center_pdf_pt": [
+            415.37421275281304,
+            186.96240832053988
+          ],
+          "digitization_sensitivity_reported_unit": 7.299281198479426e-05,
+          "digitization_interval_reported_unit": [
+            0.026072260576489637,
+            0.026218246200459223
+          ],
+          "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+          "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+          "status": "admission_ready_figure_digitized",
+          "independent_two_tick_check_value": 0.02612708680645805
+        },
+        "g_d": {
+          "property": "g_d_ratio",
+          "value_canonical": 38.247860334022555,
+          "unit_canonical": "dimensionless",
+          "reported_or_derived": "derived",
+          "derivation_formula": "G:D = 1 / digitized (I_D/I_G)",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "digitization_sensitivity_interval": [
+            38.14137651901692,
+            38.35494038064879
+          ],
+          "digitization_sensitivity_lower": 0.10648381500563175,
+          "digitization_sensitivity_upper": 0.10708004662623694,
+          "resolution_limited": false,
+          "status": "admission_ready_derived_reciprocal_of_digitized_ratio"
+        },
+        "source_locator": "SI PDF p.54 / printed p.53, Fig.47b, blue I_D/I_G circle, draw 6",
+        "conditions_notes": "Final graphene-fibre drawing series. Integrated-band ratio convention from main PDF p.11; SI caption uses peak-intensity wording. Excitation wavelength, n and experimental uncertainty not recovered. G/D is a reciprocal of a digitized D/G point, not a directly reported G/D mean."
+      },
+      {
+        "draw_ratio": 8,
+        "curated_state_id": "10.1038/s41563-026-02733-0|draw-8",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig47b",
+        "existing_record_id": "rec_06d34ede30a6",
+        "state_mapping_status": "same_explicit_draw_label_in_final_GF_series",
+        "admission_action": "append_Raman_only_to_existing_draw_state",
+        "allowed_additional_properties": [
+          "g_d_ratio"
+        ],
+        "prohibited_borrowing": "No T, E, density, electrical or thermal values copied to draw 2 or gauge records.",
+        "raw_d_g": {
+          "value_reported_unit": 0.01684839004162545,
+          "reported_unit": "I_D/I_G",
+          "value_canonical": 0.01684839004162545,
+          "conversion_factor_to_canonical": 1,
+          "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+          "reported_or_derived": "reported",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_reported": null,
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "marker": {
+            "center_native_px": [
+              2118.2452438943023,
+              662.2355909902376
+            ],
+            "radius_px": 21.87042139349939,
+            "color": "blue",
+            "seed_native_px": [
+              2118,
+              662
+            ],
+            "seed_window_halfwidth_px": 28,
+            "threshold_fits": [
+              {
+                "chromatic_threshold": 40,
+                "center_native_px": [
+                  2118.3202936365637,
+                  662.2485180871935
+                ],
+                "fitted_radius_px": 21.904665555555443,
+                "selected_pixels": 922
+              },
+              {
+                "chromatic_threshold": 60,
+                "center_native_px": [
+                  2118.2452438943023,
+                  662.2355909902376
+                ],
+                "fitted_radius_px": 21.87042139349939,
+                "selected_pixels": 895
+              },
+              {
+                "chromatic_threshold": 80,
+                "center_native_px": [
+                  2118.2289963291823,
+                  662.2495590608312
+                ],
+                "fitted_radius_px": 21.852409625781725,
+                "selected_pixels": 885
+              }
+            ],
+            "center_threshold_sensitivity_y_px": 0.01396807059359162
+          },
+          "center_pdf_pt": [
+            445.63838921521915,
+            223.11996342509065
+          ],
+          "digitization_sensitivity_reported_unit": 7.338679646468788e-05,
+          "digitization_interval_reported_unit": [
+            0.016775003245160763,
+            0.01692177683809014
+          ],
+          "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+          "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+          "status": "admission_ready_figure_digitized",
+          "independent_two_tick_check_value": 0.016830200409534653
+        },
+        "g_d": {
+          "property": "g_d_ratio",
+          "value_canonical": 59.35285196564246,
+          "unit_canonical": "dimensionless",
+          "reported_or_derived": "derived",
+          "derivation_formula": "G:D = 1 / digitized (I_D/I_G)",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "digitization_sensitivity_interval": [
+            59.09544899262861,
+            59.61250709674104
+          ],
+          "digitization_sensitivity_lower": 0.2574029730138463,
+          "digitization_sensitivity_upper": 0.25965513109858307,
+          "resolution_limited": false,
+          "status": "admission_ready_derived_reciprocal_of_digitized_ratio"
+        },
+        "source_locator": "SI PDF p.54 / printed p.53, Fig.47b, blue I_D/I_G circle, draw 8",
+        "conditions_notes": "Final graphene-fibre drawing series. Integrated-band ratio convention from main PDF p.11; SI caption uses peak-intensity wording. Excitation wavelength, n and experimental uncertainty not recovered. G/D is a reciprocal of a digitized D/G point, not a directly reported G/D mean."
+      },
+      {
+        "draw_ratio": 10,
+        "curated_state_id": "10.1038/s41563-026-02733-0|draw-10",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig47b",
+        "existing_record_id": "rec_cddb5a53e531",
+        "state_mapping_status": "same_explicit_draw_label_in_final_GF_series",
+        "admission_action": "append_Raman_only_to_existing_draw_state",
+        "allowed_additional_properties": [
+          "g_d_ratio"
+        ],
+        "prohibited_borrowing": "No T, E, density, electrical or thermal values copied to draw 2 or gauge records.",
+        "raw_d_g": {
+          "value_reported_unit": 0.0052333956985538554,
+          "reported_unit": "I_D/I_G",
+          "value_canonical": 0.0052333956985538554,
+          "conversion_factor_to_canonical": 1,
+          "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+          "reported_or_derived": "reported",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_reported": null,
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "marker": {
+            "center_native_px": [
+              2289.2511250079256,
+              917.7661000829587
+            ],
+            "radius_px": 22.039626176537336,
+            "color": "blue",
+            "seed_native_px": [
+              2289,
+              918
+            ],
+            "seed_window_halfwidth_px": 28,
+            "threshold_fits": [
+              {
+                "chromatic_threshold": 40,
+                "center_native_px": [
+                  2289.3037277618987,
+                  917.7414307132443
+                ],
+                "fitted_radius_px": 22.046735616817656,
+                "selected_pixels": 979
+              },
+              {
+                "chromatic_threshold": 60,
+                "center_native_px": [
+                  2289.2511250079256,
+                  917.7661000829587
+                ],
+                "fitted_radius_px": 22.039626176537336,
+                "selected_pixels": 958
+              },
+              {
+                "chromatic_threshold": 80,
+                "center_native_px": [
+                  2289.2280761132365,
+                  917.752478966809
+                ],
+                "fitted_radius_px": 22.032046240381593,
+                "selected_pixels": 950
+              }
+            ],
+            "center_threshold_sensitivity_y_px": 0.024669369714388267
+          },
+          "center_pdf_pt": [
+            475.9403678313417,
+            268.29324201705776
+          ],
+          "digitization_sensitivity_reported_unit": 7.387321794599314e-05,
+          "digitization_interval_reported_unit": [
+            0.005159522480607862,
+            0.005307268916499849
+          ],
+          "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+          "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+          "status": "admission_ready_figure_digitized",
+          "independent_two_tick_check_value": 0.005215177268956421
+        },
+        "g_d": {
+          "property": "g_d_ratio",
+          "value_canonical": 191.0805254562215,
+          "unit_canonical": "dimensionless",
+          "reported_or_derived": "derived",
+          "derivation_formula": "G:D = 1 / digitized (I_D/I_G)",
+          "statistic_type": "unspecified",
+          "uncertainty_type": "not_reported",
+          "uncertainty_value_canonical": null,
+          "sample_size_n": null,
+          "digitization_sensitivity_interval": [
+            188.42082730933134,
+            193.81638586875317
+          ],
+          "digitization_sensitivity_lower": 2.6596981468901504,
+          "digitization_sensitivity_upper": 2.7358604125316788,
+          "resolution_limited": false,
+          "status": "admission_ready_derived_reciprocal_of_digitized_ratio"
+        },
+        "source_locator": "SI PDF p.54 / printed p.53, Fig.47b, blue I_D/I_G circle, draw 10",
+        "conditions_notes": "Final graphene-fibre drawing series. Integrated-band ratio convention from main PDF p.11; SI caption uses peak-intensity wording. Excitation wavelength, n and experimental uncertainty not recovered. G/D is a reciprocal of a digitized D/G point, not a directly reported G/D mean."
+      }
+    ],
+    "visual_crop": {
+      "source_crop": "/private/var/folders/jb/3r5z90j96m3bx_qrg2_q6by40000gn/T/liu_omitted_figures/fig47b_source.png",
+      "calibrated_crop": "/private/var/folders/jb/3r5z90j96m3bx_qrg2_q6by40000gn/T/liu_omitted_figures/fig47b_calibration.png",
+      "native_crop_box": [
+        1280,
+        0,
+        2570,
+        1120
+      ],
+      "source_crop_sha256": "0ded1aa0e7837bde7e892e205b5bce876fd7711a15e14823bff748b849be69c4",
+      "calibrated_crop_sha256": "18a977e24c3d75ef249b102792fd899141d913355865422a834e621f160ce5f8"
+    },
+    "reported_uncertainty": "No error bars, SD or n specified for this series."
+  },
+  "thermal_summary": {
+    "pdf_page": 45,
+    "printed_page": 44,
+    "figure": "38e",
+    "native_strip_maps": [
+      {
+        "xref": 237,
+        "width_px": 2744,
+        "height_px": 736,
+        "native_y_start": 0,
+        "native_y_stop": 736,
+        "pdf_rect_pt": [
+          78.12000274658203,
+          105.95999145507812,
+          517.6799926757812,
+          223.79998779296875
+        ],
+        "pixel_sha256": "5c40b4c9cf5655e963c043b8cfdef8b16b6d8a1c52f891a7a75f982f39f17866"
+      },
+      {
+        "xref": 238,
+        "width_px": 2744,
+        "height_px": 368,
+        "native_y_start": 736,
+        "native_y_stop": 1104,
+        "pdf_rect_pt": [
+          78.12000274658203,
+          223.8000030517578,
+          517.6799926757812,
+          282.7200012207031
+        ],
+        "pixel_sha256": "89b957b4ed6fe317680bec28abf4f99a064af8eff498bf4344d11fd1adc4ed00"
+      },
+      {
+        "xref": 239,
+        "width_px": 2744,
+        "height_px": 368,
+        "native_y_start": 1104,
+        "native_y_stop": 1472,
+        "pdf_rect_pt": [
+          78.12000274658203,
+          282.719970703125,
+          517.6799926757812,
+          341.63995361328125
+        ],
+        "pixel_sha256": "501ee3c645287b12fdb322f92aec472998cd89d3a225b8e4d1b74977bc544b1d"
+      },
+      {
+        "xref": 240,
+        "width_px": 2744,
+        "height_px": 368,
+        "native_y_start": 1472,
+        "native_y_stop": 1840,
+        "pdf_rect_pt": [
+          78.12000274658203,
+          341.63995361328125,
+          517.6799926757812,
+          400.5599365234375
+        ],
+        "pixel_sha256": "cbf3617c0afb0823467a346ccb9e55a67fb355439d3425cdfa7b69918612d3a4"
+      },
+      {
+        "xref": 241,
+        "width_px": 2744,
+        "height_px": 368,
+        "native_y_start": 1840,
+        "native_y_stop": 2208,
+        "pdf_rect_pt": [
+          78.12000274658203,
+          400.55999755859375,
+          517.6799926757812,
+          459.47998046875
+        ],
+        "pixel_sha256": "e514204e4b3aa63c4467eaf15a20821268adf5c775b6372819fd8cf4eaa0c07f"
+      },
+      {
+        "xref": 242,
+        "width_px": 2744,
+        "height_px": 363,
+        "native_y_start": 2208,
+        "native_y_stop": 2571,
+        "pdf_rect_pt": [
+          78.12000274658203,
+          459.47998046875,
+          517.6799926757812,
+          517.6799926757812
+        ],
+        "pixel_sha256": "053172cd96f8093ccca0c210d2924b8ee0f276d4f4365567785168ca7ffc1568"
+      }
+    ],
+    "native_canvas_size_px": [
+      2744,
+      2571
+    ],
+    "calibration": {
+      "diameter": {
+        "coordinate_to_value": [
+          -0.016343658198890467,
+          46.71424292127789
+        ],
+        "tick_coordinates": [
+          1757.0,
+          1879.0,
+          2002.0,
+          2124.0,
+          2246.0,
+          2369.0
+        ],
+        "tick_values": [
+          18,
+          16,
+          14,
+          12,
+          10,
+          8
+        ],
+        "tick_roi_native_px": [
+          [
+            1870,
+            1753,
+            1901,
+            1762
+          ],
+          [
+            1870,
+            1875,
+            1901,
+            1884
+          ],
+          [
+            1870,
+            1998,
+            1901,
+            2007
+          ],
+          [
+            1870,
+            2120,
+            1901,
+            2129
+          ],
+          [
+            1870,
+            2242,
+            1901,
+            2251
+          ],
+          [
+            1870,
+            2365,
+            1901,
+            2374
+          ]
+        ],
+        "unit": "um",
+        "maximum_tick_residual": 0.006386606569897424,
+        "maximum_tick_residual_coordinate": 0.3907697097049543,
+        "coordinate_convention": "zero-based native pixel centers, or PDF points for vectors"
+      },
+      "density": {
+        "coordinate_to_value": [
+          -0.0012269938650306758,
+          4.280981595092027
+        ],
+        "tick_coordinates": [
+          1696.0,
+          1859.0,
+          2022.0,
+          2185.0,
+          2348.0
+        ],
+        "tick_values": [
+          2.2,
+          2.0,
+          1.8,
+          1.6,
+          1.4
+        ],
+        "tick_roi_native_px": [
+          [
+            2599,
+            1692,
+            2620,
+            1701
+          ],
+          [
+            2599,
+            1855,
+            2620,
+            1864
+          ],
+          [
+            2599,
+            2018,
+            2620,
+            2027
+          ],
+          [
+            2599,
+            2181,
+            2620,
+            2190
+          ],
+          [
+            2599,
+            2344,
+            2620,
+            2353
+          ]
+        ],
+        "unit": "g/cm^3",
+        "maximum_tick_residual": 4.440892098500626e-16,
+        "maximum_tick_residual_coordinate": 3.619327060278008e-13,
+        "coordinate_convention": "zero-based native pixel centers, or PDF points for vectors"
+      }
+    },
+    "records": [
+      {
+        "source_state_label": "UrDGOF",
+        "curated_state_id": "10.1038/s41563-026-02733-0|thermal-summary-urdgof",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig38e",
+        "measurement_set_id": "10.1038/s41563-026-02733-0|SI.Fig38e|UrDGOF",
+        "draw_ratio": null,
+        "treatment_temperature_C": null,
+        "state_mapping_status": "thermal_summary_identity_preserved_draw_ratio_not_explicit_in_Fig38",
+        "material_state": "GO fibre before thermal reduction",
+        "source_locator": "SI PDF p.45 / printed p.44, Fig.38e, UrDGOF",
+        "measurements": {
+          "diameter": {
+            "value_reported_unit": 17.103302226960576,
+            "reported_unit": "um",
+            "value_canonical": 1.7103302226960576e-05,
+            "conversion_factor_to_canonical": 1e-06,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.3280838053258748,
+            "uncertainty_value_canonical": 3.2808380532587475e-07,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                1988.205560030616,
+                1811.7694541805536
+              ],
+              "radius_px": 16.329309975051707,
+              "color": "blue",
+              "seed_native_px": [
+                1988,
+                1812
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    1988.1976714152934,
+                    1811.745295678585
+                  ],
+                  "fitted_radius_px": 16.36853426277019,
+                  "selected_pixels": 519
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    1988.205560030616,
+                    1811.7694541805536
+                  ],
+                  "fitted_radius_px": 16.329309975051707,
+                  "selected_pixels": 486
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    1988.2021761010485,
+                    1811.7960671788367
+                  ],
+                  "fitted_radius_px": 16.26396599310321,
+                  "selected_pixels": 451
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.026612998283098932
+            },
+            "center_pdf_pt": [
+              396.68975345328755,
+              396.1200362903639
+            ],
+            "digitization_sensitivity_reported_unit": 0.023165218516374517,
+            "digitization_interval_reported_unit": [
+              17.0801370084442,
+              17.12646744547695
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 1791.7777777777778,
+                "seed_y_px": 1791,
+                "roi_native_px": [
+                  1975,
+                  1787,
+                  2002,
+                  1796
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  1791.7333333333333,
+                  1791.7777777777778,
+                  1791.8
+                ],
+                "selected_side_pixel_counts": [
+                  15,
+                  18,
+                  20
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 1831.9259259259259,
+                "seed_y_px": 1832,
+                "roi_native_px": [
+                  1975,
+                  1828,
+                  2002,
+                  1837
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  1832.1,
+                  1831.9259259259259,
+                  1831.9655172413793
+                ],
+                "selected_side_pixel_counts": [
+                  20,
+                  27,
+                  29
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": 0.08239767129816755,
+            "digitization_sensitivity_sd_reported_unit": 0.03907392296767836,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "diameter",
+            "unit_canonical": "m",
+            "cross_section_method": "Reported diameter; equivalent-area versus width definition not specified; noncircular sections shown.",
+            "admission_action": "add_to_separate_thermal_summary_state_not_draw_or_gauge"
+          },
+          "density": {
+            "value_reported_unit": 1.429792750703732,
+            "reported_unit": "g/cm^3",
+            "value_canonical": 1429.792750703732,
+            "conversion_factor_to_canonical": 1000,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.030595685731249045,
+            "uncertainty_value_canonical": 30.595685731249045,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                1988.1178502654182,
+                2323.7189081764586
+              ],
+              "radius_px": 16.260005557063806,
+              "color": "red",
+              "seed_native_px": [
+                1988,
+                2324
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    1988.1651548711752,
+                    2323.7578532568755
+                  ],
+                  "fitted_radius_px": 16.260229578430692,
+                  "selected_pixels": 512
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    1988.1178502654182,
+                    2323.7189081764586
+                  ],
+                  "fitted_radius_px": 16.260005557063806,
+                  "selected_pixels": 461
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    1988.150553330158,
+                    2323.7174122806514
+                  ],
+                  "fitted_radius_px": 16.142906863659,
+                  "selected_pixels": 408
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.03894508041685185
+            },
+            "center_pdf_pt": [
+              396.67570326979376,
+              478.1134291589917
+            ],
+            "digitization_sensitivity_reported_unit": 0.0012747792397757233,
+            "digitization_interval_reported_unit": [
+              1.4285179714639562,
+              1.4310675299435078
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 2299.064516129032,
+                "seed_y_px": 2299,
+                "roi_native_px": [
+                  1975,
+                  2295,
+                  2002,
+                  2304
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2299.064516129032,
+                  2299.064516129032,
+                  2299.064516129032
+                ],
+                "selected_side_pixel_counts": [
+                  31,
+                  31,
+                  31
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 2348.935483870968,
+                "seed_y_px": 2349,
+                "roi_native_px": [
+                  1975,
+                  2345,
+                  2002,
+                  2354
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2348.8928571428573,
+                  2348.935483870968,
+                  2348.935483870968
+                ],
+                "selected_side_pixel_counts": [
+                  28,
+                  31,
+                  31
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": 0.28109182354137374,
+            "digitization_sensitivity_sd_reported_unit": 0.0024539877300617957,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "density",
+            "unit_canonical": "kg/m^3",
+            "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+            "admission_action": "add_to_separate_thermal_measurement_set_preserve_pairing"
+          }
+        },
+        "possible_overlap": [
+          "10.1038/s41563-026-02733-0|precursor-gof-draw-10"
+        ],
+        "independent_population_confirmed": false,
+        "independence_status": "not_established",
+        "overlap_resolution": "unresolved_no_source_proof_of_reused_specimens",
+        "overlap_counting_policy": "Do not sum n or treat possible-overlap measurement sets as independent populations; retain one publication.",
+        "conditions_notes": "Separate named thermal-treatment summary; no borrowed mechanical/transport values. n=3 technical replicates, mean +/- SD. Source SD and coordinate sensitivity remain separate. Possible overlap with another named source series; repeated measurements are not proven identical or independent. Retain the paired diameter and density; do not copy either to the possible-overlap state."
+      },
+      {
+        "source_state_label": "UrDGF-200",
+        "curated_state_id": "10.1038/s41563-026-02733-0|thermal-summary-urdgf-200",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig38e",
+        "measurement_set_id": "10.1038/s41563-026-02733-0|SI.Fig38e|UrDGF-200",
+        "draw_ratio": null,
+        "treatment_temperature_C": 200,
+        "state_mapping_status": "thermal_summary_identity_preserved_draw_ratio_not_explicit_in_Fig38",
+        "material_state": "thermally reduced GO fibre",
+        "source_locator": "SI PDF p.45 / printed p.44, Fig.38e, UrDGF-200",
+        "measurements": {
+          "diameter": {
+            "value_reported_unit": 11.301703940359154,
+            "reported_unit": "um",
+            "value_canonical": 1.1301703940359153e-05,
+            "conversion_factor_to_canonical": 1e-06,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.2990305748318427,
+            "uncertainty_value_canonical": 2.990305748318427e-07,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                2162.4833451416957,
+                2166.7449569719224
+              ],
+              "radius_px": 16.25030209176593,
+              "color": "blue",
+              "seed_native_px": [
+                2163,
+                2168
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    2162.47856862009,
+                    2166.7330388709356
+                  ],
+                  "fitted_radius_px": 16.26111668806473,
+                  "selected_pixels": 405
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    2162.4833451416957,
+                    2166.7449569719224
+                  ],
+                  "fitted_radius_px": 16.25030209176593,
+                  "selected_pixels": 391
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    2162.4426369662883,
+                    2166.8335220118774
+                  ],
+                  "fitted_radius_px": 16.217569387133558,
+                  "selected_pixels": 372
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.08856503995502862
+            },
+            "center_pdf_pt": [
+              424.6072248338668,
+              452.954745580932
+            ],
+            "digitization_sensitivity_reported_unit": 0.024177741510183957,
+            "digitization_interval_reported_unit": [
+              11.27752619884897,
+              11.325881681869339
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 2148.55,
+                "seed_y_px": 2149,
+                "roi_native_px": [
+                  2149,
+                  2145,
+                  2176,
+                  2154
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2148.55,
+                  2148.55,
+                  2148.6190476190477
+                ],
+                "selected_side_pixel_counts": [
+                  20,
+                  20,
+                  21
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 2185.1428571428573,
+                "seed_y_px": 2185,
+                "roi_native_px": [
+                  2149,
+                  2181,
+                  2176,
+                  2190
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2185.2727272727275,
+                  2185.1428571428573,
+                  2184.9615384615386
+                ],
+                "selected_side_pixel_counts": [
+                  11,
+                  21,
+                  26
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": 0.10147159950656714,
+            "digitization_sensitivity_sd_reported_unit": 0.03907392296767836,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "diameter",
+            "unit_canonical": "m",
+            "cross_section_method": "Reported diameter; equivalent-area versus width definition not specified; noncircular sections shown.",
+            "admission_action": "add_to_separate_thermal_summary_state_not_draw_or_gauge"
+          },
+          "density": {
+            "value_reported_unit": 1.5995921938760782,
+            "reported_unit": "g/cm^3",
+            "value_canonical": 1599.5921938760782,
+            "conversion_factor_to_canonical": 1000,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.021293456032719815,
+            "uncertainty_value_canonical": 21.293456032719817,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                2162.478220945014,
+                2185.3323619909966
+              ],
+              "radius_px": 16.161600776277634,
+              "color": "red",
+              "seed_native_px": [
+                2163,
+                2185
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    2162.461596744719,
+                    2185.297092011409
+                  ],
+                  "fitted_radius_px": 16.16180292756573,
+                  "selected_pixels": 416
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    2162.478220945014,
+                    2185.3323619909966
+                  ],
+                  "fitted_radius_px": 16.161600776277634,
+                  "selected_pixels": 399
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    2162.4671991744653,
+                    2185.3447385979784
+                  ],
+                  "fitted_radius_px": 16.144144249112546,
+                  "selected_pixels": 377
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.03526997958761058
+            },
+            "center_pdf_pt": [
+              424.6064039913589,
+              455.9307498908994
+            ],
+            "digitization_sensitivity_reported_unit": 0.0012702699136048752,
+            "digitization_interval_reported_unit": [
+              1.5983219239624733,
+              1.600862463789683
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 2167.7916666666665,
+                "seed_y_px": 2168,
+                "roi_native_px": [
+                  2149,
+                  2164,
+                  2176,
+                  2173
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2167.5882352941176,
+                  2167.7916666666665,
+                  2167.925925925926
+                ],
+                "selected_side_pixel_counts": [
+                  17,
+                  24,
+                  27
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 2202.5,
+                "seed_y_px": 2203,
+                "roi_native_px": [
+                  2149,
+                  2199,
+                  2176,
+                  2208
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2202.470588235294,
+                  2202.5,
+                  2202.4761904761904
+                ],
+                "selected_side_pixel_counts": [
+                  17,
+                  20,
+                  21
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": -0.18652865766352988,
+            "digitization_sensitivity_sd_reported_unit": 0.0024539877300617957,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "density",
+            "unit_canonical": "kg/m^3",
+            "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+            "admission_action": "add_to_separate_thermal_measurement_set_preserve_pairing"
+          }
+        },
+        "possible_overlap": [],
+        "independent_population_confirmed": false,
+        "independence_status": "not_established",
+        "overlap_resolution": "not_applicable",
+        "overlap_counting_policy": "Do not sum n or treat possible-overlap measurement sets as independent populations; retain one publication.",
+        "conditions_notes": "Separate named thermal-treatment summary; no borrowed mechanical/transport values. n=3 technical replicates, mean +/- SD. Source SD and coordinate sensitivity remain separate. "
+      },
+      {
+        "source_state_label": "UrDGF-1600",
+        "curated_state_id": "10.1038/s41563-026-02733-0|thermal-summary-urdgf-1600",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig38e",
+        "measurement_set_id": "10.1038/s41563-026-02733-0|SI.Fig38e|UrDGF-1600",
+        "draw_ratio": null,
+        "treatment_temperature_C": 1600,
+        "state_mapping_status": "thermal_summary_identity_preserved_draw_ratio_not_explicit_in_Fig38",
+        "material_state": "carbonized graphene fibre",
+        "source_locator": "SI PDF p.45 / printed p.44, Fig.38e, UrDGF-1600",
+        "measurements": {
+          "diameter": {
+            "value_reported_unit": 9.603109796665933,
+            "reported_unit": "um",
+            "value_canonical": 9.603109796665933e-06,
+            "conversion_factor_to_canonical": 1e-06,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.20546313164319585,
+            "uncertainty_value_canonical": 2.0546313164319584e-07,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                2336.903495922754,
+                2270.6748191253378
+              ],
+              "radius_px": 16.361730258650184,
+              "color": "blue",
+              "seed_native_px": [
+                2337,
+                2271
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    2336.8687347364616,
+                    2270.778567044319
+                  ],
+                  "fitted_radius_px": 16.33441253981443,
+                  "selected_pixels": 527
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    2336.903495922754,
+                    2270.6748191253378
+                  ],
+                  "fitted_radius_px": 16.361730258650184,
+                  "selected_pixels": 483
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    2336.864029827218,
+                    2270.6858930599537
+                  ],
+                  "fitted_radius_px": 16.398787376754008,
+                  "selected_pixels": 434
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.10374791898129843
+            },
+            "center_pdf_pt": [
+              452.5475017000371,
+              469.60883789098597
+            ],
+            "digitization_sensitivity_reported_unit": 0.02442588529546441,
+            "digitization_interval_reported_unit": [
+              9.578683911370469,
+              9.627535681961398
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 2258.0,
+                "seed_y_px": 2259,
+                "roi_native_px": [
+                  2324,
+                  2255,
+                  2351,
+                  2264
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2258.0,
+                  2258.0,
+                  2257.9375
+                ],
+                "selected_side_pixel_counts": [
+                  7,
+                  12,
+                  16
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 2283.1428571428573,
+                "seed_y_px": 2283,
+                "roi_native_px": [
+                  2324,
+                  2279,
+                  2351,
+                  2288
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2283.25,
+                  2283.1428571428573,
+                  2283.1
+                ],
+                "selected_side_pixel_counts": [
+                  4,
+                  7,
+                  10
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": -0.10339055390932117,
+            "digitization_sensitivity_sd_reported_unit": 0.03907392296767836,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "diameter",
+            "unit_canonical": "m",
+            "cross_section_method": "Reported diameter; equivalent-area versus width definition not specified; noncircular sections shown.",
+            "admission_action": "add_to_separate_thermal_summary_state_not_draw_or_gauge"
+          },
+          "density": {
+            "value_reported_unit": 1.8000831301143223,
+            "reported_unit": "g/cm^3",
+            "value_canonical": 1800.0831301143223,
+            "conversion_factor_to_canonical": 1000,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.015629167778073993,
+            "uncertainty_value_canonical": 15.629167778073993,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                2336.871973249495,
+                2021.9322489568278
+              ],
+              "radius_px": 16.518447814505652,
+              "color": "red",
+              "seed_native_px": [
+                2337,
+                2022
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    2336.847951256803,
+                    2021.890028043854
+                  ],
+                  "fitted_radius_px": 16.47055538519875,
+                  "selected_pixels": 458
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    2336.871973249495,
+                    2021.9322489568278
+                  ],
+                  "fitted_radius_px": 16.518447814505652,
+                  "selected_pixels": 438
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    2336.9262851533845,
+                    2021.8461999638641
+                  ],
+                  "fitted_radius_px": 16.470351926544453,
+                  "selected_pixels": 408
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.08604899296369695
+            },
+            "center_pdf_pt": [
+              452.542452098747,
+              429.7689785118483
+            ],
+            "digitization_sensitivity_reported_unit": 0.0013325754514896438,
+            "digitization_interval_reported_unit": [
+              1.7987505546628326,
+              1.801415705565812
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 2009.0869565217392,
+                "seed_y_px": 2010,
+                "roi_native_px": [
+                  2324,
+                  2006,
+                  2351,
+                  2015
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2009.4285714285713,
+                  2009.0869565217392,
+                  2009.04
+                ],
+                "selected_side_pixel_counts": [
+                  14,
+                  23,
+                  25
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 2034.5625,
+                "seed_y_px": 2034,
+                "roi_native_px": [
+                  2324,
+                  2030,
+                  2351,
+                  2039
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2034.5384615384614,
+                  2034.5625,
+                  2034.857142857143
+                ],
+                "selected_side_pixel_counts": [
+                  13,
+                  16,
+                  21
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": -0.10752069595832836,
+            "digitization_sensitivity_sd_reported_unit": 0.0024539877300617957,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "density",
+            "unit_canonical": "kg/m^3",
+            "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+            "admission_action": "add_to_separate_thermal_measurement_set_preserve_pairing"
+          }
+        },
+        "possible_overlap": [],
+        "independent_population_confirmed": false,
+        "independence_status": "not_established",
+        "overlap_resolution": "not_applicable",
+        "overlap_counting_policy": "Do not sum n or treat possible-overlap measurement sets as independent populations; retain one publication.",
+        "conditions_notes": "Separate named thermal-treatment summary; no borrowed mechanical/transport values. n=3 technical replicates, mean +/- SD. Source SD and coordinate sensitivity remain separate. "
+      },
+      {
+        "source_state_label": "UrDGF-2800",
+        "curated_state_id": "10.1038/s41563-026-02733-0|thermal-summary-urdgf-2800",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig38e",
+        "measurement_set_id": "10.1038/s41563-026-02733-0|SI.Fig38e|UrDGF-2800",
+        "draw_ratio": null,
+        "treatment_temperature_C": 2800,
+        "state_mapping_status": "thermal_summary_identity_preserved_draw_ratio_not_explicit_in_Fig38",
+        "material_state": "graphitized graphene fibre",
+        "source_locator": "SI PDF p.45 / printed p.44, Fig.38e, UrDGF-2800",
+        "measurements": {
+          "diameter": {
+            "value_reported_unit": 8.300146508296699,
+            "reported_unit": "um",
+            "value_canonical": 8.300146508296699e-06,
+            "conversion_factor_to_canonical": 1e-06,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.15985628228312976,
+            "uncertainty_value_canonical": 1.5985628228312975e-07,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                2511.105231238537,
+                2350.3976860938656
+              ],
+              "radius_px": 16.20661684322934,
+              "color": "blue",
+              "seed_native_px": [
+                2511,
+                2351
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    2511.1455316201436,
+                    2350.4247583222877
+                  ],
+                  "fitted_radius_px": 16.21847004680649,
+                  "selected_pixels": 548
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    2511.105231238537,
+                    2350.3976860938656
+                  ],
+                  "fitted_radius_px": 16.20661684322934,
+                  "selected_pixels": 524
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    2511.1096071757484,
+                    2350.4027635353336
+                  ],
+                  "fitted_radius_px": 16.20019937955058,
+                  "selected_pixels": 492
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.027072228422184708
+            },
+            "center_pdf_pt": [
+              480.45279070187917,
+              482.3908539536522
+            ],
+            "digitization_sensitivity_reported_unit": 0.023172724016802367,
+            "digitization_interval_reported_unit": [
+              8.276973784279896,
+              8.323319232313501
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_mean_with_resolution_limited_SD_precision",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 2340.3076923076924,
+                "seed_y_px": 2340,
+                "roi_native_px": [
+                  2498,
+                  2336,
+                  2525,
+                  2345
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2340.4444444444443,
+                  2340.3076923076924,
+                  2340.3333333333335
+                ],
+                "selected_side_pixel_counts": [
+                  9,
+                  13,
+                  18
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 2359.8695652173915,
+                "seed_y_px": 2360,
+                "roi_native_px": [
+                  2498,
+                  2356,
+                  2525,
+                  2365
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  2359.8888888888887,
+                  2359.8695652173915,
+                  2359.8695652173915
+                ],
+                "selected_side_pixel_counts": [
+                  18,
+                  23,
+                  23
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": -0.3090573313238565,
+            "digitization_sensitivity_sd_reported_unit": 0.03907392296767836,
+            "resolution_limited_sd": true,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "diameter",
+            "unit_canonical": "m",
+            "cross_section_method": "Reported diameter; equivalent-area versus width definition not specified; noncircular sections shown.",
+            "admission_action": "add_to_separate_thermal_summary_state_not_draw_or_gauge"
+          },
+          "density": {
+            "value_reported_unit": 2.05041719141298,
+            "reported_unit": "g/cm^3",
+            "value_canonical": 2050.41719141298,
+            "conversion_factor_to_canonical": 1000,
+            "extraction_method": "native_raster_calibrated_chromatic_ring_fit",
+            "reported_or_derived": "reported",
+            "statistic_type": "mean",
+            "uncertainty_type": "standard_deviation",
+            "uncertainty_value_reported": 0.013013213780084909,
+            "uncertainty_value_canonical": 13.013213780084909,
+            "sample_size_n": 3,
+            "marker": {
+              "center_native_px": [
+                2511.1638869857143,
+                1817.9099889984218
+              ],
+              "radius_px": 16.267505501674368,
+              "color": "red",
+              "seed_native_px": [
+                2511,
+                1818
+              ],
+              "seed_window_halfwidth_px": 21,
+              "threshold_fits": [
+                {
+                  "chromatic_threshold": 40,
+                  "center_native_px": [
+                    2511.187695490172,
+                    1817.8872593198498
+                  ],
+                  "fitted_radius_px": 16.26202679436856,
+                  "selected_pixels": 543
+                },
+                {
+                  "chromatic_threshold": 60,
+                  "center_native_px": [
+                    2511.1638869857143,
+                    1817.9099889984218
+                  ],
+                  "fitted_radius_px": 16.267505501674368,
+                  "selected_pixels": 494
+                },
+                {
+                  "chromatic_threshold": 80,
+                  "center_native_px": [
+                    2511.262616593595,
+                    1817.8928786145414
+                  ],
+                  "fitted_radius_px": 16.305234392087176,
+                  "selected_pixels": 443
+                }
+              ],
+              "center_threshold_sensitivity_y_px": 0.022729678571977274
+            },
+            "center_pdf_pt": [
+              480.46218673673286,
+              397.1031890254944
+            ],
+            "digitization_sensitivity_reported_unit": 0.0012548830411930553,
+            "digitization_interval_reported_unit": [
+              2.049162308371787,
+              2.051672074454173
+            ],
+            "digitization_sensitivity_definition": "One native pixel plus threshold-fit center variation, plus maximum tick-fit residual; a coordinate sensitivity envelope, not experimental SD, SE or confidence interval.",
+            "source_qualification": "Figure-digitized; retained digits are extraction coordinates, not measurement precision.",
+            "status": "admission_ready_figure_digitized",
+            "replicate_type": "independent technical replicates",
+            "uncertainty_source": "Fig.38 caption: mean +/- one standard deviation, n=3",
+            "error_caps": [
+              {
+                "y_native_px": 1807.25,
+                "seed_y_px": 1807,
+                "roi_native_px": [
+                  2498,
+                  1803,
+                  2525,
+                  1812
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  1807.3636363636363,
+                  1807.25,
+                  1807.2777777777778
+                ],
+                "selected_side_pixel_counts": [
+                  11,
+                  16,
+                  18
+                ],
+                "coordinate_sensitivity_px": 2.0
+              },
+              {
+                "y_native_px": 1828.4615384615386,
+                "seed_y_px": 1829,
+                "roi_native_px": [
+                  2498,
+                  1825,
+                  2525,
+                  1834
+                ],
+                "achromatic_thresholds": [
+                  25,
+                  35,
+                  45
+                ],
+                "threshold_centers_y_px": [
+                  1828.4444444444443,
+                  1828.4615384615386,
+                  1828.625
+                ],
+                "selected_side_pixel_counts": [
+                  9,
+                  13,
+                  16
+                ],
+                "coordinate_sensitivity_px": 2.0
+              }
+            ],
+            "error_cap_midpoint_offset_px": -0.05421976765251202,
+            "digitization_sensitivity_sd_reported_unit": 0.0024539877300617957,
+            "resolution_limited_sd": false,
+            "resolution_limited_sd_definition": "Coordinate sensitivity exceeds 20 percent of the source SD; mean remains resolved.",
+            "property": "density",
+            "unit_canonical": "kg/m^3",
+            "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+            "admission_action": "add_to_separate_thermal_measurement_set_preserve_pairing"
+          }
+        },
+        "possible_overlap": [
+          "10.1038/s41563-026-02733-0|draw-10"
+        ],
+        "independent_population_confirmed": false,
+        "independence_status": "not_established",
+        "overlap_resolution": "unresolved_no_source_proof_of_reused_specimens",
+        "overlap_counting_policy": "Do not sum n or treat possible-overlap measurement sets as independent populations; retain one publication.",
+        "conditions_notes": "Separate named thermal-treatment summary; no borrowed mechanical/transport values. n=3 technical replicates, mean +/- SD. Source SD and coordinate sensitivity remain separate. Possible overlap with another named source series; repeated measurements are not proven identical or independent. Retain the paired diameter and density; do not copy either to the possible-overlap state."
+      }
+    ],
+    "visual_crop": {
+      "source_crop": "/private/var/folders/jb/3r5z90j96m3bx_qrg2_q6by40000gn/T/liu_omitted_figures/fig38e_source.png",
+      "calibrated_crop": "/private/var/folders/jb/3r5z90j96m3bx_qrg2_q6by40000gn/T/liu_omitted_figures/fig38e_calibration.png",
+      "native_crop_box": [
+        1770,
+        1640,
+        2744,
+        2571
+      ],
+      "source_crop_sha256": "0344a7dd1cdefbf92e9b16d82c6cada2c96c074b2269c106ff88f484b97b64fd",
+      "calibrated_crop_sha256": "cde6b210efe2c649a9860e0d5f632e5e3bc6a25dc54c6eff8002926e29585b4d"
+    },
+    "identity_review": {
+      "main_locator": "Main PDF p.5, section Structure and performance of ultrahigh-ratio drawn GFs",
+      "supporting_evidence": "Main text associates obtained UrDGFs (draw ratio 10) with dense cross-section morphology; thermal evolution cites SI Figs.35-43.",
+      "limitation": "Fig.38 itself gives thermal-state labels but no draw ratio or specimen IDs. Context supports an association, not a confirmed measurement-set identity.",
+      "decision": "Retain all four paired thermal measurement sets with source_series_key and possible_overlap. Do not merge into draw-10/precursor-10 or count as confirmed independent populations; no endpoint identity proof exists."
+    }
+  },
+  "precursor_density": {
+    "pdf_page": 43,
+    "printed_page": 42,
+    "figure": "36",
+    "calibration": {
+      "x": {
+        "coordinate_to_value": [
+          0.03543917954179881,
+          -5.3741112363642305
+        ],
+        "tick_coordinates": [
+          151.6425018310547,
+          208.0800018310547,
+          264.510009765625,
+          320.947509765625,
+          377.385009765625,
+          433.81500244140625
+        ],
+        "tick_values": [
+          0,
+          2,
+          4,
+          6,
+          8,
+          10
+        ],
+        "tick_roi_native_px": null,
+        "unit": "draw_ratio",
+        "maximum_tick_residual": 0.00010388110325010302,
+        "maximum_tick_residual_coordinate": 0.0029312502318960365,
+        "coordinate_convention": "zero-based native pixel centers, or PDF points for vectors",
+        "tick_path_indices": [
+          111,
+          112,
+          113,
+          114,
+          115,
+          116
+        ]
+      },
+      "density": {
+        "coordinate_to_value": [
+          -0.0051590319779746905,
+          2.9889836760936395
+        ],
+        "tick_coordinates": [
+          424.28997802734375,
+          385.5374755859375,
+          346.7850036621094,
+          308.0325012207031,
+          269.197509765625,
+          230.44500732421875,
+          191.6925048828125,
+          152.9550018310547
+        ],
+        "tick_values": [
+          0.8,
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0,
+          2.2
+        ],
+        "tick_roi_native_px": null,
+        "unit": "g/cm^3",
+        "maximum_tick_residual": 0.00018511482162586468,
+        "maximum_tick_residual_coordinate": 0.03588169687960264,
+        "coordinate_convention": "zero-based native pixel centers, or PDF points for vectors",
+        "tick_path_indices": [
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133
+        ]
+      }
+    },
+    "records": [
+      {
+        "draw_ratio": 1,
+        "curated_state_id": "10.1038/s41563-026-02733-0|precursor-gof-draw-1",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig36|GOFs",
+        "material_state": "GOF precursor, not graphitized GFs-2800",
+        "source_locator": "SI PDF p.43 / printed p.42, Fig.36, grey GOFs diamond at draw 1",
+        "state_mapping_status": "explicit_GOF_precursor_series_and_draw_label",
+        "admission_action": "new_precursor_density_only_state",
+        "prohibited_borrowing": "No graphitized-fibre T, E, sigma, kappa or Raman values copied.",
+        "density": {
+          "property": "density",
+          "reported_unit": "g/cm^3",
+          "value_reported_unit": 0.8301609403037706,
+          "value_canonical": 830.1609403037706,
+          "unit_canonical": "kg/m^3",
+          "conversion_factor_to_canonical": 1000,
+          "reported_or_derived": "reported",
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "uncertainty_value_reported": 0.011066066913937522,
+          "uncertainty_value_canonical": 11.066066913937522,
+          "sample_size_n": 3,
+          "replicate_type": "independent technical replicates",
+          "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+          "density_method_qualification": "General GF density method in SI p.7; no separate GOF protocol specified.",
+          "extraction_method": "vector_path_calibrated_diamond_and_error_caps",
+          "marker_path_index": 24,
+          "marker_center_pdf_pt": [
+            179.8125,
+            418.4550018310547
+          ],
+          "error_cap_path_indices": [
+            65,
+            67
+          ],
+          "error_cap_y_pdf_pt": [
+            416.30999755859375,
+            420.5999755859375
+          ],
+          "digitization_sensitivity_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_sd_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_definition": "Half PDF point plus maximum tick-fit residual; not experimental uncertainty.",
+          "resolution_limited_sd": false,
+          "status": "admission_ready_figure_digitized"
+        }
+      },
+      {
+        "draw_ratio": 4,
+        "curated_state_id": "10.1038/s41563-026-02733-0|precursor-gof-draw-4",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig36|GOFs",
+        "material_state": "GOF precursor, not graphitized GFs-2800",
+        "source_locator": "SI PDF p.43 / printed p.42, Fig.36, grey GOFs diamond at draw 4",
+        "state_mapping_status": "explicit_GOF_precursor_series_and_draw_label",
+        "admission_action": "new_precursor_density_only_state",
+        "prohibited_borrowing": "No graphitized-fibre T, E, sigma, kappa or Raman values copied.",
+        "density": {
+          "property": "density",
+          "reported_unit": "g/cm^3",
+          "value_reported_unit": 1.1300296740235496,
+          "value_canonical": 1130.0296740235497,
+          "unit_canonical": "kg/m^3",
+          "conversion_factor_to_canonical": 1000,
+          "reported_or_derived": "reported",
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "uncertainty_value_reported": 0.02565330540341848,
+          "uncertainty_value_canonical": 25.65330540341848,
+          "sample_size_n": 3,
+          "replicate_type": "independent technical replicates",
+          "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+          "density_method_qualification": "General GF density method in SI p.7; no separate GOF protocol specified.",
+          "extraction_method": "vector_path_calibrated_diamond_and_error_caps",
+          "marker_path_index": 25,
+          "marker_center_pdf_pt": [
+            264.50999450683594,
+            360.3300018310547
+          ],
+          "error_cap_path_indices": [
+            69,
+            71
+          ],
+          "error_cap_y_pdf_pt": [
+            355.35748291015625,
+            365.302490234375
+          ],
+          "digitization_sensitivity_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_sd_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_definition": "Half PDF point plus maximum tick-fit residual; not experimental uncertainty.",
+          "resolution_limited_sd": false,
+          "status": "admission_ready_figure_digitized"
+        }
+      },
+      {
+        "draw_ratio": 6,
+        "curated_state_id": "10.1038/s41563-026-02733-0|precursor-gof-draw-6",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig36|GOFs",
+        "material_state": "GOF precursor, not graphitized GFs-2800",
+        "source_locator": "SI PDF p.43 / printed p.42, Fig.36, grey GOFs diamond at draw 6",
+        "state_mapping_status": "explicit_GOF_precursor_series_and_draw_label",
+        "admission_action": "new_precursor_density_only_state",
+        "prohibited_borrowing": "No graphitized-fibre T, E, sigma, kappa or Raman values copied.",
+        "density": {
+          "property": "density",
+          "reported_unit": "g/cm^3",
+          "value_reported_unit": 1.2401685831539226,
+          "value_canonical": 1240.1685831539226,
+          "unit_canonical": "kg/m^3",
+          "conversion_factor_to_canonical": 1000,
+          "reported_or_derived": "reported",
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "uncertainty_value_reported": 0.021455136833695265,
+          "uncertainty_value_canonical": 21.455136833695263,
+          "sample_size_n": 3,
+          "replicate_type": "independent technical replicates",
+          "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+          "density_method_qualification": "General GF density method in SI p.7; no separate GOF protocol specified.",
+          "extraction_method": "vector_path_calibrated_diamond_and_error_caps",
+          "marker_path_index": 26,
+          "marker_center_pdf_pt": [
+            320.94749450683594,
+            338.9812469482422
+          ],
+          "error_cap_path_indices": [
+            73,
+            75
+          ],
+          "error_cap_y_pdf_pt": [
+            334.86749267578125,
+            343.18499755859375
+          ],
+          "digitization_sensitivity_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_sd_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_definition": "Half PDF point plus maximum tick-fit residual; not experimental uncertainty.",
+          "resolution_limited_sd": false,
+          "status": "admission_ready_figure_digitized"
+        }
+      },
+      {
+        "draw_ratio": 8,
+        "curated_state_id": "10.1038/s41563-026-02733-0|precursor-gof-draw-8",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig36|GOFs",
+        "material_state": "GOF precursor, not graphitized GFs-2800",
+        "source_locator": "SI PDF p.43 / printed p.42, Fig.36, grey GOFs diamond at draw 8",
+        "state_mapping_status": "explicit_GOF_precursor_series_and_draw_label",
+        "admission_action": "new_precursor_density_only_state",
+        "prohibited_borrowing": "No graphitized-fibre T, E, sigma, kappa or Raman values copied.",
+        "density": {
+          "property": "density",
+          "reported_unit": "g/cm^3",
+          "value_reported_unit": 1.3299550733453067,
+          "value_canonical": 1329.9550733453068,
+          "unit_canonical": "kg/m^3",
+          "conversion_factor_to_canonical": 1000,
+          "reported_or_derived": "reported",
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "uncertainty_value_reported": 0.015477095933924101,
+          "uncertainty_value_canonical": 15.477095933924101,
+          "sample_size_n": 3,
+          "replicate_type": "independent technical replicates",
+          "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+          "density_method_qualification": "General GF density method in SI p.7; no separate GOF protocol specified.",
+          "extraction_method": "vector_path_calibrated_diamond_and_error_caps",
+          "marker_path_index": 27,
+          "marker_center_pdf_pt": [
+            377.38499450683594,
+            321.57749938964844
+          ],
+          "error_cap_path_indices": [
+            77,
+            79
+          ],
+          "error_cap_y_pdf_pt": [
+            318.5774841308594,
+            324.5774841308594
+          ],
+          "digitization_sensitivity_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_sd_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_definition": "Half PDF point plus maximum tick-fit residual; not experimental uncertainty.",
+          "resolution_limited_sd": false,
+          "status": "admission_ready_figure_digitized"
+        }
+      },
+      {
+        "draw_ratio": 10,
+        "curated_state_id": "10.1038/s41563-026-02733-0|precursor-gof-draw-10",
+        "source_series_key": "10.1038/s41563-026-02733-0|SI.Fig36|GOFs",
+        "material_state": "GOF precursor, not graphitized GFs-2800",
+        "source_locator": "SI PDF p.43 / printed p.42, Fig.36, grey GOFs diamond at draw 10",
+        "state_mapping_status": "explicit_GOF_precursor_series_and_draw_label",
+        "admission_action": "new_precursor_density_only_state",
+        "prohibited_borrowing": "No graphitized-fibre T, E, sigma, kappa or Raman values copied.",
+        "density": {
+          "property": "density",
+          "reported_unit": "g/cm^3",
+          "value_reported_unit": 1.4299176942856044,
+          "value_canonical": 1429.9176942856045,
+          "unit_canonical": "kg/m^3",
+          "conversion_factor_to_canonical": 1000,
+          "reported_or_derived": "reported",
+          "statistic_type": "mean",
+          "uncertainty_type": "standard_deviation",
+          "uncertainty_value_reported": 0.01282665270170924,
+          "uncertainty_value_canonical": 12.82665270170924,
+          "sample_size_n": 3,
+          "replicate_type": "independent technical replicates",
+          "density_basis": "sink_float_density_not_verified_outer_area_bulk_density",
+          "density_method_qualification": "General GF density method in SI p.7; no separate GOF protocol specified.",
+          "extraction_method": "vector_path_calibrated_diamond_and_error_caps",
+          "marker_path_index": 28,
+          "marker_center_pdf_pt": [
+            433.8149871826172,
+            302.2012634277344
+          ],
+          "error_cap_path_indices": [
+            81,
+            83
+          ],
+          "error_cap_y_pdf_pt": [
+            299.7149963378906,
+            304.6875
+          ],
+          "digitization_sensitivity_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_sd_reported_unit": 0.00276463081061321,
+          "digitization_sensitivity_definition": "Half PDF point plus maximum tick-fit residual; not experimental uncertainty.",
+          "resolution_limited_sd": false,
+          "status": "admission_ready_figure_digitized"
+        }
+      }
+    ],
+    "visual_crop": {
+      "source_crop": "/private/var/folders/jb/3r5z90j96m3bx_qrg2_q6by40000gn/T/liu_omitted_figures/fig36_source.png",
+      "calibrated_crop": "/private/var/folders/jb/3r5z90j96m3bx_qrg2_q6by40000gn/T/liu_omitted_figures/fig36_calibration.png",
+      "source_crop_sha256": "8d701ed515d1c74d3cc242e2fa65d3d5b598d5f34ce8d4ce3bcefef6cd2f0980",
+      "calibrated_crop_sha256": "7146cf439bc8cf8f244b984b54708b13ca95f4ea6ed1d659c6903d69bf0f3ea3"
+    }
+  },
+  "checks": {
+    "expected_source_hashes": true,
+    "tick_calibration_residual_below_1_5_pixels_or_points": true,
+    "drawing_x_labels_match": true,
+    "positive_reciprocal_intervals": true,
+    "separate_thermal_and_precursor_states": true,
+    "no_gauge_value_borrowing": true,
+    "thermal_endpoint_overlap_explicit_and_not_counted_independent": true,
+    "Raman_reciprocals_independent_two_tick_check_within_sensitivity": true,
+    "rendered_crops_visually_reviewed": true
+  }
+}

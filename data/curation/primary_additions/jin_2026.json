@@ -9,6 +9,20 @@
     "sha256": "aab9d28a22872337bff30fb6e2b6f50587f6268837a9c4b08f8d0318236741f0",
     "path": "outputs/fiber_discovery_20261022/jin_audit/an6c00845_si_001.pdf"
   },
+  "omission_audit": {
+    "date": "2026-10-22",
+    "report_path": "outputs/primary_release_20261022/omission_audit_li_jin.md",
+    "source_scope": "Actual official SI PDF pp.S1-S21, visually checked Table S2 p.S14 and prior source renders; no main-text PDF located in workspace or Downloads by DOI/title-related filename.",
+    "table_coverage": "All eight Table S2 rows and all six numerical property columns already admitted: 48 values plus 48 SDs. None rejected for method dependence alone.",
+    "new_canonical_measurements": 0,
+    "measurement_count": 48,
+    "normalization_disposition": "Source-reported specific strength, modulus and electrical conductivity are retained without fabricating density; absolute thermal conductivity is retained with its measurement conditions. Missing mass-normalization formula limits interpretation, not admission of directly reported specific electrical values.",
+    "sample_size_disposition": "Mechanical minimum n >= 40 remains a bound, not exact n. Linear-density and transport-specific n remain unknown because the mixed table caption does not independently establish those replicate counts.",
+    "geometry_disposition": "SI pp.S6-S7 reports optical/SEM area measurement and CT structure analysis but no numeric cohort areas or fiber densities. Figs.S6-S7 pp.S15-S16 are surface/fracture morphology; do not replace mass-specific values with inferred raw stresses or conductivities.",
+    "other_specimens": "Fig.S4 p.S12 reports paper electrical conductivity 909.2 S/cm, density 1.107 g/cm^3, thermal conductivity 26.92 W/m/K. These are a different form, not an alternative fiber normalization and not transferable to the eight fiber cohorts.",
+    "composition_disposition": "Table S1 p.S9 XPS and Fig.S10 p.S20 feeding-ratio TGA are powder/functionalization characterization, not statewise final fiber mass fractions or densities. Equal concentration does not fix composition, packing or geometry.",
+    "main_source_gap": "No local main text; historical acquisition audit records publisher access restrictions. Main-text-only numeric properties cannot be ruled absent. This audit does not repeat access attempts or certify whole-paper completeness."
+  },
   "held_metrics": [
     {
       "property": "density",

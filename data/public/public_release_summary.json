@@ -1,26 +1,26 @@
 {
-  "records_assessed": 1686,
-  "public_records": 1495,
-  "public_measurements": 5711,
+  "records_assessed": 1710,
+  "public_records": 1519,
+  "public_measurements": 5817,
   "public_publications": 325,
   "excluded_records": 191,
   "public_records_by_tier": {
-    "peer_reviewed_research": 1152,
+    "peer_reviewed_research": 1176,
     "peer_reviewed_contextual_comparator": 273,
     "commercial_contextual_comparator": 70
   },
   "public_records_by_material_family": {
-    "CNT_or_CNT_hybrid": 1074,
+    "CNT_or_CNT_hybrid": 1088,
     "other_carbon_comparator": 121,
     "carbon_fiber_comparator": 104,
     "polymer_fiber_comparator": 73,
-    "graphene_or_GO_fiber": 58,
+    "graphene_or_GO_fiber": 68,
     "metal_comparator": 41,
     "CNT_metal_composite": 20,
     "ceramic_or_glass_comparator": 4
   },
   "public_records_by_form_factor": {
-    "fiber_yarn": 954,
+    "fiber_yarn": 978,
     "sheet_mat_film": 299,
     "individual_nanotube_or_bundle": 96,
     "forest_array": 67,
@@ -29,20 +29,20 @@
   },
   "public_measurements_by_property": {
     "electrical_conductivity": 1069,
-    "tensile_strength": 652,
-    "density": 559,
-    "specific_volume": 559,
-    "initial_modulus": 447,
-    "diameter": 444,
-    "specific_electrical_conductivity": 425,
-    "specific_strength": 414,
-    "g_d_ratio": 371,
+    "tensile_strength": 656,
+    "density": 571,
+    "specific_volume": 571,
+    "initial_modulus": 453,
+    "diameter": 451,
+    "specific_electrical_conductivity": 433,
+    "specific_strength": 431,
+    "g_d_ratio": 381,
     "thermal_conductivity": 211,
-    "specific_modulus": 126,
-    "breaking_strain": 108,
-    "specific_thermal_conductivity": 108,
-    "ampacity": 107,
-    "linear_density": 64,
+    "specific_modulus": 134,
+    "specific_thermal_conductivity": 113,
+    "ampacity": 110,
+    "breaking_strain": 109,
+    "linear_density": 77,
     "work_of_rupture": 47
   },
   "public_records_by_source_file": {
@@ -52,23 +52,23 @@
     "XiaO_DATA.xlsx": 90,
     "cnt_atlas_human_validation.xlsx": 70,
     "jin_2026.json": 8,
-    "li_2026.json": 5,
+    "li_2026.json": 7,
     "literature_addendum_records.tsv": 8,
-    "liu_2026.json": 10,
+    "liu_2026.json": 20,
     "reference_benchmarks.json": 12,
     "sun_2026.json": 19,
-    "wang_2026.json": 6
+    "wang_2026.json": 18
   },
   "public_records_by_dataset_provenance": {
     "author_curated_published_compilation": 1240,
-    "source_table_or_direct_extraction": 255
+    "source_table_or_direct_extraction": 279
   },
   "public_records_by_value_extraction_type": {
     "author_curated_compilation": 1240,
-    "direct_or_source_table": 255
+    "direct_or_source_table": 279
   },
   "public_records_by_primary_source_verification_status": {
-    "ai_source_checked_not_human_adjudicated": 48,
+    "ai_source_checked_not_human_adjudicated": 72,
     "not_assessed": 117,
     "reviewed_multi_source_table_row": 2,
     "verified_against_primary_source": 1316,
@@ -82,10 +82,10 @@
     "no_canonical_measurements;internal_seed_or_unresolved_source": 2
   },
   "strict_comparison_ready_records": 0,
-  "records_requiring_missing_condition_warning": 621,
+  "records_requiring_missing_condition_warning": 645,
   "records_requiring_unit_inference_warning": 65,
   "commercial_or_specsheet_benchmark_records": 80,
-  "peer_reviewed_measurement_records": 161,
+  "peer_reviewed_measurement_records": 185,
   "contextual_benchmark_records": 343,
   "author_curated_compilation_records": 1240,
   "primary_source_verified_compilation_records": 1240,
