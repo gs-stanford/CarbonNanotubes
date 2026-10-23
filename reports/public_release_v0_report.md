@@ -25,19 +25,19 @@ Generated from the internal processed and curation tables.
 
 ## Counts
 
-- Internal records assessed: 1638
-- Public candidate records: 1447
-- Public candidate measurements: 5569
-- Public source/publication rows: 320
+- Internal records assessed: 1686
+- Public candidate records: 1495
+- Public candidate measurements: 5711
+- Public source/publication rows: 325
 - Excluded internal records: 191
 - Strict-comparison-ready records: 0
-- Normalized/exploratory candidate records: 1447/1447
+- Normalized/exploratory candidate records: 1495/1495
 
 ## Public Records By Tier
 
 | Tier | Records |
 | --- | ---: |
-| `peer_reviewed_research` | 1104 |
+| `peer_reviewed_research` | 1152 |
 | `peer_reviewed_contextual_comparator` | 273 |
 | `commercial_contextual_comparator` | 70 |
 
@@ -45,11 +45,11 @@ Generated from the internal processed and curation tables.
 
 | Material family | Records |
 | --- | ---: |
-| `CNT_or_CNT_hybrid` | 1036 |
+| `CNT_or_CNT_hybrid` | 1074 |
 | `other_carbon_comparator` | 121 |
 | `carbon_fiber_comparator` | 104 |
 | `polymer_fiber_comparator` | 73 |
-| `graphene_or_GO_fiber` | 48 |
+| `graphene_or_GO_fiber` | 58 |
 | `metal_comparator` | 41 |
 | `CNT_metal_composite` | 20 |
 | `ceramic_or_glass_comparator` | 4 |

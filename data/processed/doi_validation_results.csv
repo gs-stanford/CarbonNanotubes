@@ -147,8 +147,10 @@ pub_113a1375d033,10.1021/acsami.7b10968,verified_crossref_openalex,True,True,200
 pub_e08ee65507a3,10.1021/acsami.7b19012,verified_crossref_openalex,True,True,200.0,200.0
 pub_c15f2d47b5e1,10.1021/acsami.8b01128,verified_crossref_openalex,True,True,200.0,200.0
 pub_aee7d18d90c9,10.1021/acsami.9b19861,verified_crossref_openalex,True,True,200.0,200.0
+pub_5716fc62c111,10.1021/acsanm.6c00845,verified_crossref_openalex,True,True,200.0,200.0
 pub_027abd0dac9c,10.1021/acsanm.9b01859,verified_crossref_openalex,True,True,200.0,200.0
 pub_e1fcc3c30131,10.1021/acsnano.5b02408,verified_crossref_openalex,True,True,200.0,200.0
+pub_e5f527e3f568,10.1021/acsnano.5c14235,verified_crossref_openalex,True,True,200.0,200.0
 pub_c7babcb0b83d,10.1021/acsnano.8b04322,verified_crossref_openalex,True,True,200.0,200.0
 pub_6833acbd4471,10.1021/am101046v,verified_crossref_openalex,True,True,200.0,200.0
 pub_9b53b7a02b96,10.1021/am401524q,verified_crossref_openalex,True,True,200.0,200.0
@@ -180,6 +182,9 @@ pub_da9efb92bdf3,10.1038/nnano.2016.44,verified_crossref_openalex,True,True,200.
 pub_55b8428035bf,10.1038/s41427-018-0028-3,verified_crossref_openalex,True,True,200.0,200.0
 pub_038ce1b2687b,10.1038/s41467-019-10959-7,verified_crossref_openalex,True,True,200.0,200.0
 pub_32b8afd4d609,10.1038/s41467-019-10998-0,verified_crossref_openalex,True,True,200.0,200.0
+pub_2267aeabf81d,10.1038/s41467-026-69498-7,verified_crossref_openalex,True,True,200.0,200.0
+pub_7624558bb248,10.1038/s41467-026-75150-1,verified_crossref_openalex,True,True,200.0,200.0
+pub_1d957eec0aa3,10.1038/s41563-026-02733-0,verified_crossref_openalex,True,True,200.0,200.0
 pub_96e1fec991c2,10.1038/s41565-018-0141-z,verified_crossref_openalex,True,True,200.0,200.0
 pub_ff2d1529f8f3,10.1038/s41565-018-0330-9,verified_crossref_openalex,True,True,200.0,200.0
 pub_9bc57889911f,10.1038/s41598-017-09279-x,verified_crossref_openalex,True,True,200.0,200.0

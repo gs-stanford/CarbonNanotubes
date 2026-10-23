@@ -1,0 +1,92 @@
+{
+  "status": "pass",
+  "tested_at": "2026-10-23T01:10:23.243Z",
+  "base_url": "http://127.0.0.1:3000",
+  "health": {
+    "status": "ok",
+    "build": {
+      "commit": null,
+      "next_version": "16.4.2"
+    },
+    "backend": "bundled_csv",
+    "counts": {
+      "records": 1495,
+      "measurements": 5711,
+      "publications": 325
+    }
+  },
+  "release": {
+    "release_id": "bundled-public-v0",
+    "schema_version": "carbon-property-tables-public-v0.4",
+    "source_hash": null,
+    "record_count": 1495,
+    "measurement_count": 5711,
+    "publication_count": 325,
+    "imported_at": null,
+    "backend": "bundled_csv"
+  },
+  "checks": [
+    {
+      "doi": "10.1038/s41467-026-69498-7",
+      "x": "tensile_strength",
+      "y": "electrical_conductivity",
+      "x_value": 2.49,
+      "y_value": 27.34
+    },
+    {
+      "doi": "10.1021/acsnano.5c14235",
+      "x": "electrical_conductivity",
+      "y": "tensile_strength",
+      "x_value": 2.6,
+      "y_value": 8.450000000000001
+    },
+    {
+      "doi": "10.1038/s41563-026-02733-0",
+      "x": "tensile_strength",
+      "y": "thermal_conductivity",
+      "x_value": 5.890000000000001,
+      "y_value": 1720
+    },
+    {
+      "doi": "10.1021/acsanm.6c00845",
+      "x": "specific_electrical_conductivity",
+      "y": "thermal_conductivity",
+      "x_value": 1.302,
+      "y_value": 199.7
+    },
+    {
+      "doi": "10.1038/s41467-026-75150-1",
+      "x": "initial_modulus",
+      "y": "tensile_strength",
+      "x_value": 370,
+      "y_value": 11.63
+    },
+    {
+      "minimum_strength_GPa": 2,
+      "best_conductivity_MSm": 27.34,
+      "doi": "10.1038/s41467-026-69498-7"
+    },
+    {
+      "minimum_strength_GPa": 2.5,
+      "best_conductivity_MSm": 11.2,
+      "doi": "10.1016/j.carbon.2022.04.040"
+    },
+    {
+      "minimum_strength_GPa": 8.3,
+      "best_conductivity_MSm": 2.6,
+      "doi": "10.1021/acsnano.5c14235"
+    }
+  ],
+  "figure_types": [
+    "scatter",
+    "ranked",
+    "trend",
+    "ashby"
+  ],
+  "formats": [
+    "svg",
+    "png",
+    "pdf"
+  ],
+  "temporary_sample": true
+}

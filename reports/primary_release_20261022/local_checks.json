@@ -1,0 +1,12 @@
+{
+  "date_local": "2026-10-22",
+  "source_admission_tests": {"status":"pass","tests":30},
+  "public_data_integrity": {"status":"pass","errors":0,"warnings":1,"warning":"Legacy records with unknown density basis remain disclosed"},
+  "postgres_import": {"status":"pass","runtime":"PGlite embedded PostgreSQL","parity":"exact","records":1495,"measurements":5711,"publications":325,"release_id":"public-v0-7b96fd0dae5e1cba","source_hash":"7b96fd0dae5e1cbaa5ec32b6db130e3857767addf1adcdb71275f700ff49a6d8"},
+  "build": {"status":"pass","next":"16.4.2","typecheck":"pass"},
+  "npm_audit": {"status":"pass","production_clone_total_advisories":0,"scope":"isolated deployable tree, not unfinished assistant"},
+  "bounded_api": {"status":"pass","properties":16,"raw_routes_hidden":true},
+  "figure_sweep": {"status":"pass","requests":272,"supported":264,"unsupported":8,"formats":["svg","png","pdf"],"temporary_sample":true},
+  "browser": {"status":"pass","new_paper_search":true,"selected_source_values":true,"minimum_strength_cutoff":true,"mobile_viewport_width":390,"mobile_document_width":390},
+  "limitations": ["Source audits are AI-assisted, not human adjudication","Local HTTP tests use bundled CSVs; this file is not live deployment proof","No assistant or manuscript deployment included"]
+}

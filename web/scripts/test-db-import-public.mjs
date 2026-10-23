@@ -15,14 +15,11 @@ const schema = await fs.readFile(path.join(process.cwd(), "db", "schema.sql"), "
 try {
   await database.exec(schema);
   const release = loadPublicRelease();
+  const expectedCounts = release.manifest.counts;
 
   const firstImport = await importPublicRelease(database, release, { acquireLock: false });
   assert.equal(firstImport.parity, "exact");
-  assert.deepEqual(firstImport.counts, {
-    records: 1447,
-    measurements: 5569,
-    publications: 320
-  });
+  assert.deepEqual(firstImport.counts, expectedCounts);
 
   // Reproduce an upgrade from the v0.3 snapshot, which still contained zero placeholders.
   await database.query(
@@ -67,11 +64,7 @@ try {
       (SELECT count(*)::integer FROM atlas_canonical_measurements) AS measurements,
       (SELECT count(*)::integer FROM atlas_canonical_publications) AS publications
   `);
-  assert.deepEqual(countResult.rows[0], {
-    records: 1447,
-    measurements: 5569,
-    publications: 320
-  });
+  assert.deepEqual(countResult.rows[0], expectedCounts);
 
   await database.query(`
     INSERT INTO atlas_publications (

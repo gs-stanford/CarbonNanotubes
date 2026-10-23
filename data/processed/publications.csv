@@ -147,8 +147,10 @@ pub_113a1375d033,10.1021/acsami.7b10968,,,,,,,,10.1021/acsami.7b10968 || 10.1126
 pub_e08ee65507a3,10.1021/acsami.7b19012,,,,,,,,10.1021/acsami.7b19012,unvalidated,5
 pub_c15f2d47b5e1,10.1021/acsami.8b01128,,,,,,,,https://doi.org/10.1021/acsami.8b01128,unvalidated,1
 pub_aee7d18d90c9,10.1021/acsami.9b19861,,,,,,,,10.1021/acsami.9b19861,unvalidated,10
+pub_5716fc62c111,10.1021/acsanm.6c00845,,,,,,,,https://doi.org/10.1021/acsanm.6c00845,unvalidated,8
 pub_027abd0dac9c,10.1021/acsanm.9b01859,,,,,,,,10.1021/acsanm.9b01859,unvalidated,3
 pub_e1fcc3c30131,10.1021/acsnano.5b02408,,,,,,,,10.1021/acsnano.5b02408,unvalidated,4
+pub_e5f527e3f568,10.1021/acsnano.5c14235,,,,,,,,"Xiangyang Li et al. Plant Cell Wall-Inspired Interfacial Bridging Enables Ultrastrong and Tough Carbon Nanotube Fibers. ACS Nano 2026, 20, 593-602. https://doi.org/10.1021/acsnano.5c14235",unvalidated,5
 pub_c7babcb0b83d,10.1021/acsnano.8b04322,,,,,,,,https://doi.org/10.1021/acsnano.8b04322,unvalidated,1
 pub_6833acbd4471,10.1021/am101046v,,,,,,,,https://doi.org/10.1021/am101046v,unvalidated,2
 pub_9b53b7a02b96,10.1021/am401524q,,,,,,,,10.1021/am401524q || https://doi.org/10.1021/am401524q,unvalidated,6
@@ -180,6 +182,9 @@ pub_da9efb92bdf3,10.1038/nnano.2016.44,,,,,,,,10.1038/nnano.2016.44,unvalidated,
 pub_55b8428035bf,10.1038/s41427-018-0028-3,,,,,,,,10.1038/s41427-018-0028-3,unvalidated,6
 pub_038ce1b2687b,10.1038/s41467-019-10959-7,,,,,,,,10.1038/s41467-019-10959-7,unvalidated,16
 pub_32b8afd4d609,10.1038/s41467-019-10998-0,,,,,,,,"Lee, J., Lee, DM., Jung, Y. et al. Direct spinning and densification method for high-performance carbon nanotube fibers. Nat Commun 10, 2962 (2019). https://doi.org/10.1038/s41467-019-10998-0 || 10.1038/s41467-019-10998-0",unvalidated,17
+pub_2267aeabf81d,10.1038/s41467-026-69498-7,,,,,,,,https://doi.org/10.1038/s41467-026-69498-7,unvalidated,19
+pub_7624558bb248,10.1038/s41467-026-75150-1,,,,,,,,https://doi.org/10.1038/s41467-026-75150-1,unvalidated,6
+pub_1d957eec0aa3,10.1038/s41563-026-02733-0,,,,,,,,https://doi.org/10.1038/s41563-026-02733-0,unvalidated,10
 pub_96e1fec991c2,10.1038/s41565-018-0141-z,,,,,,,,10.1038/s41565-018-0141-z,unvalidated,3
 pub_ff2d1529f8f3,10.1038/s41565-018-0330-9,,,,,,,,https://doi.org/10.1038/s41565-018-0330-9,unvalidated,2
 pub_9bc57889911f,10.1038/s41598-017-09279-x,,,,,,,,10.1038/s41598-017-09279-x,unvalidated,12

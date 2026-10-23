@@ -1,0 +1,14 @@
+{
+  "10.1038/s41467-026-69498-7": {
+    "issue_pages_verified": "17, 3110",
+    "source_url": "https://www.nature.com/articles/s41467-026-69498-7",
+    "checked_date": "2026-10-22",
+    "reason": "Publisher identifies volume 17, article 3110. Cached Crossref issue-only string 17, 1 omits the article number."
+  },
+  "10.1038/s41467-026-75150-1": {
+    "issue_pages_verified": "17, 8231",
+    "source_url": "https://www.nature.com/articles/s41467-026-75150-1",
+    "checked_date": "2026-10-22",
+    "reason": "Publisher identifies volume 17, article 8231. Cached Crossref issue-only string 17, 1 omits the article number."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "status": "pass",
+  "errors": [],
+  "before_counts": {
+    "records": 1447,
+    "measurements": 5569,
+    "publications": 320
+  },
+  "after_counts": {
+    "records": 1495,
+    "measurements": 5711,
+    "publications": 325
+  },
+  "added_records": 48,
+  "added_measurements": 142,
+  "publication_counts": {
+    "10.1021/acsanm.6c00845": 8,
+    "10.1021/acsnano.5c14235": 5,
+    "10.1038/s41563-026-02733-0": 10,
+    "10.1038/s41467-026-69498-7": 19,
+    "10.1038/s41467-026-75150-1": 6
+  },
+  "source_hashes": {
+    "records": "0ba43d5f484294e65a2747803c2ce4b5683bfd5adf8fa958ca55673e32591586",
+    "measurements": "eee88167de235a0709507c4fdeb44b4fd23deef488121e59ba928d35cb641986",
+    "publications": "641ec282dc9edff01f5152176ec23dabc3afbfa077ba8002af9006c9ab13f8a8"
+  },
+  "review_status": "source-audited by AI; no independent human adjudication asserted",
+  "deployment_status": "Repository/web payload verified; this receipt does not establish live deployment"
+}

@@ -337,6 +337,8 @@ def main() -> int:
         pubs_to_validate = pubs.copy()
 
     cache = load_cache()
+    overrides_path = ROOT / "data/curation/publication_metadata_overrides.json"
+    overrides = json.loads(overrides_path.read_text()) if overrides_path.exists() else {}
     validation_rows = []
     enriched_rows = []
     for _, row in pubs_to_validate.iterrows():
@@ -356,7 +358,15 @@ def main() -> int:
                 "openalex_status_code": (validation.get("openalex") or {}).get("status_code"),
             }
         )
-        enriched_rows.append(flatten_result(row, validation))
+        enriched = flatten_result(row, validation)
+        override = overrides.get(doi)
+        if override:
+            if not all(override.get(key) for key in ["issue_pages_verified", "source_url", "checked_date", "reason"]):
+                raise ValueError(f"Unprovenanced publication correction: {doi}")
+            enriched["issue_pages_verified"] = override["issue_pages_verified"]
+            enriched["metadata_correction_source"] = override["source_url"]
+            enriched["metadata_correction_note"] = override["reason"]
+        enriched_rows.append(enriched)
 
     save_cache(cache)
     enriched_df = pd.DataFrame(enriched_rows)
