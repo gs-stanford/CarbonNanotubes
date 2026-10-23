@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import sqlite3
 from pathlib import Path
@@ -1380,21 +1381,50 @@ def detect_secondary_duplicates(records: list[dict[str, Any]]) -> list[dict[str,
     return issues
 
 
+def validate_primary_addition(item: dict[str, Any]) -> None:
+    """Fail closed on packet integrity; this does not replace scientific review."""
+    required = ["record_id", "curated_state_id", "doi_raw", "conditions_notes", "values", "measurement_metadata"]
+    if any(not item.get(key) for key in required):
+        raise ValueError("Primary addition lacks identity, values or provenance")
+    if item.get("dataset_provenance") != "ai_source_audited_primary_extraction" or item.get(
+        "primary_source_verification_status") != "ai_source_checked_not_human_adjudicated":
+        raise ValueError("Primary addition must retain its actual AI-only review state")
+    if item.get("specimen_linkage") == "same_specimen_verified" or item.get("human_duplicate_decision"):
+        raise ValueError("These source-audited packets have no human or same-filament certification")
+    if any(key in RAW_MEASUREMENT_FIELDS and value is not None for key, value in item.items()):
+        raise ValueError("Primary packet must use explicit canonical values, not legacy implicit derivation fields")
+    if any(not isinstance(value, (float, int)) or not math.isfinite(value) or value <= 0
+           for value in item["values"].values()):
+        raise ValueError("Primary values must be positive finite quantities")
+    for meta in item["measurement_metadata"].values():
+        if not meta.get("source_locator") or not (meta.get("source_sha256") or meta.get("source_document_sha256")):
+            raise ValueError("Primary measurement lacks a source locator or document hash")
+        n = meta.get("sample_size_n")
+        if n is not None and (not isinstance(n, (int, float)) or n < 1 or n != int(n)):
+            raise ValueError("Exact sample size must be a positive integer, not a bound")
+
+
 def read_curated_records() -> list[dict[str, Any]]:
     """Read reviewed, SI-normalized inputs with measurement-level provenance."""
     records = []
-    for filename in ["human_validated_records.json", "reference_benchmarks.json"]:
-        path = ROOT / "data" / "curation" / filename
+    curation = ROOT / "data" / "curation"
+    paths = [curation / name for name in ["human_validated_records.json", "reference_benchmarks.json"]]
+    paths.extend(sorted((curation / "primary_additions").glob("*.json")))
+    for path in paths:
+        filename = path.name
         if not path.exists():
             continue
         payload = json.loads(path.read_text())
         if payload.get("schema_version") != "cpt-curated-records-v1":
             raise ValueError(f"Unsupported curated schema in {filename}")
         for item in payload["records"]:
+            if path.parent.name == "primary_additions":
+                validate_primary_addition(item)
             record = base_record(item["source_file"], item["source_sheet"], item["source_row"],
                                  item["record_label"], item["sample_name"], item["citation_raw"])
             record.update({k: v for k, v in item.items()
-                           if k not in {"values", "measurement_metadata", "validation_rows", "context_measurements", "source_facts"}})
+                           if k not in {"values", "measurement_metadata", "validation_rows", "context_measurements", "source_facts"}
+                           and not isinstance(v, (dict, list))})
             record.update(item["values"])
             if record.get("tensile_strength_Pa") is not None:
                 record["tensile_strength_GPa"] = record["tensile_strength_Pa"] / 1e9
@@ -1581,6 +1611,8 @@ def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
             if value is None or value <= 0:
                 continue
             source_meta = measurement_source_metadata(record, prop)
+            source_meta = {key: json.dumps(value, sort_keys=True) if isinstance(value, (dict, list)) else value
+                           for key, value in source_meta.items()}
             rows.append(
                 {
                     "measurement_id": stable_id("meas", record["record_id"], prop, field),
@@ -1590,15 +1622,15 @@ def build_measurements(records: list[dict[str, Any]]) -> pd.DataFrame:
                     "unit_canonical": unit,
                     **source_meta,
                     "statistic_type": clean(source_meta.get("statistic_type")) or clean(record.get("statistic_type")) or "unspecified",
-                    "sample_size_n": to_float(record.get("sample_size_n")),
+                    "sample_size_n": to_float(source_meta.get("sample_size_n", record.get("sample_size_n"))),
                     "test_standard": clean(source_meta.get("test_standard")) or clean(record.get("test_standard")),
                     "specimen_id": clean(record.get("specimen_id")),
                     "sample_batch_id": clean(record.get("sample_batch_id")),
                     "specimen_linkage": clean(record.get("specimen_linkage")) or "unknown",
                     "measurement_set_id": measurement_set_id,
-                    "measurement_direction": clean(record.get("measurement_direction")),
+                    "measurement_direction": clean(source_meta.get("measurement_direction")) or clean(record.get("measurement_direction")),
                     "source_locator": clean(source_meta.get("source_locator")) or clean(record.get("provenance_table_figure_page")),
-                    "extraction_method": clean(record.get("extraction_method")) or "unknown",
+                    "extraction_method": clean(source_meta.get("extraction_method")) or clean(record.get("extraction_method")) or "unknown",
                     "source_file": record["source_file"],
                     "source_sheet": record["source_sheet"],
                     "source_row": record["source_row"],

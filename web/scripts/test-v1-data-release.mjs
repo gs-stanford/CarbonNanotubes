@@ -22,9 +22,10 @@ function close(actual, expected, label) {
 const releaseResponse = await fetch(`${baseUrl}/api/v1/release`);
 assert.equal(releaseResponse.status, 200);
 const { release } = await releaseResponse.json();
-assert.equal(release.record_count, 1447);
-assert.equal(release.measurement_count, 5569);
-assert.equal(release.publication_count, 320);
+const expected = JSON.parse(await fs.readFile(path.join(process.cwd(), "data/public/public_release_summary.json"), "utf8"));
+assert.equal(release.record_count, expected.public_records);
+assert.equal(release.measurement_count, expected.public_measurements);
+assert.equal(release.publication_count, expected.public_publications);
 
 const metals = await figure({
   kind: "scatter", x: "density", y: "specific_electrical_conductivity", top: 10, top_by: "y",

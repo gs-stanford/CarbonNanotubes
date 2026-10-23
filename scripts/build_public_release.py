@@ -66,6 +66,7 @@ IDENTITY_MEASUREMENT_FIELDS = {
 
 PUBLIC_RECORD_COLUMNS = [
     "record_id",
+    "curated_state_id",
     "public_release_status",
     "public_release_tier",
     "default_plot_visibility",
@@ -359,6 +360,12 @@ def release_decision(row: pd.Series) -> dict[str, Any]:
             " Human-reviewed review-table extraction; original reported values, corrections, and review-source provenance are retained."
             " A shared table row alone does not establish measurements on the same specimen."
         )
+    if include and dataset_provenance_detail == "ai_source_audited_primary_extraction":
+        disclosure += (
+            " AI-assisted extraction checked against primary tables, source data or figures; not independently human-adjudicated."
+            " Named-cohort linkage does not establish measurements on an identical filament."
+            " Property-specific methods, uncertainty and source qualifications are retained."
+        )
     if include and dataset_provenance_detail == "official_manufacturer_or_reference_property_table":
         disclosure = (
             "Source-checked manufacturer or physical-reference values. Nominal/typical properties and density normalization"
@@ -484,6 +491,11 @@ def duplicate_pair(row_a: pd.Series, row_b: pd.Series) -> tuple[bool, float, str
     same_publication = bool(dois_a.intersection(dois_b)) or publication_fallback_key(row_a) == publication_fallback_key(row_b)
     if not same_publication:
         return False, 0.0, "different_publication"
+
+    state_a = clean(row_a.get("curated_state_id"))
+    state_b = clean(row_b.get("curated_state_id"))
+    if state_a and state_b and state_a != state_b:
+        return False, 0.0, "explicitly_distinct_source_configurations"
 
     matches, overlaps, matched_fields = measurement_overlap(row_a, row_b)
     if overlaps == 0:
@@ -707,6 +719,8 @@ def build_public_measurements(measurements: pd.DataFrame, public_records: pd.Dat
     public_measurements["exploratory_plot_eligible"] = public_measurements["exploratory_comparison_eligible"]
     public_measurements["comparability_model_version"] = "cpt-property-pair-v1"
     public_measurements["measurement_warning"] = "none"
+    ai_checked = public_measurements["primary_source_verification_status"].eq("ai_source_checked_not_human_adjudicated")
+    public_measurements.loc[ai_checked, "measurement_warning"] = "ai_source_checked_not_human_adjudicated; named_cohort_linkage_only; consult_source_qualifications"
     tensile_mask = public_measurements["property"].eq("tensile_strength") & public_measurements["unit_inference_review_needed"]
     public_measurements.loc[tensile_mask, "measurement_warning"] = "tensile_strength_unit_inferred_from_source_scale"
     public_measurements.loc[
