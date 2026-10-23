@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import PDFDocument from "pdfkit";
 import path from "node:path";
+import fs from "node:fs/promises";
 
 const labelMetrics = new PDFDocument({ autoFirstPage: false })
   .font(path.join(process.cwd(), "assets/fonts/Arimo-Bold.ttf"));
@@ -160,7 +161,7 @@ for (const [axis, temporary] of [["x", { x: 0, y: 12 }], ["y", { x: 1.8, y: 0 }]
   assert.match(payload.error.message, new RegExp(`temporary ${axis} must be positive`));
 }
 
-console.log(JSON.stringify({
+const report = {
   status: "passed",
   property_count: keys.length,
   requests_checked: requests.length,
@@ -169,4 +170,9 @@ console.log(JSON.stringify({
   largest_figure: results.passed.sort((a, b) => b.points - a.points)[0],
   temporary_point: temporaryPayload.temporary_point,
   export_formats: Object.keys(temporaryPayload.images)
-}, null, 2));
+};
+if (process.env.CPT_FIGURE_AUDIT_OUTPUT) {
+  await fs.mkdir(path.dirname(process.env.CPT_FIGURE_AUDIT_OUTPUT), { recursive: true });
+  await fs.writeFile(process.env.CPT_FIGURE_AUDIT_OUTPUT, JSON.stringify(report, null, 2) + "\n");
+}
+console.log(JSON.stringify(report, null, 2));

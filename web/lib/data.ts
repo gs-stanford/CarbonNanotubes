@@ -148,6 +148,7 @@ export type Measurement = {
   derivation_inputs_json: string | null;
   reported_or_derived: string;
   source_locator: string | null;
+  source_qualification?: string | null;
   extraction_method: string | null;
   public_release_tier: string;
   public_plot_badge: string;
@@ -618,6 +619,7 @@ export function measurementFromRow(row: Record<string, string>): Measurement | n
     derivation_inputs_json: nullable(row.derivation_inputs_json),
     reported_or_derived: nullable(row.reported_or_derived) ?? "reported",
     source_locator: nullable(row.source_locator),
+    source_qualification: nullable(row.source_qualification) ?? nullable(row.source_discrepancy) ?? nullable(row.uncertainty_notes),
     extraction_method: nullable(row.extraction_method),
     public_release_tier: nullable(row.public_release_tier) ?? "",
     public_plot_badge: nullable(row.public_plot_badge) ?? "",
