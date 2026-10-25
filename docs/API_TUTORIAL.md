@@ -5,6 +5,7 @@ temporary-sample benchmarking without distributing the complete canonical
 database. The Python package and REST API use the same versioned service.
 
 - Website: <https://carbonnanotubes.onrender.com>
+- Website API guide: <https://carbonnanotubes.onrender.com/api-guide>
 - API root: <https://carbonnanotubes.onrender.com/api/v1>
 - OpenAPI document: <https://carbonnanotubes.onrender.com/api/v1/openapi.json>
 - Python package: <https://pypi.org/project/carbon-property-tables/>

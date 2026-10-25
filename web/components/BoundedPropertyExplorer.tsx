@@ -1,6 +1,7 @@
 "use client";
 
-import { Archive, ArrowLeftRight, Check, Clipboard, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, X } from "lucide-react";
+import { Archive, ArrowLeftRight, Check, Clipboard, Code2, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, X } from "lucide-react";
+import Link from "next/link";
 import { strToU8, zipSync } from "fflate";
 import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo, useState } from "react";
 import { formatAtlasBibtex, formatAtlasCitation, stripMarkup } from "@/lib/citations";
@@ -39,7 +40,7 @@ const PLOT_TYPES: Array<{ key: PlotType; label: string }> = [
 const TIER_OPTIONS = [
   { key: "peer_reviewed_research", label: "Peer-reviewed research", defaultOn: true },
   { key: "peer_reviewed_contextual_comparator", label: "Peer-reviewed comparators", defaultOn: true },
-  { key: "commercial_contextual_comparator", label: "Commercial/spec-sheet", defaultOn: false }
+  { key: "commercial_contextual_comparator", label: "Commercial/spec-sheet", defaultOn: true }
 ];
 
 const FAMILY_LABELS: Record<string, string> = {
@@ -185,7 +186,7 @@ function figureFilename(kind: PlotType, x: PropertyKey, y: PropertyKey, extensio
   return `carbon-property-tables-${kind}-${x}-vs-${y}.${extension}`;
 }
 
-export function BoundedPropertyExplorer({ initialData }: { initialData: ExplorerBootstrap }) {
+export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initialData: ExplorerBootstrap; databaseTotals: { records: number; publications: number } }) {
   const properties = initialData.properties;
   const families = initialData.families;
   const forms = initialData.forms;
@@ -193,8 +194,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   const initialYearMax = initialData.summary.maxYear ?? new Date().getFullYear();
   const [xKey, setXKey] = useState<PropertyKey>("specific_strength");
   const [yKey, setYKey] = useState<PropertyKey>("specific_electrical_conductivity");
-  const [xScale, setXScale] = useState<ScaleMode>("linear");
-  const [yScale, setYScale] = useState<ScaleMode>("linear");
+  const [xScale, setXScale] = useState<ScaleMode>("log");
+  const [yScale, setYScale] = useState<ScaleMode>("log");
   const [plotType, setPlotType] = useState<PlotType>("scatter");
   const [selectedTiers, setSelectedTiers] = useState(() => new Set(TIER_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
   const [selectedFamilies, setSelectedFamilies] = useState(() => new Set(families));
@@ -351,8 +352,8 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
   function reset() {
     setXKey("specific_strength");
     setYKey("specific_electrical_conductivity");
-    setXScale("linear");
-    setYScale("linear");
+    setXScale("log");
+    setYScale("log");
     setPlotType("scatter");
     setSelectedTiers(new Set(TIER_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
     setSelectedFamilies(new Set(families));
@@ -517,11 +518,11 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
     <main className="atlas-shell">
       <header className="atlas-header">
         <div className="brand-block"><h1>Carbon Property Tables</h1></div>
-        <nav className="header-nav" aria-label="Atlas sections"><button type="button" onClick={() => setCitationOpen(true)}>How to cite</button></nav>
+        <nav className="header-nav" aria-label="Atlas sections"><Link href="/api-guide"><Code2 size={16} aria-hidden="true"/>API guide</Link><button type="button" onClick={() => setCitationOpen(true)}>How to cite</button></nav>
         <div className="header-actions">
-          <button className="header-action-link" type="button" onClick={() => setSubmitOpen(true)}><Send size={16}/><span>Submit data</span></button>
-          <button className="header-action-link header-action-primary" type="button" onClick={() => setExportOpen(true)}><Download size={18}/><span>Download Figure</span></button>
-          <button className="header-action-link" type="button" onClick={reset}><RefreshCcw size={16}/><span>Reset</span></button>
+          <button className="header-action-link" type="button" aria-label="Submit data" title="Submit data" onClick={() => setSubmitOpen(true)}><Send size={16}/><span>Submit data</span></button>
+          <button className="header-action-link header-action-primary" type="button" aria-label="Download Figure" title="Download Figure" onClick={() => setExportOpen(true)}><Download size={18}/><span>Download Figure</span></button>
+          <button className="header-action-link" type="button" aria-label="Reset" title="Reset" onClick={reset}><RefreshCcw size={16}/><span>Reset</span></button>
         </div>
       </header>
 
@@ -580,7 +581,7 @@ export function BoundedPropertyExplorer({ initialData }: { initialData: Explorer
 
         <section className="plot-panel" aria-label="Property plot">
           <div className="plot-title-row">
-            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={15}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search DOI, authors, title, keyword" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={13}/></button> : null}</div>{searching || searchQuery.trim() ? <p className="plot-search-status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
+            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={15}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search DOI, authors, title, keyword" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={13}/></button> : null}</div><p className="database-totals" aria-label="Published database totals"><span>Published database</span><span><strong>{databaseTotals.records.toLocaleString("en-US")}</strong> records</span><span><strong>{databaseTotals.publications.toLocaleString("en-US")}</strong> publications</span></p>{searching || searchQuery.trim() ? <p className="plot-search-status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
             <div className="plot-heading"><h2>{figureTitle}</h2><p>Watermark is removed from exported files. Every download includes the active citation set.</p></div>
             <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist">{PLOT_TYPES.map((item) => <button key={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-selected={plotType === item.key} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}>{item.label}</button>)}</div></div>
           </div>

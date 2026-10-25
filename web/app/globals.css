@@ -97,6 +97,7 @@ nextjs-portal {
 .header-nav a {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 30px;
   color: inherit;
   text-decoration: none;
@@ -642,6 +643,23 @@ textarea {
   font-size: 11px;
   line-height: 1.3;
   text-align: center;
+}
+
+.database-totals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.database-totals strong {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .plot-type-tabs {
@@ -1788,7 +1806,7 @@ textarea {
   }
 
   .header-nav {
-    display: none;
+    gap: 16px;
   }
 
   .header-actions {
@@ -1816,7 +1834,14 @@ textarea {
 
   .atlas-header {
     align-items: flex-start;
+    flex-wrap: wrap;
     padding: 14px 16px;
+  }
+
+  .header-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
   }
 
   .atlas-workspace {
