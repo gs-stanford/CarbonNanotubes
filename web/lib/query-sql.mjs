@@ -100,6 +100,7 @@ export function buildCanonicalRecordQuery(query) {
     ];
     if (range.minValue !== undefined) clauses.push(`fm.value_canonical >= ${parameter(range.minValue)}`);
     if (range.maxValue !== undefined) clauses.push(`fm.value_canonical <= ${parameter(range.maxValue)}`);
+    if (query.excludeSourceEstimates) clauses.push("COALESCE(fm.payload_json->>'reported_or_derived', '') <> 'source_estimate'");
     where.push(`EXISTS (SELECT 1 FROM atlas_canonical_measurements fm WHERE ${clauses.join(" AND ")})`);
   });
 

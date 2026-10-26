@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       if (size > 8192) { await reader.cancel(); throw new ApiInputError("Analysis request exceeds 8192 bytes."); }
       chunks.push(value);
     }
-    return publicJson(transportAnalysis(JSON.parse(Buffer.concat(chunks).toString("utf8"))));
+    return publicJson(await transportAnalysis(JSON.parse(Buffer.concat(chunks).toString("utf8"))));
   } catch (error) {
     return apiError(error instanceof SyntaxError ? new ApiInputError("Request must be valid JSON.") : error);
   }

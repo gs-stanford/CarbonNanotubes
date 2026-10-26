@@ -1,10 +1,30 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import input from "../data/analysis/transport-v1.json";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { hasDatabaseUrl, withDb } from "./db";
 import { ApiInputError } from "./api-v1";
 
 type Bound = number | number[];
-type Contrast = typeof input.contrasts[number];
+type Contrast = { id: string; group: string; doi: string; lab: string; grade: string;
+  before: string; after: string; qualification: string; sigma_MS_m: [Bound, Bound];
+  kappa_W_mK: [Bound, Bound]; input_sha256: string };
+type Resource = { version: string; resource_sha256: string; input_table_sha256: string;
+  source_snapshot: string; scope: string; rights: string; contrasts: Contrast[];
+  sources: Record<string, unknown> };
+
+async function loadResource(): Promise<Resource> {
+  if (hasDatabaseUrl()) {
+    return withDb(async client => {
+      const result = await client.query("SELECT payload FROM atlas_analysis_resources WHERE name = $1 AND active", ["transport"]);
+      if (result.rows.length !== 1) throw new Error("Processing analysis is not configured on this server.");
+      return result.rows[0].payload as Resource;
+    });
+  }
+  if (process.env.NODE_ENV === "production") throw new Error("Backend database is required for processing analysis.");
+  const file = process.env.CPT_TRANSPORT_RESOURCE ?? path.join(process.cwd(), "data", "analysis", "transport-v1.json");
+  return JSON.parse(await fs.readFile(/* turbopackIgnore: true */ file, "utf8")) as Resource;
+}
 export const transportRequestSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("catalog"), group: z.string().max(100).optional(), version: z.string().max(80).optional() }).strict(),
   z.object({ action: z.literal("compare"), ids: z.array(z.string().max(200)).min(1).max(3), include_contextual: z.boolean().default(false), version: z.string().max(80).optional() }).strict(),
@@ -31,7 +51,13 @@ export function computeContrast(c: Contrast) {
 const retained = (c: Contrast) => ["qualified", "primary_bounded"].includes(c.grade);
 const directions = (r: [number, number]) => r[0] > 1 ? "increase" : r[1] < 1 ? "decrease" : "overlaps_no_change";
 
-export function transportAnalysis(raw: unknown) {
+export async function transportAnalysis(raw: unknown) {
+  const parsed = transportRequestSchema.safeParse(raw);
+  if (!parsed.success) throw new ApiInputError(parsed.error.issues.map(i => `${i.path.join(".")}: ${i.message}`).join("; "));
+  return analyzeTransportResource(raw, await loadResource());
+}
+
+export function analyzeTransportResource(raw: unknown, input: Resource) {
   const parsed = transportRequestSchema.safeParse(raw);
   if (!parsed.success) throw new ApiInputError(parsed.error.issues.map(i => `${i.path.join(".")}: ${i.message}`).join("; "));
   const request = parsed.data;

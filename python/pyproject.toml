@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "carbon-property-tables"
-version = "0.4.0"
+version = "0.4.1"
+license = {file = "LICENSE"}
 description = "Citation-preserving scientific figure client for Carbon Property Tables"
 readme = "README.md"
 requires-python = ">=3.10"

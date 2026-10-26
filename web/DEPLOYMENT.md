@@ -6,7 +6,7 @@ Use one Render Web Service for the Next.js app.
 
 - Root directory: `web`
 - Build command: `npm ci && npm run build`
-- Start command: `npm run db:migrate && npm run db:import-public && npm run start`
+- Start command: `npm run db:migrate && npm run start`
 - Required env vars:
   - `NODE_VERSION=22`
   - `DATABASE_URL=<Render Postgres internal connection string>`
@@ -17,16 +17,17 @@ The Blueprint generates `CPT_INTERNAL_API_TOKEN` when it is first applied to a s
 
 Render uses `/api/v1/release` as the HTTP health check and promotes a deployment only after that endpoint returns successfully.
 
-The app creates the Postgres schema lazily at runtime when `DATABASE_URL` is present. Render also migrates the schema and transactionally synchronizes the bundled canonical public release before every start:
+The app uses PostgreSQL for production data. Source files and serving tables are not bundled with the public code. Before a release, an authorized administrator admits privately prepared and validated inputs from a trusted workstation:
 
 ```bash
 npm run db:migrate
-npm run db:import-public
+CPT_RELEASE_DIR=/secure/release npm run db:import-public
+CPT_TRANSPORT_RESOURCE=/secure/transport.json node scripts/db-import-analysis.mjs
 ```
 
-`db:import-public` validates IDs and foreign keys, replaces the canonical snapshot in one transaction, and verifies exact row-payload hashes and counts before commit. It is idempotent. Use `npm run db:verify-public` to compare PostgreSQL against the bundled CSV release without writing, or inspect `/api/health/data` for the active release and backend.
+`db:import-public` rejects private document paths and restricted MatWeb sources, validates IDs and foreign keys, and replaces the canonical snapshot in one transaction. Exact payload hashes and counts are checked before commit. Keep a private backup before admission. Use `CPT_RELEASE_DIR=/secure/release npm run db:verify-public` to verify the result, or inspect `/api/health/data` for the active release and backend. Import the separately versioned processing resource before deploying code that uses it. Credentials belong only in the server environment or an owner-readable local environment file, never in commands, Git or browser code.
 
-When `DATABASE_URL` is configured, canonical records, measurements, and publications are read from PostgreSQL. Bundled CSV files are used only in environments without a configured database.
+Development without PostgreSQL requires separately authorized private data. A public clone can build the website without those files, but cannot serve scientific results until its backend is configured. Deployment restarts do not overwrite the database from Git. Run `python scripts/check_public_repository.py` before publishing code; do not publish validation receipts or raw extraction packages. Current-tree cleanup does not remove old Git history.
 
 ## Public figure API
 

@@ -21,6 +21,16 @@ try {
   assert.equal(firstImport.parity, "exact");
   assert.deepEqual(firstImport.counts, expectedCounts);
 
+  for (const excluded of [false, true]) {
+    const plan = buildCanonicalRecordQuery({ limit: 2000,
+      recordIds: ["rec_f2f3cce2b592", "rec_349415424f86", "rec_995fa42d32dc"],
+      requiredProperties: ["electrical_conductivity", "thermal_conductivity"],
+      excludeSourceEstimates: excluded });
+    const result = await database.query(plan.text, plan.values);
+    assert.equal(result.rows.length, excluded ? 1 : 3, "Source-estimate filtering must apply to active properties only.");
+    if (excluded) assert.equal(result.rows[0].record_payload.record_id, "rec_995fa42d32dc");
+  }
+
   // Reproduce an upgrade from the v0.3 snapshot, which still contained zero placeholders.
   await database.query(
     "ALTER TABLE atlas_canonical_measurements DROP CONSTRAINT atlas_canonical_measurements_scientific_domain_check"

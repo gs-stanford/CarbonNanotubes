@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from apply_source_corrections import apply_source_corrections
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -771,6 +772,9 @@ def build_public_publications(public_records: pd.DataFrame, pubs: pd.DataFrame) 
         return count
 
     public_pubs["source_record_count_public_v0"] = public_pubs.apply(referenced_count, axis=1)
+    # The inherited examples include citations from excluded records, not just
+    # the serving cohort. Canonical DOI/URL and verified metadata remain intact.
+    public_pubs = public_pubs.drop(columns=["citation_raw_examples"], errors="ignore")
     return public_pubs.sort_values(["public_source_type", "year_verified", "journal_verified"], na_position="last")
 
 
@@ -949,12 +953,20 @@ def main() -> None:
     measurements = pd.read_csv(PROCESSED / "measurements_long.csv")
     pubs = pd.read_csv(PROCESSED / "publications_enriched.csv")
 
+    queue, measurements, source_corrections = apply_source_corrections(queue, measurements)
+
     enriched = enrich_records(queue)
     enriched, duplicate_audit = apply_duplicate_canonicalization(enriched)
     public_records = build_public_records(enriched)
     exclusions = build_exclusions(enriched)
     public_measurements = build_public_measurements(measurements, public_records)
-    public_pubs = build_public_publications(public_records, pubs)
+    from publication_boundary import quarantine_restricted_sources, sanitize_runtime_table
+    public_records, public_measurements, rights_holds = quarantine_restricted_sources(public_records, public_measurements)
+    exclusions = pd.concat([exclusions, rights_holds], ignore_index=True)
+    rights_holds.to_csv(REPORTS / "restricted_source_holds.csv", index=False)
+    public_records = sanitize_runtime_table(public_records)
+    public_measurements = sanitize_runtime_table(public_measurements)
+    public_pubs = sanitize_runtime_table(build_public_publications(public_records, pubs))
     public_schema = build_public_schema()
     provenance_census = build_provenance_census(public_records, public_measurements)
 
@@ -965,6 +977,8 @@ def main() -> None:
     public_schema.to_csv(PUBLIC / "public_schema_v0.csv", index=False)
     provenance_census.to_csv(PUBLIC / "public_provenance_census_v0.csv", index=False)
     duplicate_audit.to_csv(PUBLIC / "public_duplicate_audit_v0.csv", index=False)
+    (REPORTS / "public_source_corrections.json").write_text(
+        json.dumps(source_corrections, indent=2) + "\n", encoding="utf-8")
 
     publication_years = pd.to_numeric(public_records["publication_year_verified"], errors="coerce").dropna()
     summary = {

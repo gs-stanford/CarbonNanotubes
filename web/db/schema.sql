@@ -154,6 +154,10 @@ ALTER TABLE atlas_canonical_measurements ADD COLUMN IF NOT EXISTS extraction_met
 
 DO $$
 BEGIN
+  IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'atlas_canonical_measurements_scientific_domain_check'
+             AND position('source_estimate' in pg_get_constraintdef(oid)) = 0) THEN
+    ALTER TABLE atlas_canonical_measurements DROP CONSTRAINT atlas_canonical_measurements_scientific_domain_check;
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'atlas_canonical_measurements_scientific_domain_check') THEN
     ALTER TABLE atlas_canonical_measurements
       ADD CONSTRAINT atlas_canonical_measurements_scientific_domain_check CHECK (
@@ -164,7 +168,7 @@ BEGIN
         AND uncertainty_type IN ('standard_deviation', 'standard_error', 'confidence_interval', 'range', 'reported_unspecified', 'not_reported')
         AND value_bound_type IN ('point_estimate', 'upper_bound', 'lower_bound', 'range_midpoint', 'range_endpoint', 'unspecified')
         AND normalization_basis IN ('direct_mass_specific_linear_density', 'directly_reported_mass_specific', 'derived_from_density', 'derived_from_linear_density', 'not_applicable', 'unknown')
-        AND reported_or_derived IN ('reported', 'reported_with_unit_inference', 'derived')
+        AND reported_or_derived IN ('reported', 'reported_with_unit_inference', 'derived', 'source_estimate')
         AND specimen_linkage IN ('same_specimen_verified', 'same_sample_batch', 'mixed_specimens', 'aggregated_across_specimens', 'incompatible', 'single_source_row_unverified', 'not_applicable_single_property', 'unknown')
         AND (uncertainty_type = 'not_reported' OR uncertainty_value_canonical IS NOT NULL)
         AND (
@@ -363,3 +367,15 @@ CREATE INDEX IF NOT EXISTS atlas_submissions_record_id_idx ON atlas_submissions 
 CREATE INDEX IF NOT EXISTS atlas_submissions_primary_verification_idx ON atlas_submissions (primary_source_verification_status);
 CREATE INDEX IF NOT EXISTS atlas_measurements_record_property_idx ON atlas_measurements (record_id, property);
 CREATE INDEX IF NOT EXISTS atlas_measurements_property_value_idx ON atlas_measurements (property, value_canonical);
+-- Backend-only processing inputs; public operations return bounded calculations.
+CREATE TABLE IF NOT EXISTS atlas_analysis_resources (
+  name text NOT NULL,
+  version text NOT NULL,
+  payload jsonb NOT NULL,
+  active boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (name, version)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS atlas_analysis_resources_active
+  ON atlas_analysis_resources(name) WHERE active;
+

@@ -72,6 +72,7 @@ export function parseCsv(text) {
 }
 
 function resolveDataDir() {
+  if (process.env.CPT_RELEASE_DIR) return path.resolve(process.env.CPT_RELEASE_DIR);
   const candidates = [
     path.join(process.cwd(), "data", "public"),
     path.join(process.cwd(), "..", "data", "public")
@@ -160,6 +161,16 @@ export function loadPublicRelease(dataDir = resolveDataDir()) {
   const recordFile = readCsv(dataDir, FILES.records);
   const measurementFile = readCsv(dataDir, FILES.measurements);
   const publicationFile = readCsv(dataDir, FILES.publications);
+  for (const file of [recordFile, measurementFile, publicationFile]) {
+    if (file.headers.some(h => ["source_document_path", "pdf_path", "source_pdf_path", "local_path"].includes(h))) {
+      throw new Error("Private document-path columns cannot enter the serving database.");
+    }
+    for (const row of file.rows) {
+      if (Object.values(row).some(v => /(?:\/Users\/|\/home\/|file:\/\/|data\/literature\/|matweb\.com)/i.test(v))) {
+        throw new Error("Release contains a private path or a restricted source; admission refused.");
+      }
+    }
+  }
   const summaryRaw = fs.readFileSync(path.join(dataDir, FILES.summary));
   const summary = JSON.parse(summaryRaw.toString("utf8"));
 

@@ -1,9 +1,20 @@
 import assert from "node:assert/strict";
-import { transportAnalysis, ratio } from "../lib/transport-analysis";
+import { analyzeTransportResource, ratio } from "../lib/transport-analysis";
+import fs from "node:fs";
 
-const call = (request: unknown) => transportAnalysis(request) as any;
+const resource = JSON.parse(fs.readFileSync(process.env.CPT_TRANSPORT_RESOURCE ?? "data/analysis/transport-v1.json", "utf8"));
+const call = (request: unknown) => analyzeTransportResource(request, resource) as any;
 const near = (actual: number, expected: number) => assert.ok(Math.abs(actual - expected) < 1e-10, `${actual} != ${expected}`);
 const catalog = call({ action: "catalog" });
+const behabtu = call({ action: "compare", ids: ["rec_995fa42d32dc__rec_4320625341dc", "rec_995fa42d32dc__rec_87303aa4e8a9"] });
+near(behabtu.result[0].response.thermal[0], 635 / 380);
+near(behabtu.result[1].response.thermal[0], 580 / 380);
+const doping = resource.contrasts.filter((c: any) => c.group === "Doping or acid, CNT yarn or acid-spun fiber" && ["qualified", "primary_bounded"].includes(c.grade));
+assert.equal(doping.length, 9);
+for (const c of doping) {
+  const r = call({ action: "compare", ids: [c.id] }).result[0].response;
+  assert.ok(r.electrical[0] > r.thermal[1], `Electrical preference lost for ${c.id}`);
+}
 assert.equal(catalog.contrasts.length, 54);
 assert.equal(catalog.groups.reduce((n: number, g: any) => n + g.retained_contrasts, 0), 38);
 const result = call({ action: "compare", ids: ["piontkowski2025_preheat", "piraux1985_cucl2"] });

@@ -1,4 +1,8 @@
+import { createHash } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import {
+  dataDir,
   getBundledExplorerPayload,
   getBundledExplorerBootstrap,
   getBundledReleaseSummary,
@@ -58,6 +62,7 @@ export type RecordQuery = {
   strictReady?: boolean;
   peerReviewed?: boolean;
   normalizedEligible?: boolean;
+  excludeSourceEstimates?: boolean;
 };
 
 export type CanonicalRecord = {
@@ -274,6 +279,7 @@ function matchesFallback(record: PlotRecord, query: RecordQuery): boolean {
   (query.measurementRanges ?? []).forEach((range) => ranges.set(range.property, range));
   if (query.property) ranges.set(query.property, { minValue: query.minValue, maxValue: query.maxValue });
   for (const [property, range] of ranges) {
+    if (query.excludeSourceEstimates && record.measurementMetadata[property]?.reported_or_derived === "source_estimate") return false;
     const value = record.canonicalValues[property];
     if (typeof value !== "number" || !Number.isFinite(value)) return false;
     if (range.minValue !== undefined && value < range.minValue) return false;
@@ -475,10 +481,17 @@ export async function getReleaseDescriptor(): Promise<ReleaseDescriptor> {
     };
   }
   const summary = getBundledReleaseSummary();
+  const schemaVersion = "carbon-property-tables-public-v0.4";
+  const files = ["public_records_v0.csv", "public_measurements_v0.csv",
+    "public_publications_v0.csv", "public_release_summary.json"].sort();
+  const fileHashes = Object.fromEntries(files.map(file => [file,
+    createHash("sha256").update(fs.readFileSync(path.join(dataDir(), file))).digest("hex")]));
+  // Match the canonical importer's sorted serialization, so local replay has the same pin.
+  const sourceHash = createHash("sha256").update(JSON.stringify({ fileHashes, schemaVersion })).digest("hex");
   return {
-    release_id: "bundled-public-v0",
-    schema_version: "carbon-property-tables-public-v0.4",
-    source_hash: null,
+    release_id: `public-v0-${sourceHash.slice(0, 16)}`,
+    schema_version: schemaVersion,
+    source_hash: sourceHash,
     record_count: summary.recordCount,
     measurement_count: summary.measurementCount,
     publication_count: summary.publicationCount,

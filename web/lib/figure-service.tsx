@@ -59,7 +59,8 @@ const ALLOWED_FILTERS = new Set([
   "verification",
   "strict_ready",
   "peer_reviewed",
-  "normalized_eligible"
+  "normalized_eligible",
+  "exclude_source_estimates"
 ]);
 
 const FAMILY_LABELS: Record<string, string> = {
@@ -402,18 +403,20 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
   const filters = filterSearchParams(request.filters);
   const requiredProperties = request.kind === "scatter" || request.kind === "ashby" ? [request.x, request.y] : [request.y];
   const query = parseRecordQuery(filters, { defaultLimit: 2000, maxLimit: 2000, requiredProperties });
-  const [release, page] = await Promise.all([getReleaseDescriptor(), queryCanonicalRecords(query)]);
+  const release = await getReleaseDescriptor();
   if (request.release && request.release !== release.release_id) {
     throw new ApiInputError(
       `Requested release ${request.release} is not available from this deployment; active release is ${release.release_id}.`
     );
   }
+  const page = await queryCanonicalRecords(query);
   if (page.hasMore) {
     throw new ApiInputError("The requested figure exceeds 2,000 eligible records. Apply material, form-factor, year, or measurement filters.");
   }
+  const eligible = page.records.map((item) => item.record);
   let records = request.minimum_x === undefined
-    ? representativeRecords(page.records.map((item) => item.record), request.x, request.y, request.kind)
-    : page.records.map((item) => item.record);
+    ? representativeRecords(eligible, request.x, request.y, request.kind)
+    : eligible;
   if (request.kind === "trend") {
     records = records.filter((record) => typeof record.publication_year_verified === "number" && Number.isFinite(record.publication_year_verified));
   }

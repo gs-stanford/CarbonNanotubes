@@ -142,7 +142,8 @@ export function parseRecordQuery(
     q: stringParameter(params, "q"),
     strictReady: booleanParameter(params, "strict_ready"),
     peerReviewed: booleanParameter(params, "peer_reviewed"),
-    normalizedEligible: booleanParameter(params, "normalized_eligible")
+    normalizedEligible: booleanParameter(params, "normalized_eligible"),
+    excludeSourceEstimates: booleanParameter(params, "exclude_source_estimates")
   };
 }
 
