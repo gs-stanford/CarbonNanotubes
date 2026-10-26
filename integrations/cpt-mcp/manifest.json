@@ -1,0 +1,9 @@
+{
+  "adapter_sha256": "6722675c2f1fd8f5767d66ffa190d01efb976b8e07010320c38e17be017444f0",
+  "paper2agent_reference_revision": "8c2d059165ef8cdcb70dbea76655b9c2b55b38e6",
+  "relationship": "CPT implementation using Paper2Agent's resource/tool verification principles, not a claim to execute its complete generation pipeline.",
+  "network": "Only calls configured CPT_API_URL; default public CPT HTTPS API.",
+  "private_documents_in_package": false,
+  "model_training": false,
+  "dependency_lock_sha256": "d0e19184a79121574c6e145398398e83e03d60f2c0829d047bd2fe6e891c3c64"
+}

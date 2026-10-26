@@ -17,6 +17,7 @@ const sections = [
   ["sample", "Your sample"],
   ["search", "Find publications"],
   ["rest", "REST API"],
+  ["processing", "Processing analysis"],
   ["reproducibility", "Cite and reproduce"],
 ];
 
@@ -86,6 +87,31 @@ export default function ApiGuide() {
           <ApiCodeBlock code={examples.rest} language="Terminal" label="REST figure request"/>
           <ApiCodeBlock code={examples.restSave} language="Python" label="REST export example"/>
           <p>For a repeatable request, also pass <code>release</code> with the <code>release_id</code> returned by <code>/api/v1/release</code>. PNG and PDF are base64-encoded in the JSON response; SVG is text.</p>
+        </section>
+
+        <section id="processing">
+          <h2>Processing analysis and source locations</h2>
+          <p>Compare how a named treatment changes thermal and electrical conductivity. The versioned catalog contains 54 source-linked contrasts. Each calculation returns both channel responses, their relative preference, evidence qualifications, and a reproducible receipt.</p>
+          <ApiCodeBlock language="Python" label="processing comparison example" code={`import json
+from urllib.request import Request, urlopen
+
+url = "https://carbonnanotubes.onrender.com/api/v1/analysis/transport"
+def analysis(payload):
+    request = Request(url, data=json.dumps(payload).encode(),
+                      headers={"Content-Type": "application/json"})
+    with urlopen(request, timeout=30) as response:
+        return json.load(response)
+
+catalog = analysis({"action": "catalog"})
+result = analysis({"action": "compare",
+    "ids": ["piontkowski2025_preheat", "piraux1985_cucl2"],
+    "version": catalog["analysis_version"]})
+print(result["result"])
+source = analysis({"action": "source",
+    "doi": "10.1021/acs.jpcc.5c05657"})
+print(source["source"]["locators"])`}/>
+          <p>A thermal preference does not necessarily mean a thermal gain: electrical loss also changes the ratio. Report both responses. Comparisons sharing a source or control are dependent; a treatment label alone does not establish a mechanism.</p>
+          <p>Connect your own assistant using the <a href="https://github.com/gs-stanford/CarbonNanotubes/blob/main/docs/PROCESSING_TOOLS.md">MCP setup and scientific contract<ExternalLink size={13}/></a>, or download the <a href="/downloads/cpt-processing-mcp-0.1.0.zip">MCP adapter package</a>. The adapter calls the same tested server calculations. It returns paper links and figure, table, or page locations, not publisher passages or PDFs. Access and permission to use the original papers remain separate.</p>
         </section>
 
         <section id="reproducibility">

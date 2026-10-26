@@ -14,6 +14,7 @@ export async function GET() {
         release: "/api/v1/release",
         properties: "/api/v1/properties",
         figures: "/api/v1/figures",
+        processing_analysis: "/api/v1/analysis/transport",
         doi_status: "/api/v1/doi-status?doi={doi}",
         search: "/api/v1/search?q={query}",
         citations: "/api/v1/citations?record_id={record_id}",

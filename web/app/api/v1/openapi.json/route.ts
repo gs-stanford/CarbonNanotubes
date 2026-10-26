@@ -13,6 +13,25 @@ export function GET(request: NextRequest) {
     },
     servers: [{ url: origin }],
     paths: {
+      "/api/v1/analysis/transport": {
+        post: {
+          summary: "Reproduce source-qualified processing responses and inspect paper locations",
+          description: "Frozen transport analysis, separately versioned from the CPT database. Up to three named contrasts; contextual evidence requires explicit opt-in. No raw endpoint table or publisher text. Shared top-result rate limit: 60 requests per hour per client per service process. Body limit 8192 bytes.",
+          requestBody: { required: true, content: { "application/json": { schema: {
+            oneOf: [
+              { type: "object", additionalProperties: false, required: ["action"], properties: {
+                action: { const: "catalog" }, group: { type: "string", maxLength: 100 }, version: { type: "string", maxLength: 80 } } },
+              { type: "object", additionalProperties: false, required: ["action", "ids"], properties: {
+                action: { const: "compare" }, ids: { type: "array", minItems: 1, maxItems: 3, uniqueItems: true, items: { type: "string", maxLength: 200 } },
+                include_contextual: { type: "boolean", default: false }, version: { type: "string", maxLength: 80 } } },
+              { type: "object", additionalProperties: false, required: ["action", "doi"], properties: {
+                action: { const: "source" }, doi: { type: "string", minLength: 3, maxLength: 200 }, version: { type: "string", maxLength: 80 } } }
+            ]
+          } } } },
+          responses: { "200": { description: "Catalog, calculated dimensionless responses, or source pointers with version and provenance." },
+            "400": { description: "Invalid body, IDs, contextual authorization or unavailable version." }, "429": { description: "Rate limit reached." } }
+        }
+      },
       "/api/v1": {
         get: { summary: "API discovery document", responses: { "200": { description: "API links and active release." } } }
       },

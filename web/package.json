@@ -29,7 +29,8 @@
     "pg": "^8.21.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "svg-to-pdfkit": "^0.1.8"
+    "svg-to-pdfkit": "^0.1.8",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.5",
