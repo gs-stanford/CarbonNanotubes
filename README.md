@@ -31,14 +31,16 @@ admit an authorized private release following the deployment instructions.
 Then run `npm run dev` and open the reported local URL.
 
 The Python SDK is in `python/`; `python -m pip install ./python` installs the
-current source version. Version 0.4.1 adds the MIT licence; this repository
-version does not imply that a matching package has been uploaded to PyPI.
+current source version. Version 0.4.1 is available on PyPI and includes the MIT licence.
 The MCP download contains only adapter code, dependencies, instructions and
 licences. Users connect their own assistant and obtain their own paper access.
 
 ## Release Checks
 
 Before publishing code, run `python scripts/check_public_repository.py`.
+The check requires full Git history and rejects private artifacts in any reachable
+commit, even if they were later deleted. Use a fresh clone after the October 2026
+history cleanup; do not merge pre-cleanup history back into this repository.
 For an authorized private data release, run the source/integrity checks and
 `npm run db:test-public-import` with the private tables available. Import is
 transactional and checks hashes and row counts. Source PDFs and validation
@@ -49,4 +51,5 @@ artifacts must never be placed in `web/public` or committed to Git.
 CPT-authored software uses [MIT](LICENSE). See [Data and Source Rights](DATA_RIGHTS.md)
 for the limited CC BY 4.0 grant on CPT-owned released annotations/results and
 the exclusions for third-party content. Citation does not replace permission.
-Current-tree cleanup does not erase previous Git history or third-party copies.
+Rewriting Git history cannot erase third-party copies or guarantee removal of
+provider-retained objects and cached views.
