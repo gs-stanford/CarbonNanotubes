@@ -1,7 +1,6 @@
-.page { min-height: 100vh; background: var(--paper); }
-.header { min-height: 64px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 28px; border-bottom: 1px solid var(--rule); }
-.header a { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-size: 14px; }
-.header .brand { font-size: 19px; font-weight: 700; }
+.page { min-height: 100vh; background: var(--paper); font-family: var(--font-sans); --ink: #24282b; --muted: #656e73; --rule: #e5e8ea; --accent: #087d79; }
+.header { min-height: 84px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 28px; border-bottom: 1px solid var(--rule); }
+.header > a:last-child { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-size: 14px; }
 .layout { display: grid; grid-template-columns: 200px minmax(0, 760px); gap: 48px; max-width: 1120px; margin: 0 auto; padding: 40px 24px 64px; }
 .contents { position: sticky; top: 24px; align-self: start; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
 .contents p { margin: 0 0 12px; font-weight: 600; color: var(--ink); }
@@ -38,6 +37,5 @@
   .contents a { padding: 3px 0; }
   .contents a:last-child { margin-top: 0; border: 0; padding-top: 3px; }
   .header { padding: 16px 20px; }
-  .header .brand { font-size: 17px; }
   .codeBlock pre { font-size: 12px; }
 }

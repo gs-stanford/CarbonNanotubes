@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { ApiCodeBlock } from "@/components/ApiCodeBlock";
+import { Brand } from "@/components/Brand";
 import { API_GUIDE_EXAMPLES as examples } from "@/lib/api-guide-examples";
 import styles from "./guide.module.css";
 
 export const metadata: Metadata = {
-  title: "API guide | Carbon Property Tables",
-  description: "Generate CPT figures, export citations, filter comparisons, and benchmark a temporary sample from Python or the REST API.",
+  title: "API guide | iCPM",
+  description: "Generate iCPM figures, export citations, filter comparisons, and benchmark a temporary sample from Python or the REST API.",
 };
 
 const sections = [
@@ -24,7 +25,7 @@ const sections = [
 export default function ApiGuide() {
   return <main className={styles.page}>
     <header className={styles.header}>
-      <Link href="/" className={styles.brand}>Carbon Property Tables</Link>
+      <Brand/>
       <Link href="/"><ArrowLeft size={16} aria-hidden="true"/>Property explorer</Link>
     </header>
     <div className={styles.layout}>
@@ -35,12 +36,12 @@ export default function ApiGuide() {
       </nav>
       <article className={styles.article}>
         <h1>API guide</h1>
-        <p className={styles.intro}>Create comparison figures and citation bundles from Python or HTTP. Benchmark your own sample against the published CPT database.</p>
+        <p className={styles.intro}>Create comparison figures and citation bundles from Python or HTTP. Benchmark your own sample against the published iCPM database.</p>
         <p className={styles.access}>No API key required. Figures, source metadata, and up to ten top results per request are available; bulk measurement downloads are not.</p>
 
         <section id="quickstart">
           <h2>Get started</h2>
-          <p>Use Python 3.10 or newer. The client connects to the public CPT service; it does not download the database.</p>
+          <p>Use Python 3.10 or newer. The client connects to the public iCPM service; it does not download the database.</p>
           <ApiCodeBlock code={examples.install} language="Terminal" label="installation command"/>
           <p>The first argument is the x property; the second is the y property. This example includes commercial reference materials as well as research records.</p>
           <ApiCodeBlock code={examples.quickstart} language="Python" label="quickstart example"/>
@@ -71,7 +72,7 @@ export default function ApiGuide() {
           <h2>Benchmark your sample</h2>
           <p>Add a labelled marker without changing the database. Coordinates use the displayed axis units, not the canonical units used in measurement filters.</p>
           <ApiCodeBlock code={examples.temporary} language="Python" label="temporary sample example"/>
-          <p>The response reports axis ranks, percentiles, and Pareto status within the plotted cohort. The sample is temporary, user-supplied, and not a curated CPT measurement.</p>
+          <p>The response reports axis ranks, percentiles, and Pareto status within the plotted cohort. The sample is temporary, user-supplied, and not a curated iCPM measurement.</p>
         </section>
 
         <section id="search">
@@ -95,7 +96,7 @@ export default function ApiGuide() {
           <ApiCodeBlock language="Python" label="processing comparison example" code={`import json
 from urllib.request import Request, urlopen
 
-url = "https://carbonnanotubes.onrender.com/api/v1/analysis/transport"
+url = "https://icpmatrix.com/api/v1/analysis/transport"
 def analysis(payload):
     request = Request(url, data=json.dumps(payload).encode(),
                       headers={"Content-Type": "application/json"})
@@ -118,7 +119,7 @@ print(source["source"]["locators"])`}/>
           <h2>Cite and reproduce</h2>
           <ol>
             <li>Pin the release ID and retain the generated manifest with your figures.</li>
-            <li>Cite CPT and the original sources in the figure's citation bundle.</li>
+            <li>Cite iCPM and the original sources in the figure's citation bundle.</li>
             <li>Report your properties, units, source classes, and other active filters.</li>
             <li>Check specimen identity and measurement conditions before interpreting differences across papers.</li>
           </ol>

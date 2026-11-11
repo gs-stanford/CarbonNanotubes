@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, ArrowLeftRight, Check, Clipboard, Code2, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, X } from "lucide-react";
+import { Archive, ArrowLeftRight, Check, Clipboard, Code2, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, SlidersHorizontal, ScatterChart, ListOrdered, TrendingUp, Layers, X } from "lucide-react";
 import Link from "next/link";
 import { strToU8, zipSync } from "fflate";
 import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo, useState } from "react";
@@ -8,6 +8,8 @@ import { formatAtlasBibtex, formatAtlasCitation, stripMarkup } from "@/lib/citat
 import type { ExplorerBootstrap, FigureRequest, FigureResponse, FigureTopPoint } from "@/lib/figure-api";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 import MeasurementNotes from "@/components/MeasurementNotes";
+import { Brand } from "@/components/Brand";
+import styles from "./Explorer.module.css";
 
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
 type NumericFilterKey = "density" | "diameter" | "gauge_length_mm" | "temperature_C";
@@ -30,12 +32,12 @@ type SearchResult = {
   matched_rows: number;
 };
 
-const PLOT_TYPES: Array<{ key: PlotType; label: string }> = [
-  { key: "scatter", label: "Scatter" },
-  { key: "ranked", label: "Highest reported" },
-  { key: "trend", label: "Trend" },
-  { key: "ashby", label: "Ashby" }
-];
+const PLOT_TYPES = [
+  { key: "scatter", label: "Scatter", icon: ScatterChart },
+  { key: "ranked", label: "Highest reported", icon: ListOrdered },
+  { key: "trend", label: "Trend", icon: TrendingUp },
+  { key: "ashby", label: "Ashby", icon: Layers }
+] as const;
 
 const TIER_OPTIONS = [
   { key: "peer_reviewed_research", label: "Peer-reviewed research", defaultOn: true },
@@ -183,7 +185,7 @@ function topCsv(rows: FigureTopPoint[]): string {
 }
 
 function figureFilename(kind: PlotType, x: PropertyKey, y: PropertyKey, extension: string): string {
-  return `carbon-property-tables-${kind}-${x}-vs-${y}.${extension}`;
+  return `icpm-${kind}-${x}-vs-${y}.${extension}`;
 }
 
 export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initialData: ExplorerBootstrap; databaseTotals: { records: number; publications: number } }) {
@@ -215,10 +217,46 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
   const [citationOpen, setCitationOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [submitOpen, setSubmitOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null);
   const [submissionPacket, setSubmissionPacket] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (selectedId && window.matchMedia("(max-width: 1279px)").matches) {
+      document.getElementById("point-details")?.scrollIntoView({ block: "start" });
+    }
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (!citationOpen && !exportOpen && !submitOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialog = document.querySelector<HTMLElement>(".citation-modal");
+    if (!dialog) return;
+    const focusable = () => Array.from(dialog.querySelectorAll<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex='0']")).filter(element => element.getClientRects().length > 0);
+    focusable()[0]?.focus();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKey = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setCitationOpen(false); setExportOpen(false); setSubmitOpen(false);
+      }
+      if (event.key !== "Tab") return;
+      const elements = focusable();
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    dialog.addEventListener("keydown", handleKey);
+    return () => {
+      dialog.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = overflow;
+      previousFocus?.focus();
+    };
+  }, [citationOpen, exportOpen, submitOpen]);
   const numericFiltersActive = Object.values(numericFilters).some((bounds) => bounds.min.trim() || bounds.max.trim());
 
   const xMeta = metaFor(properties, xKey);
@@ -294,6 +332,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
         const payload = await response.json();
         if (!response.ok) throw new Error(payload?.error?.message || "Figure request failed.");
         setFigure(payload as FigureResponse);
+        if (selectedId && !payload.record_ids.includes(selectedId)) setSelectedId(null);
       } catch (error) {
         if (!controller.signal.aborted) setFigureError(error instanceof Error ? error.message : "Figure request failed.");
       } finally {
@@ -330,7 +369,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     };
   }, [searchQuery]);
 
-  const selectedRecord = figure?.selected_record ?? null;
+  const selectedRecord = selectedId && figure?.selected_record?.record_id === selectedId ? figure.selected_record : null;
   const counts = figure?.counts;
   const figureTitle = plotType === "trend"
     ? `${yMeta.label} by publication year`
@@ -371,6 +410,15 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     const element = target instanceof Element ? target.closest<SVGElement>("[data-record-id]") : null;
     const recordId = element?.getAttribute("data-record-id");
     if (recordId) setSelectedId(recordId);
+  }
+
+  function closePointDetails() {
+    const marker = selectedId ? document.querySelector<SVGElement>(`[data-record-id="${CSS.escape(selectedId)}"]`) : null;
+    setSelectedId(null);
+    marker?.focus({ preventScroll: true });
+    if (window.matchMedia("(max-width: 1279px)").matches) {
+      document.getElementById("property-figure")?.scrollIntoView({ block: "start" });
+    }
   }
 
   async function requestExport(format: "svg" | "png" | "pdf" | "csv") {
@@ -421,7 +469,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
       }));
 
       const files: Record<string, Uint8Array> = {
-        "README.txt": strToU8("Carbon Property Tables figure set\n\nEach figure is supplied as editable SVG and vector PDF with its own citation sidecar.\n")
+        "README.txt": strToU8("Interactive Carbon Property Matrix (iCPM) figure set\n\nEach figure is supplied as editable SVG and vector PDF with its own citation sidecar.\n")
       };
       for (const { key, payload } of results) {
         const base = figureFilename(key, xKey, yKey, "").replace(/\.$/, "");
@@ -431,7 +479,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
         files[`${base}-citations.txt`] = strToU8(`${payload.citations.copy_all}\n\nBibTeX:\n${payload.citations.bibtex}\n`);
       }
       const archive = zipSync(files, { level: 6 });
-      downloadBlob(`carbon-property-tables-all-figures-${xKey}-vs-${yKey}.zip`, blobFromBytes(archive, "application/zip"));
+      downloadBlob(`icpm-all-figures-${xKey}-vs-${yKey}.zip`, blobFromBytes(archive, "application/zip"));
     } catch (error) {
       setFigureError(error instanceof Error ? error.message : "Figure-set export failed.");
     } finally {
@@ -515,30 +563,31 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
   const familyOptions = plotType === "ranked" ? families.filter((family) => RANKED_FAMILIES.has(family)) : families;
 
   return (
-    <main className="atlas-shell">
+    <main className={`atlas-shell ${styles.shell}`}>
       <header className="atlas-header">
-        <div className="brand-block"><h1>Carbon Property Tables</h1></div>
-        <nav className="header-nav" aria-label="Atlas sections"><Link href="/api-guide"><Code2 size={16} aria-hidden="true"/>API guide</Link><button type="button" onClick={() => setCitationOpen(true)}>How to cite</button></nav>
+        <h1 className={styles.brandHeading}><Brand/></h1>
+        <nav className="header-nav" aria-label="iCPM sections"><Link href="/api-guide"><Code2 size={16} aria-hidden="true"/>API guide</Link><button type="button" onClick={() => setCitationOpen(true)}><Quote size={15} aria-hidden="true"/>How to cite</button></nav>
         <div className="header-actions">
           <button className="header-action-link" type="button" aria-label="Submit data" title="Submit data" onClick={() => setSubmitOpen(true)}><Send size={16}/><span>Submit data</span></button>
-          <button className="header-action-link header-action-primary" type="button" aria-label="Download Figure" title="Download Figure" onClick={() => setExportOpen(true)}><Download size={18}/><span>Download Figure</span></button>
-          <button className="header-action-link" type="button" aria-label="Reset" title="Reset" onClick={reset}><RefreshCcw size={16}/><span>Reset</span></button>
+          <button className="header-action-link header-action-primary" type="button" aria-label="Download Figure" title="Download Figure" onClick={() => setExportOpen(true)}><Download size={17}/><span>Download figure</span></button>
         </div>
       </header>
 
-      <div className="atlas-workspace">
-        <aside className="control-rail" aria-label="Plot controls">
+      <div className={`atlas-workspace ${selectedId ? "" : styles.plotExpanded}`}>
+        <div className={styles.mobileControls}><button type="button" aria-expanded={filtersOpen} aria-controls="plot-controls" onClick={() => setFiltersOpen(!filtersOpen)}><SlidersHorizontal size={16}/>{filtersOpen ? "Hide filters" : "Properties & filters"}</button></div>
+        <aside id="plot-controls" className={`control-rail ${filtersOpen ? styles.filtersOpen : ""}`} aria-label="Plot controls">
+          <div className={styles.railTitle}><span><SlidersHorizontal size={15} aria-hidden="true"/>Properties & filters</span><button className="icon-button" type="button" aria-label="Reset" title="Reset all filters and axes" onClick={reset}><RefreshCcw size={15}/></button></div>
           <section className="rail-section axis-section">
-            <div className="rail-heading">Plot setup</div>
+            <div className="rail-heading">Axes</div>
             {isXy ? <>
               <label className="field-label" htmlFor="x-property">X property</label>
               <select id="x-property" value={xKey} onChange={(event) => { setXKey(event.target.value as PropertyKey); setMinimumX(""); setSelectedId(null); }}>
                 {properties.map((property) => <option key={property.key} value={property.key}>{property.label}</option>)}
               </select>
               <p className="unit-hint">({xMeta.displayUnit})</p>
-              <div className="scale-row">
-                <button className={xEffective === "linear" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setXScale("linear")}>Linear</button>
-                <button className={xEffective === "log" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setXScale("log")}>Log</button>
+              <div className="scale-row" role="group" aria-label="X axis scale">
+                <button aria-pressed={xEffective === "linear"} className={xEffective === "linear" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setXScale("linear")}>Linear</button>
+                <button aria-pressed={xEffective === "log"} className={xEffective === "log" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setXScale("log")}>Log</button>
               </div>
               <button className="swap-button" type="button" title="Swap axes" onClick={() => { const oldX = xKey; setXKey(yKey); setYKey(oldX); setXScale(yScale); setYScale(xScale); setMinimumX(""); setSelectedId(null); }}><ArrowLeftRight size={15}/></button>
             </> : null}
@@ -547,9 +596,9 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
               {properties.map((property) => <option key={property.key} value={property.key}>{property.label}</option>)}
             </select>
             <p className="unit-hint">({yMeta.displayUnit})</p>
-            <div className="scale-row">
-              <button className={yEffective === "linear" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setYScale("linear")}>Linear</button>
-              <button className={yEffective === "log" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setYScale("log")}>Log</button>
+            <div className="scale-row" role="group" aria-label="Y axis scale">
+              <button aria-pressed={yEffective === "linear"} className={yEffective === "linear" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setYScale("linear")}>Linear</button>
+              <button aria-pressed={yEffective === "log"} className={yEffective === "log" ? "segmented is-active" : "segmented"} disabled={plotType === "ashby"} onClick={() => setYScale("log")}>Log</button>
             </div>
           </section>
 
@@ -559,10 +608,6 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
             <div className="requirement-input"><input id="minimum-x" type="number" min="0" step="any" placeholder="None" value={minimumX} onChange={(event) => { setMinimumX(event.target.value); setSelectedId(null); }}/><span>{xMeta.displayUnit}</span><button type="button" className="icon-button" aria-label="Clear performance requirement" onClick={() => setMinimumX("")} disabled={!minimumX}><X size={14}/></button></div>
             {figure?.requirement ? <div className="requirement-result" aria-live="polite"><strong>{figure.requirement.qualifying_count} qualifying pairs</strong><span>{figure.requirement.best ? `Best reported: ${figure.requirement.best.y_value.toLocaleString(undefined, { maximumSignificantDigits: 4 })} ${figure.requirement.best.y_unit}` : "No qualifying record"}</span></div> : null}
           </section> : null}
-
-          <section className="rail-section"><div className="rail-heading">Figure labels</div>
-            <label className="figure-option-row" title="Source and metal labels on Scatter, Trend, and Ashby; also applies to downloads"><input type="checkbox" checked={showCallouts} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
-          </section>
 
           <section className="rail-section"><div className="rail-heading">Source class</div>
             {TIER_OPTIONS.map((item) => <label className="check-row" key={item.key}><input type="checkbox" checked={selectedTiers.has(item.key)} onChange={() => toggle(item.key, selectedTiers, setSelectedTiers)}/><span>{item.label}</span><span className="count">{counts?.release_tiers[item.key] ?? 0}</span></label>)}
@@ -581,9 +626,15 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
 
         <section className="plot-panel" aria-label="Property plot">
           <div className="plot-title-row">
-            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={15}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search DOI, authors, title, keyword" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={13}/></button> : null}</div><p className="database-totals" aria-label="Published database totals"><span>Published database</span><span><strong>{databaseTotals.records.toLocaleString("en-US")}</strong> records</span><span><strong>{databaseTotals.publications.toLocaleString("en-US")}</strong> publications</span></p>{searching || searchQuery.trim() ? <p className="plot-search-status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
-            <div className="plot-heading"><h2>{figureTitle}</h2><p>Watermark is removed from exported files. Every download includes the active citation set.</p></div>
-            <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist">{PLOT_TYPES.map((item) => <button key={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-selected={plotType === item.key} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}>{item.label}</button>)}</div></div>
+            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={17}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search publications, authors or DOI" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={15}/></button> : null}</div><p className="database-totals" aria-label="Published database totals"><span><strong>{databaseTotals.records.toLocaleString("en-US")}</strong> records</span><span><strong>{databaseTotals.publications.toLocaleString("en-US")}</strong> publications</span></p>{searching || searchQuery.trim() ? <p className="plot-search-status" role="status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
+            <div className="plot-heading"><h2>{figureTitle}</h2></div>
+            <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist" aria-label="Figure type">{PLOT_TYPES.map((item, index) => <button key={item.key} data-kind={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-controls="property-figure" tabIndex={plotType === item.key ? 0 : -1} aria-selected={plotType === item.key} onKeyDown={(event) => {
+              const next = event.key === "ArrowRight" ? (index + 1) % PLOT_TYPES.length : event.key === "ArrowLeft" ? (index + PLOT_TYPES.length - 1) % PLOT_TYPES.length : event.key === "Home" ? 0 : event.key === "End" ? PLOT_TYPES.length - 1 : null;
+              if (next === null) return;
+              event.preventDefault();
+              const target = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("[role=tab]")[next];
+              target?.focus(); target?.click();
+            }} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}><item.icon size={15} aria-hidden="true"/>{item.label}</button>)}</div><span className={styles.plotCount} role="status">{loading ? "Updating..." : `${figure?.point_count ?? 0} plotted records`}</span></div>
           </div>
 
           {searchQuery.trim() ? <div className="plot-search-results"><div className="plot-search-results-heading"><span>Search results</span><strong>{searchResults.length} publications / {visibleSearchCount} in active plot</strong></div>{searchResults.length ? <div className="plot-search-result-grid">{searchResults.map((result) => {
@@ -591,26 +642,31 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
             return <button key={result.key} className={visibleId ? "plot-search-result-card is-in-plot" : "plot-search-result-card is-out-of-plot"} disabled={!visibleId} onClick={() => visibleId && setSelectedId(visibleId)}><strong>{result.title || result.sample || result.doi || "Untitled publication"}</strong><span>{result.authors || "Unknown authors"} / {result.year ?? "n.d."}</span><small>{visibleId ? "highlight in figure" : "outside active figure"}{result.matched_rows > 1 ? ` / ${result.matched_rows} samples` : ""}</small></button>;
           })}</div> : <p className="plot-search-empty">No publication matches this query.</p>}</div> : null}
 
-          <figure className="plot-figure bounded-figure" aria-busy={loading} onClick={(event: MouseEvent<HTMLElement>) => selectFromSvg(event.target)} onKeyDown={(event: KeyboardEvent<HTMLElement>) => { if (event.key === "Enter" || event.key === " ") selectFromSvg(event.target); }}>
+          <figure id="property-figure" className="plot-figure bounded-figure" role="tabpanel" aria-label={figureTitle} aria-busy={loading} onClick={(event: MouseEvent<HTMLElement>) => selectFromSvg(event.target)} onKeyDown={(event: KeyboardEvent<HTMLElement>) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectFromSvg(event.target); } }}>
             {figure?.display_svg ? <div className="server-figure-svg" dangerouslySetInnerHTML={{ __html: figure.display_svg }}/>: null}
             {loading ? <div className="figure-status">Rendering figure…</div> : null}
             {figureError ? <div className="figure-error">{figureError}</div> : null}
           </figure>
+          <div className={styles.figureFooter}>
+            <p>Click an individual point for details.</p>
+            <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
+          </div>
         </section>
 
-        <aside className="detail-rail" aria-label="Focused record">
-          <section className="detail-section"><div className="rail-heading">Selected point</div>{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta">Select a plotted marker to inspect its source and reported conditions.</p>}</section>
+        {selectedId ? <aside id="point-details" className="detail-rail" aria-label="Focused record">
+          <div className={styles.detailsHeader}><span>Selected point</span><button type="button" className="icon-button" aria-label="Close point details" title="Close point details" onClick={closePointDetails}><X size={16}/></button></div>
+          <section className="detail-section">{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta" role="status">{figureError ? "Point details could not be loaded." : "Loading point details..."}</p>}</section>
           {selectedRecord ? <><section className="detail-section"><div className="rail-heading">Source</div><p className="source-title">{titleFor(selectedRecord)}</p><p className="detail-meta">{selectedRecord.publication_authors_short_verified || "Authors unavailable"}</p><p className="detail-meta">{[selectedRecord.publication_journal_verified, selectedRecord.publication_year_verified].filter(Boolean).join(" / ")}</p>{doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ? <a className="doi-link" href={doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ?? undefined} target="_blank" rel="noreferrer">{selectedRecord.doi_verified || selectedRecord.doi_raw}<ExternalLink size={11}/></a> : <p className="doi-line">Source identifier pending</p>}</section>
           <MeasurementNotes record={selectedRecord} properties={properties} axes={[xKey, yKey]}/>
           <section className="detail-section"><div className="rail-heading">Measurement conditions</div><dl className="detail-table"><div><dt>Temperature</dt><dd>{selectedRecord.condition_temperature_C !== null ? `${selectedRecord.condition_temperature_C} °C` : "-"}</dd></div><div><dt>Atmosphere</dt><dd>{selectedRecord.condition_atmosphere || "-"}</dd></div><div><dt>Method</dt><dd>{selectedRecord.measurement_method || "-"}</dd></div><div><dt>Gauge length</dt><dd>{selectedRecord.gauge_length_mm !== null ? `${selectedRecord.gauge_length_mm} mm` : "-"}</dd></div><div><dt>Strain rate</dt><dd>{selectedRecord.strain_rate_s_inv !== null ? `${selectedRecord.strain_rate_s_inv} s⁻¹` : "-"}</dd></div></dl></section>
           {lowDensityBasis ? <section className="detail-section"><div className="rail-heading">Comparison note</div><p className="caveat-text">Specific properties are mass-normalized. This low-density porous fiber may rank highly while retaining a substantial volumetric-performance penalty.</p></section> : null}
           <section className="detail-section"><div className="rail-heading">Citation</div><p className="citation-preview">{selectedCitation}</p><button className="citation-button" onClick={() => setCitationOpen(true)}><Quote size={14}/>Open citation tool</button></section></> : null}
-        </aside>
+        </aside> : null}
       </div>
 
       <footer className="atlas-footer">Designed by Boies Group, Stanford University</footer>
 
-      {citationOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="citation-dialog-title"><div className="citation-card citation-card-wide"><div className="citation-card-header"><div><p className="plot-kicker">Citation tool</p><h2 id="citation-dialog-title">Citations for the current figure</h2></div><button className="icon-button" aria-label="Close citation tool" onClick={() => setCitationOpen(false)}><X/></button></div><div className="citation-list"><section><div className="rail-heading">Active citation set</div><p>{figure?.point_count ?? 0} plotted representative records. Copying returns one unified citation list.</p><button className="copy-button" onClick={copyCitations}>{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? "Copied" : "Copy all citations"}</button></section><section><div className="rail-heading">Publications</div><ol className="citation-source-list">{figure?.citations.entries.filter((entry) => !entry.roles.includes("atlas")).map((entry) => <li key={entry.citation_id}>{entry.text}</li>)}</ol></section><section><div className="rail-heading">Carbon Property Tables</div><p>{formatAtlasCitation()}</p></section><section className="bibtex-section"><div className="rail-heading">BibTeX</div><pre>{figure?.citations.bibtex || formatAtlasBibtex()}</pre></section></div></div></div> : null}
+      {citationOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="citation-dialog-title"><div className="citation-card citation-card-wide"><div className="citation-card-header"><div><p className="plot-kicker">Citation tool</p><h2 id="citation-dialog-title">Citations for the current figure</h2></div><button className="icon-button" aria-label="Close citation tool" onClick={() => setCitationOpen(false)}><X/></button></div><div className="citation-list"><section><div className="rail-heading">Active citation set</div><p>{figure?.point_count ?? 0} plotted representative records. Copying returns one unified citation list.</p><button className="copy-button" onClick={copyCitations}>{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? "Copied" : "Copy all citations"}</button></section><section><div className="rail-heading">Publications</div><ol className="citation-source-list">{figure?.citations.entries.filter((entry) => !entry.roles.includes("atlas")).map((entry) => <li key={entry.citation_id}>{entry.text}</li>)}</ol></section><section><div className="rail-heading">iCPM</div><p>{formatAtlasCitation()}</p></section><section className="bibtex-section"><div className="rail-heading">BibTeX</div><pre>{figure?.citations.bibtex || formatAtlasBibtex()}</pre></section></div></div></div> : null}
 
       {exportOpen ? <div className="citation-modal" role="dialog" aria-modal="true" aria-labelledby="export-dialog-title"><div className="citation-card export-card"><div className="citation-card-header"><div><p className="plot-kicker">Figure export</p><h2 id="export-dialog-title">Download figure and citations</h2></div><button className="icon-button" aria-label="Close export" onClick={() => setExportOpen(false)}><X/></button></div><div className="export-list"><button className="export-option export-option-bundle" aria-label="Download all four figures" disabled={Boolean(exporting)} onClick={requestFigureSet}><Archive/><span><strong>All four plot types</strong><small>ZIP with Scatter, Highest reported, Trend, and Ashby as SVG and PDF files, plus citations.</small></span></button><button className="export-option" aria-label="Download SVG" disabled={Boolean(exporting)} onClick={() => requestExport("svg")}><FileText/><span><strong>SVG</strong><small>Editable vector artwork with publication legend; no selection halo or watermark.</small></span></button><button className="export-option" aria-label="Download PDF" disabled={Boolean(exporting)} onClick={() => requestExport("pdf")}><FileText/><span><strong>PDF</strong><small>Publication-ready page with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download PNG" disabled={Boolean(exporting)} onClick={() => requestExport("png")}><ImageIcon/><span><strong>PNG</strong><small>High-resolution raster output with bundled citation sidecar.</small></span></button><button className="export-option" aria-label="Download top 10 table" disabled={Boolean(exporting)} onClick={() => requestExport("csv")}><Download/><span><strong>Top 10 table</strong><small>Capped high-performance rows only; the full canonical table is not exported.</small></span></button></div></div></div> : null}
 

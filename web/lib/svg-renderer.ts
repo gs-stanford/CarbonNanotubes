@@ -747,16 +747,16 @@ function documentShell(
   kind: FigureKind
 ): string {
   const watermark = interactive
-    ? `<text class="plot-watermark" x="${WIDTH - margin.right - 4}" y="${HEIGHT - margin.bottom - 12}" text-anchor="end" fill="#69706a" opacity="0.22" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="700">Carbon Property Tables · cite original sources</text>`
+    ? `<text class="plot-watermark" x="${WIDTH - margin.right - 4}" y="${HEIGHT - margin.bottom - 12}" text-anchor="end" fill="#69706a" opacity="0.22" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="700">iCPM · cite original sources</text>`
     : "";
   const metadataPayload = JSON.stringify({
-    producer: "Carbon Property Tables",
+    producer: "Interactive Carbon Property Matrix (iCPM)",
     release_id: metadata.releaseId,
     source_hash: metadata.sourceHash,
-    citation_policy: "Cite original sources and Carbon Property Tables"
+    citation_policy: "Cite original sources and iCPM"
   });
   const modeClass = interactive ? "is-interactive" : "is-export";
-  return `${interactive ? "" : '<?xml version="1.0" encoding="UTF-8"?>\n'}<svg class="plot-svg plot-${kind} ${modeClass}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}"><title>${xml(title)}</title><desc>Release ${xml(metadata.releaseId)}. Cite the supplied original sources and Carbon Property Tables.</desc><metadata>${xml(metadataPayload)}</metadata><defs><style>${FIGURE_SVG_CSS}</style><clipPath id="plot-clip"><rect x="${margin.left}" y="${margin.top}" width="${WIDTH - margin.right - margin.left}" height="${HEIGHT - margin.bottom - margin.top}"/></clipPath></defs><rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>${body}${watermark}</svg>`;
+  return `${interactive ? "" : '<?xml version="1.0" encoding="UTF-8"?>\n'}<svg class="plot-svg plot-${kind} ${modeClass}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}"><title>${xml(title)}</title><desc>Release ${xml(metadata.releaseId)}. Cite the supplied original sources and iCPM.</desc><metadata>${xml(metadataPayload)}</metadata><defs><style>${FIGURE_SVG_CSS}</style><clipPath id="plot-clip"><rect x="${margin.left}" y="${margin.top}" width="${WIDTH - margin.right - margin.left}" height="${HEIGHT - margin.bottom - margin.top}"/></clipPath></defs><rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff"/>${body}${watermark}</svg>`;
 }
 
 function renderScatter(options: SvgFigureOptions): string {

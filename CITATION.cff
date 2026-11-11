@@ -1,21 +1,21 @@
 cff-version: 1.2.0
-message: "If you use Carbon Property Tables, cite this software/data resource and every original publication represented in the figure or table you use."
-title: "Carbon Property Tables"
+message: "If you use iCPM, cite this software/data resource and every original publication represented in the figure or table you use."
+title: "Interactive Carbon Property Matrix (iCPM)"
 type: software
-version: "0.1"
-date-released: 2026-08-26
+version: "1.0"
 authors:
   - family-names: Sharma
     given-names: Gaurav
   - family-names: Boies
     given-names: Adam M.
 repository-code: "https://github.com/gs-stanford/CarbonNanotubes"
-url: "https://carbonnanotubes.onrender.com"
+url: "https://icpmatrix.com"
 abstract: "A citation-preserving database, comparison-figure service, and Python client for reported carbon-material properties."
 preferred-citation:
   type: software
-  title: "Carbon Property Tables"
-  version: "0.1"
+  title: "Interactive Carbon Property Matrix (iCPM)"
+  version: "1.0"
+  url: "https://icpmatrix.com"
   year: 2026
   authors:
     - family-names: Sharma

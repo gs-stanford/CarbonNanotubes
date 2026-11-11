@@ -1,0 +1,194 @@
+.shell {
+  --page: #f5f6f7;
+  --rail: #f7f8f9;
+  --paper: #fff;
+  --ink: #24282b;
+  --muted: #656e73;
+  --subtle: #747c82;
+  --rule: #e5e8ea;
+  --rule-strong: #ccd2d6;
+  --accent: #087d79;
+  --focus: #087d79;
+  --font-sans: "Source Sans 3", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  height: 100dvh;
+  min-height: 640px;
+  grid-template-rows: 84px minmax(0, 1fr) 32px;
+}
+.shell :global(.atlas-header) { padding: 0 28px; gap: 22px; }
+.brandHeading { margin: 0; flex: 0 0 auto; }
+.shell :global(.header-nav) { gap: 20px; font-size: 15px; }
+.shell :global(.header-nav button), .shell :global(.header-nav a) { gap: 7px; min-height: 38px; }
+.shell :global(.header-actions) { gap: 10px; font-size: 15px; }
+.shell :global(.header-action-link) { min-height: 38px; padding: 0 12px; border-radius: 6px; font-weight: 500; }
+.shell :global(.header-action-link:hover) { background: #f0f3f4; }
+.shell :global(.header-action-primary) { background: #252d30; color: white; padding: 0 16px; }
+.shell :global(.header-action-primary:hover) { background: #087d79; color: white; }
+.shell :global(.header-action-primary span) { border: 0; }
+.shell :global(.header-action-primary svg) { color: inherit; }
+.shell :global(.atlas-workspace) { grid-template-columns: 272px minmax(0, 1fr) 320px; overflow: hidden; }
+.shell :global(.atlas-workspace).plotExpanded { grid-template-columns: 272px minmax(0, 1fr); }
+.plotExpanded :global(.selected-halo) { display: none; }
+.plotExpanded :global(.plot-point.is-selected):not(:hover):not(:focus-visible) { stroke-width: 1.2; }
+.shell :global(.control-rail), .shell :global(.detail-rail), .shell :global(.plot-panel) { scrollbar-width: thin; scrollbar-color: #cbd2d5 transparent; }
+.shell :global(.control-rail) { padding-bottom: 16px; }
+.shell :global(.detail-rail) { background: #fff; }
+.railTitle { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 18px 4px; font-size: 15px; font-weight: 600; }
+.railTitle > span { display: inline-flex; align-items: center; gap: 8px; }
+.railTitle svg { color: var(--muted); }
+.shell :global(.rail-section) { padding: 18px; border-bottom: 1px solid var(--rule); }
+.shell :global(.rail-heading) { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 600; color: #343c40; margin-bottom: 13px; }
+.shell :global(.field-label) { font-size: 14px; font-weight: 400; }
+.shell :global(select), .shell :global(input[type="number"]), .shell :global(input[type="text"]), .shell :global(textarea), .shell :global(input:not([type])) {
+  border: 1px solid var(--rule-strong); border-radius: 5px; min-height: 40px; padding: 8px; font-family: inherit; font-size: 14px; background: #fff; color: var(--ink); max-width: 100%;
+}
+.shell :global(select) { text-overflow: ellipsis; }
+.shell :global(select:hover), .shell :global(input:hover) { border-color: #a1adb2; }
+.shell :global(.unit-hint) { font-size: 13px; margin-top: 6px; }
+.shell :global(.scale-row) { display: flex; width: fit-content; padding: 3px; gap: 2px; background: #e9edef; border: 0; border-radius: 5px; margin-top: 10px; }
+.shell :global(.segmented) { min-height: 30px; min-width: 64px; border: 0; border-radius: 3px; padding: 4px 12px; font-size: 13px; background: transparent; color: var(--muted); box-shadow: none; }
+.shell :global(.segmented.is-active) { background: #fff; color: #145e5b; font-weight: 600; box-shadow: 0 1px 3px #202b3014; }
+.shell :global(.segmented:disabled) { cursor: default; opacity: 0.65; }
+.shell :global(.swap-button) { margin: 12px 0 10px auto; width: 29px; height: 29px; border-color: var(--rule); border-radius: 5px; background: #fff; }
+.shell :global(.axis-section) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px 4px; }
+.shell :global(.axis-section .rail-heading), .shell :global(.axis-section .field-label), .shell :global(.axis-section select), .shell :global(.axis-section .swap-button) { grid-column: 1 / -1; }
+.shell :global(.axis-section .field-label) { margin: 0; }
+.shell :global(.axis-section .unit-hint) { align-self: center; margin: 0; }
+.shell :global(.axis-section .scale-row) { grid-column: 2; margin: 0; }
+.shell :global(.axis-section .segmented) { min-width: 40px; padding: 4px 8px; }
+.shell :global(.axis-section .swap-button) { margin: 3px 0 3px auto; }
+.shell :global(.icon-button) { border-color: transparent; width: 30px; height: 30px; border-radius: 5px; }
+.shell :global(.icon-button:hover) { background: #e8edef; border-color: transparent; }
+.shell :global(button:disabled) { cursor: not-allowed; opacity: 0.5; }
+.shell :global(.check-row) { min-height: 32px; gap: 7px; font-size: 14px; margin: 2px 0; padding: 4px 0; }
+.shell :global(.check-row input), .shell :global(.figure-option-row input) { accent-color: var(--accent); width: 16px; height: 16px; }
+.shell :global(.check-row .count) { font-size: 13px; color: var(--subtle); font-variant-numeric: tabular-nums; }
+.shell :global(.material-swatch), .shell :global(.shape-swatch) { width: 9px; height: 9px; }
+.shell :global(.figure-option-row) { font-size: 14px; align-items: center; margin-top: 0; }
+.shell :global(.figure-option-row input) { margin: 0; }
+.shell :global(.requirement-input) { grid-template-columns: minmax(60px, 1fr) minmax(0, 1fr) 28px; }
+.shell :global(.requirement-result) { padding-left: 10px; border-left: 2px solid var(--accent); line-height: 1.5; }
+.shell :global(.plot-panel) { min-width: 0; overflow: auto; display: block; background: white; }
+.shell :global(.plot-title-row) { display: flex; flex-direction: column; align-items: stretch; gap: 20px; min-height: 0; padding: 22px 26px 0; }
+.shell :global(.plot-search-bar) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; width: 100%; margin: 0; }
+.shell :global(.search-input-shell) { flex: 1 1 240px; min-width: 0; min-height: 40px; border-radius: 6px; border: 1px solid var(--rule); padding: 0 12px; background: #f6f8f9; }
+.shell :global(.search-input-shell input[type="search"]) { font-family: inherit; font-size: 15px; background: transparent; padding: 9px 0; min-height: 40px; outline: 0; }
+.shell :global(.search-input-shell svg) { color: #6b777d; }
+.shell :global(.search-input-shell:focus-within) { outline: 2px solid #087d7930; border-color: var(--accent); outline-offset: 1px; }
+.shell :global(.database-totals) { margin: 0; display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 14px; font-size: 13px; }
+.shell :global(.database-totals span) { white-space: nowrap; }
+.shell :global(.database-totals strong) { font-weight: 600; }
+.shell :global(.plot-search-status) { flex-basis: 100%; text-align: left; font-size: 13px; }
+.shell :global(.plot-heading) { min-width: 0; }
+.shell :global(.plot-heading h2) { font-size: 22px; font-weight: 600; line-height: 1.35; max-width: none; text-wrap: balance; overflow-wrap: anywhere; }
+.shell :global(.plot-toolbar) { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.shell :global(.plot-type-tabs) { display: flex; border: 0; border-radius: 0; background: transparent; overflow: visible; gap: 8px; padding-bottom: 12px; }
+.shell :global(.plot-type-tabs .mode-button) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; min-width: 0; padding: 7px 12px; border: 1px solid transparent; border-radius: 5px; background: var(--tab-tint); font-size: 15px; font-weight: 500; box-shadow: none; white-space: nowrap; color: var(--tab-color); }
+.shell :global(.mode-button[data-kind="scatter"]) { --tab-color: #12689a; --tab-tint: #edf5fb; }
+.shell :global(.mode-button[data-kind="ranked"]) { --tab-color: #8a511a; --tab-tint: #fcf3e7; }
+.shell :global(.mode-button[data-kind="trend"]) { --tab-color: #127165; --tab-tint: #eaf5f0; }
+.shell :global(.mode-button[data-kind="ashby"]) { --tab-color: #7e4f78; --tab-tint: #f6eef5; }
+.shell :global(.plot-type-tabs .mode-button.is-active) { background: var(--tab-color); color: white; border-color: var(--tab-color); font-weight: 600; }
+.shell :global(.plot-type-tabs .mode-button:hover) { border-color: var(--tab-color); }
+.shell :global(.plot-type-tabs svg) { flex-shrink: 0; }
+.plotCount { font-size: 13px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.shell :global(.bounded-figure) { margin: 0; padding: 18px 16px 8px; min-height: 320px; }
+.shell :global(.server-figure-svg > svg) { min-height: 0; width: 100%; height: auto; max-height: calc(100dvh - 390px); display: block; }
+.shell .plotExpanded :global(.server-figure-svg > svg) { max-height: none; }
+.shell :global(.figure-status) { background: #ffffffeb; color: var(--muted); border: 1px solid var(--rule); padding: 10px 16px; border-radius: 5px; font-size: 14px; }
+.figureFooter { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 0 26px 18px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); }
+.figureFooter p { margin: 0; }
+.shell .figureFooter :global(.figure-option-row) { width: auto; margin: 0; font-size: 14px; }
+.detailsHeader { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 0; font-size: 15px; font-weight: 600; grid-column: 1 / -1; }
+.shell :global(.detail-section) { padding: 20px; border-bottom: 1px solid var(--rule); border-right: 0; }
+.shell :global(.detail-section h3) { font-size: 18px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+.shell :global(.detail-meta) { font-size: 14px; line-height: 1.65; }
+.shell :global(.badge-line) { gap: 5px; margin-top: 12px; }
+.shell :global(.tier-badge) { border: 0; border-radius: 3px; background: #eff2f3; padding: 5px 7px; line-height: 1.3; font-size: 12px; }
+.shell :global(.tier-badge.primary) { background: #e8f3ef; color: #23664f; }
+.shell :global(.tier-badge.warning) { background: #fcf0e8; color: #93451e; }
+.shell :global(.metric-list) { border-top: 0; margin-top: 20px; }
+.shell :global(.metric-list div) { padding: 12px 0; gap: 12px; grid-template-columns: minmax(0, 1fr) auto; border-color: var(--rule); }
+.shell :global(.metric-list dt) { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 14px; line-height: 1.5; }
+.shell :global(.metric-list dd) { font-size: 15px; font-weight: 600; line-height: 1.5; max-width: 150px; overflow-wrap: anywhere; }
+.shell :global(.metric-list div:first-child dd), .shell :global(.metric-list div:nth-child(2) dd) { color: #126a65; }
+.shell :global(.source-title) { font-size: 14px; font-weight: 500; line-height: 1.6; }
+.shell :global(.detail-table) { font-size: 14px; }
+.shell :global(.detail-table div) { padding: 10px 0; }
+.shell :global(.detail-table dd) { overflow-wrap: anywhere; line-height: 1.6; }
+.shell :global(.citation-preview), .shell :global(.caveat-text) { font-size: 14px; line-height: 1.65; }
+.shell :global(.citation-button), .shell :global(.copy-button) { font-family: inherit; border-radius: 5px; font-size: 14px; padding: 9px 12px; }
+.shell :global(.atlas-footer) { padding: 6px 24px; font-size: 12px; line-height: 1.5; color: #747c80; background: #f7f8f9; border-top: 1px solid var(--rule); }
+.shell :global(.citation-modal) { background: #18222566; padding: 24px; }
+.shell :global(.citation-card) { border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 20px 80px #121c2529; }
+.shell :global(.citation-card-header) { padding: 22px 24px; }
+.shell :global(.citation-card-header h2) { font-size: 20px; line-height: 1.35; font-weight: 600; }
+.shell :global(.export-option) { font-family: inherit; border-radius: 6px; }
+.shell :global(.export-option strong) { font-weight: 600; }
+.shell :global(.export-option small) { line-height: 1.55; }
+.shell :global(.plot-kicker) { letter-spacing: 0; }
+.shell :global(button:focus-visible), .shell :global(a:focus-visible), .shell :global(input:focus-visible), .shell :global(select:focus-visible), .shell :global(textarea:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.shell :global(.search-input-shell input:focus-visible) { outline: 0; }
+.mobileControls { display: none; }
+
+@media (min-width: 1800px) {
+  .shell :global(.atlas-workspace) { grid-template-columns: 288px minmax(0, 1fr) 344px; }
+  .shell :global(.atlas-workspace).plotExpanded { grid-template-columns: 288px minmax(0, 1fr); }
+}
+@media (max-width: 1279px) {
+  .shell { height: auto; min-height: 100dvh; grid-template-rows: 84px 1fr auto; }
+  .shell :global(.atlas-workspace) { grid-template-columns: 272px minmax(0, 1fr); overflow: visible; }
+  .shell :global(.detail-rail) { grid-column: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-left: 0; }
+  .shell :global(.control-rail) { grid-row: 1 / span 2; }
+  .shell :global(.header-nav) { gap: 14px; }
+  .shell :global(.plot-toolbar) { flex-wrap: wrap; gap: 0; }
+  .shell :global(.server-figure-svg > svg) { max-height: none; }
+  .plotCount { margin-bottom: 10px; }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-rows: auto 1fr auto; }
+  .shell :global(.atlas-header) { flex-wrap: wrap; gap: 12px; padding: 16px 20px 0; align-items: center; }
+  .shell :global(.header-actions) { margin-left: auto; }
+  .shell :global(.header-nav) { order: 3; margin: 0; width: 100%; gap: 22px; padding-bottom: 6px; }
+  .shell :global(.atlas-workspace) { display: flex; flex-direction: column; }
+  .mobileControls { display: flex; order: 0; background: #f7f8f9; padding: 8px 20px; border-bottom: 1px solid var(--rule); }
+  .mobileControls button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; border: 0; padding: 0; background: transparent; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .shell :global(.control-rail) { display: none; order: 1; border: 0; border-bottom: 1px solid var(--rule); }
+  .shell :global(.control-rail).filtersOpen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .railTitle { grid-column: 1 / -1; }
+  .shell :global(.plot-panel) { order: 2; overflow: visible; }
+  .shell :global(.detail-rail) { order: 3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .shell :global(.plot-title-row) { padding: 20px 20px 0; }
+  .shell :global(.plot-toolbar) { width: 100%; }
+  .shell :global(.server-figure-svg > svg) { min-height: 0; }
+}
+@media (max-width: 560px) {
+  .shell :global(.atlas-header) { padding: 14px 16px 0; gap: 12px 4px; }
+  .shell :global(.header-actions) { gap: 4px; }
+  .shell :global(.header-action-link) { width: 36px; height: 36px; min-height: 36px; justify-content: center; padding: 0; }
+  .shell :global(.header-action-link span) { display: none; }
+  .shell :global(.header-nav) { font-size: 14px; }
+  .shell :global(.plot-title-row) { padding: 16px 16px 0; gap: 18px; }
+  .shell :global(.plot-heading h2) { font-size: 20px; text-wrap: initial; }
+  .shell :global(.plot-search-bar) { gap: 10px; }
+  .shell :global(.search-input-shell) { flex-basis: 100%; }
+  .shell :global(.search-input-shell input[type="search"]) { font-size: 16px; }
+  .shell :global(.plot-type-tabs) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 6px; padding-bottom: 0; }
+  .shell :global(.plot-type-tabs .mode-button) { font-size: 14px; gap: 6px; padding: 8px; }
+  .shell :global(.plot-type-tabs svg) { width: 16px; height: 16px; }
+  .plotCount { padding-top: 8px; margin-bottom: 8px; }
+  .shell :global(.bounded-figure) { padding: 10px 4px; min-height: 220px; }
+  .figureFooter { margin: 0 16px 20px; font-size: 14px; }
+  .shell .figureFooter :global(.figure-option-row) { font-size: 14px; }
+  .shell :global(select), .shell :global(input[type="number"]), .shell :global(input[type="text"]), .shell :global(textarea), .shell :global(input:not([type])) { font-size: 16px; }
+  .shell :global(.control-rail).filtersOpen, .shell :global(.detail-rail) { grid-template-columns: 1fr; }
+  .shell :global(.detail-section) { padding: 20px; }
+  .shell :global(.rail-section) { border-right: 0; }
+  .shell :global(.citation-modal) { padding: 10px; }
+  .shell :global(.citation-card-header) { padding: 18px; }
+  .shell :global(.citation-card-header h2) { font-size: 18px; }
+}
+@media (max-width: 360px) {
+  .shell :global(.plot-type-tabs) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

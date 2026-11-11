@@ -74,7 +74,7 @@ for paper in cpt.search("carbon nanotube", limit=5):
 for prop in cpt.properties():
     print(prop["key"], prop["display_unit"])`,
   rest: `curl --fail-with-body \\
-  https://carbonnanotubes.onrender.com/api/v1/figures \\
+  https://icpmatrix.com/api/v1/figures \\
   -H 'Content-Type: application/json' \\
   -d '{
     "kind": "scatter",
