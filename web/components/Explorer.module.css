@@ -18,15 +18,16 @@
 }
 .shell :global(.atlas-header) { padding: 0 28px; gap: 22px; }
 .brandHeading { margin: 0; flex: 0 0 auto; }
-.shell :global(.header-nav) { gap: 20px; font-size: 15px; }
+.shell :global(.header-nav) { gap: 20px; font-size: 15px; color: var(--brand-red); }
 .shell :global(.header-nav button), .shell :global(.header-nav a) { gap: 7px; min-height: 38px; }
-.shell :global(.header-actions) { gap: 10px; font-size: 15px; }
+.shell :global(.header-nav a:hover), .shell :global(.header-nav button:hover) { color: var(--brand-red-hover); }
+.shell :global(.header-actions) { gap: 10px; font-size: 15px; color: var(--brand-red); }
 .shell :global(.header-action-link) { min-height: 38px; padding: 0 12px; border-radius: 6px; font-weight: 500; }
-.shell :global(.header-action-link:hover) { background: #f0f3f4; }
-.shell :global(.header-action-primary) { background: #252d30; color: white; padding: 0 16px; }
-.shell :global(.header-action-primary:hover) { background: #087d79; color: white; }
+.shell :global(.header-action-link svg) { color: inherit; }
+.shell :global(.header-action-link:hover) { background: var(--brand-red-tint); color: var(--brand-red-hover); }
+.shell :global(.header-action-primary) { background: var(--brand-red); color: white; padding: 0 16px; }
+.shell :global(.header-action-primary:hover) { background: var(--brand-red-hover); color: white; }
 .shell :global(.header-action-primary span) { border: 0; }
-.shell :global(.header-action-primary svg) { color: inherit; }
 .shell :global(.atlas-workspace) { grid-template-columns: 272px minmax(0, 1fr) 320px; overflow: hidden; }
 .shell :global(.atlas-workspace).plotExpanded { grid-template-columns: 272px minmax(0, 1fr); }
 .plotExpanded :global(.selected-halo) { display: none; }
@@ -94,8 +95,7 @@
 .shell :global(.plot-type-tabs svg) { flex-shrink: 0; }
 .plotCount { font-size: 13px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .shell :global(.bounded-figure) { margin: 0; padding: 18px 16px 8px; min-height: 320px; }
-.shell :global(.server-figure-svg > svg) { min-height: 0; width: 100%; height: auto; max-height: calc(100dvh - 390px); display: block; }
-.shell .plotExpanded :global(.server-figure-svg > svg) { max-height: none; }
+.shell :global(.server-figure-svg > svg) { min-height: 0; width: 100%; height: auto; display: block; }
 .shell :global(.figure-status) { background: #ffffffeb; color: var(--muted); border: 1px solid var(--rule); padding: 10px 16px; border-radius: 5px; font-size: 14px; }
 .figureActions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; font-size: 14px; color: var(--muted); }
 .shell .figureActions p { margin: 0; font-size: 14px; line-height: 1.4; }
@@ -119,7 +119,7 @@
 .shell :global(.detail-table dd) { overflow-wrap: anywhere; line-height: 1.6; }
 .shell :global(.citation-preview), .shell :global(.caveat-text) { font-size: 14px; line-height: 1.65; }
 .shell :global(.citation-button), .shell :global(.copy-button) { font-family: inherit; border-radius: 5px; font-size: 14px; padding: 9px 12px; }
-.shell :global(.atlas-footer) { padding: 6px 24px; font-size: 12px; line-height: 1.5; color: #747c80; background: #f7f8f9; border-top: 1px solid var(--rule); }
+.shell :global(.atlas-footer) { min-height: 32px; padding: 6px 24px; font-size: 12px; line-height: 1.5; color: white; background: var(--brand-red); border-top: 1px solid var(--brand-red); }
 .shell :global(.citation-modal) { background: #18222566; padding: 24px; }
 .shell :global(.citation-card) { border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 20px 80px #121c2529; }
 .shell :global(.citation-card-header) { padding: 22px 24px; }
@@ -129,8 +129,19 @@
 .shell :global(.export-option small) { line-height: 1.55; }
 .shell :global(.plot-kicker) { letter-spacing: 0; }
 .shell :global(button:focus-visible), .shell :global(a:focus-visible), .shell :global(input:focus-visible), .shell :global(select:focus-visible), .shell :global(textarea:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.shell :global(.atlas-header a:focus-visible), .shell :global(.atlas-header button:focus-visible) { outline-color: var(--brand-red); }
+.shell :global(.header-nav a:focus-visible), .shell :global(.header-nav button:focus-visible), .shell :global(.header-action-link:focus-visible) { color: var(--brand-red-hover); }
+.shell :global(.header-action-primary:focus-visible) { color: white; background: var(--brand-red-hover); }
 .shell :global(.search-input-shell input:focus-visible) { outline: 0; }
 .mobileControls { display: none; }
+
+@media (min-width: 901px) {
+  .shell :global(.plot-panel) { display: flex; flex-direction: column; height: max(524px, calc(100dvh - 116px)); min-height: 0; }
+  .shell :global(.plot-title-row), .shell :global(.plot-search-results) { flex: 0 0 auto; }
+  .shell :global(.bounded-figure) { flex: 1 1 0; min-height: 260px; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
+  .shell :global(.server-figure-svg) { height: 100%; min-height: 0; }
+  .shell :global(.server-figure-svg > svg) { height: 100%; max-height: none; }
+}
 
 @media (min-width: 1800px) {
   .shell :global(.atlas-workspace) { grid-template-columns: 288px minmax(0, 1fr) 344px; }
