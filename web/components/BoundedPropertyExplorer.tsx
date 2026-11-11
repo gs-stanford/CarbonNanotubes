@@ -627,7 +627,13 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
         <section className="plot-panel" aria-label="Property plot">
           <div className="plot-title-row">
             <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={17}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search publications, authors or DOI" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={15}/></button> : null}</div><p className="database-totals" aria-label="Published database totals"><span><strong>{databaseTotals.records.toLocaleString("en-US")}</strong> records</span><span><strong>{databaseTotals.publications.toLocaleString("en-US")}</strong> publications</span></p>{searching || searchQuery.trim() ? <p className="plot-search-status" role="status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
-            <div className="plot-heading"><h2>{figureTitle}</h2></div>
+            <div className="plot-heading">
+              <h2>{figureTitle}</h2>
+              <div className={styles.figureActions}>
+                <p>Click an individual point for details.</p>
+                <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
+              </div>
+            </div>
             <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist" aria-label="Figure type">{PLOT_TYPES.map((item, index) => <button key={item.key} data-kind={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-controls="property-figure" tabIndex={plotType === item.key ? 0 : -1} aria-selected={plotType === item.key} onKeyDown={(event) => {
               const next = event.key === "ArrowRight" ? (index + 1) % PLOT_TYPES.length : event.key === "ArrowLeft" ? (index + PLOT_TYPES.length - 1) % PLOT_TYPES.length : event.key === "Home" ? 0 : event.key === "End" ? PLOT_TYPES.length - 1 : null;
               if (next === null) return;
@@ -647,10 +653,6 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
             {loading ? <div className="figure-status">Rendering figure…</div> : null}
             {figureError ? <div className="figure-error">{figureError}</div> : null}
           </figure>
-          <div className={styles.figureFooter}>
-            <p>Click an individual point for details.</p>
-            <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
-          </div>
         </section>
 
         {selectedId ? <aside id="point-details" className="detail-rail" aria-label="Focused record">

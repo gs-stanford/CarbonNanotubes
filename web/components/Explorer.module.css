@@ -80,8 +80,8 @@
 .shell :global(.database-totals span) { white-space: nowrap; }
 .shell :global(.database-totals strong) { font-weight: 600; }
 .shell :global(.plot-search-status) { flex-basis: 100%; text-align: left; font-size: 13px; }
-.shell :global(.plot-heading) { min-width: 0; }
-.shell :global(.plot-heading h2) { font-size: 22px; font-weight: 600; line-height: 1.35; max-width: none; text-wrap: balance; overflow-wrap: anywhere; }
+.shell :global(.plot-heading) { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
+.shell :global(.plot-heading h2) { flex: 1 1 480px; min-width: 0; font-size: 22px; font-weight: 600; line-height: 1.35; max-width: none; overflow-wrap: anywhere; }
 .shell :global(.plot-toolbar) { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .shell :global(.plot-type-tabs) { display: flex; border: 0; border-radius: 0; background: transparent; overflow: visible; gap: 8px; padding-bottom: 12px; }
 .shell :global(.plot-type-tabs .mode-button) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; min-width: 0; padding: 7px 12px; border: 1px solid transparent; border-radius: 5px; background: var(--tab-tint); font-size: 15px; font-weight: 500; box-shadow: none; white-space: nowrap; color: var(--tab-color); }
@@ -97,9 +97,9 @@
 .shell :global(.server-figure-svg > svg) { min-height: 0; width: 100%; height: auto; max-height: calc(100dvh - 390px); display: block; }
 .shell .plotExpanded :global(.server-figure-svg > svg) { max-height: none; }
 .shell :global(.figure-status) { background: #ffffffeb; color: var(--muted); border: 1px solid var(--rule); padding: 10px 16px; border-radius: 5px; font-size: 14px; }
-.figureFooter { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 0 26px 18px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--muted); }
-.figureFooter p { margin: 0; }
-.shell .figureFooter :global(.figure-option-row) { width: auto; margin: 0; font-size: 14px; }
+.figureActions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; font-size: 14px; color: var(--muted); }
+.shell .figureActions p { margin: 0; font-size: 14px; line-height: 1.4; }
+.shell .figureActions :global(.figure-option-row) { width: auto; margin: 0; font-size: 14px; }
 .detailsHeader { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 0; font-size: 15px; font-weight: 600; grid-column: 1 / -1; }
 .shell :global(.detail-section) { padding: 20px; border-bottom: 1px solid var(--rule); border-right: 0; }
 .shell :global(.detail-section h3) { font-size: 18px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
@@ -179,8 +179,7 @@
   .shell :global(.plot-type-tabs svg) { width: 16px; height: 16px; }
   .plotCount { padding-top: 8px; margin-bottom: 8px; }
   .shell :global(.bounded-figure) { padding: 10px 4px; min-height: 220px; }
-  .figureFooter { margin: 0 16px 20px; font-size: 14px; }
-  .shell .figureFooter :global(.figure-option-row) { font-size: 14px; }
+  .figureActions { width: 100%; margin: 0; align-items: flex-start; }
   .shell :global(select), .shell :global(input[type="number"]), .shell :global(input[type="text"]), .shell :global(textarea), .shell :global(input:not([type])) { font-size: 16px; }
   .shell :global(.control-rail).filtersOpen, .shell :global(.detail-rail) { grid-template-columns: 1fr; }
   .shell :global(.detail-section) { padding: 20px; }
