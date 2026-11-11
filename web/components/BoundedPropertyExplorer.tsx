@@ -231,7 +231,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     if (selectedId && window.matchMedia("(max-width: 1279px)").matches) {
       document.getElementById("point-details")?.scrollIntoView({ block: "start" });
     }
-  }, [selectedId]);
+  }, [selectedId, selection.record]);
 
   useEffect(() => {
     if (!citationOpen && !exportOpen && !submitOpen) return;
