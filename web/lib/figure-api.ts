@@ -30,6 +30,14 @@ export type FigureRequest = {
   comparison_grades?: ComparabilityGrade[];
   minimum_x?: number;
   show_callouts?: boolean;
+  interactive_details?: boolean;
+};
+
+export type FigureSelectionContext = { token: string; expires_at: string };
+export type FigureSelectionResponse = {
+  api_version: "v1";
+  release: ReleaseDescriptor;
+  record: PlotRecord;
 };
 
 export type FigureTopPoint = {
@@ -89,6 +97,7 @@ export type FigureResponse = {
   citations: CitationBundle;
   temporary_point: FigureTemporaryRank | null;
   selected_record: PlotRecord | null;
+  selection_context?: FigureSelectionContext;
   counts: FigureCounts;
   comparability: FigureComparability;
   requirement: {

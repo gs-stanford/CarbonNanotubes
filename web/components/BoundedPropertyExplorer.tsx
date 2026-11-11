@@ -3,12 +3,13 @@
 import { Archive, ArrowLeftRight, Check, Clipboard, Code2, Download, ExternalLink, FileText, Image as ImageIcon, Quote, RefreshCcw, Search, Send, SlidersHorizontal, ScatterChart, ListOrdered, TrendingUp, Layers, X } from "lucide-react";
 import Link from "next/link";
 import { strToU8, zipSync } from "fflate";
-import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, type KeyboardEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { formatAtlasBibtex, formatAtlasCitation, stripMarkup } from "@/lib/citations";
 import type { ExplorerBootstrap, FigureRequest, FigureResponse, FigureTopPoint } from "@/lib/figure-api";
 import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/data";
 import MeasurementNotes from "@/components/MeasurementNotes";
 import { Brand } from "@/components/Brand";
+import { useFigureSelection } from "@/components/useFigureSelection";
 import styles from "./Explorer.module.css";
 
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
@@ -209,6 +210,9 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
   const [showCallouts, setShowCallouts] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [figure, setFigure] = useState<FigureResponse | null>(null);
+  const [figureRevision, setFigureRevision] = useState(0);
+  const figureElement = useRef<HTMLDivElement>(null);
+  const selection = useFigureSelection(figure, selectedId);
   const [loading, setLoading] = useState(true);
   const [figureError, setFigureError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -307,7 +311,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     y: yKey,
     x_scale: xEffective,
     y_scale: yEffective,
-    selected_record_id: selectedId,
+    interactive_details: true,
     highlight_record_ids: highlightedIds,
     formats: ["svg"],
     top: 0,
@@ -315,7 +319,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     filters,
     minimum_x: isXy && REQUIREMENT_Y_PROPERTIES.has(yKey) ? numeric(minimumX) ?? undefined : undefined,
     show_callouts: showCallouts
-  }), [filters, highlightedIds, isXy, minimumX, plotType, selectedId, showCallouts, xEffective, xKey, yEffective, yKey]);
+  }), [filters, highlightedIds, isXy, minimumX, plotType, showCallouts, xEffective, xKey, yEffective, yKey]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -332,7 +336,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
         const payload = await response.json();
         if (!response.ok) throw new Error(payload?.error?.message || "Figure request failed.");
         setFigure(payload as FigureResponse);
-        if (selectedId && !payload.record_ids.includes(selectedId)) setSelectedId(null);
+        setSelectedId(current => current && !payload.record_ids.includes(current) ? null : current);
       } catch (error) {
         if (!controller.signal.aborted) setFigureError(error instanceof Error ? error.message : "Figure request failed.");
       } finally {
@@ -343,7 +347,34 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [requestBody]);
+  }, [requestBody, figureRevision]);
+
+  useEffect(() => {
+    const root = figureElement.current;
+    if (!root) return;
+    root.querySelectorAll(".selected-halo").forEach(element => element.remove());
+    root.querySelectorAll(".plot-point").forEach(element => {
+      element.classList.remove("is-selected");
+      element.setAttribute("aria-pressed", "false");
+    });
+    if (!selectedId) return;
+    const marker = root.querySelector<SVGGraphicsElement>(`[data-record-id="${CSS.escape(selectedId)}"]`);
+    if (!marker) return;
+    marker.classList.add("is-selected");
+    marker.setAttribute("aria-pressed", "true");
+    const box = marker.getBBox();
+    const halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    halo.setAttribute("class", "selected-halo");
+    halo.setAttribute("cx", String(box.x + box.width / 2));
+    halo.setAttribute("cy", String(box.y + box.height / 2));
+    halo.setAttribute("r", String(Math.max(box.width, box.height) / 2 + 5));
+    halo.setAttribute("fill", "none");
+    halo.setAttribute("stroke", "#126f6d");
+    halo.setAttribute("stroke-width", "1.8");
+    halo.setAttribute("pointer-events", "none");
+    halo.setAttribute("aria-hidden", "true");
+    marker.parentNode?.insertBefore(halo, marker);
+  }, [figure?.display_svg, selectedId]);
 
   useEffect(() => {
     const query = searchQuery.trim();
@@ -369,7 +400,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     };
   }, [searchQuery]);
 
-  const selectedRecord = selectedId && figure?.selected_record?.record_id === selectedId ? figure.selected_record : null;
+  const selectedRecord = selection.record;
   const counts = figure?.counts;
   const figureTitle = plotType === "trend"
     ? `${yMeta.label} by publication year`
@@ -427,7 +458,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
       const response = await fetch("/api/v1/figures", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...requestBody, highlight_record_ids: [], selected_record_id: null, formats: format === "csv" ? ["svg"] : [format], top: format === "csv" ? 10 : 0 })
+        body: JSON.stringify({ ...requestBody, interactive_details: false, highlight_record_ids: [], selected_record_id: null, formats: format === "csv" ? ["svg"] : [format], top: format === "csv" ? 10 : 0 })
       });
       const payload = await response.json() as FigureResponse & { error?: { message?: string } };
       if (!response.ok) throw new Error(payload.error?.message || "Export failed.");
@@ -453,6 +484,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...requestBody,
+            interactive_details: false,
             kind: key,
             minimum_x: key === "scatter" || key === "ashby" ? requestBody.minimum_x : undefined,
             x_scale: key === "ashby" ? "log" : xScale,
@@ -649,7 +681,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
           })}</div> : <p className="plot-search-empty">No publication matches this query.</p>}</div> : null}
 
           <figure id="property-figure" className="plot-figure bounded-figure" role="tabpanel" aria-label={figureTitle} aria-busy={loading} onClick={(event: MouseEvent<HTMLElement>) => selectFromSvg(event.target)} onKeyDown={(event: KeyboardEvent<HTMLElement>) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectFromSvg(event.target); } }}>
-            {figure?.display_svg ? <div className="server-figure-svg" dangerouslySetInnerHTML={{ __html: figure.display_svg }}/>: null}
+            {figure?.display_svg ? <div ref={figureElement} className="server-figure-svg" dangerouslySetInnerHTML={{ __html: figure.display_svg }}/>: null}
             {loading ? <div className="figure-status">Rendering figure…</div> : null}
             {figureError ? <div className="figure-error">{figureError}</div> : null}
           </figure>
@@ -657,7 +689,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
 
         {selectedId ? <aside id="point-details" className="detail-rail" aria-label="Focused record">
           <div className={styles.detailsHeader}><span>Selected point</span><button type="button" className="icon-button" aria-label="Close point details" title="Close point details" onClick={closePointDetails}><X size={16}/></button></div>
-          <section className="detail-section">{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <p className="detail-meta" role="status">{figureError ? "Point details could not be loaded." : "Loading point details..."}</p>}</section>
+          <section className="detail-section">{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <div role="status"><p className="detail-meta">{selection.error || "Loading point details..."}</p>{selection.error ? <button type="button" className="citation-button" disabled={loading} onClick={() => selection.expired ? setFigureRevision(value => value + 1) : selection.retry()}><RefreshCcw size={14}/>{selection.expired ? "Refresh figure details" : "Retry details"}</button> : null}</div>}</section>
           {selectedRecord ? <><section className="detail-section"><div className="rail-heading">Source</div><p className="source-title">{titleFor(selectedRecord)}</p><p className="detail-meta">{selectedRecord.publication_authors_short_verified || "Authors unavailable"}</p><p className="detail-meta">{[selectedRecord.publication_journal_verified, selectedRecord.publication_year_verified].filter(Boolean).join(" / ")}</p>{doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ? <a className="doi-link" href={doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ?? undefined} target="_blank" rel="noreferrer">{selectedRecord.doi_verified || selectedRecord.doi_raw}<ExternalLink size={11}/></a> : <p className="doi-line">Source identifier pending</p>}</section>
           <MeasurementNotes record={selectedRecord} properties={properties} axes={[xKey, yKey]}/>
           <section className="detail-section"><div className="rail-heading">Measurement conditions</div><dl className="detail-table"><div><dt>Temperature</dt><dd>{selectedRecord.condition_temperature_C !== null ? `${selectedRecord.condition_temperature_C} °C` : "-"}</dd></div><div><dt>Atmosphere</dt><dd>{selectedRecord.condition_atmosphere || "-"}</dd></div><div><dt>Method</dt><dd>{selectedRecord.measurement_method || "-"}</dd></div><div><dt>Gauge length</dt><dd>{selectedRecord.gauge_length_mm !== null ? `${selectedRecord.gauge_length_mm} mm` : "-"}</dd></div><div><dt>Strain rate</dt><dd>{selectedRecord.strain_rate_s_inv !== null ? `${selectedRecord.strain_rate_s_inv} s⁻¹` : "-"}</dd></div></dl></section>

@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const limited = enforceFigureRateLimit(request, Number(body?.top ?? 0) > 0);
     if (limited) return limited;
-    return publicJson(await buildFigureResponse(body));
+    const response = publicJson(await buildFigureResponse(body));
+    if (body?.interactive_details) response.headers.set("Cache-Control", "no-store");
+    return response;
   } catch (error) {
     if (error instanceof SyntaxError) return apiError(new ApiInputError("Request body must be valid JSON."));
     return apiError(error);

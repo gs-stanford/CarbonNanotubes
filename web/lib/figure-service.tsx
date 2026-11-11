@@ -23,6 +23,7 @@ import {
 import { pairedRequirementRecords, PERFORMANCE_PROPERTIES } from "@/lib/representative";
 import { getReleaseDescriptor, queryCanonicalRecords } from "@/lib/query-store";
 import { renderSvgFigure, type FigureReferenceLine } from "@/lib/svg-renderer";
+import { figureSelections } from "@/lib/figure-selection";
 import {
   figureComparability,
   type ComparabilityGrade,
@@ -171,6 +172,9 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
   if (body.show_callouts !== undefined && typeof body.show_callouts !== "boolean") {
     throw new ApiInputError("show_callouts must be a boolean.");
   }
+  if (body.interactive_details !== undefined && typeof body.interactive_details !== "boolean") {
+    throw new ApiInputError("interactive_details must be a boolean.");
+  }
   const minimumX = body.minimum_x;
   if (minimumX !== undefined && (typeof minimumX !== "number" || !Number.isFinite(minimumX) || minimumX < 0)) {
     throw new ApiInputError("minimum_x must be a finite nonnegative number in displayed x-axis units.");
@@ -245,7 +249,8 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
     formats,
     filters: body.filters ? objectValue(body.filters, "filters") : {},
     minimum_x: minimumX as number | undefined,
-    show_callouts: body.show_callouts !== false
+    show_callouts: body.show_callouts !== false,
+    interactive_details: body.interactive_details === true
   };
 }
 
@@ -463,6 +468,7 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
     citations,
     temporary_point: temporaryRank(records, request.temporary, request.x, request.y),
     selected_record: selected,
+    ...(request.interactive_details ? { selection_context: figureSelections.create(records, release) } : {}),
     counts: figureCounts(records),
     comparability,
     requirement: request.minimum_x === undefined ? null : {
