@@ -598,6 +598,14 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     <main className={`atlas-shell ${styles.shell}`}>
       <header className="atlas-header">
         <h1 className={styles.brandHeading}><Brand/></h1>
+        <div className={styles.headerSearch} role="search">
+          <div className="search-input-shell">
+            <Search size={17}/>
+            <input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search publications, authors or DOI" onChange={(event) => setSearchQuery(event.target.value)}/>
+            {searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={15}/></button> : null}
+          </div>
+          <p className="database-totals" aria-label="Published database totals"><span><strong>{databaseTotals.records.toLocaleString("en-US")}</strong> records</span><span><strong>{databaseTotals.publications.toLocaleString("en-US")}</strong> publications</span></p>
+        </div>
         <nav className="header-nav" aria-label="iCPM sections"><Link href="/api-guide"><Code2 size={16} aria-hidden="true"/>API guide</Link><button type="button" onClick={() => setCitationOpen(true)}><Quote size={15} aria-hidden="true"/>How to cite</button></nav>
         <div className="header-actions">
           <button className="header-action-link" type="button" aria-label="Submit data" title="Submit data" onClick={() => setSubmitOpen(true)}><Send size={16}/><span>Submit data</span></button>
@@ -658,7 +666,6 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
 
         <section className="plot-panel" aria-label="Property plot">
           <div className="plot-title-row">
-            <div className="plot-search-bar" role="search"><div className="search-input-shell"><Search size={17}/><input type="search" aria-label="Search records by DOI, author, title, or keyword" value={searchQuery} placeholder="Search publications, authors or DOI" onChange={(event) => setSearchQuery(event.target.value)}/>{searchQuery ? <button onClick={() => setSearchQuery("")} aria-label="Clear search"><X size={15}/></button> : null}</div><p className="database-totals" aria-label="Published database totals"><span><strong>{databaseTotals.records.toLocaleString("en-US")}</strong> records</span><span><strong>{databaseTotals.publications.toLocaleString("en-US")}</strong> publications</span></p>{searching || searchQuery.trim() ? <p className="plot-search-status" role="status">{searching ? "Searching…" : `${searchResults.length} publications found; ${visibleSearchCount} represented in the active plot.`}</p> : null}</div>
             <div className="plot-heading">
               <h2>{figureTitle}</h2>
               <div className={styles.figureActions}>
@@ -675,7 +682,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
             }} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}><item.icon size={15} aria-hidden="true"/>{item.label}</button>)}</div><span className={styles.plotCount} role="status">{loading ? "Updating..." : `${figure?.point_count ?? 0} plotted records`}</span></div>
           </div>
 
-          {searchQuery.trim() ? <div className="plot-search-results"><div className="plot-search-results-heading"><span>Search results</span><strong>{searchResults.length} publications / {visibleSearchCount} in active plot</strong></div>{searchResults.length ? <div className="plot-search-result-grid">{searchResults.map((result) => {
+          {searchQuery.trim() ? <div className="plot-search-results"><div className="plot-search-results-heading"><span>Search results</span><strong role="status">{searching ? "Searching…" : `${searchResults.length} publications / ${visibleSearchCount} in active plot`}</strong></div>{searchResults.length ? <div className="plot-search-result-grid">{searchResults.map((result) => {
             const visibleId = result.record_ids.find((id) => plottedIds.has(id));
             return <button key={result.key} className={visibleId ? "plot-search-result-card is-in-plot" : "plot-search-result-card is-out-of-plot"} disabled={!visibleId} onClick={() => visibleId && setSelectedId(visibleId)}><strong>{result.title || result.sample || result.doi || "Untitled publication"}</strong><span>{result.authors || "Unknown authors"} / {result.year ?? "n.d."}</span><small>{visibleId ? "highlight in figure" : "outside active figure"}{result.matched_rows > 1 ? ` / ${result.matched_rows} samples` : ""}</small></button>;
           })}</div> : <p className="plot-search-empty">No publication matches this query.</p>}</div> : null}
