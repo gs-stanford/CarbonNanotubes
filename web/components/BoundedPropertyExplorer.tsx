@@ -669,19 +669,16 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
               <h2>{figureTitle}</h2>
               <div className={styles.figureActions} role="group" aria-label="Figure controls">
                 <p>Click an individual point for details.</p>
-                <div className={styles.figureActionControls}>
-                  <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
-                  <button className={styles.figureDownload} type="button" aria-label="Download Figure" aria-haspopup="dialog" onClick={() => setExportOpen(true)}><Download size={17} aria-hidden="true"/><span>Download figure</span></button>
-                </div>
+                <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
               </div>
             </div>
-            <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist" aria-label="Figure type">{PLOT_TYPES.map((item, index) => <button key={item.key} data-kind={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-controls="property-figure" tabIndex={plotType === item.key ? 0 : -1} aria-selected={plotType === item.key} onKeyDown={(event) => {
+            <div className="plot-toolbar"><div className={styles.figureTypeControls} role="group" aria-label="Figure type and download"><div className="plot-type-tabs" role="tablist" aria-label="Figure type">{PLOT_TYPES.map((item, index) => <button key={item.key} data-kind={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-controls="property-figure" tabIndex={plotType === item.key ? 0 : -1} aria-selected={plotType === item.key} onKeyDown={(event) => {
               const next = event.key === "ArrowRight" ? (index + 1) % PLOT_TYPES.length : event.key === "ArrowLeft" ? (index + PLOT_TYPES.length - 1) % PLOT_TYPES.length : event.key === "Home" ? 0 : event.key === "End" ? PLOT_TYPES.length - 1 : null;
               if (next === null) return;
               event.preventDefault();
               const target = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("[role=tab]")[next];
               target?.focus(); target?.click();
-            }} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}><item.icon size={15} aria-hidden="true"/>{item.label}</button>)}</div><span className={styles.plotCount} role="status">{loading ? "Updating..." : `${figure?.point_count ?? 0} plotted records`}</span></div>
+            }} onClick={() => { setPlotType(item.key); if (item.key === "ashby") { setXScale("log"); setYScale("log"); } setSelectedId(null); }}><item.icon size={15} aria-hidden="true"/>{item.label}</button>)}</div><button className={styles.figureDownload} type="button" aria-label="Download Figure" aria-haspopup="dialog" onClick={() => setExportOpen(true)}><Download size={17} aria-hidden="true"/><span>Download figure</span></button></div><span className={styles.plotCount} role="status">{loading ? "Updating..." : `${figure?.point_count ?? 0} plotted records`}</span></div>
           </div>
 
           {searchQuery.trim() ? <div className="plot-search-results"><div className="plot-search-results-heading"><span>Search results</span><strong role="status">{searching ? "Searching…" : `${searchResults.length} publications / ${visibleSearchCount} in active plot`}</strong></div>{searchResults.length ? <div className="plot-search-result-grid">{searchResults.map((result) => {

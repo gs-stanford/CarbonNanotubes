@@ -15,12 +15,19 @@ try {
       await page.goto(base);
       await page.locator(".plot-point").first().waitFor();
       const button = page.getByRole("button", { name: "Download Figure", exact: true });
-      const controls = page.getByRole("group", { name: "Figure controls", exact: true });
+      const controls = page.getByRole("group", { name: "Figure type and download", exact: true });
       assert.equal(await button.count(), 1);
       assert.equal(await page.locator(".atlas-header").getByRole("button", { name: "Download Figure", exact: true }).count(), 0);
       assert.equal(await controls.getByRole("button", { name: "Download Figure", exact: true }).count(), 1);
-      assert.equal(await controls.getByRole("checkbox", { name: "Point callouts", exact: true }).count(), 1);
+      assert.equal(await page.getByRole("group", { name: "Figure controls", exact: true }).getByRole("checkbox", { name: "Point callouts", exact: true }).count(), 1);
+      assert.equal(await controls.getByRole("tab").count(), 4);
+      assert.equal(await controls.getByRole("tablist").getByRole("button", { name: "Download Figure", exact: true }).count(), 0);
       const buttonBox = await button.boundingBox();
+      const ashbyBox = await controls.getByRole("tab", { name: "Ashby", exact: true }).boundingBox();
+      if (viewport.width > 560) {
+        assert.ok(buttonBox.x > ashbyBox.x + ashbyBox.width, "Download belongs immediately after Ashby");
+        assert.ok(Math.abs(buttonBox.y - ashbyBox.y) < 2, "Download aligns with the figure tabs");
+      }
       const figureBox = await page.locator("#property-figure").boundingBox();
       assert.ok(buttonBox.y + buttonBox.height <= figureBox.y, "Download belongs above the figure");
       assert.ok(buttonBox.x >= 0 && buttonBox.x + buttonBox.width <= viewport.width, "Download must fit the viewport");
