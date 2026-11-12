@@ -609,7 +609,6 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
         <nav className="header-nav" aria-label="iCPM sections"><Link href="/api-guide"><Code2 size={16} aria-hidden="true"/>API guide</Link><button type="button" onClick={() => setCitationOpen(true)}><Quote size={15} aria-hidden="true"/>How to cite</button></nav>
         <div className="header-actions">
           <button className="header-action-link" type="button" aria-label="Submit data" title="Submit data" onClick={() => setSubmitOpen(true)}><Send size={16}/><span>Submit data</span></button>
-          <button className="header-action-link header-action-primary" type="button" aria-label="Download Figure" title="Download Figure" onClick={() => setExportOpen(true)}><Download size={17}/><span>Download figure</span></button>
         </div>
       </header>
 
@@ -668,9 +667,12 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
           <div className="plot-title-row">
             <div className="plot-heading">
               <h2>{figureTitle}</h2>
-              <div className={styles.figureActions}>
+              <div className={styles.figureActions} role="group" aria-label="Figure controls">
                 <p>Click an individual point for details.</p>
-                <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
+                <div className={styles.figureActionControls}>
+                  <label className="figure-option-row" title="Show source and metal labels in the figure and downloads"><input type="checkbox" checked={showCallouts} disabled={plotType === "ranked"} onChange={(event) => setShowCallouts(event.target.checked)}/><span>Point callouts</span></label>
+                  <button className={styles.figureDownload} type="button" aria-label="Download Figure" aria-haspopup="dialog" onClick={() => setExportOpen(true)}><Download size={17} aria-hidden="true"/><span>Download figure</span></button>
+                </div>
               </div>
             </div>
             <div className="plot-toolbar"><div className="plot-type-tabs" role="tablist" aria-label="Figure type">{PLOT_TYPES.map((item, index) => <button key={item.key} data-kind={item.key} className={plotType === item.key ? "mode-button is-active" : "mode-button"} role="tab" aria-controls="property-figure" tabIndex={plotType === item.key ? 0 : -1} aria-selected={plotType === item.key} onKeyDown={(event) => {

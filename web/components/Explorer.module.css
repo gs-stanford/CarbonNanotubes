@@ -99,9 +99,14 @@
 .shell :global(.bounded-figure) { margin: 0; padding: 10px 16px 8px; min-height: 320px; }
 .shell :global(.server-figure-svg > svg) { min-height: 0; width: 100%; height: auto; display: block; }
 .shell :global(.figure-status) { background: #ffffffeb; color: var(--muted); border: 1px solid var(--rule); padding: 10px 16px; border-radius: 5px; font-size: 14px; }
-.figureActions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; font-size: 14px; color: var(--muted); }
+.figureActions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; max-width: 100%; font-size: 14px; color: var(--muted); }
 .shell .figureActions p { margin: 0; font-size: 14px; line-height: 1.4; }
 .shell .figureActions :global(.figure-option-row) { width: auto; margin: 0; font-size: 14px; }
+.figureActionControls { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 16px; }
+.figureDownload { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 8px 12px; border: 1px solid transparent; border-radius: 6px; background: var(--brand-red); color: white; font-family: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.figureDownload:hover { background: var(--brand-red-hover); }
+.shell .figureDownload:focus-visible { outline-color: var(--brand-red); }
+.figureDownload svg { flex: 0 0 auto; }
 .detailsHeader { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 0; font-size: 15px; font-weight: 600; grid-column: 1 / -1; }
 .shell :global(.detail-section) { padding: 20px; border-bottom: 1px solid var(--rule); border-right: 0; }
 .shell :global(.detail-section h3) { font-size: 18px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
@@ -211,6 +216,7 @@
   .plotCount { padding-top: 8px; margin-bottom: 8px; }
   .shell :global(.bounded-figure) { padding: 10px 4px; min-height: 220px; }
   .figureActions { width: 100%; margin: 0; align-items: flex-start; }
+  .figureActionControls { justify-content: flex-start; }
   .shell :global(select), .shell :global(input[type="number"]), .shell :global(input[type="text"]), .shell :global(textarea), .shell :global(input:not([type])) { font-size: 16px; }
   .shell :global(.control-rail).filtersOpen, .shell :global(.detail-rail) { grid-template-columns: 1fr; }
   .shell :global(.detail-section) { padding: 20px; }
