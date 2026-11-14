@@ -4,7 +4,7 @@ import { unzipSync } from "fflate";
 import { chromium } from "playwright-core";
 
 const outDir = path.resolve("qa");
-const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const chromePath = process.env.CPT_CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const target = process.env.QA_URL ?? "http://localhost:3000";
 
 await fs.mkdir(outDir, { recursive: true });
@@ -64,11 +64,10 @@ const viewBoxHeight = viewBoxMatch ? Number(viewBoxMatch[1].trim().split(/\s+/)[
 if (viewBoxHeight !== 576) {
   throw new Error(`Exported SVG did not use the compact publication canvas: ${viewBoxMatch?.[1] ?? "missing"}.`);
 }
-const plotAreaY = Number(exportedSvg.match(/<rect class="plot-area"[^>]* y="([^"]+)"/)?.[1]);
-const legendTextYs = [...exportedSvg.matchAll(/<text class="export-legend-text"[^>]* y="([^"]+)"/g)].map((match) => Number(match[1]));
-const legendGap = plotAreaY - Math.max(...legendTextYs);
-if (!Number.isFinite(legendGap) || legendGap < 8 || legendGap > 36) {
-  throw new Error(`Export legend gap is outside the compact layout target: ${legendGap}.`);
+const plot = exportedSvg.match(/<rect class="plot-area"[^>]* x="([^"]+)"[^>]* y="([^"]+)"[^>]* width="([^"]+)"[^>]* height="([^"]+)"/);
+const legend = exportedSvg.match(/data-legend-box="([^"]+)"/)?.[1].split(",").map(Number);
+if (!plot || !legend || legend[0] < Number(plot[1]) || legend[1] < Number(plot[2]) || legend[2] > Number(plot[1]) + Number(plot[3]) || legend[3] > Number(plot[2]) + Number(plot[4])) {
+  throw new Error("Export legend must sit inside the plot axes.");
 }
 const pdfDownload = await Promise.all([
   page.waitForEvent("download", { timeout: 10000 }),

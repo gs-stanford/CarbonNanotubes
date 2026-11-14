@@ -77,6 +77,7 @@ path.ashby-region-unknown { fill: #979d95; stroke: #60665f; }
 .temporary-point-label { fill: #151a17; font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: rgba(252, 253, 252, 0.96); stroke-width: 3px; }
 .temporary-rank-line { stroke: #151a17; stroke-width: 1.05; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
 .export-legend { display: block; }
+.export-legend-box { fill: white; fill-opacity: 0.94; stroke: none; }
 .export-legend-heading { fill: #171a16; font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; font-weight: 700; letter-spacing: 0; }
 .export-legend-text { fill: #4f574e; font-family: Arial, Helvetica, sans-serif; font-size: 9.4px; font-weight: 500; }
 .export-legend-symbol { stroke-width: 1.05; vector-effect: non-scaling-stroke; }

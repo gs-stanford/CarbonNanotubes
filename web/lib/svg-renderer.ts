@@ -38,7 +38,7 @@ type MarkerShape = "circle" | "open-circle" | "square" | "diamond" | "triangle" 
 
 const WIDTH = 920;
 const HEIGHT = 576;
-const BASE_MARGIN = { top: 64, right: 32, bottom: 60, left: 84 };
+const BASE_MARGIN = { top: 24, right: 32, bottom: 60, left: 84 };
 const LINEAR_TICK_TARGET = 6;
 // Arimo has Arial-compatible metrics and is also bundled for PNG rendering.
 const labelMetrics = new PDFDocument({ autoFirstPage: false })
@@ -334,40 +334,80 @@ function activeKeys(records: PlotRecord[], getter: (record: PlotRecord) => strin
   return [...order.filter((key) => active.has(key)), ...[...active].filter((key) => !order.includes(key)).sort()];
 }
 
-function renderLegend(records: PlotRecord[]): { markup: string; bottom: number } {
+type LegendLayout = { markup: string; width: number; height: number };
+
+function renderLegend(records: PlotRecord[], ashby = false, maxWidth = WIDTH - BASE_MARGIN.left - BASE_MARGIN.right - 20): LegendLayout {
   const familyKeys = activeKeys(records, (record) => record.material_family, FAMILY_ORDER);
   const formKeys = activeKeys(records, (record) => record.form_factor, FORM_ORDER);
-  let y = 22;
   const rows: string[] = [];
-  const renderRow = (heading: string, items: Array<{ key: string; label: string; symbol: (x: number, y: number) => string }>) => {
-    let x = 92;
-    rows.push(`<text class="export-legend-heading" x="38" y="${y + 3}">${heading}</text>`);
-    for (const item of items) {
-      const width = 28 + item.label.length * 5.15;
-      if (x + width > WIDTH - 28) {
-        y += 22;
-        x = 92;
-      }
+  let y = 14;
+  let width = 0;
+  const renderRow = (heading: string, items: Array<{ label: string; symbol: (x: number, y: number) => string }>) => {
+    rows.push(`<text class="export-legend-heading" x="10" y="${y + 3}">${heading}</text>`);
+    const start = heading.length * 6 + 24;
+    let x = start;
+    items.forEach((item) => {
+      const itemWidth = item.label.length * 5.15 + 30;
+      if (x + itemWidth > maxWidth - 8 && x > start) { x = start; y += 18; }
       rows.push(item.symbol(x, y));
-      rows.push(`<text class="export-legend-text" x="${x + 10}" y="${y + 3}">${xml(item.label)}</text>`);
-      x += width;
-    }
-    y += 22;
+      rows.push(`<text class="export-legend-text" x="${x + 12}" y="${y + 3}">${xml(item.label)}</text>`);
+      width = Math.max(width, x + itemWidth);
+      x += itemWidth;
+    });
+    y += 20;
   };
-  renderRow("COLOR", familyKeys.map((key) => ({
-    key,
+  if (ashby) rows.push('<g class="ashby-region-legend">');
+  renderRow(ashby ? "MATERIAL REGIONS" : "COLOR", familyKeys.map((key) => ({
     label: FAMILY_LABELS[key] ?? key,
     symbol: (x, itemY) => {
       const color = FAMILY_COLORS[key] ?? { fill: "#979d95", stroke: "#60665f" };
-      return `<circle cx="${x}" cy="${itemY}" r="3.7" fill="${color.fill}" stroke="${color.stroke}" stroke-width="1"/>`;
+      const region = ashby && records.filter(record => record.material_family === key).length >= 2
+        ? `<rect class="ashby-region-legend-swatch" x="${x - 7}" y="${itemY - 5}" width="15" height="10" rx="3" fill="${color.fill}" stroke="${color.stroke}"/>` : "";
+      return `${region}<circle cx="${x}" cy="${itemY}" r="3.2" fill="${color.fill}" stroke="${color.stroke}" stroke-width="1"/>`;
     }
   })));
+  if (ashby) rows.push('</g>');
   renderRow("SHAPE", formKeys.map((key) => ({
-    key,
     label: FORM_LABELS[key] ?? key,
     symbol: (x, itemY) => legendSymbol(markerShape({ form_factor: key } as PlotRecord), x, itemY)
   })));
-  return { markup: `<g class="export-legend">${rows.join("")}</g>`, bottom: y };
+  return { markup: rows.join(""), width, height: y - 6 };
+}
+
+function positionLegend(layout: LegendLayout, points: Point[], margin: typeof BASE_MARGIN): { box: Box; collisions: number } {
+  const left = margin.left + 10;
+  const right = WIDTH - margin.right - layout.width - 10;
+  const top = margin.top + 10;
+  const bottom = HEIGHT - margin.bottom - layout.height - 10;
+  const positions = [[right, bottom], [left, bottom], [right, top], [left, top]];
+  // Prefer corners, then unused edge space, before considering the plot interior.
+  for (let step = 1; step < 12; step++) {
+    const x = left + (right - left) * step / 12;
+    const y = top + (bottom - top) * step / 12;
+    positions.push([x, bottom], [x, top], [left, y], [right, y]);
+  }
+  for (let row = 1; row < 8; row++) {
+    for (let column = 1; column < 8; column++) positions.push([left + (right - left) * column / 8, top + (bottom - top) * row / 8]);
+  }
+  const candidates = positions.map(([x, y]) => {
+    const box = { x0: x, y0: y, x1: x + layout.width, y1: y + layout.height };
+    const collisions = points.filter(point => point.x >= box.x0 - 10 && point.x <= box.x1 + 10 && point.y >= box.y0 - 10 && point.y <= box.y1 + 10).length;
+    return { box, collisions };
+  });
+  return candidates.sort((a, b) => a.collisions - b.collisions)[0];
+}
+
+function legendMarkup(layout: LegendLayout, box: Box): string {
+  return `<g class="export-legend" data-legend-box="${box.x0},${box.y0},${box.x1},${box.y1}" transform="translate(${box.x0} ${box.y0})"><rect class="export-legend-box" width="${layout.width}" height="${layout.height}" rx="2"/>${layout.markup}</g>`;
+}
+
+// For a densely occupied plot, add axis headroom instead of covering observations.
+function legendHeadroom(domain: [number, number], scale: ScaleMode, layout: LegendLayout, margin: typeof BASE_MARGIN, maximum: number): [number, number] {
+  const height = HEIGHT - margin.bottom - margin.top;
+  const factor = height / Math.max(80, height - layout.height - 32);
+  const upper = scale === "log" ? 10 ** (Math.log10(domain[0]) + (Math.log10(maximum) - Math.log10(domain[0])) * factor)
+    : domain[0] + (maximum - domain[0]) * factor;
+  return [domain[0], Math.max(domain[1], upper)];
 }
 
 function axisMarkup({
@@ -554,7 +594,6 @@ function renderAshbyRegions(records: PlotRecord[], x: PropertyKey, y: PropertyKe
   }
   const limits = { x0: margin.left + 4, y0: margin.top + 4, x1: WIDTH - margin.right - 4, y1: HEIGHT - margin.bottom - 4 };
   const regions: string[] = [];
-  const legendEntries: Array<{ label: string; fill: string; stroke: string }> = [];
   for (const family of FAMILY_ORDER) {
     const points = groups.get(family) ?? [];
     const envelope = ashbyEnvelope(points, limits);
@@ -562,28 +601,8 @@ function renderAshbyRegions(records: PlotRecord[], x: PropertyKey, y: PropertyKe
     const color = FAMILY_COLORS[family] ?? { fill: "#979d95", stroke: "#60665f" };
     const familyClass = (FAMILY_POINT_CLASSES[family] ?? "point-material-unknown").replace("point-material-", "ashby-region-");
     regions.push(`<path class="ashby-region ${familyClass}" data-total-count="${points.length}" d="${envelope.path}" fill="${color.fill}" stroke="${color.stroke}"/>`);
-    legendEntries.push({ label: FAMILY_LABELS[family] ?? family, fill: color.fill, stroke: color.stroke });
   }
-  if (!legendEntries.length) return "";
-  const legendX = WIDTH - margin.right + 12;
-  const legendY = margin.top + 8;
-  const legendWidth = margin.right - 24;
-  const rowHeight = 24;
-  const legendHeight = 38 + legendEntries.length * rowHeight;
-  const legend = [
-    `<g class="ashby-region-legend" transform="translate(${legendX} ${legendY})">`,
-    `<rect class="ashby-region-legend-box" x="0" y="0" width="${legendWidth}" height="${legendHeight}" rx="3"/>`,
-    '<text class="ashby-region-legend-title" x="12" y="19">MATERIAL REGIONS</text>',
-    ...legendEntries.flatMap((entry, index) => {
-      const baseline = 45 + index * rowHeight;
-      return [
-        `<rect class="ashby-region-legend-swatch" x="12" y="${baseline - 11}" width="20" height="12" rx="2" fill="${entry.fill}" stroke="${entry.stroke}"/>`,
-        `<text class="ashby-region-legend-text" x="42" y="${baseline}">${xml(entry.label)}</text>`
-      ];
-    }),
-    "</g>"
-  ].join("");
-  return `<g clip-path="url(#plot-clip)">${regions.join("")}</g>${legend}`;
+  return `<g clip-path="url(#plot-clip)">${regions.join("")}</g>`;
 }
 
 function firstAuthor(authors: string): string {
@@ -640,7 +659,7 @@ function segmentBounds(start: Point, end: Point, padding = 1): Box {
   };
 }
 
-function renderCallouts(records: PlotRecord[], points: Map<string, Point>, valueKey: PropertyKey, margin: typeof BASE_MARGIN): string {
+function renderCallouts(records: PlotRecord[], points: Map<string, Point>, valueKey: PropertyKey, margin: typeof BASE_MARGIN, reserved: Box[] = []): string {
   const seenMetals = new Set<string>();
   const metals = records
     .filter((record) => record.material_family === "metal_comparator")
@@ -659,7 +678,7 @@ function renderCallouts(records: PlotRecord[], points: Map<string, Point>, value
       return all.findIndex((candidate) => (candidate.doi_verified || candidate.doi_raw || candidate.record_id).toLowerCase() === doi) === index;
     })
     .slice(0, 3);
-  const occupied: Box[] = [];
+  const occupied: Box[] = [...reserved];
   const markerBoxes = new Map(
     Array.from(points, ([recordId, point]) => [
       recordId,
@@ -763,11 +782,10 @@ function renderScatter(options: SvgFigureOptions): string {
   const xMeta = PROPERTY_BY_KEY.get(options.x);
   const yMeta = PROPERTY_BY_KEY.get(options.y);
   if (!xMeta || !yMeta) throw new Error("Unknown property metadata.");
-  const legend = renderLegend(options.records);
+  const legend = renderLegend(options.records, options.kind === "ashby");
   const margin = {
     ...BASE_MARGIN,
-    right: options.kind === "ashby" ? 260 : BASE_MARGIN.right,
-    top: Math.max(BASE_MARGIN.top, legend.bottom - 2) + (options.minimumX === undefined ? 0 : 36)
+    top: BASE_MARGIN.top + (options.minimumX === undefined ? 0 : 36)
   };
   const xValues = options.records.map((record) => finite(record, options.x)).filter((value): value is number => value !== null);
   const yValues = options.records.map((record) => finite(record, options.y)).filter((value): value is number => value !== null);
@@ -776,7 +794,7 @@ function renderScatter(options: SvgFigureOptions): string {
     yValues.push(options.temporary.y);
   }
   const xDomain = extent(xValues, options.xScale);
-  const yDomain = extent(yValues, options.yScale);
+  let yDomain = extent(yValues, options.yScale);
   const xRange: [number, number] = [margin.left, WIDTH - margin.right];
   const yRange: [number, number] = [HEIGHT - margin.bottom, margin.top];
   const points = new Map<string, Point>();
@@ -788,6 +806,19 @@ function renderScatter(options: SvgFigureOptions): string {
       x: scaleNumber(xValue, xDomain, xRange, options.xScale),
       y: scaleNumber(yValue, yDomain, yRange, options.yScale)
     });
+  }
+  const legendPoints = () => [...points.values(), ...(options.temporary ? [{
+    x: scaleNumber(options.temporary.x, xDomain, xRange, options.xScale),
+    y: scaleNumber(options.temporary.y, yDomain, yRange, options.yScale)
+  }] : [])];
+  let placement = positionLegend(legend, legendPoints(), margin);
+  if (placement.collisions) {
+    yDomain = legendHeadroom(yDomain, options.yScale, legend, margin, Math.max(...yValues));
+    for (const record of options.records) {
+      const point = points.get(record.record_id);
+      if (point) point.y = scaleNumber(finite(record, options.y)!, yDomain, yRange, options.yScale);
+    }
+    placement = positionLegend(legend, legendPoints(), margin);
   }
   const title = `${options.kind === "ashby" ? "Ashby plot: " : ""}${yMeta.label} vs ${xMeta.label}`;
   const regions = options.kind === "ashby" ? renderAshbyRegions(options.records, options.x, options.y, xDomain, yDomain, margin) : "";
@@ -821,12 +852,12 @@ function renderScatter(options: SvgFigureOptions): string {
       })()
     : "";
   const body = [
-    legend.markup,
     axisMarkup({ xDomain, yDomain, xScale: options.xScale, yScale: options.yScale, xLabel: `${xMeta.label} (${xMeta.displayUnit})`, yLabel: `${yMeta.label} (${yMeta.displayUnit})`, margin, powerLogTicks: options.kind === "ashby" }),
     regions,
     requirementSummary,
     `<g clip-path="url(#plot-clip)">${requirement}${markers}${temporary}</g>`,
-    options.showCallouts !== false ? renderCallouts(options.records, points, options.y, margin) : ""
+    options.showCallouts !== false ? renderCallouts(options.records, points, options.y, margin, [placement.box]) : "",
+    legendMarkup(legend, placement.box)
   ].join("");
   return documentShell(body, title, margin, options.interactive, options.documentMetadata, options.kind);
 }
@@ -841,8 +872,8 @@ function renderRanked(options: SvgFigureOptions): string {
     })
     .sort((a, b) => (finite(b, options.y) ?? -Infinity) - (finite(a, options.y) ?? -Infinity))
     .slice(0, 18);
-  const legend = renderLegend(plotRecords);
-  const margin = { ...BASE_MARGIN, top: Math.max(116, legend.bottom + 50), left: 204, right: 54 };
+  const legend = renderLegend(plotRecords, false, WIDTH - 204 - 54 - 154);
+  const margin = { ...BASE_MARGIN, left: 204, right: 54 };
   const values = [
     ...plotRecords.map((record) => finite(record, options.y) as number),
     ...options.referenceLines.map((line) => line.value),
@@ -851,7 +882,9 @@ function renderRanked(options: SvgFigureOptions): string {
   const xDomain = extent(values, options.yScale, true);
   const xRange: [number, number] = [margin.left, WIDTH - margin.right];
   const bottom = HEIGHT - margin.bottom;
-  const rowStep = (bottom - margin.top) / Math.max(plotRecords.length, 1);
+  const rowTop = margin.top + legend.height + 24;
+  const rowStep = (bottom - rowTop) / Math.max(plotRecords.length, 1);
+  const legendBox = { x0: margin.left + 10, y0: margin.top + 10, x1: margin.left + 10 + legend.width, y1: margin.top + 10 + legend.height };
   const axis = axisMarkup({
     xDomain,
     yDomain: [0, 1],
@@ -864,7 +897,7 @@ function renderRanked(options: SvgFigureOptions): string {
   });
   const rows = plotRecords.map((record, index) => {
     const value = finite(record, options.y) as number;
-    const y = margin.top + rowStep * (index + 0.5);
+    const y = rowTop + rowStep * (index + 0.5);
     const x = scaleNumber(value, xDomain, xRange, options.yScale);
     const baseline = options.yScale === "log" ? xRange[0] : scaleNumber(0, xDomain, xRange, options.yScale);
     const point = pointMarkup(record, x, y, options);
@@ -875,20 +908,19 @@ function renderRanked(options: SvgFigureOptions): string {
     .filter((line) => Number.isFinite(line.value) && (options.yScale === "linear" || line.value > 0))
     .map((line, index) => {
       const x = scaleNumber(line.value, xDomain, xRange, options.yScale);
-      const lane = index % 3;
-      const tagY = margin.top - 53 + lane * 18;
+      const tagY = margin.top + 10 + index * 18;
       const text = `${line.label} ${formatNumber(line.value)}`;
       const width = clamp(text.length * 6 + 14, 52, 126);
-      const boxX = clamp(x - width / 2, margin.left, WIDTH - margin.right - width);
-      return `<line class="rank-reference-line ${xml(line.className || "")}" x1="${x}" x2="${x}" y1="${margin.top - 5}" y2="${bottom}"/><line class="rank-reference-leader ${xml(line.className || "")}" x1="${x}" x2="${clamp(x, boxX, boxX + width)}" y1="${margin.top - 5}" y2="${tagY + 14}"/><rect class="rank-reference-tag ${xml(line.className || "")}" x="${boxX}" y="${tagY}" width="${width}" height="16" rx="2"/><text class="rank-reference-label ${xml(line.className || "")}" x="${boxX + width / 2}" y="${tagY + 11.5}" text-anchor="middle">${xml(text)}</text>`;
+      const boxX = WIDTH - margin.right - width - 10;
+      return `<line class="rank-reference-line ${xml(line.className || "")}" x1="${x}" x2="${x}" y1="${rowTop}" y2="${bottom}"/><rect class="rank-reference-tag ${xml(line.className || "")}" x="${boxX}" y="${tagY}" width="${width}" height="16" rx="2"/><text class="rank-reference-label ${xml(line.className || "")}" x="${boxX + width / 2}" y="${tagY + 11.5}" text-anchor="middle">${xml(text)}</text>`;
     }).join("");
   const temporary = options.temporary && Number.isFinite(options.temporary.y) && (options.yScale === "linear" || options.temporary.y > 0)
     ? (() => {
         const x = scaleNumber(options.temporary?.y ?? 0, xDomain, xRange, options.yScale);
-        return `<line class="temporary-rank-line" x1="${x}" x2="${x}" y1="${margin.top}" y2="${bottom}"/><text class="temporary-point-label" x="${clamp(x + 5, margin.left + 4, WIDTH - margin.right - 82)}" y="${margin.top + 13}">${xml(options.temporary?.label || "User input")}</text>`;
+        return `<line class="temporary-rank-line" x1="${x}" x2="${x}" y1="${rowTop}" y2="${bottom}"/><text class="temporary-point-label" x="${clamp(x + 5, margin.left + 4, WIDTH - margin.right - 82)}" y="${rowTop - 3}">${xml(options.temporary?.label || "User input")}</text>`;
       })()
     : "";
-  return documentShell(`${legend.markup}${axis}${references}${rows}${temporary}`, `Highest reported values: ${yMeta.label}`, margin, options.interactive, options.documentMetadata, options.kind);
+  return documentShell(`${axis}${references}${rows}${temporary}${legendMarkup(legend, legendBox)}`, `Highest reported values: ${yMeta.label}`, margin, options.interactive, options.documentMetadata, options.kind);
 }
 
 function renderTrend(options: SvgFigureOptions): string {
@@ -896,12 +928,12 @@ function renderTrend(options: SvgFigureOptions): string {
   if (!yMeta) throw new Error("Unknown property metadata.");
   const records = options.records.filter((record) => record.publication_year_verified !== null && finite(record, options.y) !== null);
   const legend = renderLegend(records);
-  const margin = { ...BASE_MARGIN, top: Math.max(BASE_MARGIN.top, legend.bottom - 2) };
+  const margin = { ...BASE_MARGIN };
   const years = records.map((record) => record.publication_year_verified as number);
   const yearMinimum = years.length ? Math.floor(Math.min(...years) / 5) * 5 : 1991;
   const yearMaximumRaw = years.length ? Math.ceil(Math.max(...years) / 5) * 5 : new Date().getFullYear();
   const xDomain: [number, number] = [yearMinimum, Math.max(yearMinimum + 5, yearMaximumRaw)];
-  const yDomain = extent(records.map((record) => finite(record, options.y) as number), options.yScale);
+  let yDomain = extent(records.map((record) => finite(record, options.y) as number), options.yScale);
   const xRange: [number, number] = [margin.left, WIDTH - margin.right];
   const yRange: [number, number] = [HEIGHT - margin.bottom, margin.top];
   const points = new Map<string, Point>();
@@ -909,8 +941,13 @@ function renderTrend(options: SvgFigureOptions): string {
     x: scaleNumber(record.publication_year_verified as number, xDomain, xRange, "linear"),
     y: scaleNumber(finite(record, options.y) as number, yDomain, yRange, options.yScale)
   }));
+  let placement = positionLegend(legend, [...points.values()], margin);
+  if (placement.collisions) {
+    yDomain = legendHeadroom(yDomain, options.yScale, legend, margin, Math.max(...records.map(record => finite(record, options.y)!)));
+    records.forEach(record => { points.get(record.record_id)!.y = scaleNumber(finite(record, options.y)!, yDomain, yRange, options.yScale); });
+    placement = positionLegend(legend, [...points.values()], margin);
+  }
   const body = [
-    legend.markup,
     axisMarkup({
       xDomain,
       yDomain,
@@ -925,7 +962,8 @@ function renderTrend(options: SvgFigureOptions): string {
       const point = points.get(record.record_id) as Point;
       return pointMarkup(record, point.x, point.y, options);
     }).join("")}</g>`,
-    options.showCallouts !== false ? renderCallouts(records, points, options.y, margin) : ""
+    options.showCallouts !== false ? renderCallouts(records, points, options.y, margin, [placement.box]) : "",
+    legendMarkup(legend, placement.box)
   ].join("");
   return documentShell(body, `${yMeta.label} by publication year`, margin, options.interactive, options.documentMetadata, options.kind);
 }
