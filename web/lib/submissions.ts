@@ -9,6 +9,7 @@ import {
   type PublicRecord
 } from "@/lib/data";
 import { hasDatabaseUrl } from "@/lib/db";
+import { validateSpecimenForms } from "@/lib/specimen-forms.mjs";
 import { maybeCleanupSubmissionWithOpenAI } from "@/lib/openai-cleanup";
 import { hasStoredSubmission, saveAcceptedSubmission } from "@/lib/submission-store";
 
@@ -540,6 +541,16 @@ export async function acceptSubmission(payload: SubmissionPayload): Promise<Acce
     );
   }
   const doi = normalizeDoi(payload.publication?.doi);
+  try {
+    validateSpecimenForms([{
+      record_id: "submitted sample",
+      sample_name: cleanString(payload.sample?.sample_label),
+      doi_raw: doi,
+      form_factor: cleanString(payload.sample?.form_factor) || "unknown"
+    }], []);
+  } catch (error) {
+    throw new SubmissionError(422, "invalid_specimen_form", error instanceof Error ? error.message : "Check the specimen form.");
+  }
   const metadata = await validateDoi(doi);
   const measurements = measurementEntries(payload);
   if (!measurements.length) {

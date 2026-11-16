@@ -8,6 +8,7 @@ import {
   type PublicRecord
 } from "@/lib/data";
 import { ensureDatabaseSchema, hasDatabaseUrl, withDb } from "@/lib/db";
+import { validateSpecimenForms } from "@/lib/specimen-forms.mjs";
 
 export type ReviewStatus = "accepted" | "curator_hold" | "official" | "rejected" | "hidden";
 
@@ -552,6 +553,12 @@ export async function updateSubmissionReview(submissionId: string, patch: AdminS
       }
 
       const nextRecord = sanitizeRecordPatch(currentRecord, patch.record_patch);
+      validateSpecimenForms([{
+        record_id: nextRecord.record_id,
+        sample_name: nextRecord.sample_name,
+        doi_raw: nextRecord.doi_verified ?? nextRecord.doi_raw ?? "",
+        form_factor: nextRecord.form_factor
+      }], []);
       if (nextStatus === "official") {
         nextRecord.primary_source_verification_status = "verified_against_primary_source";
         nextRecord.public_plot_badge = "Curator-verified research";

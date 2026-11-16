@@ -31,6 +31,8 @@ Development without PostgreSQL requires separately authorized private data. A pu
 
 ## Public figure API
 
+The importer also rejects unrecognized forms, graphite-crystal/nanoribbon identity conflicts, and record/measurement form disagreements. The private release builder applies audited morphology corrections before the same checks. Do not resolve a failed admission by relabeling the material family or dropping its values; inspect the specimen description and record an explicit correction. Morphology checks do not replace scientific source review.
+
 The versioned artifact API is served under `/api/v1`; its OpenAPI document is `/api/v1/openapi.json`. Production filters execute against indexed canonical PostgreSQL fields, while representative-record selection and plotting remain server-side. Public responses contain rendered figures, citations, temporary-point ranks, and at most ten exact top rows. Canonical record and coordinate routes require `CPT_INTERNAL_API_TOKEN` and are not advertised. See [`API.md`](./API.md) for examples.
 
 The Python package in `../python` consumes only this artifact contract. It defaults to `https://carbonnanotubes.onrender.com`; set `CPT_API_URL` or pass a URL to `CPTClient` for another deployment.

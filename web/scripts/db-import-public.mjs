@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
+import { validateSpecimenForms } from "../lib/specimen-forms.mjs";
 
 const { Pool } = pg;
 const SCHEMA_VERSION = "carbon-property-tables-public-v0.4";
@@ -161,6 +162,7 @@ export function loadPublicRelease(dataDir = resolveDataDir()) {
   const recordFile = readCsv(dataDir, FILES.records);
   const measurementFile = readCsv(dataDir, FILES.measurements);
   const publicationFile = readCsv(dataDir, FILES.publications);
+  validateSpecimenForms(recordFile.rows, measurementFile.rows);
   for (const file of [recordFile, measurementFile, publicationFile]) {
     if (file.headers.some(h => ["source_document_path", "pdf_path", "source_pdf_path", "local_path"].includes(h))) {
       throw new Error("Private document-path columns cannot enter the serving database.");

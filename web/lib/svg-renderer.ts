@@ -4,6 +4,7 @@ import { stripMarkup } from "@/lib/citations";
 import { PROPERTY_BY_KEY, type PlotRecord, type PropertyKey, type ScaleMode } from "@/lib/data";
 import type { FigureKind, FigureTemporaryPoint } from "@/lib/figure-api";
 import { FIGURE_SVG_CSS, POINT_LABEL_FONT_SIZE } from "@/lib/figure-style";
+import { FORM_LABELS } from "@/lib/specimen-forms.mjs";
 
 export type FigureReferenceLine = {
   label: string;
@@ -90,17 +91,6 @@ const FAMILY_POINT_CLASSES: Record<string, string> = {
   ceramic_or_glass_comparator: "point-material-ceramic"
 };
 
-const FORM_LABELS: Record<string, string> = {
-  buckypaper: "Buckypaper",
-  fiber_yarn: "Fiber / yarn",
-  foam_aerogel: "Foam / aerogel",
-  forest_array: "Forest / array",
-  individual_nanotube_or_bundle: "Individual tube / bundle",
-  sheet_mat_film: "Sheet / mat / film",
-  bulk: "Bulk",
-  unknown: "Unknown"
-};
-
 const FORM_ORDER = [
   "buckypaper",
   "fiber_yarn",
@@ -109,6 +99,8 @@ const FORM_ORDER = [
   "individual_nanotube_or_bundle",
   "sheet_mat_film",
   "bulk",
+  "bulk_single_crystal",
+  "micro_nanoscale_device",
   "unknown"
 ];
 
@@ -272,6 +264,8 @@ function markerShape(record: PlotRecord): MarkerShape {
   if (record.form_factor === "forest_array") return "triangle";
   if (record.form_factor === "individual_nanotube_or_bundle") return "diamond";
   if (record.form_factor === "bulk") return "hexagon";
+  if (record.form_factor === "bulk_single_crystal") return "hexagon";
+  if (record.form_factor === "micro_nanoscale_device") return "diamond";
   return "open-circle";
 }
 

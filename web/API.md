@@ -53,6 +53,10 @@ Curator-approved community submissions are included only when their review statu
 
 ## Units and filters
 
+Figures default to macroscopic forms: `fiber_yarn`, `sheet_mat_film`, `buckypaper`, `foam_aerogel`, `forest_array`, and `bulk`. Ordinary bulk metal references remain included. Graphite crystals/HOPG (`bulk_single_crystal`), micro/nanoscale devices (`micro_nanoscale_device`), individual tubes/bundles (`individual_nanotube_or_bundle`), and unresolved forms (`unknown`) are opt-in. Set `filters.form_factor` explicitly to include them; an empty form list is rejected. The response's `request.filters.form_factor` records the effective selection for replay. Search and publication counts still cover the entire released database.
+
+Point details retain `measurementMetadata[property].reported_or_derived` and `source_qualification`. A value marked `source_estimate` is a source estimate, not an independently measured value. Use `filters.exclude_source_estimates: true` when the selected properties must exclude those estimates.
+
 Figure axes and temporary-point coordinates use the display units returned by `/api/v1/properties`. Measurement-range filters use canonical SI units. Repeated values are accepted for material family, form factor, release tier, provenance, and verification filters.
 
 `comparison_grades` accepts any non-empty subset of `A`, `B`, `C`, and `D`. Grades are computed for the active property pair under `cpt-property-pair-v1`; they are point-evidence grades and do not assert inter-record method equivalence.

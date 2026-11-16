@@ -22,6 +22,7 @@ from typing import Any
 
 import pandas as pd
 from openpyxl import load_workbook
+from specimen_forms import specimen_form
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -404,21 +405,8 @@ def radar_citation_override(sheet_name: str, source_row: int, label: Any, notes:
 
 
 def infer_form_factor(material_family: str, label: Any, notes: Any) -> str:
-    text = lower_text(label, notes)
-    family = material_family.lower()
-    if "individual" in text:
-        return "individual_nanotube_or_bundle"
-    if re.search(r"\b(sheets?|films?|mats?)\b", text):
-        return "sheet_mat_film"
-    if re.search(r"\b(foams?|aerogels?)\b", text):
-        return "foam_aerogel"
-    if re.search(r"\b(forests?|arrays?)\b", text):
-        return "forest_array"
-    if re.search(r"\bbucky(papers?)?\b", text):
-        return "buckypaper"
-    if family.endswith("comparator") or "fiber" in family or "cnt" in family or material_family == "CNT_metal_composite":
-        return "fiber_yarn"
-    return "unknown"
+    # A material family is not evidence of specimen geometry.
+    return specimen_form(lower_text(label, notes))
 
 
 def infer_cnt_type(label: Any, notes: Any) -> str | None:
@@ -508,16 +496,12 @@ def james_material_family(category: Any, category2: Any, reference: Any, notes: 
 
 
 def james_form_factor(category: Any, reference: Any, notes: Any, material_family: str) -> str:
-    text = lower_text(category, reference, notes)
-    if "individual" in text:
-        return "individual_nanotube_or_bundle"
-    if "film" in text or "sheet" in text or "mat" in text or "paper" in text:
-        if "bucky" in text:
-            return "buckypaper"
-        return "sheet_mat_film"
-    if "bulk material" in text:
-        return "bulk"
-    return infer_form_factor(material_family, reference, notes)
+    # Specimen notes take precedence over workbook grouping and article titles.
+    for candidate in (notes, category):
+        form = specimen_form(lower_text(candidate))
+        if form != "unknown":
+            return form
+    return "unknown"
 
 
 def james_cnt_type(category: Any, reference: Any, notes: Any) -> str | None:

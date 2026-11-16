@@ -10,6 +10,7 @@ import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/dat
 import MeasurementNotes from "@/components/MeasurementNotes";
 import { Brand } from "@/components/Brand";
 import { useFigureSelection } from "@/components/useFigureSelection";
+import { FORM_LABELS, DEFAULT_FIGURE_FORMS } from "@/lib/specimen-forms.mjs";
 import styles from "./Explorer.module.css";
 
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
@@ -68,17 +69,6 @@ const MATERIAL_CLASS: Record<string, string> = {
   ceramic_or_glass_comparator: "material-ceramic"
 };
 
-const FORM_LABELS: Record<string, string> = {
-  fiber_yarn: "Fiber / yarn",
-  sheet_mat_film: "Sheet / mat / film",
-  buckypaper: "Buckypaper",
-  foam_aerogel: "Foam / aerogel",
-  forest_array: "Forest / array",
-  individual_nanotube_or_bundle: "Individual tube / bundle",
-  bulk: "Bulk",
-  unknown: "Unknown"
-};
-
 const FORM_SHAPE_CLASS: Record<string, string> = {
   fiber_yarn: "shape-circle",
   sheet_mat_film: "shape-down-triangle",
@@ -87,6 +77,8 @@ const FORM_SHAPE_CLASS: Record<string, string> = {
   forest_array: "shape-triangle",
   individual_nanotube_or_bundle: "shape-diamond",
   bulk: "shape-hexagon",
+  bulk_single_crystal: "shape-hexagon",
+  micro_nanoscale_device: "shape-diamond",
   unknown: "shape-open-circle"
 };
 
@@ -202,7 +194,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
   const [plotType, setPlotType] = useState<PlotType>("scatter");
   const [selectedTiers, setSelectedTiers] = useState(() => new Set(TIER_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
   const [selectedFamilies, setSelectedFamilies] = useState(() => new Set(families));
-  const [selectedForms, setSelectedForms] = useState(() => new Set(forms));
+  const [selectedForms, setSelectedForms] = useState(() => new Set(forms.filter(form => DEFAULT_FIGURE_FORMS.includes(form))));
   const [yearMin, setYearMin] = useState(initialYearMin);
   const [yearMax, setYearMax] = useState(initialYearMax);
   const [numericFilters, setNumericFilters] = useState<NumericFilterState>(() => emptyNumericFilters());
@@ -427,7 +419,7 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
     setPlotType("scatter");
     setSelectedTiers(new Set(TIER_OPTIONS.filter((item) => item.defaultOn).map((item) => item.key)));
     setSelectedFamilies(new Set(families));
-    setSelectedForms(new Set(forms));
+    setSelectedForms(new Set(forms.filter(form => DEFAULT_FIGURE_FORMS.includes(form))));
     setYearMin(initialYearMin);
     setYearMax(initialYearMax);
     setNumericFilters(emptyNumericFilters());
@@ -695,7 +687,11 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
 
         {selectedId ? <aside id="point-details" className="detail-rail" aria-label="Focused record">
           <div className={styles.detailsHeader}><span>Selected point</span><button type="button" className="icon-button" aria-label="Close point details" title="Close point details" onClick={closePointDetails}><X size={16}/></button></div>
-          <section className="detail-section">{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => { const meta = metaFor(properties, key); return <div key={key}><dt>{meta.label}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>; })}</dl></> : <div role="status"><p className="detail-meta">{selection.error || "Loading point details..."}</p>{selection.error ? <button type="button" className="citation-button" disabled={loading} onClick={() => selection.expired ? setFigureRevision(value => value + 1) : selection.retry()}><RefreshCcw size={14}/>{selection.expired ? "Refresh figure details" : "Retry details"}</button> : null}</div>}</section>
+          <section className="detail-section">{selectedRecord ? <><h3>{titleFor(selectedRecord)}</h3><p className="detail-meta">{sampleSummary(selectedRecord)}</p><div className="badge-line"><span className={`tier-badge ${selectedRecord.contextual_benchmark ? "context" : "primary"}`}>{selectedRecord.public_plot_badge}</span>{lowDensityBasis ? <span className="tier-badge warning">low-density basis</span> : null}{selectedRecord.missing_conditions ? <span className="tier-badge warning">missing conditions</span> : null}</div><dl className="metric-list">{detailKeys.map((key) => {
+            const meta = metaFor(properties, key);
+            const measurement = selectedRecord.measurementMetadata[key];
+            return <div key={key}><dt>{meta.label}{measurement?.reported_or_derived === "source_estimate" ? <span className={styles.estimateBadge} title={measurement.source_qualification ?? "Source-estimated value"}>Source estimate</span> : null}</dt><dd>{displayValue(selectedRecord.values[key] as number, meta)}</dd></div>;
+          })}</dl></> : <div role="status"><p className="detail-meta">{selection.error || "Loading point details..."}</p>{selection.error ? <button type="button" className="citation-button" disabled={loading} onClick={() => selection.expired ? setFigureRevision(value => value + 1) : selection.retry()}><RefreshCcw size={14}/>{selection.expired ? "Refresh figure details" : "Retry details"}</button> : null}</div>}</section>
           {selectedRecord ? <><section className="detail-section"><div className="rail-heading">Source</div><p className="source-title">{titleFor(selectedRecord)}</p><p className="detail-meta">{selectedRecord.publication_authors_short_verified || "Authors unavailable"}</p><p className="detail-meta">{[selectedRecord.publication_journal_verified, selectedRecord.publication_year_verified].filter(Boolean).join(" / ")}</p>{doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ? <a className="doi-link" href={doiHref(selectedRecord.doi_verified || selectedRecord.doi_raw) ?? undefined} target="_blank" rel="noreferrer">{selectedRecord.doi_verified || selectedRecord.doi_raw}<ExternalLink size={11}/></a> : <p className="doi-line">Source identifier pending</p>}</section>
           <MeasurementNotes record={selectedRecord} properties={properties} axes={[xKey, yKey]}/>
           <section className="detail-section"><div className="rail-heading">Measurement conditions</div><dl className="detail-table"><div><dt>Temperature</dt><dd>{selectedRecord.condition_temperature_C !== null ? `${selectedRecord.condition_temperature_C} °C` : "-"}</dd></div><div><dt>Atmosphere</dt><dd>{selectedRecord.condition_atmosphere || "-"}</dd></div><div><dt>Method</dt><dd>{selectedRecord.measurement_method || "-"}</dd></div><div><dt>Gauge length</dt><dd>{selectedRecord.gauge_length_mm !== null ? `${selectedRecord.gauge_length_mm} mm` : "-"}</dd></div><div><dt>Strain rate</dt><dd>{selectedRecord.strain_rate_s_inv !== null ? `${selectedRecord.strain_rate_s_inv} s⁻¹` : "-"}</dd></div></dl></section>

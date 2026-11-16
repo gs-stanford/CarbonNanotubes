@@ -24,6 +24,7 @@ import { pairedRequirementRecords, PERFORMANCE_PROPERTIES } from "@/lib/represen
 import { getReleaseDescriptor, queryCanonicalRecords } from "@/lib/query-store";
 import { renderSvgFigure, type FigureReferenceLine } from "@/lib/svg-renderer";
 import { figureSelections } from "@/lib/figure-selection";
+import { FORM_LABELS, DEFAULT_FIGURE_FORMS } from "@/lib/specimen-forms.mjs";
 import {
   figureComparability,
   type ComparabilityGrade,
@@ -73,17 +74,6 @@ const FAMILY_LABELS: Record<string, string> = {
   polymer_fiber_comparator: "Polymer",
   metal_comparator: "Metal",
   ceramic_or_glass_comparator: "Ceramic / glass"
-};
-
-const FORM_LABELS: Record<string, string> = {
-  fiber_yarn: "Fiber / yarn",
-  sheet_mat_film: "Sheet / mat / film",
-  buckypaper: "Buckypaper",
-  foam_aerogel: "Foam / aerogel",
-  forest_array: "Forest / array",
-  individual_nanotube_or_bundle: "Individual tube / bundle",
-  bulk: "Bulk",
-  unknown: "Unknown"
 };
 
 const RANKED_REFERENCE_LINES: Partial<Record<PropertyKey, FigureReferenceLine[]>> = {
@@ -226,7 +216,13 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
         }
         return body.release.trim();
       })();
-  filterSearchParams(body.filters);
+  const filters = { ...(body.filters === undefined ? {} : objectValue(body.filters, "filters")) };
+  if (!Object.hasOwn(filters, "form_factor")) filters.form_factor = [...DEFAULT_FIGURE_FORMS];
+  const formParams = filterSearchParams(filters);
+  const forms = formParams.getAll("form_factor").flatMap(value => value.split(",")).map(value => value.trim()).filter(Boolean);
+  if (!forms.length) throw new ApiInputError("Select at least one specimen form.");
+  if (forms.some(form => !Object.hasOwn(FORM_LABELS, form))) throw new ApiInputError("Unknown specimen form.");
+  filters.form_factor = [...new Set(forms)];
   if (temporary && (kind === "scatter" || kind === "ashby") && xScale === "log" && temporary.x <= 0) {
     throw new ApiInputError("temporary x must be positive on a logarithmic x-axis.");
   }
@@ -247,7 +243,7 @@ function parseRequest(value: unknown): Required<Pick<FigureRequest, "kind" | "x"
     highlight_record_ids: highlights,
     comparison_grades: comparisonGrades,
     formats,
-    filters: body.filters ? objectValue(body.filters, "filters") : {},
+    filters,
     minimum_x: minimumX as number | undefined,
     show_callouts: body.show_callouts !== false,
     interactive_details: body.interactive_details === true
@@ -455,6 +451,7 @@ export async function buildFigureResponse(rawRequest: unknown): Promise<FigureRe
   return {
     ...apiMeta(release),
     api_version: "v1",
+    request: { ...request, release: release.release_id },
     kind: request.kind,
     axes: {
       x: { key: xMeta.key, label: xMeta.label, canonicalUnit: xMeta.canonicalUnit, displayUnit: xMeta.displayUnit },

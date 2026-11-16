@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from specimen_forms import validate_specimen_forms
 
 CORRECTIONS = Path(__file__).resolve().parents[1] / "data/curation/source_corrections.json"
 FIELDS = {
@@ -52,6 +53,7 @@ def apply_source_corrections(records, measurements, path=CORRECTIONS):
                 mm = measurements.record_id.eq(rid) & measurements.property.isin(affected)
                 measurements.loc[mm, "reported_or_derived"] = "source_estimate"
                 measurements.loc[mm, "source_qualification"] = operation["reason"]
+                measurements.loc[mm, "source_locator"] = entry["locator"]
             elif action == "replace":
                 value = operation["value"]
                 records.loc[mask, col] = value
@@ -79,4 +81,5 @@ def apply_source_corrections(records, measurements, path=CORRECTIONS):
                 raise ValueError(f"Unknown correction action: {action}")
             changes.append({"property": prop, **operation})
         audit.append({**entry, "applied_changes": changes})
+    validate_specimen_forms(records, measurements)
     return records, measurements, audit

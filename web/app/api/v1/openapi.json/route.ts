@@ -108,7 +108,7 @@ export function GET(request: NextRequest) {
                       items: { type: "string", enum: ["A", "B", "C", "D"] }
                     },
                     formats: { type: "array", items: { type: "string", enum: ["svg", "png", "pdf"] } },
-                    filters: { type: "object", additionalProperties: true }
+                    filters: { type: "object", additionalProperties: true, description: "form_factor defaults to macroscopic forms. Graphite crystals/HOPG, micro/nanoscale devices, individual tubes/bundles, and unknown forms require explicit opt-in. Empty form lists are invalid. The response request contains the effective filters and release for replay." }
                   }
                 }
               }

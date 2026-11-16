@@ -78,6 +78,7 @@ export type FigureCounts = {
 
 export type FigureResponse = {
   api_version: "v1";
+  request: FigureRequest;
   generated_at: string;
   release: ReleaseDescriptor;
   kind: FigureKind;
