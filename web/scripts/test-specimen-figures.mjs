@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { DEFAULT_FIGURE_FORMS } from "../lib/specimen-forms.mjs";
+import { DEFAULT_FIGURE_FORMS, REFERENCE_FORM_GROUP } from "../lib/specimen-forms.mjs";
 
 const base = process.env.CPT_TEST_URL ?? "http://localhost:3005";
 const request = { kind: "scatter", x: "electrical_conductivity", y: "thermal_conductivity", x_scale: "log", y_scale: "log", formats: ["svg"] };
@@ -21,7 +21,7 @@ assert.equal(device.selected_record.values.thermal_conductivity, 1100);
 assert.equal(device.selected_record.measurementMetadata.thermal_conductivity.reported_or_derived, "source_estimate");
 assert.match(device.selected_record.measurementMetadata.thermal_conductivity.source_qualification, /model estimate/);
 await plot({ filters: { form_factor: "micro_nanoscale_device", doi: "10.1063/1.3147183", exclude_source_estimates: true } }, 400);
-assert.match(device.images.svg, /Micro \/ nanoscale device/);
+assert.match(device.images.svg, /Crystals &amp; micro\/nanostructures/);
 assert.equal(Buffer.from(device.images.png_base64, "base64").subarray(1, 4).toString(), "PNG");
 assert.equal(Buffer.from(device.images.pdf_base64, "base64").subarray(0, 4).toString(), "%PDF");
 for (const kind of ["scatter", "trend", "ranked", "ashby"]) {
@@ -31,6 +31,14 @@ for (const kind of ["scatter", "trend", "ranked", "ashby"]) {
 const crystal = await plot({ x: "specific_strength", y: "specific_electrical_conductivity", filters: { form_factor: ["bulk_single_crystal"] } });
 assert.ok(crystal.record_ids.includes("rec_7a9c079963dd"));
 assert.equal(crystal.selected_record.form_factor, "bulk_single_crystal");
+assert.match(crystal.images.svg, /point-shape-diamond/);
+assert.doesNotMatch(crystal.images.svg, /point-shape-hexagon/);
+for (const kind of ["scatter", "trend", "ranked", "ashby"]) {
+  const grouped = await plot({ kind, filters: { form_factor: [...REFERENCE_FORM_GROUP.forms] } });
+  assert.deepEqual(grouped.request.filters.form_factor, [...REFERENCE_FORM_GROUP.forms]);
+  assert.equal((grouped.images.svg.match(/Crystals &amp; micro\/nanostructures/g) ?? []).length, 1, `${kind}: one shared reference legend`);
+  assert.doesNotMatch(grouped.images.svg, /Graphite crystal \/ HOPG|Micro \/ nanoscale device|Individual tube \/ bundle/);
+}
 for (const form_factor of [[], "", null, "not_a_form"]) await plot({ filters: { form_factor } }, 400);
 assert.deepEqual((await plot(initial.request)).record_ids, initial.record_ids, "Replay preserves default cohort");
 console.log("Figure API checks passed: all four defaults, explicit reference opt-in, empty cohort, empty/invalid filters, estimate exclusion, SVG/PNG/PDF and replay.");

@@ -11,6 +11,22 @@ export const FORM_LABELS = Object.freeze({
   unknown: "Unknown"
 });
 
+// Presentation grouping only: retain precise specimen identities in stored records.
+export const REFERENCE_FORM_GROUP = Object.freeze({
+  key: "crystal_micro_nano",
+  label: "Crystals & micro/nanostructures",
+  forms: Object.freeze(["bulk_single_crystal", "individual_nanotube_or_bundle", "micro_nanoscale_device"])
+});
+
+export const FIGURE_FORM_LABELS = Object.freeze({
+  ...FORM_LABELS,
+  [REFERENCE_FORM_GROUP.key]: REFERENCE_FORM_GROUP.label
+});
+
+export function figureFormGroup(form) {
+  return REFERENCE_FORM_GROUP.forms.includes(form) ? REFERENCE_FORM_GROUP.key : form;
+}
+
 // Nanoscale specimens, graphite crystals and unresolved forms require opt-in.
 export const DEFAULT_FIGURE_FORMS = Object.freeze([
   "fiber_yarn", "sheet_mat_film", "buckypaper", "foam_aerogel", "forest_array", "bulk"

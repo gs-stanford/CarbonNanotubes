@@ -55,6 +55,8 @@ Curator-approved community submissions are included only when their review statu
 
 Figures default to macroscopic forms: `fiber_yarn`, `sheet_mat_film`, `buckypaper`, `foam_aerogel`, `forest_array`, and `bulk`. Ordinary bulk metal references remain included. Graphite crystals/HOPG (`bulk_single_crystal`), micro/nanoscale devices (`micro_nanoscale_device`), individual tubes/bundles (`individual_nanotube_or_bundle`), and unresolved forms (`unknown`) are opt-in. Set `filters.form_factor` explicitly to include them; an empty form list is rejected. The response's `request.filters.form_factor` records the effective selection for replay. Search and publication counts still cover the entire released database.
 
+The explorer groups graphite crystals, individual tubes/bundles and micro/nanoscale devices under one optional **Crystals & micro/nanostructures** checkbox. Website and API figures use a shared diamond marker and one legend entry for this group. API filters, selected-point details and submission forms retain the three precise specimen classifications; the combined display label is not a new stored form or API filter value.
+
 Point details retain `measurementMetadata[property].reported_or_derived` and `source_qualification`. A value marked `source_estimate` is a source estimate, not an independently measured value. Use `filters.exclude_source_estimates: true` when the selected properties must exclude those estimates.
 
 Figure axes and temporary-point coordinates use the display units returned by `/api/v1/properties`. Measurement-range filters use canonical SI units. Repeated values are accepted for material family, form factor, release tier, provenance, and verification filters.

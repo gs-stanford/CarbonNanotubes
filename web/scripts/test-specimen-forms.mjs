@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { DEFAULT_FIGURE_FORMS, FORM_LABELS, referenceForm, validateSpecimenForms } from "../lib/specimen-forms.mjs";
+import { DEFAULT_FIGURE_FORMS, FORM_LABELS, FIGURE_FORM_LABELS, REFERENCE_FORM_GROUP, figureFormGroup, referenceForm, validateSpecimenForms } from "../lib/specimen-forms.mjs";
 import { loadPublicRelease } from "./db-import-public.mjs";
 
 const release = loadPublicRelease();
@@ -13,6 +13,16 @@ for (const [ids, form] of [[crystals, "bulk_single_crystal"], [devices, "micro_n
 assert.ok(DEFAULT_FIGURE_FORMS.includes("bulk"), "Ordinary bulk metal references remain visible.");
 assert.ok(!DEFAULT_FIGURE_FORMS.includes("individual_nanotube_or_bundle"));
 assert.ok(!DEFAULT_FIGURE_FORMS.includes("unknown"));
+for (const form of REFERENCE_FORM_GROUP.forms) {
+  assert.equal(figureFormGroup(form), REFERENCE_FORM_GROUP.key);
+  assert.ok(!DEFAULT_FIGURE_FORMS.includes(form));
+  assert.ok(FORM_LABELS[form], "Precise labels remain available for record details.");
+}
+assert.equal(FIGURE_FORM_LABELS[REFERENCE_FORM_GROUP.key], "Crystals & micro/nanostructures");
+assert.equal(figureFormGroup("bulk"), "bulk", "Ordinary bulk materials stay separate.");
+assert.equal(figureFormGroup("fiber_yarn"), "fiber_yarn");
+assert.equal(figureFormGroup(REFERENCE_FORM_GROUP.key), REFERENCE_FORM_GROUP.key);
+assert.throws(() => validateSpecimenForms([{ record_id: "display-only", form_factor: REFERENCE_FORM_GROUP.key }], []), /Unrecognized/);
 for (const [sample, doi, form] of [
   ["Single Crystal Graphite", "", "bulk_single_crystal"],
   ["HOPG", "", "bulk_single_crystal"],

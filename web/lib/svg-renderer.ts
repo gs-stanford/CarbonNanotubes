@@ -4,7 +4,7 @@ import { stripMarkup } from "@/lib/citations";
 import { PROPERTY_BY_KEY, type PlotRecord, type PropertyKey, type ScaleMode } from "@/lib/data";
 import type { FigureKind, FigureTemporaryPoint } from "@/lib/figure-api";
 import { FIGURE_SVG_CSS, POINT_LABEL_FONT_SIZE } from "@/lib/figure-style";
-import { FORM_LABELS } from "@/lib/specimen-forms.mjs";
+import { FIGURE_FORM_LABELS, REFERENCE_FORM_GROUP, figureFormGroup } from "@/lib/specimen-forms.mjs";
 
 export type FigureReferenceLine = {
   label: string;
@@ -96,11 +96,9 @@ const FORM_ORDER = [
   "fiber_yarn",
   "foam_aerogel",
   "forest_array",
-  "individual_nanotube_or_bundle",
+  REFERENCE_FORM_GROUP.key,
   "sheet_mat_film",
   "bulk",
-  "bulk_single_crystal",
-  "micro_nanoscale_device",
   "unknown"
 ];
 
@@ -262,10 +260,8 @@ function markerShape(record: PlotRecord): MarkerShape {
   if (record.form_factor === "buckypaper") return "square";
   if (record.form_factor === "foam_aerogel") return "open-circle";
   if (record.form_factor === "forest_array") return "triangle";
-  if (record.form_factor === "individual_nanotube_or_bundle") return "diamond";
+  if (figureFormGroup(record.form_factor) === REFERENCE_FORM_GROUP.key) return "diamond";
   if (record.form_factor === "bulk") return "hexagon";
-  if (record.form_factor === "bulk_single_crystal") return "hexagon";
-  if (record.form_factor === "micro_nanoscale_device") return "diamond";
   return "open-circle";
 }
 
@@ -332,7 +328,7 @@ type LegendLayout = { markup: string; width: number; height: number };
 
 function renderLegend(records: PlotRecord[], ashby = false, maxWidth = WIDTH - BASE_MARGIN.left - BASE_MARGIN.right - 20): LegendLayout {
   const familyKeys = activeKeys(records, (record) => record.material_family, FAMILY_ORDER);
-  const formKeys = activeKeys(records, (record) => record.form_factor, FORM_ORDER);
+  const formKeys = activeKeys(records, (record) => figureFormGroup(record.form_factor), FORM_ORDER);
   const rows: string[] = [];
   let y = 14;
   let width = 0;
@@ -362,7 +358,7 @@ function renderLegend(records: PlotRecord[], ashby = false, maxWidth = WIDTH - B
   })));
   if (ashby) rows.push('</g>');
   renderRow("SHAPE", formKeys.map((key) => ({
-    label: FORM_LABELS[key] ?? key,
+    label: FIGURE_FORM_LABELS[key] ?? key,
     symbol: (x, itemY) => legendSymbol(markerShape({ form_factor: key } as PlotRecord), x, itemY)
   })));
   return { markup: rows.join(""), width, height: y - 6 };

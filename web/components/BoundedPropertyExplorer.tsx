@@ -10,7 +10,7 @@ import type { PlotRecord, PropertyKey, PropertyMeta, ScaleMode } from "@/lib/dat
 import MeasurementNotes from "@/components/MeasurementNotes";
 import { Brand } from "@/components/Brand";
 import { useFigureSelection } from "@/components/useFigureSelection";
-import { FORM_LABELS, DEFAULT_FIGURE_FORMS } from "@/lib/specimen-forms.mjs";
+import { FORM_LABELS, FIGURE_FORM_LABELS, REFERENCE_FORM_GROUP, figureFormGroup, DEFAULT_FIGURE_FORMS } from "@/lib/specimen-forms.mjs";
 import styles from "./Explorer.module.css";
 
 type PlotType = "scatter" | "ranked" | "trend" | "ashby";
@@ -75,10 +75,8 @@ const FORM_SHAPE_CLASS: Record<string, string> = {
   buckypaper: "shape-square",
   foam_aerogel: "shape-open-circle",
   forest_array: "shape-triangle",
-  individual_nanotube_or_bundle: "shape-diamond",
+  [REFERENCE_FORM_GROUP.key]: "shape-diamond",
   bulk: "shape-hexagon",
-  bulk_single_crystal: "shape-hexagon",
-  micro_nanoscale_device: "shape-diamond",
   unknown: "shape-open-circle"
 };
 
@@ -185,6 +183,10 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
   const properties = initialData.properties;
   const families = initialData.families;
   const forms = initialData.forms;
+  const formGroups = useMemo(() => [...new Set(forms.map(figureFormGroup))].map(key => ({
+    key,
+    members: forms.filter(form => figureFormGroup(form) === key)
+  })), [forms]);
   const initialYearMin = initialData.summary.minYear ?? 1991;
   const initialYearMax = initialData.summary.maxYear ?? new Date().getFullYear();
   const [xKey, setXKey] = useState<PropertyKey>("specific_strength");
@@ -647,7 +649,14 @@ export function BoundedPropertyExplorer({ initialData, databaseTotals }: { initi
             {familyOptions.map((family) => <label className="check-row compact family-check-row" key={family}><input type="checkbox" checked={selectedFamilies.has(family)} onChange={() => toggle(family, selectedFamilies, setSelectedFamilies)}/><i className={`material-swatch ${MATERIAL_CLASS[family] ?? "material-unknown"}`}/><span>{FAMILY_LABELS[family] ?? family}</span><span className="count">{counts?.material_families[family] ?? 0}</span></label>)}
           </section>
           <section className="rail-section"><div className="rail-heading">Form factor</div>
-            {forms.map((form) => <label className="check-row compact family-check-row" key={form}><input type="checkbox" checked={selectedForms.has(form)} onChange={() => toggle(form, selectedForms, setSelectedForms)}/><i className={`shape-swatch ${FORM_SHAPE_CLASS[form] ?? "shape-open-circle"}`}/><span>{FORM_LABELS[form] ?? form}</span><span className="count">{counts?.form_factors[form] ?? 0}</span></label>)}
+            {formGroups.map(({ key, members }) => <label className="check-row compact family-check-row" key={key} title={members.length > 1 ? members.map(form => FORM_LABELS[form]).join("; ") : undefined}><input type="checkbox" checked={members.every(form => selectedForms.has(form))} onChange={event => {
+              const checked = event.target.checked;
+              setSelectedForms(current => {
+                const next = new Set(current);
+                members.forEach(form => checked ? next.add(form) : next.delete(form));
+                return next;
+              });
+            }}/><i className={`shape-swatch ${FORM_SHAPE_CLASS[key] ?? "shape-open-circle"}`}/><span>{FIGURE_FORM_LABELS[key] ?? key}</span><span className="count">{members.reduce((sum, form) => sum + (counts?.form_factors[form] ?? 0), 0)}</span></label>)}
           </section>
           <section className="rail-section"><div className="rail-heading">Year</div><div className="year-row"><input type="number" value={yearMin} onChange={(event) => setYearMin(Number(event.target.value))}/><span>to</span><input type="number" value={yearMax} onChange={(event) => setYearMax(Number(event.target.value))}/></div></section>
           <section className="rail-section"><div className="rail-heading">Numeric filters{numericFiltersActive ? <span className="rail-heading-note">active</span> : null}</div><div className="numeric-filter-grid">
